@@ -1,249 +1,0 @@
-TMorphy
-v7
-r0
-t340722668.626185
-cCheck dependencies
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o /Users/martinbrazeau/Dropbox/Morphy/main.c normal x86_64 c com.apple.compilers.gcc.4_2
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c normal x86_64 c com.apple.compilers.gcc.4_2
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o /Users/martinbrazeau/Dropbox/Morphy/randtree.c normal x86_64 c com.apple.compilers.gcc.4_2
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/taxpart.o /Users/martinbrazeau/Dropbox/Morphy/taxpart.c normal x86_64 c com.apple.compilers.gcc.4_2
-cLd /Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy normal x86_64
-
-N/Developer/SDKs/MacOSX10.6.sdk
-c000000004D5A274300000000000000EE
-t1297753923
-s238
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/ctype.h
-c000000004BBD2CE90000000000002C18
-t1270689001
-s11288
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/math.h
-c000000004A5C14A000000000000004F1
-t1247548576
-s1265
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/stdio.h
-c000000004BBD2CE90000000000004174
-t1270689001
-s16756
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/stdlib.h
-c000000004BBD2CE90000000000002DF5
-t1270689001
-s11765
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/string.h
-c000000004BBD2CE90000000000001731
-t1270689001
-s5937
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stdbool.h
-c000000004A11EB240000000000000644
-t1242688292
-s1604
-
-N/Users/martinbrazeau/Desktop/morphy/morphy.h
-c000000004E660C76000000000000090A
-t1315310710
-s2314
-i<stdio.h>
-i<stdlib.h>
-i<string.h>
-i<stdbool.h>
-i<ctype.h>
-
-N/Users/martinbrazeau/Dropbox/Morphy/../../Desktop/morphy/exhaustive2.c
-c000000004E6C2CA80000000000000F10
-t1315712168
-s3856
-i"morphy.h"
-i<math.h>
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy
-t1319029868
-s26856
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/Morphy.LinkFileList
-c000000004E99AF0D00000000000001A9
-t1318694669
-s425
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o
-t1319028958
-s13136
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive2.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/fhandl.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o
-t1319029868
-s19452
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o
-t1319028958
-s7160
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/readnewick.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/taxpart.o
-t1319028958
-s7612
-
-N/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c
-c000000004E9D97580000000000001FD8
-t1318950744
-s8152
-i"morphy.h"
-i<math.h>
-
-N/Users/martinbrazeau/Dropbox/Morphy/fhandl.c
-c000000004E7C53CD0000000000002346
-t1316770765
-s9030
-i"fhandl.h"
-
-N/Users/martinbrazeau/Dropbox/Morphy/fhandl.h
-c000000004E7C569A000000000000032B
-t1316771482
-s811
-
-N/Users/martinbrazeau/Dropbox/Morphy/main.c
-c000000004E9ECCAC00000000000030F0
-t1319029932
-s12528
-i"morphy.h"
-
-N/Users/martinbrazeau/Dropbox/Morphy/morphy.h
-c000000004E9D4CF50000000000000B30
-t1318931701
-s2864
-i<stdio.h>
-i<stdlib.h>
-i<string.h>
-i<stdbool.h>
-i<ctype.h>
-i<gsl/gsl_rng.h>
-
-N/Users/martinbrazeau/Dropbox/Morphy/randtree.c
-c000000004E9DE59D0000000000000950
-t1318970781
-s2384
-i"morphy.h"
-
-N/Users/martinbrazeau/Dropbox/Morphy/readnewick.c
-c000000004E97F2B2000000000000020A
-t1318580914
-s522
-
-N/Users/martinbrazeau/Dropbox/Morphy/taxpart.c
-c000000004E9DE5AA0000000000000A6C
-t1318970794
-s2668
-i"morphy.h"
-
-N/usr/local/include/gsl/gsl_rng.h
-c000000004E2048D90000000000001AC6
-t1310738649
-s6854
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies340722668#340722668#0(0"0(0#1#0"8607300960#0"0#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340721758.080194
-e340721758.854271
-r1
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o
-x/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c: In function 'allunrooted':
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:192: warning: initialization from incompatible pointer type
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:348: warning: implicit declaration of function 'denode'
-lSLF07#2@56"Compile /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c340721758#340721758#0(291"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c: In function 'allunrooted':/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:192: warning: initialization from incompatible pointer type/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:348: warning: implicit declaration of function 'denode'2(22@45"Initialization from incompatible pointer type340721758#77#109#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c340643544#192#0#192#0#45"initialization from incompatible pointer type0(22@41"Implicit declaration of function 'denode'340721758#186#105#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c340643544#348#0#348#0#36"implicit declaration of function '*'0(0#0#48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c8603233472#1277"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o0#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive2.o /Users/martinbrazeau/Dropbox/Morphy/../../Desktop/morphy/exhaustive2.c normal x86_64 c com.apple.compilers.gcc.4_2
-r0
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/fhandl.o /Users/martinbrazeau/Dropbox/Morphy/fhandl.c normal x86_64 c com.apple.compilers.gcc.4_2
-r0
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o /Users/martinbrazeau/Dropbox/Morphy/main.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340722668.524562
-e340722668.563896
-r1
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o
-x/Users/martinbrazeau/Dropbox/Morphy/main.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@50"Compile /Users/martinbrazeau/Dropbox/Morphy/main.c340722668#340722668#0(0"0(0#0#42"/Users/martinbrazeau/Dropbox/Morphy/main.c8607573152#1265"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/main.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o0#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o /Users/martinbrazeau/Dropbox/Morphy/randtree.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340721758.096967
-e340721758.844360
-r1
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o
-x/Users/martinbrazeau/Dropbox/Morphy/randtree.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c: In function 'rand_w_root':
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c:109: warning: control reaches end of non-void function
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c: In function 'randunrooted':
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c:116: warning: control reaches end of non-void function
-lSLF07#2@54"Compile /Users/martinbrazeau/Dropbox/Morphy/randtree.c340721758#340721758#0(355"/Users/martinbrazeau/Dropbox/Morphy/randtree.c: In function 'rand_w_root':/Users/martinbrazeau/Dropbox/Morphy/randtree.c:109: warning: control reaches end of non-void function/Users/martinbrazeau/Dropbox/Morphy/randtree.c: In function 'randunrooted':/Users/martinbrazeau/Dropbox/Morphy/randtree.c:116: warning: control reaches end of non-void function2(22@40"Control reaches end of non-void function340721758#75#102#0(6@46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c340663581#109#0#109#0#40"control reaches end of non-void function0(22@40"Control reaches end of non-void function340721758#253#102#0(6@46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c340663581#116#0#116#0#40"control reaches end of non-void function0(0#0#46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c8602896032#1273"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/randtree.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o0#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/readnewick.o /Users/martinbrazeau/Dropbox/Morphy/readnewick.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340273714.186754
-e340273714.247496
-r0
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/readnewick.o
-x/Users/martinbrazeau/Dropbox/Morphy/readnewick.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@56"Compile /Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#340273714#0(859"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c: In function 'nwk_one':/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:21: error: 'numnodes' undeclared (first use in this function)/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:21: error: (Each undeclared identifier is reported only once/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:21: error: for each function it appears in.)/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:25: error: expected declaration or statement at end of input/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:16: warning: unused variable 'numtaxa'/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:16: warning: unused variable 'numnodes_p'/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:16: warning: unused variable 'numnodes_a'/Users/martinbrazeau/Dropbox/Morphy/readnewick.c:15: warning: unused variable 'closecount'6(4@50"'numnodes' undeclared (first use in this function)340273714#73#111#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#21#0#21#0#43"'*' undeclared (first use in this function)0(4@49"Expected declaration or statement at end of input340273714#388#110#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#25#0#25#0#49"expected declaration or statement at end of input0(22@25"Unused variable 'numtaxa'340273714#498#88#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#16#0#16#0#19"unused variable '*'0(22@28"Unused variable 'numnodes_p'340273714#586#91#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#16#0#16#0#19"unused variable '*'0(22@28"Unused variable 'numnodes_a'340273714#677#91#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#16#0#16#0#19"unused variable '*'0(22@28"Unused variable 'closecount'340273714#768#91#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c340273714#15#0#15#0#19"unused variable '*'0(0#0#48"/Users/martinbrazeau/Dropbox/Morphy/readnewick.c8614956992#1277"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/readnewick.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/readnewick.o1#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/taxpart.o /Users/martinbrazeau/Dropbox/Morphy/taxpart.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340721758.098275
-e340721758.844058
-r1
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/taxpart.o
-x/Users/martinbrazeau/Dropbox/Morphy/taxpart.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-lSLF07#2@53"Compile /Users/martinbrazeau/Dropbox/Morphy/taxpart.c340721758#340721758#0(0"0(0#0#45"/Users/martinbrazeau/Dropbox/Morphy/taxpart.c8603409728#1271"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/taxpart.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/taxpart.o0#
-
-CLd /Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy normal x86_64
-s340722668.564180
-e340722668.626148
-r1
-xLd
-x/Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy
-xnormal
-xx86_64
-lSLF07#2@59"Link /Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy340722668#340722668#0(0"0(0#0#0"8606911744#479"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv MACOSX_DEPLOYMENT_TARGET 10.6    /Developer/usr/bin/gcc-4.2 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.6.sdk -L/Users/martinbrazeau/Dropbox/Morphy/build/Debug -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -filelist /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/Morphy.LinkFileList -mmacosx-version-min=10.6 -o /Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy0#
-

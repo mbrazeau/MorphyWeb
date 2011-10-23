@@ -1,180 +1,0 @@
-TMorphy
-v7
-r0
-t340228164.490292
-cCheck dependencies
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o /Users/martinbrazeau/Dropbox/Morphy/main.c normal x86_64 c com.apple.compilers.gcc.4_2
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c normal x86_64 c com.apple.compilers.gcc.4_2
-cCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o /Users/martinbrazeau/Dropbox/Morphy/randtree.c normal x86_64 c com.apple.compilers.gcc.4_2
-
-N/Developer/SDKs/MacOSX10.6.sdk
-c000000004D5A274300000000000000EE
-t1297753923
-s238
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/ctype.h
-c000000004BBD2CE90000000000002C18
-t1270689001
-s11288
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/math.h
-c000000004A5C14A000000000000004F1
-t1247548576
-s1265
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/stdio.h
-c000000004BBD2CE90000000000004174
-t1270689001
-s16756
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/stdlib.h
-c000000004BBD2CE90000000000002DF5
-t1270689001
-s11765
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/include/string.h
-c000000004BBD2CE90000000000001731
-t1270689001
-s5937
-
-N/Developer/SDKs/MacOSX10.6.sdk/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stdbool.h
-c000000004A11EB240000000000000644
-t1242688292
-s1604
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/Morphy.LinkFileList
-c000000004E9740C3000000000000013F
-t1318535363
-s319
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/fhandl.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o
-t2
-s0
-
-N/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c
-c000000004E3BF2370000000000001DE8
-t1312551479
-s7656
-i"morphy.h"
-i<math.h>
-
-N/Users/martinbrazeau/Dropbox/Morphy/fhandl.c
-c000000004E7C53CD0000000000002346
-t1316770765
-s9030
-i"fhandl.h"
-
-N/Users/martinbrazeau/Dropbox/Morphy/fhandl.h
-c000000004E7C569A000000000000032B
-t1316771482
-s811
-
-N/Users/martinbrazeau/Dropbox/Morphy/main.c
-c000000004E7C46600000000000002957
-t1316767328
-s10583
-i"morphy.h"
-
-N/Users/martinbrazeau/Dropbox/Morphy/morphy.h
-c000000004E7C56560000000000000A60
-t1316771414
-s2656
-i<stdio.h>
-i<stdlib.h>
-i<string.h>
-i<stdbool.h>
-i<ctype.h>
-
-N/Users/martinbrazeau/Dropbox/Morphy/randtree.c
-c000000004E7C49F100000000000002A0
-t1316768241
-s672
-i"morphy.h"
-
-CCheck dependencies
-r0
-lSLF07#2@18"Check dependencies340228163#340228163#0(0"0(0#1#0"8247620834010738688#0"0#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340228163.814388
-e340228164.490248
-r0
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o
-x/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-oIn file included from /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:10:
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:182: error: conflicting types for 'allunrooted'
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:87: error: previous declaration of 'allunrooted' was here
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c: In function 'allunrooted':
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:327: warning: implicit declaration of function 'detree'
-o/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:328: warning: implicit declaration of function 'detree2'
-lSLF07#2@56"Compile /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c340228163#340228164#0(807"In file included from /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:10:/Users/martinbrazeau/Dropbox/Morphy/morphy.h:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token/Users/martinbrazeau/Dropbox/Morphy/morphy.h:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:182: error: conflicting types for 'allunrooted'/Users/martinbrazeau/Dropbox/Morphy/morphy.h:87: error: previous declaration of 'allunrooted' was here/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c: In function 'allunrooted':/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:327: warning: implicit declaration of function 'detree'/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c:328: warning: implicit declaration of function 'detree2'6(4@65"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token340228164#75#122#2(7@70"In file included from /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c340228164#18446744073709551615#0#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c334244279#10#0#10#0#0"0(13@113"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token in /Users/martinbrazeau/Dropbox/Morphy/morphy.h340228164#18446744073709551615#0#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#30#0#30#0#0"0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#30#0#30#0#19"expected * before *0(4@65"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token340228164#197#122#2(7@70"In file included from /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c340228164#18446744073709551615#0#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c334244279#10#0#10#0#0"0(13@113"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token in /Users/martinbrazeau/Dropbox/Morphy/morphy.h340228164#18446744073709551615#0#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#31#0#31#0#0"0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#31#0#31#0#19"expected * before *0(4@35"Conflicting types for 'allunrooted'340228164#319#97#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c334244279#182#0#182#0#25"conflicting types for '*'0(13@46"Previous declaration of 'allunrooted' was here340228164#416#103#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#87#0#87#0#0"0(22@41"Implicit declaration of function 'detree'340228164#596#105#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c334244279#327#0#327#0#36"implicit declaration of function '*'0(22@42"Implicit declaration of function 'detree2'340228164#701#106#0(6@48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c334244279#328#0#328#0#36"implicit declaration of function '*'0(0#0#48"/Users/martinbrazeau/Dropbox/Morphy/exhaustive.c8602492640#1277"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/exhaustive.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/exhaustive.o1#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/fhandl.o /Users/martinbrazeau/Dropbox/Morphy/fhandl.c normal x86_64 c com.apple.compilers.gcc.4_2
-r0
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o /Users/martinbrazeau/Dropbox/Morphy/main.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340228163.795805
-e340228164.490107
-r0
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o
-x/Users/martinbrazeau/Dropbox/Morphy/main.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-oIn file included from /Users/martinbrazeau/Dropbox/Morphy/main.c:12:
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token
-o/Users/martinbrazeau/Dropbox/Morphy/main.c: In function 'applyData':
-o/Users/martinbrazeau/Dropbox/Morphy/main.c:230: error: array subscript is not an integer
-o/Users/martinbrazeau/Dropbox/Morphy/main.c: In function 'main':
-o/Users/martinbrazeau/Dropbox/Morphy/main.c:466: warning: unused variable 'start'
-o/Users/martinbrazeau/Dropbox/Morphy/main.c:462: warning: unused variable 'i'
-lSLF07#2@50"Compile /Users/martinbrazeau/Dropbox/Morphy/main.c340228163#340228164#0(693"In file included from /Users/martinbrazeau/Dropbox/Morphy/main.c:12:/Users/martinbrazeau/Dropbox/Morphy/morphy.h:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token/Users/martinbrazeau/Dropbox/Morphy/morphy.h:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token/Users/martinbrazeau/Dropbox/Morphy/main.c: In function 'applyData':/Users/martinbrazeau/Dropbox/Morphy/main.c:230: error: array subscript is not an integer/Users/martinbrazeau/Dropbox/Morphy/main.c: In function 'main':/Users/martinbrazeau/Dropbox/Morphy/main.c:466: warning: unused variable 'start'/Users/martinbrazeau/Dropbox/Morphy/main.c:462: warning: unused variable 'i'5(4@65"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token340228164#69#122#2(7@64"In file included from /Users/martinbrazeau/Dropbox/Morphy/main.c340228164#18446744073709551615#0#0(6@42"/Users/martinbrazeau/Dropbox/Morphy/main.c338460128#12#0#12#0#0"0(13@113"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token in /Users/martinbrazeau/Dropbox/Morphy/morphy.h340228164#18446744073709551615#0#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#30#0#30#0#0"0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#30#0#30#0#19"expected * before *0(4@65"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token340228164#191#122#2(7@64"In file included from /Users/martinbrazeau/Dropbox/Morphy/main.c340228164#18446744073709551615#0#0(6@42"/Users/martinbrazeau/Dropbox/Morphy/main.c338460128#12#0#12#0#0"0(13@113"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token in /Users/martinbrazeau/Dropbox/Morphy/morphy.h340228164#18446744073709551615#0#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#31#0#31#0#0"0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#31#0#31#0#19"expected * before *0(4@33"Array subscript is not an integer340228164#382#89#0(6@42"/Users/martinbrazeau/Dropbox/Morphy/main.c338460128#230#0#230#0#0"0(22@23"Unused variable 'start'340228164#535#81#0(6@42"/Users/martinbrazeau/Dropbox/Morphy/main.c338460128#466#0#466#0#19"unused variable '*'0(22@19"Unused variable 'i'340228164#616#77#0(6@42"/Users/martinbrazeau/Dropbox/Morphy/main.c338460128#462#0#462#0#19"unused variable '*'0(0#0#42"/Users/martinbrazeau/Dropbox/Morphy/main.c7020319295437486080#1265"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/main.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/main.o1#
-
-CCompileC build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o /Users/martinbrazeau/Dropbox/Morphy/randtree.c normal x86_64 c com.apple.compilers.gcc.4_2
-s340228163.815026
-e340228164.489892
-r0
-xCompileC
-xbuild/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o
-x/Users/martinbrazeau/Dropbox/Morphy/randtree.c
-xnormal
-xx86_64
-xc
-xcom.apple.compilers.gcc.4_2
-oIn file included from /Users/martinbrazeau/Dropbox/Morphy/randtree.c:12:
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token
-o/Users/martinbrazeau/Dropbox/Morphy/morphy.h:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c: In function 'isodd':
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c:16: error: invalid operands to binary % (have 'float' and 'int')
-o/Users/martinbrazeau/Dropbox/Morphy/randtree.c:21: warning: control reaches end of non-void function
-lSLF07#2@54"Compile /Users/martinbrazeau/Dropbox/Morphy/randtree.c340228163#340228164#0(599"In file included from /Users/martinbrazeau/Dropbox/Morphy/randtree.c:12:/Users/martinbrazeau/Dropbox/Morphy/morphy.h:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token/Users/martinbrazeau/Dropbox/Morphy/morphy.h:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before '*' token/Users/martinbrazeau/Dropbox/Morphy/randtree.c: In function 'isodd':/Users/martinbrazeau/Dropbox/Morphy/randtree.c:16: error: invalid operands to binary % (have 'float' and 'int')/Users/martinbrazeau/Dropbox/Morphy/randtree.c:21: warning: control reaches end of non-void function4(4@65"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token340228164#73#122#2(7@68"In file included from /Users/martinbrazeau/Dropbox/Morphy/randtree.c340228164#18446744073709551615#0#0(6@46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c338461041#12#0#12#0#0"0(13@113"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token in /Users/martinbrazeau/Dropbox/Morphy/morphy.h340228164#18446744073709551615#0#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#30#0#30#0#0"0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#30#0#30#0#19"expected * before *0(4@65"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token340228164#195#122#2(7@68"In file included from /Users/martinbrazeau/Dropbox/Morphy/randtree.c340228164#18446744073709551615#0#0(6@46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c338461041#12#0#12#0#0"0(13@113"Expected '=', ',', ';', 'asm' or '__attribute__' before '*' token in /Users/martinbrazeau/Dropbox/Morphy/morphy.h340228164#18446744073709551615#0#0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#31#0#31#0#0"0(6@44"/Users/martinbrazeau/Dropbox/Morphy/morphy.h338464214#31#0#31#0#19"expected * before *0(4@53"Invalid operands to binary % (have 'float' and 'int')340228164#386#112#0(6@46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c338461041#16#0#16#0#0"0(22@40"Control reaches end of non-void function340228164#498#101#0(6@46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c338461041#21#0#21#0#40"control reaches end of non-void function0(0#0#46"/Users/martinbrazeau/Dropbox/Morphy/randtree.c8592100544#1273"    cd /Users/martinbrazeau/Dropbox/Morphy    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c -arch x86_64 -fmessage-length=0 -pipe -std=gnu99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -mmacosx-version-min=10.6 -gdwarf-2 -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-generated-files.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-own-target-headers.hmap -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-all-target-headers.hmap -iquote /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Morphy-project-headers.hmap -F/Users/martinbrazeau/Dropbox/Morphy/build/Debug -I/Users/martinbrazeau/Dropbox/Morphy/build/Debug/include -I/usr/local/include -I/usr/local/include/gsl -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources/x86_64 -I/Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/DerivedSources -c /Users/martinbrazeau/Dropbox/Morphy/randtree.c -o /Users/martinbrazeau/Dropbox/Morphy/build/Morphy.build/Debug/Morphy.build/Objects-normal/x86_64/randtree.o1#
-
-CLd /Users/martinbrazeau/Dropbox/Morphy/build/Debug/Morphy normal x86_64
-r0
-

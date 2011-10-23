@@ -1,2 +1,0 @@
-/Users/martinbrazeau/Dropbox/Morphy/taxpart.c: In function 'apply_partition':
-/Users/martinbrazeau/Dropbox/Morphy/taxpart.c:22: warning: unused variable 'i'
