@@ -60,7 +60,7 @@ struct tree *randrooted (tree *randtree)
 	int *taxarray;
 	node *p, *q;
 	
-	taxarray = malloc(ntax * sizeof(int));
+	//taxarray = malloc(ntax * sizeof(int));
 	init_taxarray(taxarray);
 	
 	/*for (i = 0; i < ntax; ++i) {
