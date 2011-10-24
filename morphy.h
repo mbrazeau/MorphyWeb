@@ -15,7 +15,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include <gsl/gsl_rng.h>
+/*#include <gsl/gsl_rng.h>*/
 
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
