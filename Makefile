@@ -16,6 +16,7 @@ OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
 $(ODIR)/%.o: %.c $(DEPS)
+	-@mkdir -p obj
 	$(CC) -c -o $@ $< $(CFLAGS) -g
 
 $(EXE): $(OBJ)
