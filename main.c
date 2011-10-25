@@ -460,27 +460,29 @@ void dealloc_tree(tree *gbgtree)
 }
 
 
-int main (void) 
+void pauseit(void)
 {
-	int i; //Loop counter
 	int c;
-	
-	printf("Size of struct node: %lu\n", sizeof(node));
-	printf("Size of struct tree: %lu\n", sizeof(tree));
-	
-	//allunrooted();
-	
-	/*generate a random tree*/
 	
 	do {
 		printf("Enter c to continue: \n");
 		c = getchar();
 	} while (c != 'c');
 	c = getchar();
+}
+
+int main (void) 
+{
+	int i; //Loop counter
+
+	//allunrooted();
 	
+	/*generate a random tree*/
+	
+	pauseit();
 	
 	tree **randtrees;
-	randtrees = (tree **) malloc(150000 * sizeof(tree));
+	randtrees = (tree **) malloc(150000 * sizeof(tree*));
 	if (randtrees == NULL) {
 		printf("Error in main(): failed malloc for randtrees\n");
 		return 1;
@@ -492,26 +494,18 @@ int main (void)
 		//printf(";\n");
 	}
 	
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
+	pauseit();
 	
 	for (i = 0; i < 150000; ++i) {
 		dealloc_tree(randtrees[i]);
 	}	
 	free(randtrees);
 	
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
+	pauseit();
 	
 	printf("One more time\n");
 	
-	randtrees = (tree **) malloc(150000 * sizeof(tree));
+	randtrees = (tree **) malloc(150000 * sizeof(tree*));
 	if (randtrees == NULL) {
 		printf("Error in main(): failed malloc for randtrees\n");
 		return 1;
@@ -523,23 +517,14 @@ int main (void)
 		//printf(";\n");
 	}
 		
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
+	pauseit();
 		
 	for (i = 0; i < 150000; ++i) {
 		dealloc_tree(randtrees[i]);
 	}
 	free(randtrees);
 	
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
-	
+	pauseit();
 	
 	defOutgroup();
 	
