@@ -60,7 +60,7 @@ struct tree *randrooted (tree *randtree)
 	int *taxarray;
 	node *p, *q;
 	
-	//taxarray = malloc(ntax * sizeof(int));
+	taxarray = malloc(ntax * sizeof(int));
 	init_taxarray(taxarray);
 	
 	/*for (i = 0; i < ntax; ++i) {
@@ -97,6 +97,8 @@ struct tree *randrooted (tree *randtree)
 	//printNewick(randtree->root);
 	//printf(";\n\n");
 	
+	free(taxarray);
+	
 	return (randtree);
 }
 
@@ -104,7 +106,7 @@ struct tree *rand_w_root (void)
 {
 	/* Returns a random ingroup topology on a given root
 	 * and will arbitrarily resolve the outgroup*/
-	
+	return;
 	
 }
 
@@ -112,5 +114,5 @@ struct tree *randunrooted (void)
 {
 	/* Returns a random unrooted tree*/
 	
-	
+	return;
 }
