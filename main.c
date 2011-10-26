@@ -31,37 +31,33 @@ void init_taxarray(int *taxarray)
 struct tree *alloctree(tree *newtree)
 {
 	int i; //Loop counter
-	nodearray *newtrnodes;
 	
-	newtree = (tree *)calloc(sizeof(tree), 1);
+	newtree = (tree*)malloc(sizeof(tree));
 	
 	if (newtree == NULL) {
 		printf("Error: failed to allocate new tree.\n");
 		return (struct tree*) 0;
 	}
 	
-	newtrnodes = &newtree->trnodes;
-	*newtrnodes = (nodearray)calloc(sizeof(node *), (2 * ntax - 1));
+	newtree->trnodes = (node **)malloc( (2 * ntax - 1)* sizeof(node));
 	
 	for (i = 0; i <= (2 * ntax - 1); ++i) {
 		
-		(*newtrnodes)[i] = (node *)calloc(sizeof(node), 1);
-		if ((*newtrnodes)[i] == NULL) {
+		newtree->trnodes[i] = (node *)malloc(sizeof(node));
+		if (newtree->trnodes[i] == NULL) {
 			printf("Error: failed to allocate new node.\n");
 		}
-		(*newtrnodes)[i]->tip = i + 1;
+		//newtree->trnodes[i]->tip = i + 1;
 	}
 	
 	for (i = 0; i < ntax; ++i) {
-		(*newtrnodes)[i]->tip = i + 1;
-		(*newtrnodes)[i]->outedge = NULL;
-		(*newtrnodes)[i]->next = NULL;
-		//(*newtrnodes)[i]->tipname = NULL;
-		//(*newtrnodes)[i]->apomorphies = NULL;
+		newtree->trnodes[i]->tip = i + 1;
+		newtree->trnodes[i]->outedge = NULL;
+		newtree->trnodes[i]->next = NULL;
 	}
 	
 	for (i = ntax; i <= (2 * ntax - 1); ++i) {
-		newring((*newtrnodes)[i]);
+		newring(newtree->trnodes[i]);
 	}
 	
 	return (newtree);
@@ -214,7 +210,7 @@ void newring(node *r1)
 	r1->start = r2->start = r3->start = false;
 	r1->dummy = r2->dummy = r3->dummy = false;
 	
-	r1->apomorphies = r2->apomorphies = r3->apomorphies = (statearray) calloc(sizeof(char), maxstates);
+	r1->apomorphies = r2->apomorphies = r3->apomorphies = (char*) malloc(maxstates * sizeof(char));
 }
 
 
@@ -431,32 +427,7 @@ void deroot(tree *rootedtree)
 	
 }
 
-void detree(node *n)
-{
-	node *p;
-	
-	if (n->tip && !n->start)
-		return;
-	
-	//if (n->apomorphies && !n->tip) {
-	//	free(n->apomorphies);
-	//}
-	
-	if (n->start) {
-		detree(n->outedge);
-		return;
-	}	
-	
-	p = n->next;
-	while (p != n) {
-		detree(p->outedge);
-		p = p->next;
-	}
-	
-	free(n->apomorphies);
-}
-
-void denode(nodearray trnptr)
+void dealloc_nodes(nodearray trnptr)
 {
 	int i;
 	
@@ -464,7 +435,6 @@ void denode(nodearray trnptr)
 	
 	for (i = 0; i < ntax; ++i) {
 		free(trnptr[i]);
-		//trnptr[i] = NULL;
 	}
 	
 	for (i = ntax; i <= (2 * ntax - 1); ++i) {
@@ -475,32 +445,41 @@ void denode(nodearray trnptr)
 				free(p);
 				p = q;
 			} while (p != trnptr[i]);
-			free(trnptr[i]->apomorphies);
-			free(trnptr[i]);
-			//trnptr[i] = NULL;
+			free(p->apomorphies);
+			free(p);
 		}
 	}
-	
-	free(trnptr);
-	//trnptr = NULL;
 }
 
 
-int main (void) 
+void dealloc_tree(tree *gbgtree)
 {
-	int i; //Loop counter
+	dealloc_nodes(gbgtree->trnodes);	
+	free(gbgtree->trnodes);
+	free(gbgtree);
+}
+
+
+void pauseit(void)
+{
 	int c;
-	
-	//allunrooted();
-	
-	/*generate a random tree*/
 	
 	do {
 		printf("Enter c to continue: \n");
 		c = getchar();
 	} while (c != 'c');
 	c = getchar();
+}
+
+int main (void) 
+{
+	int i; //Loop counter
+
+	//allunrooted();
 	
+	/*generate a random tree*/
+	
+	pauseit();
 	
 	tree **randtrees;
 	randtrees = (tree **) malloc(150000 * sizeof(tree*));
@@ -515,25 +494,14 @@ int main (void)
 		//printf(";\n");
 	}
 	
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
+	pauseit();
 	
 	for (i = 0; i < 150000; ++i) {
-		denode(randtrees[i]->trnodes);
-		free(randtrees[i]);
-	}
-	
+		dealloc_tree(randtrees[i]);
+	}	
 	free(randtrees);
-	randtrees = NULL;
 	
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
+	pauseit();
 	
 	printf("One more time\n");
 	
@@ -549,26 +517,15 @@ int main (void)
 		//printf(";\n");
 	}
 		
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
+	pauseit();
 		
 	for (i = 0; i < 150000; ++i) {
-		denode(randtrees[i]->trnodes);
-		free(randtrees[i]);
+		dealloc_tree(randtrees[i]);
 	}
-	
-	do {
-		printf("Enter c to continue: \n");
-		c = getchar();
-	} while (c != 'c');
-	c = getchar();
-	
 	free(randtrees);
-	randtrees = NULL;
-
+	
+	pauseit();
+	
 	defOutgroup();
 	
 	//printf("%i\n", outtaxa[i]);
