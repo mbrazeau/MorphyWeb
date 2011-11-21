@@ -52,11 +52,13 @@ struct tree *alloctree(tree *newtree)
 	
 	for (i = 0; i < ntax; ++i) {
 		newtree->trnodes[i]->tip = i + 1;
+		newtree->trnodes[i]->index = i + 1;
 		newtree->trnodes[i]->outedge = NULL;
 		newtree->trnodes[i]->next = NULL;
 	}
 	
 	for (i = ntax; i <= (2 * ntax - 1); ++i) {
+		newtree->trnodes[i]->index = i;
 		newring(newtree->trnodes[i]);
 	}
 	
@@ -206,7 +208,7 @@ void newring(node *r1)
 	r3->next = r1;
 	
 	r1->tip = r2->tip = r3->tip = 0;
-	r1->index = r2->index = r3->index = 0;
+	r1->index = r2->index = r3->index;
 	r1->start = r2->start = r3->start = false;
 	r1->dummy = r2->dummy = r3->dummy = false;
 	
@@ -404,14 +406,41 @@ void copytree(tree *origtree, tree *newtree, long long int *counter)
 	*counter++;
 }
 
-void roottree(tree *toroot, int root)
+
+
+void point_bottom(node *n, node **nodes, int *counter)
+{
+	// Re-sets the pointers to the internal nodes to point to the 'bottom' (rootward) node in the ring
+}
+
+void rootOnTerminal(tree *trtoroot, int root)
 {
 	
-	/* root a tree with this function eventually*/
+	// Roots the tree between a terminal (leaf) and an internal node
+	
+	int counter = ntax + 1;
+	int *count_ptr;
+	node *nodeptr, *r2, *r3;
+	
+	nodeptr = trtoroot->trnodes[root]->outedge;
+	r2 = trtoroot->trnodes[ntax]->next;
+	r3 = trtoroot->trnodes[ntax]->next->next;
+	
+	trtoroot->trnodes[root]->outedge = r2;
+	r2->outedge = trtoroot->trnodes[root];
+	
+	r3->outedge = nodeptr;
+	nodeptr->outedge = r3;
+	
+	trtoroot->root = trtoroot->trnodes[ntax];
+	
+	count_ptr = &counter;
+	
+	//point_bottom(trtoroot->root, trtoroot->trnodes, count_ptr);
 	
 }
 
-void deroot(tree *rootedtree)
+void unroot(tree *rootedtree)
 {
 	node *proot, *leftdesc, *rightdesc;
 	
@@ -482,53 +511,24 @@ int main (void)
 	pauseit();
 	
 	tree **randtrees;
-	randtrees = (tree **) malloc(150000 * sizeof(tree*));
+	randtrees = (tree **) malloc(15 * sizeof(tree*));
 	if (randtrees == NULL) {
 		printf("Error in main(): failed malloc for randtrees\n");
 		return 1;
 	}
 	
-	for (i = 0; i < 150000; ++i) {
+	for (i = 0; i < 15; ++i) {
 		randtrees[i] = randrooted(randtrees[i]);
-		//printNewick(randtrees[i]->root);
-		//printf(";\n");
+		printNewick(randtrees[i]->root);
+		printf(";\n");
 	}
 	
 	pauseit();
 	
-	for (i = 0; i < 150000; ++i) {
+	for (i = 0; i < 15; ++i) {
 		dealloc_tree(randtrees[i]);
 	}	
 	free(randtrees);
-	
-	pauseit();
-	
-	printf("One more time\n");
-	
-	randtrees = (tree **) malloc(150000 * sizeof(tree*));
-	if (randtrees == NULL) {
-		printf("Error in main(): failed malloc for randtrees\n");
-		return 1;
-	}
-	
-	for (i = 0; i < 150000; ++i) {
-		randtrees[i] = randrooted(randtrees[i]);
-		//printNewick(randtrees[i]->root);
-		//printf(";\n");
-	}
-		
-	pauseit();
-		
-	for (i = 0; i < 150000; ++i) {
-		dealloc_tree(randtrees[i]);
-	}
-	free(randtrees);
-	
-	pauseit();
-	
-	defOutgroup();
-	
-	//printf("%i\n", outtaxa[i]);
 	
 	return 0;
 	
