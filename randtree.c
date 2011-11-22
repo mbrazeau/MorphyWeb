@@ -16,13 +16,17 @@ extern int ntax;
 long long int numnodes;
 
 /*bool isodd (float seedn)
- {
- if (seedn % 2 == 0)
- return false;
- else 
- return true;
- 
- }*/
+{
+	if (seedn % 2 == 0)
+    {
+		return false;
+    }
+	else 
+    {
+		return true;
+    }
+	
+}*/
 
 /* Taxon shuffle using array shuffle by Ben Pfaff http://benpfaff.org/writings/clc/shuffle.html 
  * ****NOTE******: Will be modified to employ the GSL random number generator*/
@@ -52,11 +56,11 @@ struct tree *randtrunk(tree *newtrunk, node *startn)
 	return (newtrunk);
 }
 
-struct tree *randrooted (tree *randtree)
+struct tree *randrooted ()
 {
 	/* Returns a random tree with an arbitrary root*/
-	
-	randtree = randunrooted(randtree);
+	tree *randtree;
+	randtree = randunrooted();
 	randtree->trnodes[0]->start = false;
 	rootOnTerminal(randtree, 1);	// The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
 	
@@ -71,14 +75,15 @@ struct tree *randrooted (tree *randtree)
 	
 //}
 
-struct tree *randunrooted (tree *randtree)
+struct tree *randunrooted ()
 {
 	/* Returns a random unrooted tree*/
 	
 	int i;
 	int *taxarray;
 	node *p, *q;
-	
+	tree *randtree;
+
 	taxarray = malloc(ntax * sizeof(int));
 	init_taxarray(taxarray);
 	
