@@ -508,27 +508,27 @@ int main (void)
 	
 	/*generate a random tree*/
 	
-	pauseit();
-	
 	tree **randtrees;
-	randtrees = (tree **) malloc(15 * sizeof(tree*));
+	randtrees = (tree **) malloc(150000 * sizeof(tree*));
 	if (randtrees == NULL) {
 		printf("Error in main(): failed malloc for randtrees\n");
 		return 1;
 	}
 	
-	for (i = 0; i < 15; ++i) {
+	for (i = 0; i < 150000; ++i) {
 		randtrees[i] = randrooted(randtrees[i]);
-		printNewick(randtrees[i]->root);
-		printf(";\n");
+	//	printNewick(randtrees[i]->root);
+	//	printf(";\n");
 	}
 	
 	pauseit();
 	
-	for (i = 0; i < 15; ++i) {
+	for (i = 0; i < 150000; ++i) {
 		dealloc_tree(randtrees[i]);
 	}	
 	free(randtrees);
+	
+	pauseit();
 	
 	return 0;
 	

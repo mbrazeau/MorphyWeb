@@ -87,6 +87,7 @@ void growcopy(node *templ, node *target, tree *newtree, int *iter);	// Called by
 void newring(node *r1);
 void detree(node *n);
 void detree2(nodearray trnptr);
+void rootOnTerminal(tree *trtoroot, int root);
 
 
 /*in exhaustive.c*/ 
@@ -97,6 +98,7 @@ long long int numtrees(int ntaxa);
 
 /*in random.c*/
 struct tree *randrooted (tree *randtree);
+struct tree *randunrooted (tree *randtree);
 
 /*in taxpart*/
 void defOutgroup(void);

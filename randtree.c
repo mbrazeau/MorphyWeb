@@ -63,13 +63,13 @@ struct tree *randrooted (tree *randtree)
 	return (randtree);
 }
 
-//struct tree *rand_w_root (int root)
-//{
+struct tree *rand_w_root (int root)
+{
 	/* Returns a random ingroup topology on a given root
 	 * and will arbitrarily resolve the outgroup*/
-//	return;
+	return;
 	
-//}
+}
 
 struct tree *randunrooted (tree *randtree)
 {

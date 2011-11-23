@@ -345,7 +345,7 @@ void allunrooted(/*tree *treearray, int ntax*/)
 		//printNewick(start);
 		//printf("\n");
 		//detree(start);
-		denode(trn_ptr);
+		//denode(trn_ptr);
 		//++destree;
 		//printf("Destroying tree %lli\n", destree);
 	}
