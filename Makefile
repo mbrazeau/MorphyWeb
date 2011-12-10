@@ -1,6 +1,6 @@
 IDIR =.
 CC=gcc
-CFLAGS=-I$(IDIR)
+CFLAGS=-I$(IDIR) -Wall
 
 ODIR=obj
 LDIR =.
@@ -14,6 +14,7 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = main.o randtree.o taxpart.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
+all: $(EXE)
 
 $(ODIR)/%.o: %.c $(DEPS)
 	-@mkdir -p obj
