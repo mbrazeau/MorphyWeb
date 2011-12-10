@@ -11,7 +11,7 @@
 
 #include "morphy.h"
 
-#define MORPHY_NUM_ITERATIONS 150000 /* What is a better name for this? MB: Nothing. It's only for testing right now*/
+#define MORPHY_NUM_ITERATIONS 15
 int ntax = 9;
 int outtaxa[MAX_OG_SIZE];
 int intaxa[MAX_IG_SIZE];
@@ -57,19 +57,7 @@ struct tree *alloctree()
 		printf("Error: failed to allocate new tree.\n");
 		return (struct tree*) 0;
 	}
-	
-    /* 
-     * CJD: I noticed that you were allocating 
-     * (2 * ntax - 1) * sizeof(node)
-     * But what you want is a list of node pointers 
-     * not a list of nodes. So I changed it to sizeof(node*), 
-     * and then I realized that you actually 
-     * want 2 * ntax     (0..17 elements) node pointers
-     * not  2 * ntax - 1 (0..16 elements)
-     * Note: The reason this works is because I also changed
-     * the <= operator to a < operator, which is much more common
-     * in for loop conditions.
-     */
+
 	newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
 	
 	for (i = 0; i < (2 * ntax); ++i)
@@ -111,13 +99,6 @@ void freetree(tree *newtree)
     /* free all of the trnodes */
 	for (i = 0; i < (2 * ntax); ++i)
     {
-        /* If the trnode->next is not NULL then free it. */
-        /*
-         * CJD: This is better than my previous implementation
-         *  because if new ring is called on trnodes[i] where i < ntax
-         *  then that memory will also be deleted. For example with 
-         *  the addBranch function.
-         */
         if (newtree->trnodes[i]->next)
         {
             deletering(newtree->trnodes[i]);
@@ -381,7 +362,7 @@ void growcopy(node *templ, node *target, tree *newtree, int *iter)
 		
 		node *newr1;
 		
-		newtree->trnodes[ntax + *iter] = (node *) malloc(sizeof(node));
+		//newtree->trnodes[ntax + *iter] = (node *) malloc(sizeof(node));
 		newr1 = newtree->trnodes[ntax + *iter];
 		newr1->visited = templ->visited;
 		newring(newr1);
@@ -406,40 +387,14 @@ void growcopy(node *templ, node *target, tree *newtree, int *iter)
 }
 
 
-void copytree(tree *origtree, tree *newtree, long long int *counter)
+struct tree * copytree(tree *origtree /*, long long int *counter*/)
 {
-	int i, totalnodes, iteration = 1;
+	int iteration = 1;
 	int *iter = &iteration;
 	node *base1;
+	tree *treecopy;
 	
-	if (origtree->root) {
-		totalnodes = 2 * ntax - 1;
-	} else {
-		totalnodes = 2 * ntax - 2;
-	}
-	
-	// Allocate memory for the new tree and the new node array.
-	
-	if (!newtree) {	
-		newtree = (tree *) malloc(sizeof(tree));
-		if (newtree == NULL) {
-			printf("failed to allocate memory for new tree in copytree\n");
-		}
-		newtree->trnodes = (nodearray) malloc(totalnodes * sizeof(node));
-		if (newtree->trnodes == NULL) {
-			printf("failed to allocate memory for nodes in copytree\n");
-		}
-	}
-	
-	for (i = 0; i < totalnodes; ++i) {
-		newtree->trnodes[i] = (node *) malloc(sizeof(node));
-		if (newtree->trnodes[i] == NULL) {
-			printf("failed to allocate memory for node %i in copytree\n", i);
-		}
-		if (i >= ntax) {
-			newtree->trnodes[i]->tip = 0;
-		}
-	}
+	treecopy = alloctree();
 	
 	if (origtree->root == NULL) {
 		
@@ -447,15 +402,14 @@ void copytree(tree *origtree, tree *newtree, long long int *counter)
 		/* Generates the starting tip node and its corresponding internal
 		 * node first. */
 		
-		//printf("unrooted copying\n");
-		newtree->root == NULL;
+		treecopy->root == NULL;
 		origtree->trnodes[0]->start = true;
-		newtree->trnodes[0]->start = origtree->trnodes[0]->start;
-		newtree->trnodes[0]->tip = origtree->trnodes[0]->tip;
-		newring(newtree->trnodes[ntax + 1]);
-		newtree->trnodes[0]->outedge = newtree->trnodes[ntax + 1];
-		newtree->trnodes[ntax + 1]->outedge = newtree->trnodes[0];
-		growcopy(origtree->trnodes[0]->outedge, newtree->trnodes[ntax + 1], newtree, iter);
+		treecopy->trnodes[0]->start = origtree->trnodes[0]->start;
+		treecopy->trnodes[0]->tip = origtree->trnodes[0]->tip;
+		newring(treecopy->trnodes[ntax + 1]);
+		treecopy->trnodes[0]->outedge = treecopy->trnodes[ntax + 1];
+		treecopy->trnodes[ntax + 1]->outedge = treecopy->trnodes[0];
+		growcopy(origtree->trnodes[0]->outedge, treecopy->trnodes[ntax + 1], treecopy, iter);
 		
 		/*printf("copiedtree: ");
 		 printNewick(newtree->trnodes[0]);
@@ -465,17 +419,19 @@ void copytree(tree *origtree, tree *newtree, long long int *counter)
 		/**** If the tree is rooted ****/
 		/* Simply generates the root ring first and begins from there */
 		
-		base1 = newtree->trnodes[ntax];
+		base1 = treecopy->trnodes[ntax];
 		newring(base1);
-		newtree->root = newtree->trnodes[ntax];
-		growcopy(origtree->root, newtree->root, newtree, iter);
+		treecopy->root = treecopy->trnodes[ntax];
+		growcopy(origtree->root, treecopy->root, treecopy, iter);
 		
 		printf("copiedtree: ");
-		printNewick(newtree->root);
+		printNewick(treecopy->root);
 		printf("\n");
 	}
 	
-	*counter++;
+	//*counter++;
+	
+	return treecopy;
 }
 
 
@@ -594,10 +550,21 @@ void numberOfNodes(void)
 int main(void)
 {
 	numberOfNodes();
-    rand_tree();
+    /*rand_tree();
 	pauseit();
     rand_tree();
-	pauseit();
+	pauseit();*/
+	
+	tree *originaltree;
+	tree *copiedtree;
+	
+	originaltree = randrooted();
+	printNewick(originaltree->root);
+	printf("\n");
+	
+	copiedtree = copytree(originaltree);
+	printNewick(copiedtree->root);
+	printf("\n");
 	
 	return 0;
 }
