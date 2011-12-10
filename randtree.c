@@ -16,13 +16,17 @@ extern int ntax;
 long long int numnodes;
 
 /*bool isodd (float seedn)
- {
- if (seedn % 2 == 0)
- return false;
- else 
- return true;
- 
- }*/
+{
+	if (seedn % 2 == 0)
+    {
+		return false;
+    }
+	else 
+    {
+		return true;
+    }
+	
+}*/
 
 /* Taxon shuffle using array shuffle by Ben Pfaff http://benpfaff.org/writings/clc/shuffle.html 
  * ****NOTE******: Will be modified to employ the GSL random number generator*/
@@ -47,38 +51,38 @@ struct tree *randtrunk(tree *newtrunk, node *startn)
 	/* Generates the 'trunk' of the tree which consists of the network of all
 	 * internal nodes in the tree */
 	
-	
-	
 	return (newtrunk);
 }
 
-struct tree *randrooted (tree *randtree)
+struct tree *randrooted (void)
 {
 	/* Returns a random tree with an arbitrary root*/
 	
-	randtree = randunrooted(randtree);
+	tree *randtree;
+	randtree = randunrooted();
 	randtree->trnodes[0]->start = false;
 	rootOnTerminal(randtree, 1);	// The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
 	
 	return (randtree);
 }
 
-struct tree *rand_w_root (int root)
-{
+//struct tree *rand_w_root (int root)
+//{
 	/* Returns a random ingroup topology on a given root
 	 * and will arbitrarily resolve the outgroup*/
-	return;
+//	return;
 	
-}
+//}
 
-struct tree *randunrooted (tree *randtree)
+struct tree *randunrooted (void)
 {
 	/* Returns a random unrooted tree*/
 	
 	int i;
 	int *taxarray;
 	node *p, *q;
-	
+	tree *randtree;
+
 	taxarray = malloc(ntax * sizeof(int));
 	init_taxarray(taxarray);
 	

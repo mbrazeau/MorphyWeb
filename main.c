@@ -11,10 +11,12 @@
 
 #include "morphy.h"
 
+#define MORPHY_NUM_ITERATIONS 150000 /* What is a better name for this? MB: Nothing. It's only for testing right now*/
 int ntax = 9;
 int outtaxa[MAX_OG_SIZE];
 int intaxa[MAX_IG_SIZE];
 int maxstates = 5;
+int numnodes;
 bool OGdefined=false;
 nodearray ingroup; 
 nodearray outgroup;
@@ -23,46 +25,110 @@ void init_taxarray(int *taxarray)
 {
 	int i;
 	
-	for (i = 0; i < ntax; ++i)
+	for (i = 0; i < ntax; ++i) {
 		taxarray[i] = i + 1;
-	
+	}
 }
 
-struct tree *alloctree(tree *newtree)
+struct node * allocnode()
+{
+	node *newNode;
+	newNode = (node *)malloc(sizeof(node));
+	if (newNode == NULL)
+	{
+		printf("Error: failed to allocate new node.\n");
+	}
+	else
+	{
+		memset(newNode, 0, sizeof(node));
+	}
+	return newNode;
+}
+
+struct tree *alloctree()
 {
 	int i; //Loop counter
+    tree *newtree;
 	
 	newtree = (tree*)malloc(sizeof(tree));
 	
-	if (newtree == NULL) {
+	if (newtree == NULL)
+    {
 		printf("Error: failed to allocate new tree.\n");
 		return (struct tree*) 0;
 	}
 	
-	newtree->trnodes = (node **)malloc( (2 * ntax - 1)* sizeof(node));
+    /* 
+     * CJD: I noticed that you were allocating 
+     * (2 * ntax - 1) * sizeof(node)
+     * But what you want is a list of node pointers 
+     * not a list of nodes. So I changed it to sizeof(node*), 
+     * and then I realized that you actually 
+     * want 2 * ntax     (0..17 elements) node pointers
+     * not  2 * ntax - 1 (0..16 elements)
+     * Note: The reason this works is because I also changed
+     * the <= operator to a < operator, which is much more common
+     * in for loop conditions.
+     */
+	newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
 	
-	for (i = 0; i <= (2 * ntax - 1); ++i) {
+	for (i = 0; i < (2 * ntax); ++i)
+    {
+		newtree->trnodes[i] = allocnode();
+	}
+	
+	for (i = 0; i < (2 * ntax); ++i)
+    {
+        /* First half of trnodes are initialized to this */
+        if (i < ntax)
+        {
+		    newtree->trnodes[i]->tip = i + 1;
+		    newtree->trnodes[i]->index = i + 1;
+			newtree->trnodes[i]->next = NULL;
+        }
+        else /* second half are allocated as a newring */
+        {
+		    newtree->trnodes[i]->index = i;
+		    newring(newtree->trnodes[i]);
+        }
 		
-		newtree->trnodes[i] = (node *)malloc(sizeof(node));
-		if (newtree->trnodes[i] == NULL) {
-			printf("Error: failed to allocate new node.\n");
-		}
-		//newtree->trnodes[i]->tip = i + 1;
-	}
-	
-	for (i = 0; i < ntax; ++i) {
-		newtree->trnodes[i]->tip = i + 1;
-		newtree->trnodes[i]->index = i + 1;
 		newtree->trnodes[i]->outedge = NULL;
-		newtree->trnodes[i]->next = NULL;
 	}
 	
-	for (i = ntax; i <= (2 * ntax - 1); ++i) {
-		newtree->trnodes[i]->index = i;
-		newring(newtree->trnodes[i]);
-	}
+	newtree->root = NULL;
 	
 	return (newtree);
+}
+
+/*
+ * freetree - deletes an entire tree, by doing the mirror image
+ * of alloctree.
+ */
+void freetree(tree *newtree)
+{
+    int i;
+    
+    /* free all of the trnodes */
+	for (i = 0; i < (2 * ntax); ++i)
+    {
+        /* If the trnode->next is not NULL then free it. */
+        /*
+         * CJD: This is better than my previous implementation
+         *  because if new ring is called on trnodes[i] where i < ntax
+         *  then that memory will also be deleted. For example with 
+         *  the addBranch function.
+         */
+        if (newtree->trnodes[i]->next)
+        {
+            deletering(newtree->trnodes[i]);
+        }
+        free(newtree->trnodes[i]);
+    }
+    /* free the trnode list */
+    free(newtree->trnodes);
+    /* free the tree */
+    free(newtree);
+	
 }
 
 void printNewick(node *n)
@@ -194,15 +260,9 @@ void newring(node *r1)
 	
 	node *r2, *r3;
 	
-	r2 = (node *) malloc(sizeof(node));
-	if (r2 == NULL) {
-		printf("failed to allocate memory for internal node r2\n");
-	}
-	r3 = (node *) malloc(sizeof(node));
-	if (r2 == NULL) {
-		printf("failed to allocate memory for internal node r3\n");
-	}
-	
+	r2 = allocnode();
+	r3 = allocnode();
+		
 	r1->next = r2;
 	r2->next = r3;
 	r3->next = r1;
@@ -215,7 +275,19 @@ void newring(node *r1)
 	r1->apomorphies = r2->apomorphies = r3->apomorphies = (char*) malloc(maxstates * sizeof(char));
 }
 
-
+/*
+ * deletering - deletes a node (ring) by doing the mirror image of newring.
+ */
+void deletering(node *r1)
+{
+    node *r2, *r3;
+    r2 = r1->next;
+    r3 = r2->next;
+    /* Note: apomorphies is only allocated once, r2 and r3 both point to the r1 apomorphies. */
+    free(r1->apomorphies);
+    free(r2);
+    free(r3);
+}
 
 void addBranch(node *desc, node *ancest, tree *newtips, int *taxon)
 {	
@@ -410,13 +482,32 @@ void copytree(tree *origtree, tree *newtree, long long int *counter)
 
 void point_bottom(node *n, node **nodes, int *counter)
 {
-	// Re-sets the pointers to the internal nodes to point to the 'bottom' (rootward) node in the ring
+	/* Re-sets the pointers to the internal nodes in the tree's
+	 * node array to point to the 'bottom' (rootward) node in the ring*/
+	
+	node *p;
+	
+	if (n->tip) {
+		return;
+	}
+	
+	if (n->outedge) {
+		nodes[*counter] = n;
+		*counter = *counter + 1;
+	}	
+	
+	p = n->next;
+	while (p != n) {
+		point_bottom(p->outedge, nodes, counter);
+		p = p->next;		
+	}
+	
 }
 
 void rootOnTerminal(tree *trtoroot, int root)
 {
 	
-	// Roots the tree between a terminal (leaf) and an internal node
+	/*Roots the tree between a terminal (leaf) and an internal node*/
 	
 	int counter = ntax + 1;
 	int *count_ptr;
@@ -433,10 +524,11 @@ void rootOnTerminal(tree *trtoroot, int root)
 	nodeptr->outedge = r3;
 	
 	trtoroot->root = trtoroot->trnodes[ntax];
+	trtoroot->trnodes[ntax]->outedge = NULL;
 	
 	count_ptr = &counter;
 	
-	//point_bottom(trtoroot->root, trtoroot->trnodes, count_ptr);
+	point_bottom(trtoroot->root, trtoroot->trnodes, count_ptr);
 	
 }
 
@@ -456,39 +548,6 @@ void unroot(tree *rootedtree)
 	
 }
 
-void dealloc_nodes(nodearray trnptr)
-{
-	int i;
-	
-	node *p, *q;
-	
-	for (i = 0; i < ntax; ++i) {
-		free(trnptr[i]);
-	}
-	
-	for (i = ntax; i <= (2 * ntax - 1); ++i) {
-		if ( (trnptr[i] != NULL) && (trnptr[i]->next != NULL)) {
-			p = trnptr[i]->next;
-			do {
-				q = p->next;
-				free(p);
-				p = q;
-			} while (p != trnptr[i]);
-			free(p->apomorphies);
-			free(p);
-		}
-	}
-}
-
-
-void dealloc_tree(tree *gbgtree)
-{
-	dealloc_nodes(gbgtree->trnodes);	
-	free(gbgtree->trnodes);
-	free(gbgtree);
-}
-
-
 void pauseit(void)
 {
 	int c;
@@ -500,36 +559,45 @@ void pauseit(void)
 	c = getchar();
 }
 
-int main (void) 
+void rand_tree (void) 
 {
 	int i; //Loop counter
-
-	//allunrooted();
 	
 	/*generate a random tree*/
 	
 	tree **randtrees;
-	randtrees = (tree **) malloc(150000 * sizeof(tree*));
+	randtrees = (tree **) malloc(MORPHY_NUM_ITERATIONS * sizeof(tree*));
 	if (randtrees == NULL) {
 		printf("Error in main(): failed malloc for randtrees\n");
-		return 1;
+		return;
 	}
 	
-	for (i = 0; i < 150000; ++i) {
-		randtrees[i] = randrooted(randtrees[i]);
-	//	printNewick(randtrees[i]->root);
-	//	printf(";\n");
+	for (i = 0; i < MORPHY_NUM_ITERATIONS; ++i) {
+		randtrees[i] = randrooted();
+		printNewick(randtrees[i]->root);
+		printf(";\n");
 	}
 	
-	pauseit();
+	for (i = 0; i < MORPHY_NUM_ITERATIONS; ++i) {
+        freetree(randtrees[i]);
+	}
 	
-	for (i = 0; i < 150000; ++i) {
-		dealloc_tree(randtrees[i]);
-	}	
 	free(randtrees);
-	
+
+}
+
+void numberOfNodes(void)
+{
+	numnodes = 2 * ntax - 1;
+}
+
+int main(void)
+{
+	numberOfNodes();
+    rand_tree();
+	pauseit();
+    rand_tree();
 	pauseit();
 	
 	return 0;
-	
 }

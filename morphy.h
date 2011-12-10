@@ -78,15 +78,17 @@ typedef struct tree {
 /*in main.c*/
 
 void init_taxarray(int *taxarray);
-struct tree *alloctree(tree *newtree);
+struct tree *alloctree();
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
 void copytree(tree *origtree, tree *newtree, long long int *counter);	// Calls growcopy to copy a template tree
 void growcopy(node *templ, node *target, tree *newtree, int *iter);	// Called by copytree. Copies tree in preorder
 void newring(node *r1);
+void deletering(node *r1);
 void detree(node *n);
 void detree2(nodearray trnptr);
+void point_bottom(node *n, node **nodes, int *counter);
 void rootOnTerminal(tree *trtoroot, int root);
 
 
@@ -97,8 +99,13 @@ long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
 
 /*in random.c*/
-struct tree *randrooted (tree *randtree);
-struct tree *randunrooted (tree *randtree);
+void allunrooted(void /*tree *treearray, int ntaxa*/);
+void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
+long long int factorial(long long int n);
+long long int numtrees(int ntaxa);
+struct tree *randrooted (void);
+struct tree *randunrooted (void);
+
 
 /*in taxpart*/
 void defOutgroup(void);
