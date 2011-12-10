@@ -82,7 +82,7 @@ struct tree *alloctree();
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
-void copytree(tree *origtree, tree *newtree, long long int *counter);	// Calls growcopy to copy a template tree
+struct tree * copytree(tree *origtree/*, long long int *counter*/);	// Calls growcopy to copy a template tree
 void growcopy(node *templ, node *target, tree *newtree, int *iter);	// Called by copytree. Copies tree in preorder
 void newring(node *r1);
 void deletering(node *r1);
