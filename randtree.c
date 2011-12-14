@@ -96,7 +96,7 @@ struct tree *randunrooted (void)
     randtree->trnodes[0]->outedge = randtree->trnodes[taxarray[0]];
     
     // Join all the internal nodes (except the root) together
-    for (i = 1; i <= (ntax - 2); ++i) {
+    for (i = 1; i <= (ntax - 3); ++i) {
         p = randtree->trnodes[ntax + i]->next->next;
         q = randtree->trnodes[ntax + i + 1];
         p->outedge = q;
