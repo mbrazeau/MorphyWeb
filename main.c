@@ -12,7 +12,7 @@
 #include "morphy.h"
 
 #define MORPHY_NUM_ITERATIONS 15
-int ntax = 4;
+int ntax = 9;
 int outtaxa[MAX_OG_SIZE];
 int intaxa[MAX_IG_SIZE];
 int maxstates = 5;
@@ -416,8 +416,8 @@ struct tree * copytree(tree *origtr)
     {
         treecp->trnodes[0]->start = true;
         begin = ntax + 1;
-        treecp->trnodes[ntax + 1]->outedge = treecp->trnodes[origtr->trnodes[ntax + 1]->index];
-        treecp->trnodes[origtr->trnodes[ntax + 1]->index]->outedge = treecp->trnodes[ntax + 1];
+        treecp->trnodes[ntax + 1]->outedge = treecp->trnodes[origtr->trnodes[ntax + 1]->outedge->index];
+        treecp->trnodes[origtr->trnodes[ntax + 1]->outedge->index]->outedge = treecp->trnodes[ntax + 1];
     }
 
     for (i = begin; i < numnodes; ++i) 
@@ -636,7 +636,7 @@ int main(void)
     printf("\n");
     
     copiedtree = copytree(originaltree);
-    printf("Copying with collapsed node: ");
+    printf("Copying of unrooted tree: ");
     printNewick(copiedtree->trnodes[0]);
     printf("\n");
     
