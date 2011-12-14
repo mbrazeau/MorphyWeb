@@ -6,7 +6,7 @@
  *  Copyright 2011. All rights reserved.
  *  Morphy is provided as is with no warranty of any kind.
  *
- *	
+ *  
  */
 
 
@@ -25,16 +25,16 @@
 FILE *inputFile, *outFile;
 FILE *changelog;
 char input_name[64];
-char tokbuf[64];				//buffer that holds tokens for parsing.
+char tokbuf[64];                //buffer that holds tokens for parsing.
 char charbuf[11];
 //taxbuf *taxlist;
 //chcell *charmatrix;
-int *nexusdata;			
-long unsigned fileSize;					//Gives the size of the file in number of characters.
+int *nexusdata;         
+long unsigned fileSize;                 //Gives the size of the file in number of characters.
 bool isNex;
 int  nchar;
-int	 nsymb;
-int	 tokcount;
+int  nsymb;
+int  tokcount;
 */
  
 /*typedefs*/
@@ -48,29 +48,29 @@ typedef char *statearray;
  * pointer joins the node to either a leaf or the nearest internal node. */
 
 typedef struct node {
-	struct node *outedge, *next;
-	char *tipname;
-	int tip;
-	int index;
-	int visited;
-	bool start;
-	bool dummy;
-	int minsteps;
-	int maxsteps;
-	int numstates; //number of states of a character reconstructed at that node
-	statearray apomorphies;
+    struct node *outedge, *next;
+    char *tipname;
+    int tip;
+    int index;
+    int visited;
+    bool start;
+    bool dummy;
+    int minsteps;
+    int maxsteps;
+    int numstates; //number of states of a character reconstructed at that node
+    statearray apomorphies;
 } node;
 
 typedef node **nodearray;
 
 typedef struct tree {
-	nodearray trnodes;
-	/* An array of pointers to nodes. Elements from 0 to ntax - 1 are the terminals. Element
-	 * ntax is generally reserved for the root, but this is just a convention. All other nodes
-	 * are internal nodes and not the root node. */
-	node *root;
-	int length;
-	int index;
+    nodearray trnodes;
+    /* An array of pointers to nodes. Elements from 0 to ntax - 1 are the terminals. Element
+     * ntax is generally reserved for the root, but this is just a convention. All other nodes
+     * are internal nodes and not the root node. */
+    node *root;
+    int length;
+    int index;
 } tree;
 
 /*Function prototypes*/
@@ -82,8 +82,8 @@ struct tree *alloctree();
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
-struct tree * copytree(tree *origtree/*, long long int *counter*/);	// Calls growcopy to copy a template tree
-void growcopy(node *templ, node *target, tree *newtree, int *iter);	// Called by copytree. Copies tree in preorder
+struct tree * copytree(tree *origtree); // Calls growcopy to copy a template tree
+void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
 void newring(node *r1);
 void deletering(node *r1);
 void detree(node *n);

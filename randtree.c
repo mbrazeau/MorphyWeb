@@ -5,7 +5,7 @@
  *  Created by Martin Brazeau on 11-07-25.
  *  Copyright 2011 __MyCompanyName__. All rights reserved.
  *
- *	This file contains code for generating random rooted (pre-specified) and unrooted trees
+ *  This file contains code for generating random rooted (pre-specified) and unrooted trees
  *
  */
 
@@ -17,15 +17,15 @@ long long int numnodes;
 
 /*bool isodd (float seedn)
 {
-	if (seedn % 2 == 0)
+    if (seedn % 2 == 0)
     {
-		return false;
+        return false;
     }
-	else 
+    else 
     {
-		return true;
+        return true;
     }
-	
+    
 }*/
 
 /* Taxon shuffle using array shuffle by Ben Pfaff http://benpfaff.org/writings/clc/shuffle.html 
@@ -33,90 +33,95 @@ long long int numnodes;
 
 void shuffle(int *taxarray, int length)
 {
-	int i, j, t;
-	
-	
+    int i, j, t;
+    
+    
     if (length > 1) {
-		for (i = 0; i < length - 1; i++) {
-			j = i + rand() / (RAND_MAX / (length - i) + 1);
-			t = taxarray[j];
-			taxarray[j] = taxarray[i];
-			taxarray[i] = t;
-		}
+        for (i = 0; i < length - 1; i++) {
+            j = i + rand() / (RAND_MAX / (length - i) + 1);
+            t = taxarray[j];
+            taxarray[j] = taxarray[i];
+            taxarray[i] = t;
+        }
     }
 }
 
 struct tree *randtrunk(tree *newtrunk, node *startn)
 {
-	/* Generates the 'trunk' of the tree which consists of the network of all
-	 * internal nodes in the tree */
-	
-	return (newtrunk);
+    /* Generates the 'trunk' of the tree which consists of the network of all
+     * internal nodes in the tree */
+    
+    return (newtrunk);
 }
 
 struct tree *randrooted (void)
 {
-	/* Returns a random tree with an arbitrary root*/
-	
-	tree *randtree;
-	randtree = randunrooted();
-	randtree->trnodes[0]->start = false;
-	rootOnTerminal(randtree, 1);	// The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
-	
-	return (randtree);
+    /* Returns a random tree with an arbitrary root*/
+    
+    tree *randtree;
+    randtree = randunrooted();
+    randtree->trnodes[0]->start = false;
+    rootOnTerminal(randtree, 1);    // The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
+    
+    return (randtree);
 }
 
 //struct tree *rand_w_root (int root)
 //{
-	/* Returns a random ingroup topology on a given root
-	 * and will arbitrarily resolve the outgroup*/
-//	return;
-	
+    /* Returns a random ingroup topology on a given root
+     * and will arbitrarily resolve the outgroup*/
+//  return;
+    
 //}
 
 struct tree *randunrooted (void)
 {
-	/* Returns a random unrooted tree*/
-	
-	int i;
-	int *taxarray;
-	node *p, *q;
-	tree *randtree;
+    /* Returns a random unrooted tree*/
+    
+    int i;
+    int *taxarray;
+    int counter = ntax + 1;
+    int *count_ptr;
+    node *p, *q;
+    tree *randtree;
 
-	taxarray = malloc(ntax * sizeof(int));
-	init_taxarray(taxarray);
-	
-	shuffle(taxarray, ntax);
-	
-	randtree = alloctree(randtree);
-	
-	randtree->trnodes[0]->start = true;
-	randtree->trnodes[0]->outedge = randtree->trnodes[taxarray[0]];
-	
-	// Join all the internal nodes (except the root) together
-	for (i = 1; i <= (ntax - 2); ++i) {
-		p = randtree->trnodes[ntax + i]->next->next;
-		q = randtree->trnodes[ntax + i + 1];
-		p->outedge = q;
-		q->outedge = p;		
-	}
-	
-	// Add all the tips to the appropriate internal nodes
-	randtree->trnodes[taxarray[0] - 1]->outedge = randtree->trnodes[ntax + 1];
-	randtree->trnodes[ntax + 1]->outedge = randtree->trnodes[taxarray[0] - 1];
-	
-	for (i = 1; i < ntax - 1; ++i) {
-		randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[ntax + i]->next;
-		randtree->trnodes[ntax + i]->next->outedge = randtree->trnodes[taxarray[i] - 1];
-	} 
-	
-	randtree->trnodes[2 * ntax - 2]->next->next->outedge = randtree->trnodes[taxarray[i] - 1];
-	randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[2 * ntax - 2]->next->next;
-	
-	free(taxarray);
-	
-	printNewick(randtree->trnodes[0]);
-	printf("\n");
-	
-	return (randtree);
+    taxarray = malloc(ntax * sizeof(int));
+    init_taxarray(taxarray);
+    
+    shuffle(taxarray, ntax);
+    
+    randtree = alloctree();
+    
+    randtree->trnodes[0]->start = true;
+    randtree->trnodes[0]->outedge = randtree->trnodes[taxarray[0]];
+    
+    // Join all the internal nodes (except the root) together
+    for (i = 1; i <= (ntax - 2); ++i) {
+        p = randtree->trnodes[ntax + i]->next->next;
+        q = randtree->trnodes[ntax + i + 1];
+        p->outedge = q;
+        q->outedge = p;     
+    }
+    
+    // Add all the tips to the appropriate internal nodes
+    randtree->trnodes[taxarray[0] - 1]->outedge = randtree->trnodes[ntax + 1];
+    randtree->trnodes[ntax + 1]->outedge = randtree->trnodes[taxarray[0] - 1];
+    
+    for (i = 1; i < ntax - 1; ++i) {
+        randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[ntax + i]->next;
+        randtree->trnodes[ntax + i]->next->outedge = randtree->trnodes[taxarray[i] - 1];
+    } 
+    
+    randtree->trnodes[2 * ntax - 2]->next->next->outedge = randtree->trnodes[taxarray[i] - 1];
+    randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[2 * ntax - 2]->next->next;
+    
+    count_ptr = &counter;
+    point_bottom(randtree->trnodes[0]->outedge, randtree->trnodes, count_ptr);
+    
+    free(taxarray);
+    
+    printNewick(randtree->trnodes[0]);
+    printf(";\n");
+    
+    return (randtree);
 }
