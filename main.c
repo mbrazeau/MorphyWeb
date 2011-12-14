@@ -456,7 +456,6 @@ struct tree * copytree(tree *origtr)
             } while (p->next != origtr->trnodes[i]);
         
             q->next = treecp->trnodes[i];
-            reIndex(treecp->trnodes[i], treecp->trnodes[i]->index);
         }
     }
     
