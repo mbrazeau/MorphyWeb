@@ -12,7 +12,7 @@
 #include "morphy.h"
 
 #define MORPHY_NUM_ITERATIONS 15
-int ntax = 9;
+int ntax = 4;
 int outtaxa[MAX_OG_SIZE];
 int intaxa[MAX_IG_SIZE];
 int maxstates = 5;
@@ -65,7 +65,7 @@ struct tree *alloctree()
 
     newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
     
-    for (i = 0; i < (2 * ntax); ++i)
+    for (i = 0; i < numnodes; ++i)
     {
         newtree->trnodes[i] = allocnode();
     }
@@ -382,6 +382,21 @@ void applyData(tree *currenttree, char **tipdata, int ntaxa, int *start)
     *start = *start + i;    // Maybe i - 1
 }
 
+void reIndex(node *n, int index_val)
+{
+    node *p;
+    
+    n->index = index_val;
+    
+    if (n->next) {
+        p = n->next;
+        while (p != n) {
+            p->index = n->index;
+            p = p->next;
+        }
+    }
+}
+
 struct tree * copytree(tree *origtr)
 {
     int i, begin;
@@ -441,26 +456,12 @@ struct tree * copytree(tree *origtr)
             } while (p->next != origtr->trnodes[i]);
         
             q->next = treecp->trnodes[i];
+            reIndex(treecp->trnodes[i], treecp->trnodes[i]->index);
         }
     }
     
     return treecp;
     
-}
-
-void reIndex(node *n, int *index_val)
-{
-    node *p;
-    
-    n->index = *index_val;
-    
-    if (n->next) {
-        p = n->next;
-        while (p != n) {
-            p->index = n->index;
-            p = p->next;
-        }
-    }
 }
 
 void point_bottom(node *n, node **nodes, int *counter)
@@ -476,7 +477,7 @@ void point_bottom(node *n, node **nodes, int *counter)
     
     if (n->outedge) {
         nodes[*counter] = n;
-        reIndex(n, counter);
+        reIndex(n, *counter);
         *counter = *counter + 1;
     }   
     
