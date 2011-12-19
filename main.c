@@ -150,9 +150,9 @@ struct tree *alloc_noring(void)
 
 void printNewick(node *n)
 {   
-    /* Prints the tree in Newick format (i.e. using brackets plus commas to separate
-     * equally ranked objects). In an unrooted tree, function will be called on a 
-     * terminal node that has its start variable set to 1. */
+    /* Prints the tree in Newick format (i.e. using brackets plus commas to 
+     * separate equally ranked objects). In an unrooted tree, function will 
+     * be called on a terminal node that has its start variable set to 1. */
     
     node *p;
     
@@ -164,7 +164,8 @@ void printNewick(node *n)
     }   
     
     if (n->tip && n->outedge->next->outedge) {
-        if (n->outedge->next->outedge->tip && !n->outedge->next->outedge->start) {
+        if (n->outedge->next->outedge->tip && 
+            !n->outedge->next->outedge->start) {
             printf("%i", n->tip);
             return;
         }
