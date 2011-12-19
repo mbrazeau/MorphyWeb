@@ -35,6 +35,12 @@ void init_taxarray(int *taxarray)
     }
 }
 
+void joinNodes(node *n, node *p)
+{
+    n->outedge = p;
+    p->outedge = n;
+}
+
 struct node * allocnode()
 {
     node *newNode;
@@ -440,8 +446,7 @@ struct tree * copytree(tree *origtr)
             
                 if (inring) {
                     if (!q->outedge) {
-                        q->outedge = treecp->trnodes[p->outedge->index];
-                        treecp->trnodes[p->outedge->index]->outedge = q;
+                        joinNodes(q, treecp->trnodes[p->outedge->index]);
                     }
                 }
             
@@ -451,9 +456,7 @@ struct tree * copytree(tree *origtr)
             
                 if (p->next == origtr->trnodes[i] && inring) {
                     if (!q->outedge) {
-                        q->outedge = treecp->trnodes[p->outedge->index];
-                        treecp->trnodes[p->outedge->index]->outedge = q;
-                    }
+                        joinNodes(q, treecp->trnodes[p->outedge->index]);                    }
                 }
             
             } while (p->next != origtr->trnodes[i]);
@@ -508,11 +511,9 @@ void rootOnTerminal(tree *trtoroot, int root)
     r2 = trtoroot->trnodes[ntax]->next;
     r3 = trtoroot->trnodes[ntax]->next->next;
     
-    trtoroot->trnodes[root]->outedge = r2;
-    r2->outedge = trtoroot->trnodes[root];
-    
-    r3->outedge = nodeptr;
-    nodeptr->outedge = r3;
+    joinNodes(r2, trtoroot->trnodes[root]);
+
+    joinNodes(r3, nodeptr);
     
     trtoroot->root = trtoroot->trnodes[ntax];
     trtoroot->trnodes[ntax]->outedge = NULL;
@@ -534,9 +535,8 @@ void collapseBiNode(node *n)
     
     an1 = n->outedge;
     an2 = an1->next;
-    
-    an1->outedge = n2->outedge;
-    n2->outedge->outedge = an1;
+   
+    joinNodes(an1, n2->outedge);
     
     an1->next = n3;
     n3->next = an2;
@@ -556,8 +556,7 @@ void unroot(tree *rootedtree)
     leftdesc = proot->next->outedge;
     rightdesc = proot->next->next->outedge;
     
-    leftdesc->outedge = rightdesc;
-    rightdesc->outedge = leftdesc;
+    joinNodes(leftdesc, rightdesc);
     
     rootedtree->root = NULL;
     rootedtree->trnodes[0]->start = true; // Could, in the future, 
