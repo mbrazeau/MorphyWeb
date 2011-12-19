@@ -250,10 +250,11 @@ void treelen(node *n, int *stepcount)
 
 void nacount(node *n, int *stepcount)
 {   
-    /* Will eventually become a function analogous to treelen but that checks to see if a
-     * non-applicable score is used. In which case, it will skip the call to fitchdown, and 
-     * 'wait' to see if the next outgroup is similarly sharing a non-applicable score before 
-     * before generating the synapset for the node. */
+    /* Will eventually become a function analogous to treelen but that checks 
+     * to see if a non-applicable score is used. In which case, it will skip 
+     * the call to fitchdown, and 'wait' to see if the next outgroup is 
+     * similarly sharing a non-applicable score before before generating the 
+     * synapset for the node. */
     
     node *p;
     
@@ -317,10 +318,11 @@ void deletering(node *r1)
 void addBranch(node *desc, node *ancest, tree *newtips, int *taxon)
 {   
     /* Adds a sister terminal to an existing terminal node in the tree.
-     * Receives pointers of the ancestor and descendant of a branch, pointers to a tree struct
-     * containing an array of nodes and a pointer to an integer which is used to draw the 
-     * correct pointer for the insertion. Mostly useless, but served as an early test for
-     * my understanding of how to dynamically add branches to the tree. */
+     * Receives pointers of the ancestor and descendant of a branch, pointers 
+     * to a tree struct containing an array of nodes and a pointer to an 
+     * integer which is used to draw the correct pointer for the insertion. 
+     * Mostly useless, but served as an early test for my understanding of 
+     * how to dynamically add branches to the tree. */
     
     node *newtip, *newn;
     
@@ -558,7 +560,8 @@ void unroot(tree *rootedtree)
     rightdesc->outedge = leftdesc;
     
     rootedtree->root = NULL;
-    rootedtree->trnodes[0]->start = true; // Could, in the future, be user-defined.
+    rootedtree->trnodes[0]->start = true; // Could, in the future, 
+                                          // be user-defined.
     
 }
 
