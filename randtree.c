@@ -99,13 +99,14 @@ struct tree *randunrooted (void)
     for (i = 1; i <= (ntax - 3); ++i) {
         p = randtree->trnodes[ntax + i]->next->next;
         q = randtree->trnodes[ntax + i + 1];
-        p->outedge = q;
-        q->outedge = p;     
+        joinNodes(p, q);
     }
     
     // Add all the tips to the appropriate internal nodes
-    randtree->trnodes[taxarray[0] - 1]->outedge = randtree->trnodes[ntax + 1];
-    randtree->trnodes[ntax + 1]->outedge = randtree->trnodes[taxarray[0] - 1];
+    //randtree->trnodes[taxarray[0] - 1]->outedge = randtree->trnodes[ntax + 1];
+    //randtree->trnodes[ntax + 1]->outedge = randtree->trnodes[taxarray[0] - 1];
+    
+    joinNodes(randtree->trnodes[ntax + 1], randtree->trnodes[taxarray[0] - 1]);
     
     for (i = 1; i < ntax - 1; ++i) {
         randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[ntax + i]->next;
