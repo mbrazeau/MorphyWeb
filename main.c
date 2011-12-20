@@ -37,6 +37,13 @@ void init_taxarray(int *taxarray)
 
 void joinNodes(node *n, node *p)
 {
+    if (n->outedge) {
+        n->outedge->outedge = NULL;
+    }
+    if (p->outedge) {
+        p->outedge->outedge = NULL;
+    }
+    
     n->outedge = p;
     p->outedge = n;
 }
@@ -512,7 +519,6 @@ void rootOnTerminal(tree *trtoroot, int root)
     r3 = trtoroot->trnodes[ntax]->next->next;
     
     joinNodes(r2, trtoroot->trnodes[root]);
-
     joinNodes(r3, nodeptr);
     
     trtoroot->root = trtoroot->trnodes[ntax];
