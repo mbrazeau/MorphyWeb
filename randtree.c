@@ -11,7 +11,6 @@
 
 #include "morphy.h"
 
-
 extern int ntax;
 long long int numnodes;
 
@@ -103,8 +102,6 @@ struct tree *randunrooted (void)
     }
     
     // Add all the tips to the appropriate internal nodes
-    //randtree->trnodes[taxarray[0] - 1]->outedge = randtree->trnodes[ntax + 1];
-    //randtree->trnodes[ntax + 1]->outedge = randtree->trnodes[taxarray[0] - 1];
     
     joinNodes(randtree->trnodes[ntax + 1], randtree->trnodes[taxarray[0] - 1]);
     

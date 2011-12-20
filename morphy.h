@@ -78,6 +78,7 @@ typedef struct tree {
 /*in main.c*/
 
 void init_taxarray(int *taxarray);
+void joinNodes(node *n, node *p);
 struct tree *alloctree();
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
