@@ -36,7 +36,7 @@ struct node * seekInternal(node ** nds)
             {
                 if (!p->outedge) 
                 {
-                    unused = nds[i];
+                    unused = p;
                     p = nds[i];
                 }
                 else 
@@ -47,7 +47,13 @@ struct node * seekInternal(node ** nds)
         }
     }
     
-    return unused;
+    if (!unused) {
+        printf("Error in tree memory allocation\n");
+        return unused;
+    }
+    else {
+        return unused;
+    }
 }
 
 void closeRing(node *n)
@@ -67,37 +73,23 @@ void closeRing(node *n)
     while (p != n);
 }
 
-void makeAsRing(node *n)
+void asRing(node *n)
 {
-
-    node *p, *q;
     
-    if (n->next) {
-        p = n->next;
-        do {
-            if (p->next) {
-                q = p->next;
-                free(p);
-                p = q;
-            }
-            if (!p->next) {
-                q = p;
-                free(q);
-                p = n; // Terminates traversal if no p->next--+ 
-            }          //                                     | 
-        } while (p != n); // <--------------------------------+
-    }
-    
-    newring(n);
-}
-
-void makeNoring(node *n)
-{
     if (n->next) {
         closeRing(n);
         deletering(n);
     }
     
+    newring(n);
+}
+
+void asNoring(node *n)
+{
+    if (n->next) {
+        closeRing(n);
+        deletering(n);
+    }
 }
 
 void collapse(node *n)
