@@ -133,18 +133,53 @@ int determOrder(node *n)
     int i = 0;
     node *p;
     
+    if (n->outedge) {
+        i = 1;
+    }
+    
     if (n->tip) {
-        return 0;
+        return i;
     }
     
     p = n->next;
     while (p != n) {
-        ++i;
+        if (p->outedge) {
+            ++i;
+        }
         p = p->next;
     }
     
     return i;
     
+}
+
+void setOrder(node *n)
+{
+    int ord;
+    node *p;
+    ord = determOrder(n);
+    
+    n->order = ord;
+    if (n->next) {
+        p = n->next;
+        while (p != n) {
+            p->order = ord;
+            p = p->next;
+        }
+    }
+}
+
+void clearOrder(node *n)
+{
+    node *p;
+ 
+    p = n->next;
+    while (p != n) {
+        p->order = 0;
+        p = p->next;
+    }
+    
+    n->order = 0;
 }
 
 void resolve(node *n, node ** nds)
