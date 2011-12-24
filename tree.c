@@ -127,10 +127,44 @@ void collapse(node *n)
     
 }
 
+int determOrder(node *n)
+{
+    /*determines the number of branchings in a node*/
+    int i = 0;
+    node *p;
+    
+    if (n->tip) {
+        return 0;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        ++i;
+        p = p->next;
+    }
+    
+    return i;
+    
+}
+
 void resolve(node *n, node ** nds)
 {
     /* Arbitrarily resolves a non-binary node */
+    int ord;
+    node *in;
+    
+    // Make sure node there is a polytomy, otherwise exit resolve
+    ord = determOrder(n);
+    if (ord <= 2) {
+        return;
+    }
     
     // Find available internal node(s) in nds
+    in = seekInternal(nds);
+    asNoring(in);
+    
     // Randomly select branches to join to it
+    
+    
+    
 }
