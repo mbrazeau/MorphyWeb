@@ -10,7 +10,7 @@
 extern int ntax;
 extern int numnodes;
 
-struct node * seekInternal(node ** nds)
+struct node * seekInternal(node **nds)
 {
     /* Searches for an unused internal node */
     /* NB: This function needs to return some kind of error msg
@@ -182,15 +182,79 @@ void clearOrder(node *n)
     n->order = 0;
 }
 
-void resolve(node *n, node ** nds)
+void setIndex(node *n)
+{
+    node *p;
+    
+    if (n->next) {
+        p = n->next;
+        while (p != n) {
+            p->index = n->index;
+            p = p->next;
+        }
+    }   
+}
+
+void putBranchInRing(node *n, node *rnode)
+{
+    /* Given a branch (two nodes joined by their outedge pointers), places the 
+     * branch in a ring */
+    
+    node *rnode2 = NULL;
+    
+    if (rnode->next) {
+        rnode2 = rnode->next;
+    }
+        
+    rnode->next = n;
+    
+    if (rnode2) {
+        n->next = rnode2;
+    }
+    else {
+        n->next = rnode;
+    }
+
+    rnode->order = rnode->order + 1;
+    setOrder(rnode);
+}
+
+void insertBranch(node *br, node *target)
+{
+    /* Inserts a branch with a ring base into another branch*/
+    
+    node *p, *bout, *tdesc;
+    
+    tdesc = target->outedge;
+    
+    // Find an available node in the ring 
+    p = br->next;
+    while (p != br) {
+        if (!p->outedge) {
+            bout = p;
+            p = br;
+        }
+        else {
+            p = p->next;
+        }
+    }
+    
+    joinNodes(br, target);
+    joinNodes(bout, tdesc);
+    
+}
+
+void resolve(node *n, node **nds)
 {
     /* Arbitrarily resolves a non-binary node */
+    
     int ord;
     node *in;
     
-    // Make sure node there is a polytomy, otherwise exit resolve
+    // Make sure node there is a polytomy, otherwise exit resolve()
     ord = determOrder(n);
-    if (ord <= 2) {
+    n->order = ord;
+    if (ord <= 3) {
         return;
     }
     
