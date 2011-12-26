@@ -10,19 +10,6 @@
 extern int ntax;
 extern int numnodes;
 
-int headortails(void)
-{
-    if (rand() % 2 == 0)
-    {
-        return 1;
-    }
-    else 
-    {
-        return 0;
-    }
- 
-}
-
 struct node * seekInternal(node **nds)
 {
     /* Searches for an unused internal node */

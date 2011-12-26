@@ -53,6 +53,7 @@ typedef struct node {
     int tip;
     int index;
     int visited;
+    int order;
     bool start;
     bool dummy;
     int minsteps;
