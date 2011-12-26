@@ -10,6 +10,19 @@
 extern int ntax;
 extern int numnodes;
 
+int headortails(void)
+{
+    if (rand() % 2 == 0)
+    {
+        return 1;
+    }
+    else 
+    {
+        return 0;
+    }
+ 
+}
+
 struct node * seekInternal(node **nds)
 {
     /* Searches for an unused internal node */
@@ -246,10 +259,10 @@ void insertBranch(node *br, node *target)
 
 void resolve(node *n, node **nds)
 {
-    /* Arbitrarily resolves a non-binary node */
+    /* Arbitrarily resolves a non-binary node and leaves it as binary*/
     
-    int ord;
-    node *in;
+    int i, ord;
+    node *p, *in;
     
     // Make sure node there is a polytomy, otherwise exit resolve()
     ord = determOrder(n);
