@@ -1,30 +1,13 @@
-IDIR =.
-CC=gcc
-CFLAGS=-I$(IDIR) -Wall
+SUBDIRS = mfl tui
 
-ODIR=obj
-LDIR =.
+all: $(SUBDIRS)
 
-LIBS=-lm
-EXE=morphy
+.PHONY: $(SUBDIRS) clean
 
-_DEPS = morphy.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-_OBJ = main.o randtree.o taxpart.o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
-
-all: $(EXE)
-
-$(ODIR)/%.o: %.c $(DEPS)
-	-@mkdir -p obj
-	$(CC) -c -o $@ $< $(CFLAGS) -g
-
-$(EXE): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
-
-.PHONY: clean
+$(SUBDIRS):
+	cd $@; $(MAKE) $(MFLAGS)
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(EXE)
-
+	@for i in $(SUBDIRS); do \
+	echo "Clearing in $$i..."; \
+	(cd $$i; $(MAKE) $(MFLAGS) $(MYMAKEFLAGS) clean); done

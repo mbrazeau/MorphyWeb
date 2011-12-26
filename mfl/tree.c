@@ -172,7 +172,7 @@ void setOrder(node *n)
 void clearOrder(node *n)
 {
     node *p;
- 
+    
     p = n->next;
     while (p != n) {
         p->order = 0;
@@ -205,7 +205,7 @@ void putBranchInRing(node *n, node *rnode)
     if (rnode->next) {
         rnode2 = rnode->next;
     }
-        
+    
     rnode->next = n;
     
     if (rnode2) {
@@ -214,7 +214,7 @@ void putBranchInRing(node *n, node *rnode)
     else {
         n->next = rnode;
     }
-
+    
     rnode->order = rnode->order + 1;
     setOrder(rnode);
 }

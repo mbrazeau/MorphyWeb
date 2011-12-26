@@ -75,7 +75,7 @@ struct tree *alloctree()
         printf("Error: failed to allocate new tree.\n");
         return (struct tree*) 0;
     }
-
+    
     newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
     
     for (i = 0; i < numnodes; ++i)
@@ -296,7 +296,7 @@ void newring(node *r1)
     
     r2 = allocnode();
     r3 = allocnode();
-        
+    
     r1->next = r2;
     r2->next = r3;
     r3->next = r1;
@@ -435,7 +435,7 @@ struct tree * copytree(tree *origtr)
         treecp->trnodes[ntax + 1]->outedge = treecp->trnodes[origtr->trnodes[ntax + 1]->outedge->index];
         treecp->trnodes[origtr->trnodes[ntax + 1]->outedge->index]->outedge = treecp->trnodes[ntax + 1];
     }
-
+    
     for (i = begin; i < numnodes; ++i) 
     {
         
@@ -450,25 +450,25 @@ struct tree * copytree(tree *origtr)
                 if (!q->next) {
                     q->next = allocnode();
                 }
-            
+                
                 if (inring) {
                     if (!q->outedge) {
                         joinNodes(q, treecp->trnodes[p->outedge->index]);
                     }
                 }
-            
+                
                 p = p->next;
                 q = q->next;
                 inring = true;
-            
+                
                 if (p->next == origtr->trnodes[i] && inring) {
                     if (!q->outedge) {
                         joinNodes(q, treecp->trnodes[p->outedge->index]);                    
                     }
                 }
-            
+                
             } while (p->next != origtr->trnodes[i]);
-        
+            
             q->next = treecp->trnodes[i];
         }
     }
@@ -542,7 +542,7 @@ void collapseBiNode(node *n)
     
     an1 = n->outedge;
     an2 = an1->next;
-   
+    
     joinNodes(an1, n2->outedge);
     
     an1->next = n3;
@@ -567,7 +567,7 @@ void unroot(tree *rootedtree)
     
     rootedtree->root = NULL;
     rootedtree->trnodes[0]->start = true; // Could, in the future, 
-                                          // be user-defined.
+    // be user-defined.
     
 }
 
@@ -606,7 +606,7 @@ void rand_tree (void)
     }
     
     free(randtrees);
-
+    
 }
 
 int main(void)
