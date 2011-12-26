@@ -172,7 +172,7 @@ void setOrder(node *n)
 void clearOrder(node *n)
 {
     node *p;
- 
+    
     p = n->next;
     while (p != n) {
         p->order = 0;
@@ -205,7 +205,7 @@ void putBranchInRing(node *n, node *rnode)
     if (rnode->next) {
         rnode2 = rnode->next;
     }
-        
+    
     rnode->next = n;
     
     if (rnode2) {
@@ -214,7 +214,7 @@ void putBranchInRing(node *n, node *rnode)
     else {
         n->next = rnode;
     }
-
+    
     rnode->order = rnode->order + 1;
     setOrder(rnode);
 }
@@ -246,10 +246,10 @@ void insertBranch(node *br, node *target)
 
 void resolve(node *n, node **nds)
 {
-    /* Arbitrarily resolves a non-binary node */
+    /* Arbitrarily resolves a non-binary node and leaves it as binary*/
     
-    int ord;
-    node *in;
+    int i, ord;
+    node *p, *in;
     
     // Make sure node there is a polytomy, otherwise exit resolve()
     ord = determOrder(n);
