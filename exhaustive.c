@@ -25,38 +25,38 @@ long long int factorial(long long int n)
 	return result;
 }
 
-long long int numrooted(int ntaxa)
+long long int numrooted(void)
 {
 	long long int numerator, denominator, treecombs;
 	
-	if (ntaxa < 3) {
+	if (ntax < 3) {
 		printf("Error in ntax: too few taxa\b");		// Should have output to stderr, too
 		return 0;
 		
 	} else {	
-		numerator = 2 * ntaxa - 3;
+		numerator = 2 * ntax - 3;
 		numerator = factorial(numerator);
-		denominator = (long long int)pow(2, ntaxa - 2);		// cast as type long long because pow returns type double
-		denominator = denominator * factorial(ntaxa - 2);
+		denominator = (long long int)pow(2, ntax - 2);		// cast as type long long because pow returns type double
+		denominator = denominator * factorial(ntax - 2);
 		
 		treecombs = numerator / denominator;
 		return treecombs;
 	}
 }
 
-long long int nunrooted(int ntaxa)
+long long int nunrooted(void  )
 {
 	long long int numerator, denominator, treecombs;
 	
-	if (ntaxa < 3) {
+	if (ntax < 3) {
 		printf("Error in ntax: too few taxa\b");		// Should have output to stderr, too
 		return 0;
 		
 	} else {	
-		numerator = 2 * ntaxa - 5;
+		numerator = 2 * ntax - 5;
 		numerator = factorial(numerator);
-		denominator = (long long int)pow(2, ntaxa - 3);
-		denominator = denominator * factorial(ntaxa - 3);
+		denominator = (long long int)pow(2, ntax - 3);
+		denominator = denominator * factorial(ntax - 3);
 		
 		treecombs = numerator / denominator;
 		return treecombs;
