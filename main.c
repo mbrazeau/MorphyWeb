@@ -443,7 +443,7 @@ struct tree * copytree(tree *origtr)
         p = origtr->trnodes[i];
         q = treecp->trnodes[i];
         
-        if (p->next)
+        if (p->next && p->next->outedge)
         {
             do 
             {
@@ -463,7 +463,8 @@ struct tree * copytree(tree *origtr)
             
                 if (p->next == origtr->trnodes[i] && inring) {
                     if (!q->outedge) {
-                        joinNodes(q, treecp->trnodes[p->outedge->index]);                    }
+                        joinNodes(q, treecp->trnodes[p->outedge->index]);                    
+                    }
                 }
             
             } while (p->next != origtr->trnodes[i]);
@@ -620,12 +621,12 @@ int main(void)
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
-    
+        
     copiedtree = copytree(anewtree);
     printNewick(copiedtree->root);
     printf("\n");
     
-    collapseBiNode(anewtree->trnodes[ntax + 1]); // Magic number just for testing
+    collapse(anewtree->trnodes[ntax + 3]); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
     printf("\n");
