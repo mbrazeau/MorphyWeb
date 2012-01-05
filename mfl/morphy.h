@@ -81,6 +81,7 @@ typedef struct tree {
 void init_taxarray(int *taxarray);
 void joinNodes(node *n, node *p);
 struct tree *alloctree();
+struct tree *alloc_noring(void);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
