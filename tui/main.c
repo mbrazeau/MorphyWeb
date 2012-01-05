@@ -12,7 +12,6 @@
 #include "morphy.h"
 
 #define MORPHY_NUM_ITERATIONS 15
-int ntax = 9;
 int outtaxa[MAX_OG_SIZE];
 int intaxa[MAX_IG_SIZE];
 int maxstates = 5;
@@ -21,12 +20,14 @@ bool OGdefined=false;
 nodearray ingroup; 
 nodearray outgroup;
 
-void numberOfNodes(void)
+void testNWKreading(void);
+
+void numberOfNodes(int ntax)
 {
     numnodes = 2 * ntax - 1;
 }
 
-void init_taxarray(int *taxarray)
+void init_taxarray(int *taxarray, int ntax)
 {
     int i;
     
@@ -48,7 +49,7 @@ void joinNodes(node *n, node *p)
     p->outedge = n;
 }
 
-struct node * allocnode()
+struct node * allocnode(void)
 {
     node *newNode;
     newNode = (node *)malloc(sizeof(node));
@@ -63,7 +64,7 @@ struct node * allocnode()
     return newNode;
 }
 
-struct tree *alloctree()
+struct tree *alloctree(int ntax)
 {
     int i; //Loop counters
     tree *newtree;
@@ -130,7 +131,7 @@ void freetree(tree *newtree)
     
 }
 
-struct tree *alloc_noring(void)
+struct tree *alloc_noring(int ntax)
 {
     int i;
     tree *newtree;
@@ -387,11 +388,11 @@ void addTip(node *n, tree *newtips, int *taxon)
     }
 }
 
-void applyData(tree *currenttree, char **tipdata, int ntaxa, int *start)
+void applyData(tree *currenttree, char **tipdata, int ntax, int *start)
 {   
     int i;
     
-    for (i = 0; i < ntaxa; ++i) {
+    for (i = 0; i < ntax; ++i) {
         currenttree->trnodes[i]->apomorphies = tipdata[i + *start];
     }
     
@@ -413,14 +414,14 @@ void reIndex(node *n, int index_val)
     }
 }
 
-struct tree * copytree(tree *origtr)
+struct tree * copytree(tree *origtr, int ntax)
 {
     int i, begin;
     tree *treecp; // Pointer to the tree copy
     node *p, *q;
     bool inring = false;
     
-    treecp = alloc_noring();
+    treecp = alloc_noring(ntax);
     
     if (origtr->root)
     {
@@ -502,7 +503,7 @@ void point_bottom(node *n, node **nodes, int *counter)
     
 }
 
-void rootOnTerminal(tree *trtoroot, int root)
+void rootOnTerminal(tree *trtoroot, int root, int ntax)
 {
     
     /*Roots the tree between a terminal (leaf) and an internal node*/
@@ -582,7 +583,7 @@ void pauseit(void)
     c = getchar();
 }
 
-void rand_tree (void) 
+void rand_tree (int ntax) 
 {
     int i; //Loop counter
     
@@ -596,7 +597,7 @@ void rand_tree (void)
     }
     
     for (i = 0; i < MORPHY_NUM_ITERATIONS; ++i) {
-        randtrees[i] = randrooted();
+        randtrees[i] = randrooted(ntax);
         printNewick(randtrees[i]->root);
         printf(";\n");
     }
@@ -611,18 +612,23 @@ void rand_tree (void)
 
 int main(void)
 {
-    numberOfNodes();
+    
+    int ntax = 9;
+    
+    numberOfNodes(ntax);
     tree *anewtree;
     tree *originaltree;
     tree *copiedtree;
     
+    testNWKreading();
+    
     /* This part is just for testing the collapseBiNode*/
-    anewtree = randrooted();
+    anewtree = randrooted(ntax);
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
         
-    copiedtree = copytree(anewtree);
+    copiedtree = copytree(anewtree, ntax);
     printNewick(copiedtree->root);
     printf("\n");
     
@@ -632,19 +638,19 @@ int main(void)
     printf("\n");
     /*end of node collase test*/
     
-    copiedtree = copytree(anewtree);
+    copiedtree = copytree(anewtree, ntax);
     printf("Copying with collapsed node: ");
     printNewick(copiedtree->root);
     printf("\n");
     
     freetree(copiedtree);
     
-    originaltree = randunrooted();
+    originaltree = randunrooted(ntax);
     printf("unrooted test: ");
     printNewick(originaltree->trnodes[0]);
     printf("\n");
     
-    copiedtree = copytree(originaltree);
+    copiedtree = copytree(originaltree, ntax);
     printf("Copying of unrooted tree: ");
     printNewick(copiedtree->trnodes[0]);
     printf("\n");

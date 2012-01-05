@@ -11,7 +11,6 @@
 
 #include "morphy.h"
 
-extern int ntax;
 long long int numnodes;
 
 /*bool isodd (float seedn)
@@ -53,14 +52,14 @@ struct tree *randtrunk(tree *newtrunk, node *startn)
     return (newtrunk);
 }
 
-struct tree *randrooted (void)
+struct tree *randrooted (int ntax)
 {
     /* Returns a random tree with an arbitrary root*/
     
     tree *randtree;
-    randtree = randunrooted();
+    randtree = randunrooted(ntax);
     randtree->trnodes[0]->start = false;
-    rootOnTerminal(randtree, 1);    // The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
+    rootOnTerminal(randtree, 1, ntax);    // The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
     
     return (randtree);
 }
@@ -73,7 +72,7 @@ struct tree *randrooted (void)
     
 //}
 
-struct tree *randunrooted (void)
+struct tree *randunrooted (int ntax)
 {
     /* Returns a random unrooted tree*/
     
@@ -85,11 +84,11 @@ struct tree *randunrooted (void)
     tree *randtree;
 
     taxarray = malloc(ntax * sizeof(int));
-    init_taxarray(taxarray);
+    init_taxarray(taxarray, ntax);
     
     shuffle(taxarray, ntax);
     
-    randtree = alloctree();
+    randtree = alloctree(ntax);
     
     randtree->trnodes[0]->start = true;
     randtree->trnodes[0]->outedge = randtree->trnodes[taxarray[0]];
