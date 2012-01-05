@@ -109,11 +109,24 @@ long long int numtrees(int ntaxa);
 struct tree *randrooted (void);
 struct tree *randunrooted (void);
 
-
 /*in taxpart*/
 void defOutgroup(void);
 void wipe_Og(void);
 void wipe_Ig(void);
 int strToInt (char string[]);
+
+/*in tree.c*/
+struct node * seekInternal(int ntaxa, node **nds);
+void closeRing(node *n);
+void asRing(node *n);
+void asNoring(node *n);
+void collapse(node *n);
+int determOrder(node *n);
+void setOrder(node *n);
+void clearOrder(node *n);
+void setIndex(node *n);
+void putBranchInRing(node *n, node *rnode);
+void insertBranch(node *br, node *target);
+void resolve(node *n, node **nds);
 
 /*End function prototypes*/
