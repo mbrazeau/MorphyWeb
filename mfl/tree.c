@@ -7,10 +7,9 @@
  */
 
 #include "morphy.h"
-extern int ntax;
 extern int numnodes;
 
-struct node * seekInternal(node **nds)
+struct node * seekInternal(int ntax, node **nds)
 {
     /* Searches for an unused internal node */
     /* NB: This function needs to return some kind of error msg
@@ -244,7 +243,7 @@ void insertBranch(node *br, node *target)
     
 }
 
-void resolve(node *n, node **nds)
+void resolve(node *n, node **nds, int ntax)
 {
     /* Arbitrarily resolves a non-binary node and leaves it as binary*/
     
@@ -259,7 +258,7 @@ void resolve(node *n, node **nds)
     }
     
     // Find available internal node(s) in nds
-    in = seekInternal(nds);
+    in = seekInternal(ntax, nds);
     asNoring(in);
     
     // Randomly select branches to join to it

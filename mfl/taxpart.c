@@ -11,7 +11,6 @@
 
 extern int outtaxa[MAX_OG_SIZE];
 extern int intaxa[MAX_IG_SIZE];
-extern int ntax;
 extern bool OGdefined;
 extern nodearray ingroup; 
 extern nodearray outgroup;
@@ -50,7 +49,7 @@ void wipe_Ig(void)
 	}
 }
 
-void defOutgroup(void)
+void defOutgroup(int ntax)
 {
 
 	int i = 0, j = 0, k = 0; // Loop counters
