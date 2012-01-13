@@ -117,7 +117,7 @@ void wipe_Ig(void);
 int strToInt (char string[]);
 
 /*in tree.c*/
-struct node * seekInternal(int ntaxa, node **nds);
+struct node * seekInternal(int ntax, int numnodes, node **nds);
 void closeRing(node *n);
 void asRing(node *n);
 void asNoring(node *n);
@@ -128,6 +128,7 @@ void clearOrder(node *n);
 void setIndex(node *n);
 void putBranchInRing(node *n, node *rnode);
 void insertBranch(node *br, node *target);
-void resolve(node *n, node **nds, int ntax);
+void resolve(node *n, node **nds, int ntax, int numnodes);
+void deinit_tree(tree *t);
 
 /*End function prototypes*/

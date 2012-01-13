@@ -7,9 +7,8 @@
  */
 
 #include "morphy.h"
-extern int numnodes;
 
-struct node * seekInternal(int ntax, node **nds)
+struct node * seekInternal(int ntax, int numnodes, node **nds)
 {
     /* Searches for an unused internal node */
     /* NB: This function needs to return some kind of error msg
@@ -18,30 +17,39 @@ struct node * seekInternal(int ntax, node **nds)
     int i;
     node *unused = NULL;
     node *p;
+    bool isUsed = false;
     
     for (i = ntax + 1; i < numnodes; ++i) {
-        if (!nds[i]->next) {
+        if (!nds[i]->next && !nds[i]->initialized && !nds[i]->outedge) {
             unused = nds[i];
             i = numnodes;
         }
     }
     
-    if (!unused) {
+    if (!unused) 
+    {
         for (i = ntax + 1; i < numnodes; ++i) 
         {
-            p = nds[i]->next;
-            
-            while (p != nds[i]) 
+            if (nds[i]->next) 
             {
-                if (!p->outedge) 
+                p = nds[i];
+                
+                do
                 {
-                    unused = p;
-                    p = nds[i];
+                    if (p->outedge) 
+                    {
+                        isUsed = true;
+                        p = nds[i];
+                    }
+                    else 
+                    {
+                        p = p->next;
+                    }                
+                } while (p != nds[i]);
+                
+                if (!isUsed) {
+                    unused = nds[i];
                 }
-                else 
-                {
-                    p = p->next;
-                }                
             }
         }
     }
@@ -51,6 +59,7 @@ struct node * seekInternal(int ntax, node **nds)
         return unused;
     }
     else {
+        unused->initialized = 1;
         return unused;
     }
 }
@@ -59,6 +68,8 @@ void closeRing(node *n)
 {
     /* Makes sure there isn't a dangling next pointer*/
     node *p;
+    
+    p = n;
     
     do {
         if (p->next) {
@@ -194,6 +205,36 @@ void setIndex(node *n)
     }   
 }
 
+void deinit_tree(tree *t)
+{
+    int i;
+    node *p;
+    
+    for (i = 0; t->trnodes[i]; ++i) 
+    {
+        t->trnodes[i]->initialized = 0;
+        
+        if (t->trnodes[i]->next) 
+        {
+            p = t->trnodes[i]->next;
+            
+            do {
+                p->initialized = 0;
+                if (p->next) 
+                {
+                    p = p->next;
+                }
+                else 
+                {
+                    p = t->trnodes[i]; /* Should prevent a crash in the event of a dangling next pointer*/
+                }
+
+            } while (p != t->trnodes[i]);
+            
+        }
+    }
+}
+
 void putBranchInRing(node *n, node *rnode)
 {
     /* Given a branch (two nodes joined by their outedge pointers), places the 
@@ -243,7 +284,7 @@ void insertBranch(node *br, node *target)
     
 }
 
-void resolve(node *n, node **nds, int ntax)
+void resolve(node *n, node **nds, int ntax, int numnodes)
 {
     /* Arbitrarily resolves a non-binary node and leaves it as binary*/
     
@@ -258,7 +299,7 @@ void resolve(node *n, node **nds, int ntax)
     }
     
     // Find available internal node(s) in nds
-    in = seekInternal(ntax, nds);
+    in = seekInternal(ntax, numnodes, nds);
     asNoring(in);
     
     // Randomly select branches to join to it
