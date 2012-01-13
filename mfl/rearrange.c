@@ -8,10 +8,7 @@
 
 #include "morphy.h"
 
-extern int ntax;
-extern int numnodes;
-
-void bswap(node *p, node *q)
+void mfl_bswap(node *p, node *q)
 {
     /* Exchanges the position of two nodes */
     
@@ -27,3 +24,18 @@ void bswap(node *p, node *q)
     
 }
 
+struct node * mfl_remove_branch(node *n)
+{
+    node *p, *q, *nb;
+    
+    nb = n->outedge;
+    
+    p = nb->next->outedge;
+    q = nb->next->next->outedge;
+    nb->next->outedge = NULL;
+    nb->next->next->outedge = NULL;
+    joinNodes(p, q);
+    
+    nb = nb->next;
+    return nb;
+}
