@@ -52,7 +52,7 @@ typedef struct node {
     char *tipname;
     int tip;
     int index;
-    int visited;
+    int initialized;
     int order;
     bool start;
     bool dummy;
