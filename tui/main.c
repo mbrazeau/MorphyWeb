@@ -15,16 +15,15 @@
 int outtaxa[MAX_OG_SIZE];
 int intaxa[MAX_IG_SIZE];
 int maxstates = 5;
-int numnodes;
 bool OGdefined=false;
 nodearray ingroup; 
 nodearray outgroup;
 
 void testNWKreading(void);
 
-void numberOfNodes(int ntax)
+int numberOfNodes(int ntax)
 {
-    numnodes = 2 * ntax - 1;
+    return numnodes = 2 * ntax - 1;
 }
 
 void init_taxarray(int *taxarray, int ntax)
@@ -64,7 +63,7 @@ struct node * allocnode(void)
     return newNode;
 }
 
-struct tree *alloctree(int ntax)
+struct tree *alloctree(int ntax, int numnodes)
 {
     int i; //Loop counters
     tree *newtree;
@@ -111,7 +110,7 @@ struct tree *alloctree(int ntax)
  * freetree - deletes an entire tree, by doing the mirror image
  * of alloctree.
  */
-void freetree(tree *newtree)
+void freetree(tree *newtree, int numnodes)
 {
     int i;
     
@@ -131,7 +130,7 @@ void freetree(tree *newtree)
     
 }
 
-struct tree *alloc_noring(int ntax)
+struct tree *alloc_noring(int ntax, int numnodes)
 {
     int i;
     tree *newtree;
@@ -413,14 +412,14 @@ void reIndex(node *n, int index_val)
     }
 }
 
-struct tree * copytree(tree *origtr, int ntax)
+struct tree * copytree(tree *origtr, int ntax, int numnodes)
 {
     int i, begin;
     tree *treecp; // Pointer to the tree copy
     node *p, *q;
     bool inring = false;
     
-    treecp = alloc_noring(ntax);
+    treecp = alloc_noring(ntax, numnodes);
     
     if (origtr->root)
     {
@@ -582,7 +581,7 @@ void pauseit(void)
     c = getchar();
 }
 
-void rand_tree (int ntax) 
+void rand_tree (int ntax, int numnodes) 
 {
     int i; //Loop counter
     
@@ -596,13 +595,13 @@ void rand_tree (int ntax)
     }
     
     for (i = 0; i < MORPHY_NUM_ITERATIONS; ++i) {
-        randtrees[i] = randrooted(ntax);
+        randtrees[i] = randrooted(ntax, numnodes);
         printNewick(randtrees[i]->root);
         printf(";\n");
     }
     
     for (i = 0; i < MORPHY_NUM_ITERATIONS; ++i) {
-        freetree(randtrees[i]);
+        freetree(randtrees[i], numnodes);
     }
     
     free(randtrees);
@@ -613,6 +612,9 @@ int main(void)
 {
     
     int ntax = 9;
+    int numnodes;
+    
+    numnodes = numberOfNodes(ntax);
     
     numberOfNodes(ntax);
     tree *anewtree;
@@ -622,12 +624,12 @@ int main(void)
     testNWKreading();
     
     /* This part is just for testing the collapseBiNode*/
-    anewtree = randrooted(ntax);
+    anewtree = randrooted(ntax, numnodes);
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
         
-    copiedtree = copytree(anewtree, ntax);
+    copiedtree = copytree(anewtree, ntax, numnodes);
     printNewick(copiedtree->root);
     printf("\n");
     
@@ -637,19 +639,19 @@ int main(void)
     printf("\n");
     /*end of node collase test*/
     
-    copiedtree = copytree(anewtree, ntax);
+    copiedtree = copytree(anewtree, ntax, numnodes);
     printf("Copying with collapsed node: ");
     printNewick(copiedtree->root);
     printf("\n");
     
-    freetree(copiedtree);
+    freetree(copiedtree, numnodes);
     
-    originaltree = randunrooted(ntax);
+    originaltree = randunrooted(ntax, numnodes);
     printf("unrooted test: ");
     printNewick(originaltree->trnodes[0]);
     printf("\n");
     
-    copiedtree = copytree(originaltree, ntax);
+    copiedtree = copytree(originaltree, ntax, numnodes);
     printf("Copying of unrooted tree: ");
     printNewick(copiedtree->trnodes[0]);
     printf("\n");
