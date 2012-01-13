@@ -33,8 +33,6 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *p
     do {
         
         *pos = *pos + 1;
-    
-        printf("%c", nwktr[*pos]);
         
         if (nwktr[*pos] == ')')
         {
@@ -52,8 +50,6 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *p
             tipbuf[i] = '\0';
         
             tipnum = atoi(tipbuf);
-            
-            printf("\ntipnum: %i\n", tipnum);
             
             nlst->next = allocnode();
             nlst = nlst->next;
@@ -88,13 +84,9 @@ void cpRootedNWK(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree,
     int *ctrp;
     
     ctrp = &ctr;
-        
-    printf("%i\n", *ctrp);
-    printf("The newick string: %s\n", nwktr);
     
     newtree->trnodes[ntax] = cpyfromNWK(nwktr, nwklen, ntax, numnodes, ctrp, newtree->trnodes, isRooted);
     
-    printf("\nclear the print buffer\n");
     newtree->root = newtree->trnodes[ntax];
     
     printNewick(newtree->root);
@@ -175,7 +167,7 @@ void testNWKreading(void)
     
     char *nwktree;
     
-    char newickTree[] = "(2,1,5,3,4);";  
+    char newickTree[] = "(2,(1,(5,3),4));";  
     printf("The newick string: %s;\n", newickTree);
     
     nwktree = newickTree;
