@@ -14,7 +14,6 @@ extern int intaxa[MAX_IG_SIZE];
 extern bool OGdefined;
 extern nodearray ingroup; 
 extern nodearray outgroup;
-long long int numnodes;
 
 
 int strToInt (char string[])
