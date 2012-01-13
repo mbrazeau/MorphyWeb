@@ -23,6 +23,8 @@ void testNWKreading(void);
 
 int numberOfNodes(int ntax)
 {
+    int numnodes;
+    
     return numnodes = 2 * ntax - 1;
 }
 
