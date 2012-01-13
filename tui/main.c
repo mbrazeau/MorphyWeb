@@ -157,7 +157,6 @@ struct tree *alloc_noring(int ntax)
     }
     
     newtree->root = NULL;
-    
     return (newtree);
     
 }
