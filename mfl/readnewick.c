@@ -149,7 +149,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 	
 	numnodes_a = 2 * numtaxa - 1;
 	
-	newtree = alloc_noring(numtaxa);
+	newtree = alloc_noring(numtaxa, numnodes_a);
     deinit_tree(newtree);
 	
     i = 0;
@@ -167,7 +167,7 @@ void testNWKreading(void)
     
     char *nwktree;
     
-    char newickTree[] = "(2,(1,(5,3),4));";  
+    char newickTree[] = "(2,((1,(5,3),4),6));";  
     printf("The newick string: %s;\n", newickTree);
     
     nwktree = newickTree;

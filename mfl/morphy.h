@@ -80,13 +80,13 @@ typedef struct tree {
 
 void init_taxarray(int *taxarray, int ntax);
 void joinNodes(node *n, node *p);
-struct tree *alloctree(int ntax);
-struct tree *alloc_noring(int ntax);
+struct tree *alloctree(int ntax, int numnodes);
+struct tree *alloc_noring(int ntax, int numnodes);
 struct node * allocnode(void);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
-struct tree * copytree(tree *origtree, int ntax); // Calls growcopy to copy a template tree
+struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
 void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
 void newring(node *r1);
 void deletering(node *r1);
@@ -107,8 +107,8 @@ void allunrooted(void /*tree *treearray, int ntaxa*/);
 void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
 long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
-struct tree *randrooted (int ntax);
-struct tree *randunrooted (int ntax);
+struct tree *randrooted (int ntax, int numnodes);
+struct tree *randunrooted (int ntax, int numnodes);
 
 /*in taxpart*/
 void defOutgroup(int ntax);
