@@ -155,7 +155,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 	numnodes_a = 2 * numtaxa - 1;
 	
 	newtree = alloc_noring(numtaxa, numnodes_a);
-    deinit_tree(newtree);
+    mfl_deinit_tree(newtree);
 	
     i = 0;
     position = &i;
