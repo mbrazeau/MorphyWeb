@@ -20,25 +20,6 @@
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
 
-/*global variables
- 
- FILE *inputFile, *outFile;
- FILE *changelog;
- char input_name[64];
- char tokbuf[64];                //buffer that holds tokens for parsing.
- char charbuf[11];
- //taxbuf *taxlist;
- //chcell *charmatrix;
- int *nexusdata;         
- long unsigned fileSize;                 //Gives the size of the file in number of characters.
- bool isNex;
- int  nchar;
- int  nsymb;
- int  tokcount;
- */
-
-/*typedefs*/
-
 typedef char *statearray;
 
 /* For node and tree structures, this program follows the format recommended by
