@@ -122,13 +122,13 @@ void closeRing(node *n);
 void asRing(node *n);
 void asNoring(node *n);
 void collapse(node *n);
-int determOrder(node *n);
-void setOrder(node *n);
-void clearOrder(node *n);
-void setIndex(node *n);
+int mfl_determ_order(node *n);
+void mfl_set_order(node *n);
+void mfl_clear_order(node *n);
+void mfl_set_index(node *n);
 void putBranchInRing(node *n, node *rnode);
 void insertBranch(node *br, node *target);
 void resolve(node *n, node **nds, int ntax, int numnodes);
-void deinit_tree(tree *t);
+void mfl_deinit_tree(tree *t);
 
 /*End function prototypes*/
