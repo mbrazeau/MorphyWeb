@@ -17,7 +17,8 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *p
     char tipbuf[10];
     node *n, *nlst, *p;
     
-    n = seekInternal(ntax - 1, numnodes, nds);
+    n = seekInternal(ntax - 1, nds);
+    n->initialized = 1;
     nlst = n;
     
     do {
@@ -80,7 +81,7 @@ void cpRootedNWK(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree,
     newtree->root = newtree->trnodes[ntax];
 
     if (!isRooted) {
-        unroot(newtree);
+        unroot(ntax, newtree);
     }
     
     /* debugging print */
@@ -121,7 +122,6 @@ struct tree * readNWK (char *nwktr, bool isRooted)
         }
 		
 		if (nwktr[i] == ',') {
-			++numnodes_a;
             intaxname = false;
         }
 		
@@ -168,15 +168,26 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 
 void testNWKreading(void)
 {
-    bool isRooted = false;
-    
+    bool isRooted = false;    
     char *nwktree;
+
+    char newickTree1[] = "(2,(1,4,3,5,6));";  
+    printf("The newick string: %s\n", newickTree1);
+    char newickTree2[] = "(2,((1,4,3),(5,6)));";  
+    printf("The newick string: %s\n", newickTree2);
+    char newickTree3[] = "(((1,2,4),3),(5,6));";  
+    printf("The newick string: %s\n", newickTree3);
+    char newickTree4[] = "((((1,2),4),3),(5,6));";  
+    printf("The newick string: %s\n", newickTree4);
     
-    char newickTree[] = "(2,((1,(5,3),4),6));";  
-    printf("The newick string: %s;\n", newickTree);
-    
-    nwktree = newickTree;
-    
+    nwktree = newickTree1;
     readNWK(nwktree, isRooted);
+    nwktree = newickTree2;
+    readNWK(nwktree, isRooted);
+    nwktree = newickTree3;
+    readNWK(nwktree, isRooted);
+    nwktree = newickTree4;
+    readNWK(nwktree, isRooted);
+
     
 }

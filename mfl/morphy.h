@@ -94,7 +94,7 @@ void detree(node *n);
 void detree2(nodearray trnptr);
 void point_bottom(node *n, node **nodes, int *counter);
 void rootOnTerminal(tree *trtoroot, int root, int ntax);
-void unroot(tree *rootedtree);
+void unroot(int ntax, tree *rootedtree);
 
 /*in exhaustive.c*/ 
 void allunrooted(void /*tree *treearray, int ntaxa*/);
@@ -117,7 +117,7 @@ void wipe_Ig(void);
 int strToInt (char string[]);
 
 /*in tree.c*/
-struct node * seekInternal(int ntax, int numnodes, node **nds);
+struct node * seekInternal(int ntax, node **nds);
 void closeRing(node *n);
 void asRing(node *n);
 void asNoring(node *n);

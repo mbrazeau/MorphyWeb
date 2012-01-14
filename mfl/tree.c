@@ -8,7 +8,7 @@
 
 #include "morphy.h"
 
-struct node * seekInternal(int ntax, int numnodes, node **nds)
+struct node * seekInternal(int ntax, node **nds)
 {
     /* Searches for an unused internal node */
     /* NB: This function needs to return some kind of error msg
@@ -19,21 +19,21 @@ struct node * seekInternal(int ntax, int numnodes, node **nds)
     node *p;
     bool isUsed = false;
     
-    for (i = ntax + 1; i < numnodes; ++i) {
+    for (i = ntax + 1; nds[i]; ++i) {
         if (!nds[i]->next && !nds[i]->initialized && !nds[i]->outedge) {
             unused = nds[i];
-            i = numnodes;
+            i = 2 * ntax;
         }
     }
     
     if (!unused) 
     {
-        for (i = ntax + 1; i < numnodes; ++i) 
+        for (i = ntax + 1; nds[i]; ++i) 
         {
+            isUsed = false;
             if (nds[i]->next) 
             {
-                p = nds[i];
-                
+                p = nds[i];                
                 do
                 {
                     if (p->outedge) 
@@ -137,7 +137,7 @@ void collapse(node *n)
     
 }
 
-int determOrder(node *n)
+int mfl_determ_order(node *n)
 {
     /*determines the number of branchings in a node*/
     int i = 0;
@@ -152,7 +152,8 @@ int determOrder(node *n)
     }
     
     p = n->next;
-    while (p != n) {
+    while (p != n) 
+    {
         if (p->outedge) {
             ++i;
         }
@@ -160,14 +161,15 @@ int determOrder(node *n)
     }
     
     return i;
+    printf("node order: %i\n", i);
     
 }
 
-void setOrder(node *n)
+void mfl_set_order(node *n)
 {
     int ord;
     node *p;
-    ord = determOrder(n);
+    ord = mfl_determ_order(n);
     
     n->order = ord;
     if (n->next) {
@@ -179,7 +181,7 @@ void setOrder(node *n)
     }
 }
 
-void clearOrder(node *n)
+void mfl_clear_order(node *n)
 {
     node *p;
     
@@ -192,7 +194,7 @@ void clearOrder(node *n)
     n->order = 0;
 }
 
-void setIndex(node *n)
+void mfl_set_index(node *n)
 {
     node *p;
     
@@ -256,32 +258,7 @@ void putBranchInRing(node *n, node *rnode)
     }
     
     rnode->order = rnode->order + 1;
-    setOrder(rnode);
-}
-
-void insertBranch(node *br, node *target)
-{
-    /* Inserts a branch with a ring base into another branch*/
-    
-    node *p, *bout, *tdesc;
-    
-    tdesc = target->outedge;
-    
-    // Find an available node in the ring 
-    p = br->next;
-    while (p != br) {
-        if (!p->outedge) {
-            bout = p;
-            p = br;
-        }
-        else {
-            p = p->next;
-        }
-    }
-    
-    joinNodes(br, target);
-    joinNodes(bout, tdesc);
-    
+    mfl_set_order(rnode);
 }
 
 void resolve(node *n, node **nds, int ntax, int numnodes)
@@ -292,14 +269,14 @@ void resolve(node *n, node **nds, int ntax, int numnodes)
     node *p, *in;
     
     // Make sure node there is a polytomy, otherwise exit resolve()
-    ord = determOrder(n);
+    ord = mfl_determ_order(n);
     n->order = ord;
     if (ord <= 3) {
         return;
     }
     
     // Find available internal node(s) in nds
-    in = seekInternal(ntax, numnodes, nds);
+    in = seekInternal(ntax, nds);
     asNoring(in);
     
     // Randomly select branches to join to it
