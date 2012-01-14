@@ -9,13 +9,6 @@
 
 #include "morphy.h"
 
-extern int outtaxa[MAX_OG_SIZE];
-extern int intaxa[MAX_IG_SIZE];
-extern bool OGdefined;
-extern nodearray ingroup; 
-extern nodearray outgroup;
-
-
 int strToInt (char string[])
 {
     int i = 0, intValue, result = 0;
@@ -30,25 +23,34 @@ int strToInt (char string[])
 	return result;
 }
 
-void wipe_Og(void)
+void wipe_Og(int outtaxa[], nodearray outgroup)
 {
 	int i; // Loop counter
 	
 	for (i = 0; outtaxa[i]; ++i) {
 		outtaxa[i] = '\0';
+        if (outgroup[i])
+        {
+            outgroup[i] = NULL;
+        }
 	}
 }
 
-void wipe_Ig(void)
+void wipe_Ig(int intaxa[], nodearray ingroup)
 {
 	int i; // Loop counter
 	
 	for (i = 0; intaxa[i]; ++i) {
 		intaxa[i] = '\0';
+        if (ingroup[i])
+        {
+            ingroup[i] = NULL;
+        }
 	}
 }
 
-void defOutgroup(int ntax)
+void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], 
+                 nodearray ingroup, bool *OGdefined)
 {
 
 	int i = 0, j = 0, k = 0; // Loop counters
@@ -105,7 +107,7 @@ void defOutgroup(int ntax)
 		return;
 	}
 	
-	OGdefined = true;
+	*OGdefined = true;
 	
 	
 	/*takes the complement of ntax and outtaxa to give the values in inttaxa, the ingroup terminals*/
