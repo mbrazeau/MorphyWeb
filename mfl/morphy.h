@@ -111,10 +111,10 @@ struct tree *randrooted (int ntax, int numnodes);
 struct tree *randunrooted (int ntax, int numnodes);
 
 /*in taxpart*/
-void defOutgroup(int ntax);
-void wipe_Og(void);
-void wipe_Ig(void);
 int strToInt (char string[]);
+void wipe_Og(int outtaxa[], nodearray outgroup);
+void wipe_Ig(int intaxa[], nodearray ingroup);
+void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], nodearray ingroup, bool *OGdefined);
 
 /*in tree.c*/
 struct node * seekInternal(int ntax, node **nds);
