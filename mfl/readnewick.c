@@ -69,7 +69,7 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *p
     return n;
 }
 
-void cpRootedNWK(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree, bool isRooted)
+void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree, bool isRooted)
 {
     int ctr = 0;
     int *ctrp;
@@ -160,7 +160,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
     i = 0;
     position = &i;
     
-    cpRootedNWK(nwktr, nwklen, numtaxa, numnodes_a, newtree, isRooted);
+    NWK_roothandl(nwktr, nwklen, numtaxa, numnodes_a, newtree, isRooted);
     
     return newtree;
 }
