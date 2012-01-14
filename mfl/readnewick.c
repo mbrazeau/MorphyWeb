@@ -164,30 +164,3 @@ struct tree * readNWK (char *nwktr, bool isRooted)
     
     return newtree;
 }
-
-
-void testNWKreading(void)
-{
-    bool isRooted = false;    
-    char *nwktree;
-
-    char newickTree1[] = "(2,(1,4,3,5,6));";  
-    printf("The newick string: %s\n", newickTree1);
-    char newickTree2[] = "(2,((1,4,3),(5,6)));";  
-    printf("The newick string: %s\n", newickTree2);
-    char newickTree3[] = "(((1,2,4),3),(5,6));";  
-    printf("The newick string: %s\n", newickTree3);
-    char newickTree4[] = "((((1,2),4),3),(5,6));";  
-    printf("The newick string: %s\n", newickTree4);
-    
-    nwktree = newickTree1;
-    readNWK(nwktree, isRooted);
-    nwktree = newickTree2;
-    readNWK(nwktree, isRooted);
-    nwktree = newickTree3;
-    readNWK(nwktree, isRooted);
-    nwktree = newickTree4;
-    readNWK(nwktree, isRooted);
-
-    
-}
