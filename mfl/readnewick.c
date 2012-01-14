@@ -10,7 +10,8 @@
 #include <ctype.h>
 #include "morphy.h"
 
-struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *pos, nodearray nds, bool isRooted)
+struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, 
+                         int *pos, nodearray nds, bool isRooted)
 {
     
     int i, tipnum;
@@ -69,14 +70,16 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *p
     return n;
 }
 
-void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree, bool isRooted)
+void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, 
+                   tree *newtree, bool isRooted)
 {
     int ctr = 0;
     int *ctrp;
     
     ctrp = &ctr;
     
-    newtree->trnodes[ntax] = cpyfromNWK(nwktr, nwklen, ntax, numnodes, ctrp, newtree->trnodes, isRooted);
+    newtree->trnodes[ntax] = cpyfromNWK(nwktr, nwklen, ntax, numnodes, ctrp, 
+                                        newtree->trnodes, isRooted);
     
     newtree->root = newtree->trnodes[ntax];
 
