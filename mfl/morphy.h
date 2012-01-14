@@ -94,7 +94,7 @@ void detree(node *n);
 void detree2(nodearray trnptr);
 void point_bottom(node *n, node **nodes, int *counter);
 void rootOnTerminal(tree *trtoroot, int root, int ntax);
-
+void unroot(tree *rootedtree);
 
 /*in exhaustive.c*/ 
 void allunrooted(void /*tree *treearray, int ntaxa*/);
