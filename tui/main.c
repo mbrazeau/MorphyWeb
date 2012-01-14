@@ -19,8 +19,6 @@ bool OGdefined=false;
 nodearray ingroup; 
 nodearray outgroup;
 
-void testNWKreading(void);
-
 int numberOfNodes(int ntax)
 {
     int numnodes;
@@ -556,20 +554,70 @@ void collapseBiNode(node *n)
     
 }
 
-void unroot(tree *rootedtree)
+void unroot(int ntax, tree *rootedtree)
 {
-    node *proot, *leftdesc, *rightdesc;
+    node *proot, *leftdesc, *rightdesc, *subnode, *n, *m, *p, *q, *ftip;
     
     proot = rootedtree->root;
-    leftdesc = proot->next->outedge;
-    rightdesc = proot->next->next->outedge;
     
-    joinNodes(leftdesc, rightdesc);
+    mfl_set_order(proot);
+    
+    if (proot->order > 2) 
+    {
+        printf("derooting multifurcating node\n");
+        
+        subnode = seekInternal(ntax, rootedtree->trnodes);
+        
+        /*grab the second branch in the ring*/
+        
+        p = proot->next->next;
+        
+        /*find the last node in the ring before the bottom node*/
+        
+        q = p;
+        while (q->next != proot) {
+            q = q->next;
+        }
+        
+        q->next = NULL;
+        
+        if (subnode->next)
+        {
+            printf("Doing the trickier one\n");
+            n = subnode->next;
+            m = subnode;
+            while (m->next != subnode) {
+                m = m->next;
+            }
+            m->next = NULL;
+            
+            ftip = proot->next->outedge;
+            joinNodes(ftip, subnode);
+            subnode->next = p;
+            q->next = subnode;
+            proot->next = n;
+            m->next = proot;
+            
+        }
+        else 
+        {
+            ftip = proot->next->outedge;
+            joinNodes(ftip, subnode);
+            proot->next = NULL;
+            subnode->next = p;
+            q->next = subnode;
+        }
+    }
+    else 
+    {
+        leftdesc = proot->next->outedge;
+        rightdesc = proot->next->next->outedge;
+        joinNodes(leftdesc, rightdesc);
+    }
     
     rootedtree->root = NULL;
-    rootedtree->trnodes[0]->start = true; // Could, in the future, 
-    // be user-defined.
-    
+    rootedtree->trnodes[0]->start = true;
+
 }
 
 void pauseit(void)
