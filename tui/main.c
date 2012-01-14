@@ -11,13 +11,10 @@
 
 #include "morphy.h"
 
+/*temporary defs for testing*/
 #define MORPHY_NUM_ITERATIONS 15
-int outtaxa[MAX_OG_SIZE];
-int intaxa[MAX_IG_SIZE];
-int maxstates = 5;
-bool OGdefined=false;
-nodearray ingroup; 
-nodearray outgroup;
+#define MAXSTATES 5
+/**/
 
 int numberOfNodes(int ntax)
 {
@@ -304,7 +301,7 @@ void newring(node *r1)
     r1->start = r2->start = r3->start = false;
     r1->dummy = r2->dummy = r3->dummy = false;
     
-    r1->apomorphies = r2->apomorphies = r3->apomorphies = (char*) malloc(maxstates * sizeof(char));
+    r1->apomorphies = r2->apomorphies = r3->apomorphies = (char*) malloc(MAXSTATES * sizeof(char));
     r2->index = r1->index;
     r3->index = r1->index;
 }
@@ -660,7 +657,7 @@ void rand_tree (int ntax, int numnodes)
 
 void testNWKreading(void)
 {
-    bool isRooted = true;    
+    bool isRooted = false;    
     char *nwktree;
     
     char newickTree1[] = "(2,(1,4,3,5,6));";  
