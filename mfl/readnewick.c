@@ -17,18 +17,8 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *p
     char tipbuf[10];
     node *n, *nlst, *p;
     
-    if (isRooted) 
-    {
-        n = nds[ntax];
-        nlst = n;
-        isRooted = false;
-    }
-    else 
-    {
-        n = seekInternal(ntax, numnodes, nds);
-        nlst = n;
-    }
-    
+    n = seekInternal(ntax - 1, numnodes, nds);
+    nlst = n;
     
     do {
         
@@ -88,10 +78,25 @@ void cpRootedNWK(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree,
     newtree->trnodes[ntax] = cpyfromNWK(nwktr, nwklen, ntax, numnodes, ctrp, newtree->trnodes, isRooted);
     
     newtree->root = newtree->trnodes[ntax];
+
+    if (!isRooted) {
+        unroot(newtree);
+    }
     
-    printNewick(newtree->root);
+    /* debugging print */
+    printf("[&");
+    if (newtree->root) 
+    {
+        printf("R] = ");
+        printNewick(newtree->root);
+    }
+    else 
+    {
+        printf("U] = ");
+        printNewick(newtree->trnodes[0]);
+    }
     printf("\n");
-    
+    /* end debugging print */    
 }
 
 struct tree * readNWK (char *nwktr, bool isRooted)
@@ -163,7 +168,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 
 void testNWKreading(void)
 {
-    bool isRooted = true;
+    bool isRooted = false;
     
     char *nwktree;
     
