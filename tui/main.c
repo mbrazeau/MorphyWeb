@@ -704,7 +704,7 @@ int main(void)
     printNewick(copiedtree->root);
     printf("\n");
     
-    collapse(anewtree->trnodes[ntax + 3]); // Magic number just for testing
+    mfl_collapse(anewtree->trnodes[ntax + 3], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
     printf("\n");
