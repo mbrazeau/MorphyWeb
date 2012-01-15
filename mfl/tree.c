@@ -102,39 +102,28 @@ void asNoring(node *n)
     }
 }
 
-void collapse(node *n)
+void mfl_collapse(node *n, nodearray nds)
 {
     /*collapses a branch*/
+    node *an1, *p;
     
-    node *an1, *an2, *b1, *b2;
-    node *desc1;
-    node *p;
-    
-    // Set a pointer to the ancestor of n
     an1 = n->outedge;
-    // Set a pointer to next node in ring from ancestor of n
-    an2 = an1->next;
-    
-    // Set a pointer to the left-most descendant of n's ring
-    desc1 = n->next->outedge;
-    
-    // Find the segment of the ring that contains the descendant branches
-    b1 = n->next->next;
-    p = b1;
-    while (p->next != n) {
+    p = an1->next;
+    while (p->next != an1) 
+    {
         p = p->next;
     }
-    b2 = p;
-    
-    n->next->next = n;
-    n->outedge = NULL;
-    n->next->outedge = NULL;
-    
-    joinNodes(desc1, an1);
-    
-    an1->next = b1;
-    b2->next = an2;
-    
+    p->next = n->next;
+    p = p->next;
+    while (p->next != n) 
+    {
+        p = p->next;
+    }
+    p->next = an1->next;
+    n->next = NULL;
+    n->outedge->outedge = NULL;
+    free(n->outedge);
+    nds[n->index] = n; // Ensures n can be found in the trnodes array
 }
 
 int mfl_determ_order(node *n)
@@ -207,7 +196,7 @@ void mfl_set_index(node *n)
     }   
 }
 
-void deinit_tree(tree *t)
+void mfl_deinit_tree(tree *t)
 {
     int i;
     node *p;
@@ -261,7 +250,7 @@ void putBranchInRing(node *n, node *rnode)
     mfl_set_order(rnode);
 }
 
-void resolve(node *n, node **nds, int ntax, int numnodes)
+void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
 {
     /* Arbitrarily resolves a non-binary node and leaves it as binary*/
     
