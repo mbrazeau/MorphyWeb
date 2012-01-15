@@ -105,25 +105,36 @@ void asNoring(node *n)
 void mfl_collapse(node *n, nodearray nds)
 {
     /*collapses a branch*/
-    node *an1, *p;
+    int oldindex;
+    node *an1, *an2, *p;
+    
+    oldindex = n->index;
     
     an1 = n->outedge;
-    p = an1->next;
+    an2 = an1->next;
+    p = an2;
+    
     while (p->next != an1) 
     {
         p = p->next;
     }
+    
     p->next = n->next;
+    
     p = p->next;
     while (p->next != n) 
     {
         p = p->next;
     }
-    p->next = an1->next;
+    
+    an1->next = NULL;
+    p->next = an2;
     n->next = NULL;
     n->outedge->outedge = NULL;
     free(n->outedge);
-    nds[n->index] = n; // Ensures n can be found in the trnodes array
+    n->outedge = NULL;
+    mfl_set_index(an1);
+    nds[oldindex] = n; // Ensures n can be found in the trnodes array
 }
 
 int mfl_determ_order(node *n)
@@ -187,9 +198,12 @@ void mfl_set_index(node *n)
 {
     node *p;
     
+    printf("clear the buffer\n");
+    
     if (n->next) {
         p = n->next;
-        while (p != n) {
+        while (p != n) 
+        {
             p->index = n->index;
             p = p->next;
         }
@@ -250,26 +264,105 @@ void putBranchInRing(node *n, node *rnode)
     mfl_set_order(rnode);
 }
 
+void mfl_insert_branch(node *n, node *tgt1)
+{
+    node *p, *q, *tgt2;
+    
+    tgt2 = tgt1->outedge;
+    
+    if (n->outedge) 
+    {
+        p = n->next;
+        while (p->outedge) 
+        {
+            p = p->next;
+        }
+    }
+    
+    q = p->next;
+    if (q->outedge) 
+    {
+        while (q->outedge)
+        {
+            q = q->next;
+        }
+    }
+    
+    joinNodes(p, tgt1);
+    joinNodes(q, tgt2);    
+}
+
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
 {
-    /* Arbitrarily resolves a non-binary node and leaves it as binary*/
+    /* Arbitrarily resolves a non-binary node and leaves it binary*/
     
-    int i, ord;
-    node *p, *in;
+    int c, i, j, ord;
+    node *p, *q, *in, *in2;
     
     // Make sure node there is a polytomy, otherwise exit resolve()
-    ord = mfl_determ_order(n);
-    n->order = ord;
+    mfl_set_order(n);
+    ord = n->order;
     if (ord <= 3) {
+        printf("mfl_arb_resolve() called in error on node %i\n", n->index);
         return;
     }
     
     // Find available internal node(s) in nds
     in = seekInternal(ntax, nds);
-    asNoring(in);
+    in2 = in;
+    if (in->next) {
+        asNoring(in);
+    }
+    if (in->outedge) {
+        if (in->outedge->outedge) {
+            in->outedge->outedge = NULL;
+        }
+        in->outedge = NULL;
+    }
     
-    // Randomly select branches to join to it
+    /* Randomly select branches to join to it. Cycles through the ring (skipping 
+     * n itself) ntax % 10 times. This doesn't use a true random number 
+     * generator, but should be both sufficiently arbitrary with respect to the
+     * tree's topology, but sufficiently deterministic to be repeatable. */
     
+    c = ntax % 10;
     
+    for (i = 0; i < (ord - 3); ++i)
+    {
+        p = n->next;
+        for (j = 0; j <= c; ++j) 
+        {
+            q = p;
+            p = p->next;
+            if (p = n) 
+            {
+                q = p;
+                p = p->next;
+            }
+        }
+        in2->next = p;
+        in2 = in2->next;
+        q->next = p->next;
+        p->next = NULL;
+    }
+    
+    p->next = allocnode();
+    if (p->next->outedge) {
+        p->next->outedge = NULL;
+    }
+    p = p->next;
+    p->next = in;
+    
+    if (ntax % 2) 
+    {
+        n = n->next;
+    }
+    else 
+    {
+        n = n->next->next;
+    }
+
+    
+    mfl_insert_branch(in, n);
     
 }
