@@ -16,6 +16,21 @@
 #define MAXSTATES 5
 /**/
 
+void call_index(node *n)
+{
+    node *p;
+    
+    if (n->next) {
+        printf("index: %i\n", n->index);
+        p = n->next;
+        while (p != n) 
+        {
+            printf("index: %i\n", p->index);
+            p = p->next;
+        }
+    }   
+}
+
 int numberOfNodes(int ntax)
 {
     int numnodes;
@@ -321,65 +336,6 @@ void deletering(node *r1)
         q = p->next;
         free(p);
         p = q;
-    }
-}
-
-void addBranch(node *desc, node *ancest, tree *newtips, int *taxon)
-{   
-    /* Adds a sister terminal to an existing terminal node in the tree.
-     * Receives pointers of the ancestor and descendant of a branch, pointers 
-     * to a tree struct containing an array of nodes and a pointer to an 
-     * integer which is used to draw the correct pointer for the insertion. 
-     * Mostly useless, but served as an early test for my understanding of 
-     * how to dynamically add branches to the tree. */
-    
-    node *newtip, *newn;
-    
-    newtips->trnodes[*taxon - 6] = (node *) malloc(sizeof(node));
-    if (newtips->trnodes[*taxon - 6] == NULL) {
-        printf("malloc failed in addBranch newtips->trnodes[*taxon - 6]\n");
-    }
-    newtips->trnodes[*taxon] = (node *) malloc(sizeof(node));
-    if (newtips->trnodes[*taxon] == NULL) {
-        printf("malloc failed in addBranch newtips->trnodes[*taxon]\n");
-    }
-    
-    newtip = newtips->trnodes[*taxon - 6];
-    newtip->apomorphies = malloc(3 * sizeof(char));
-    if (newtip->apomorphies == NULL) {
-        printf("malloc failed in addBranch newtip->apomorphies\n");
-    }
-    
-    newn = newtips->trnodes[*taxon];
-    
-    newring(newn);
-    
-    ancest->outedge = newn;
-    newn->outedge = ancest;
-    
-    newn->next->outedge = desc;
-    desc->outedge = newn->next;
-    
-    newn->next->next->outedge = newtip;
-    newtip->outedge = newn->next->next;
-    
-    newtip->tip = *taxon;
-    *taxon = *taxon + 1;
-}
-
-void addTip(node *n, tree *newtips, int *taxon)
-{
-    node *p;
-    
-    if (n->tip) {
-        addBranch(n, n->outedge, newtips, taxon);
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        addTip(p->outedge, newtips, taxon);
-        p = p->next;
     }
 }
 
@@ -713,6 +669,11 @@ int main(void)
     copiedtree = copytree(anewtree, ntax, numnodes);
     printf("Copying with collapsed node: ");
     printNewick(copiedtree->root);
+    printf("\n");
+    
+    mfl_arb_resolve(anewtree->trnodes[ntax + 2], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
+    printf("With resolved node: ");
+    printNewick(anewtree->root);
     printf("\n");
     
     freetree(copiedtree, numnodes);
