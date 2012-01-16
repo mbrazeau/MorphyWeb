@@ -59,6 +59,7 @@ typedef struct tree {
 
 /*in main.c*/
 
+void dump_nodearray(nodearray nds, int ntax, int numnodes);
 void init_taxarray(int *taxarray, int ntax);
 void joinNodes(node *n, node *p);
 struct tree *alloctree(int ntax, int numnodes);
@@ -111,5 +112,12 @@ void putBranchInRing(node *n, node *rnode);
 void insertBranch(node *br, node *target);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
 void mfl_deinit_tree(tree *t);
+
+/*in readnewick.c*/
+struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, 
+                         int *pos, nodearray nds, bool isRooted);
+void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, 
+                   tree *newtree, bool isRooted);
+struct tree * readNWK (char *nwktr, bool isRooted);
 
 /*End function prototypes*/

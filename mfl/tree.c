@@ -76,6 +76,7 @@ void closeRing(node *n)
             p = p->next;
         }
         if (!p->next) {
+            printf("REPORT ERROR: dangling next pointer at %p\n", p);
             p->next = n;
             p = p->next; 
         }
@@ -100,168 +101,6 @@ void asNoring(node *n)
         closeRing(n);
         deletering(n);
     }
-}
-
-void mfl_collapse(node *n, nodearray nds)
-{
-    /*collapses a branch*/
-    int oldindex;
-    node *an1, *an2, *p;
-    
-    oldindex = n->index;
-    
-    an1 = n->outedge;
-    an2 = an1->next;
-    p = an2;
-    
-    while (p->next != an1) 
-    {
-        p = p->next;
-    }
-    
-    p->next = n->next;
-    
-    p = p->next;
-    while (p->next != n) 
-    {
-        p = p->next;
-    }
-    
-    an1->next = NULL;
-    p->next = an2;
-    n->next = NULL;
-    n->outedge->outedge = NULL;
-    free(n->outedge);
-    n->outedge = NULL;
-    mfl_set_index(an1);
-    nds[oldindex] = n; // Ensures n can be found in the trnodes array
-}
-
-int mfl_determ_order(node *n)
-{
-    /*determines the number of branchings in a node*/
-    int i = 0;
-    node *p;
-    
-    if (n->outedge) {
-        i = 1;
-    }
-    
-    if (n->tip) {
-        return i;
-    }
-    
-    p = n->next;
-    while (p != n) 
-    {
-        if (p->outedge) {
-            ++i;
-        }
-        p = p->next;
-    }
-    
-    return i;
-    printf("node order: %i\n", i);
-    
-}
-
-void mfl_set_order(node *n)
-{
-    int ord;
-    node *p;
-    ord = mfl_determ_order(n);
-    
-    n->order = ord;
-    if (n->next) {
-        p = n->next;
-        while (p != n) {
-            p->order = ord;
-            p = p->next;
-        }
-    }
-}
-
-void mfl_clear_order(node *n)
-{
-    node *p;
-    
-    p = n->next;
-    while (p != n) {
-        p->order = 0;
-        p = p->next;
-    }
-    
-    n->order = 0;
-}
-
-void mfl_set_index(node *n)
-{
-    node *p;
-    
-    printf("clear the buffer\n");
-    
-    if (n->next) {
-        p = n->next;
-        while (p != n) 
-        {
-            p->index = n->index;
-            p = p->next;
-        }
-    }   
-}
-
-void mfl_deinit_tree(tree *t)
-{
-    int i;
-    node *p;
-    
-    for (i = 0; t->trnodes[i]; ++i) 
-    {
-        t->trnodes[i]->initialized = 0;
-        
-        if (t->trnodes[i]->next) 
-        {
-            p = t->trnodes[i]->next;
-            
-            do {
-                p->initialized = 0;
-                if (p->next) 
-                {
-                    p = p->next;
-                }
-                else 
-                {
-                    p = t->trnodes[i]; /* Should prevent a crash in the event of a dangling next pointer*/
-                }
-
-            } while (p != t->trnodes[i]);
-            
-        }
-    }
-}
-
-void putBranchInRing(node *n, node *rnode)
-{
-    /* Given a branch (two nodes joined by their outedge pointers), places the 
-     * branch in a ring */
-    
-    node *rnode2 = NULL;
-    
-    if (rnode->next) {
-        rnode2 = rnode->next;
-    }
-    
-    rnode->next = n;
-    
-    if (rnode2) {
-        n->next = rnode2;
-    }
-    else {
-        n->next = rnode;
-    }
-    
-    rnode->order = rnode->order + 1;
-    mfl_set_order(rnode);
 }
 
 void mfl_insert_branch(node *n, node *tgt1)
@@ -290,6 +129,69 @@ void mfl_insert_branch(node *n, node *tgt1)
     
     joinNodes(p, tgt1);
     joinNodes(q, tgt2);    
+}
+
+void mfl_reindex_tree(nodearray nds, int ntax, int numnodes)
+{
+    int i;
+    
+    for (i = 0; i < numnodes; ++i)
+    {
+        /* First half of trnodes are initialized to this */
+        if (i < ntax)
+        {
+            nds[i]->index = i;
+        }
+        else /* second half are allocated as a newring */
+        {
+            nds[i]->index = i;
+            mfl_set_index(nds[i]);
+        }        
+    }
+}
+
+void mfl_reset_ring_to_n(node *n)
+{
+    node *p;
+    
+    if (n->next) {
+        p = n->next;
+        while (p != n) 
+        {
+            p->index = n->index;
+            p->apomorphies = n->apomorphies;
+            p->initialized = n->initialized;
+            p = p->next;
+        }
+    }
+    mfl_set_order(n);
+    
+}
+
+void mfl_collapse(node *n1, nodearray nds)
+{
+    node *an1, *an2, *n2, *tmp;
+    
+    an1 = n1->outedge;
+    an2 = an1->next;
+    tmp = an2;
+    while (an2->next != an1) {
+        an2 = an2->next;
+    }
+    an2->next = n1->next;
+    
+    n2 = n1->next;
+    while (n2->next != n1) {
+        n2 = n2->next;
+    }
+    n2->next = an1->next;
+    an1->next = NULL;
+    n1->next = NULL;
+    n1->outedge = NULL;
+    an1->outedge = NULL;
+    free(an1);
+    nds[n1->index] = n1;
+    mfl_reset_ring_to_n(tmp);
 }
 
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
@@ -361,8 +263,144 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     {
         n = n->next->next;
     }
-
     
     mfl_insert_branch(in, n);
     
+    dump_nodearray(nds, ntax, numnodes);
+    
+    /*int *cptr;
+    c = 0;
+    cptr = &c;
+    point_bottom(nds[ntax], nds, cptr);
+    mfl_reindex_tree(nds, ntax, numnodes);
+    
+    for (i = 0; i < numnodes; ++i) {
+        printf("Index: %i, order: %i\n", nds[i]->index, nds[i]->order);
+    }*/
+    
+}
+
+int mfl_determ_order(node *n)
+{
+    /*determines the number of branchings in a node*/
+    int i = 0;
+    node *p;
+    
+    if (n->outedge) {
+        i = 1;
+    }
+    
+    if (n->tip) {
+        return i;
+    }
+    
+    p = n->next;
+    while (p != n) 
+    {
+        ++i;
+        p = p->next;
+    }
+    
+    return i;
+    printf("node order: %i\n", i);
+    
+}
+
+void mfl_set_order(node *n)
+{
+    int ord;
+    node *p;
+    ord = mfl_determ_order(n);
+    
+    n->order = ord;
+    if (n->next) {
+        p = n->next;
+        while (p != n) {
+            p->order = ord;
+            p = p->next;
+        }
+    }
+}
+
+void mfl_clear_order(node *n)
+{
+    node *p;
+    
+    p = n->next;
+    while (p != n) {
+        p->order = 0;
+        p = p->next;
+    }
+    
+    n->order = 0;
+}
+
+void mfl_set_index(node *n)
+{
+    node *p;
+    
+    printf("setting to index %i\n", n->index);
+    
+    if (n->next) {
+        p = n->next;
+        while (p != n) 
+        {
+            p->index = n->index;
+            p = p->next;
+        }
+    }   
+}
+
+void mfl_deinit_tree(tree *t)
+{
+    int i;
+    node *p;
+    
+    for (i = 0; t->trnodes[i]; ++i) 
+    {
+        t->trnodes[i]->initialized = 0;
+        
+        if (t->trnodes[i]->next) 
+        {
+            p = t->trnodes[i]->next;
+            
+            do {
+                p->initialized = 0;
+                if (p->next) 
+                {
+                    p = p->next;
+                }
+                else 
+                {
+                    p = t->trnodes[i]; /* Should prevent a crash in the event of a dangling next pointer*/
+                }
+
+            } while (p != t->trnodes[i]);
+            
+        }
+    }
+}
+
+void putBranchInRing(node *n, node *rnode)
+{
+    /* Given a branch (two nodes joined by their outedge pointers), places the 
+     * branch in a ring */
+    
+    node *rnode2 = NULL;
+    
+    if (rnode->next) {
+        rnode2 = rnode->next;
+    }
+    
+    rnode->next = n;
+    
+    if (rnode2) {
+        n->next = rnode2;
+    }
+    else {
+        n->next = rnode;
+    }
+    
+    rnode->order = rnode->order + 1;
+    mfl_set_order(rnode);
 }

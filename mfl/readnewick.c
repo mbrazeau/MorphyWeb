@@ -101,11 +101,16 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes,
     }
     printf("\n");
     /* end debugging print */    
+
 }
 
 struct tree * readNWK (char *nwktr, bool isRooted)
 {
 
+    /* Returns a pointer to a tree based on a Newick-format string. The Newick 
+     * format does not have to have an arbitrary root to be read. If there is an
+     * error in reading the Newick tree, a NULL pointer is returned. */
+    
 	int i = 0;
     int nwklen;
 	int opencount = 0, closecount = 0;	// number of open and closed brackets 
