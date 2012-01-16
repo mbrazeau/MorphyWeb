@@ -31,6 +31,40 @@ void call_index(node *n)
     }   
 }
 
+
+void dump_nodearray(nodearray nds, int ntax, int numnodes)
+{
+    int i;
+    node *p; 
+    
+    for (i = 0; i < numnodes; ++i) {
+        mfl_reset_ring_to_n(nds[i]);
+        printf("Index: %i, tip: %i, order: %i, address: %p, outedge %p", nds[i]->index, nds[i]->tip, nds[i]->order, nds[i], nds[i]->outedge);
+        if (i >= ntax) {
+            printf(", next: %p\n", nds[i]->next);
+            p = nds[i]->next;
+            while (p != nds[i]) {
+                printf("In ring: index: %i, tip: %i, order: %i, address: %p, outedge: %p, next: %p\n", p->index, p->tip, p->order, p, p->outedge, p->next);
+                p = p->next;
+            }
+        }
+        else 
+        {
+            printf("\n");
+        }
+
+    }
+}
+
+void close_all_rings(nodearray nds, int ntax, int numnodes)
+{
+    int i;
+  
+    for (i = ntax; i < numnodes; ++i) {
+        closeRing(nds[i]);
+    }
+}
+
 int numberOfNodes(int ntax)
 {
     int numnodes;
@@ -131,6 +165,7 @@ void freetree(tree *newtree, int numnodes)
     {
         if (newtree->trnodes[i]->next)
         {
+            closeRing(newtree->trnodes[i]);
             deletering(newtree->trnodes[i]);
         }
         free(newtree->trnodes[i]);
@@ -615,6 +650,7 @@ void testNWKreading(void)
 {
     bool isRooted = false;    
     char *nwktree;
+    tree *anewtree;
     
     char newickTree1[] = "(2,(1,4,3,5,6));";  
     printf("The newick string: %s\n", newickTree1);
@@ -626,13 +662,17 @@ void testNWKreading(void)
     printf("The newick string: %s\n", newickTree4);
     
     nwktree = newickTree1;
-    readNWK(nwktree, isRooted);
+    anewtree = readNWK(nwktree, isRooted);
+    freetree(anewtree, 2*6-1);
     nwktree = newickTree2;
-    readNWK(nwktree, isRooted);
+    anewtree = readNWK(nwktree, isRooted);
+    freetree(anewtree, 2*6-1);
     nwktree = newickTree3;
-    readNWK(nwktree, isRooted);
+    anewtree = readNWK(nwktree, isRooted);
+    freetree(anewtree, 2*6-1);
     nwktree = newickTree4;
-    readNWK(nwktree, isRooted);
+    anewtree = readNWK(nwktree, isRooted);
+    freetree(anewtree, 2*6-1);
 }
 
 int main(void)
@@ -655,27 +695,39 @@ int main(void)
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
-        
+    
+    dump_nodearray(anewtree->trnodes, ntax, numnodes);
+    
     copiedtree = copytree(anewtree, ntax, numnodes);
     printNewick(copiedtree->root);
     printf("\n");
+    
+    freetree(copiedtree, numnodes);
     
     mfl_collapse(anewtree->trnodes[ntax + 3], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
     printf("\n");
-    /*end of node collase test*/
     
     copiedtree = copytree(anewtree, ntax, numnodes);
+    dump_nodearray(copiedtree->trnodes, ntax, numnodes);
     printf("Copying with collapsed node: ");
     printNewick(copiedtree->root);
     printf("\n");
+    
+    freetree(copiedtree, numnodes);
     
     mfl_arb_resolve(anewtree->trnodes[ntax + 2], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
     printf("With resolved node: ");
     printNewick(anewtree->root);
     printf("\n");
     
+    copiedtree = copytree(anewtree, ntax, numnodes);
+    printf("Copying with resolved node: ");
+    printNewick(copiedtree->root);
+    printf("\n");
+    
+    freetree(anewtree, numnodes);
     freetree(copiedtree, numnodes);
     
     originaltree = randunrooted(ntax, numnodes);
@@ -687,6 +739,9 @@ int main(void)
     printf("Copying of unrooted tree: ");
     printNewick(copiedtree->trnodes[0]);
     printf("\n");
+    
+    freetree(originaltree, numnodes);
+    freetree(copiedtree, numnodes);
     
     return 0;
 }
