@@ -39,3 +39,28 @@ struct node * mfl_remove_branch(node *n)
     nb = nb->next;
     return nb;
 }
+
+void mfl_insert_branch(node *br, node *target)
+{
+    // Inserts a branch with a ring base into another branch
+    
+    node *p, *bout, *tdesc;
+    
+    tdesc = target->outedge;
+    
+    // Find an available node in the ring 
+    p = br->next;
+    while (p != br) {
+        if (!p->outedge) {
+            bout = p;
+            p = br;
+        }
+        else {
+            p = p->next;
+        }
+    }
+    
+    joinNodes(br, target);
+    joinNodes(bout, tdesc);
+    
+}

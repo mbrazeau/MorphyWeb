@@ -103,6 +103,7 @@ struct node * seekInternal(int ntax, node **nds);
 void closeRing(node *n);
 void asRing(node *n);
 void asNoring(node *n);
+void mfl_reset_ring_to_n(node *n);
 void mfl_collapse(node *n, nodearray nds);
 int mfl_determ_order(node *n);
 void mfl_set_order(node *n);
@@ -112,6 +113,7 @@ void putBranchInRing(node *n, node *rnode);
 void insertBranch(node *br, node *target);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
 void mfl_deinit_tree(tree *t);
+
 
 /*in readnewick.c*/
 struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, 

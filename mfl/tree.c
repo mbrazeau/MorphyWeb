@@ -76,7 +76,7 @@ void closeRing(node *n)
             p = p->next;
         }
         if (!p->next) {
-            printf("REPORT ERROR: dangling next pointer at %p\n", p);
+            printf("Report error: dangling next pointer at %p\n", p);
             p->next = n;
             p = p->next; 
         }
@@ -101,34 +101,6 @@ void asNoring(node *n)
         closeRing(n);
         deletering(n);
     }
-}
-
-void mfl_insert_branch(node *n, node *tgt1)
-{
-    node *p, *q, *tgt2;
-    
-    tgt2 = tgt1->outedge;
-    
-    if (n->outedge) 
-    {
-        p = n->next;
-        while (p->outedge) 
-        {
-            p = p->next;
-        }
-    }
-    
-    q = p->next;
-    if (q->outedge) 
-    {
-        while (q->outedge)
-        {
-            q = q->next;
-        }
-    }
-    
-    joinNodes(p, tgt1);
-    joinNodes(q, tgt2);    
 }
 
 void mfl_reindex_tree(nodearray nds, int ntax, int numnodes)
@@ -191,7 +163,7 @@ void mfl_collapse(node *n1, nodearray nds)
     an1->outedge = NULL;
     free(an1);
     nds[n1->index] = n1;
-    mfl_reset_ring_to_n(tmp);
+    //mfl_reset_ring_to_n(tmp);
 }
 
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
@@ -265,19 +237,6 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     }
     
     mfl_insert_branch(in, n);
-    
-    dump_nodearray(nds, ntax, numnodes);
-    
-    /*int *cptr;
-    c = 0;
-    cptr = &c;
-    point_bottom(nds[ntax], nds, cptr);
-    mfl_reindex_tree(nds, ntax, numnodes);
-    
-    for (i = 0; i < numnodes; ++i) {
-        printf("Index: %i, order: %i\n", nds[i]->index, nds[i]->order);
-    }*/
-    
 }
 
 int mfl_determ_order(node *n)
@@ -290,7 +249,7 @@ int mfl_determ_order(node *n)
         i = 1;
     }
     
-    if (n->tip) {
+    if (n->tip || !n->next) {
         return i;
     }
     
@@ -313,7 +272,8 @@ void mfl_set_order(node *n)
     ord = mfl_determ_order(n);
     
     n->order = ord;
-    if (n->next) {
+    if (n->next) 
+    {
         p = n->next;
         while (p != n) {
             p->order = ord;
