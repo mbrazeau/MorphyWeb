@@ -176,7 +176,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     // Make sure node there is a polytomy, otherwise exit resolve()
     mfl_set_order(n);
     ord = n->order;
-    if (ord <= 3) {
+    if (ord <= 3 && n->index != ntax) {
         printf("mfl_arb_resolve() called in error on node %i\n", n->index);
         return;
     }
@@ -201,7 +201,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     
     c = ntax % 10;
     
-    for (i = 0; i < (ord - 3); ++i)
+    for (i = 0; i <= (ord - 3); ++i)
     {
         p = n->next;
         for (j = 0; j <= c; ++j) 
@@ -256,13 +256,13 @@ int mfl_determ_order(node *n)
     p = n->next;
     while (p != n) 
     {
-        ++i;
+        if (p->outedge) {
+            ++i;
+        }
         p = p->next;
     }
     
     return i;
-    printf("node order: %i\n", i);
-    
 }
 
 void mfl_set_order(node *n)

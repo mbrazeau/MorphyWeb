@@ -116,10 +116,11 @@ void mfl_deinit_tree(tree *t);
 
 
 /*in readnewick.c*/
-struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, 
-                         int *pos, nodearray nds, bool isRooted);
-void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, 
-                   tree *newtree, bool isRooted);
+struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *pos, nodearray nds, bool isRooted);
+void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtree, bool isRooted);
 struct tree * readNWK (char *nwktr, bool isRooted);
+
+/*in rearrange.c*/
+void mfl_insert_branch(node *br, node *target);
 
 /*End function prototypes*/
