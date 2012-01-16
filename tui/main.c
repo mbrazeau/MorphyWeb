@@ -678,7 +678,7 @@ void testNWKreading(void)
 int main(void)
 {
     
-    int ntax = 9;
+    int ntax = 10;
     int numnodes;
     
     numnodes = numberOfNodes(ntax);
@@ -703,7 +703,7 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
-    mfl_collapse(anewtree->trnodes[ntax + 3], anewtree->trnodes); // Magic number just for testing
+    mfl_collapse(anewtree->trnodes[ntax + 1], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
     printf("\n");    
@@ -717,14 +717,14 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
-    mfl_arb_resolve(anewtree->trnodes[ntax + 2], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
+    mfl_arb_resolve(anewtree->trnodes[ntax], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
     printf("With resolved node: ");
     printNewick(anewtree->root);
     printf("\n");
-    dump_nodearray(anewtree->trnodes, ntax, numnodes);
+    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
-    dump_nodearray(copiedtree->trnodes, ntax, numnodes);
+    //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
     printf("Copying with resolved node: ");
     printNewick(copiedtree->root);
     printf("\n");
