@@ -40,7 +40,7 @@ void dump_nodearray(nodearray nds, int ntax, int numnodes)
     for (i = 0; i < numnodes; ++i) {
         mfl_reset_ring_to_n(nds[i]);
         printf("Index: %i, tip: %i, order: %i, address: %p, outedge %p", nds[i]->index, nds[i]->tip, nds[i]->order, nds[i], nds[i]->outedge);
-        if (i >= ntax) {
+        if (i >= ntax && nds[i]->next) {
             printf(", next: %p\n", nds[i]->next);
             p = nds[i]->next;
             while (p != nds[i]) {
@@ -695,8 +695,7 @@ int main(void)
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
-    
-    dump_nodearray(anewtree->trnodes, ntax, numnodes);
+    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
     printNewick(copiedtree->root);
@@ -707,10 +706,11 @@ int main(void)
     mfl_collapse(anewtree->trnodes[ntax + 3], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
-    printf("\n");
+    printf("\n");    
+    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
-    dump_nodearray(copiedtree->trnodes, ntax, numnodes);
+    //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
     printf("Copying with collapsed node: ");
     printNewick(copiedtree->root);
     printf("\n");
@@ -721,8 +721,10 @@ int main(void)
     printf("With resolved node: ");
     printNewick(anewtree->root);
     printf("\n");
+    dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
+    dump_nodearray(copiedtree->trnodes, ntax, numnodes);
     printf("Copying with resolved node: ");
     printNewick(copiedtree->root);
     printf("\n");
