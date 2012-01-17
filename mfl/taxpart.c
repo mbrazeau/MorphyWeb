@@ -9,29 +9,15 @@
 
 #include "morphy.h"
 
-int strToInt (char string[])
-{
-    int i = 0, intValue, result = 0;
-	
-    while (string[i] >= '0' && string[i] <= '9')
-    {
-		intValue = string[i] - '0';
-		result = result * 10 + intValue;
-		++i;
-    }
-	
-	return result;
-}
-
 void wipe_Og(int outtaxa[], nodearray outgroup)
 {
 	int i; // Loop counter
 	
 	for (i = 0; outtaxa[i]; ++i) {
 		outtaxa[i] = '\0';
-        if (outgroup[i])
+        if (outgroup)
         {
-            outgroup[i] = NULL;
+            free(outgroup);
         }
 	}
 }
@@ -42,9 +28,9 @@ void wipe_Ig(int intaxa[], nodearray ingroup)
 	
 	for (i = 0; intaxa[i]; ++i) {
 		intaxa[i] = '\0';
-        if (ingroup[i])
+        if (ingroup)
         {
-            ingroup[i] = NULL;
+            free(ingroup);
         }
 	}
 }
@@ -79,7 +65,7 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[],
 			buffer[j] = '\0';
 		} 		
 		if (input[i] == ' ' || input[i] == ';') {
-			taxnum = strToInt(buffer);
+			taxnum = atoi(buffer);
 			if (taxnum > ntax) {
 				printf("Error: taxon %i not in dataset.\n", taxnum);
 				printf("No taxon %i added to outgroup.\n", taxnum);
