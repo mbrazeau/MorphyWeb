@@ -8,7 +8,7 @@
 
 #include "morphy.h"
 
-struct node * seekInternal(int ntax, node **nds)
+struct node * mfl_seek_internal(int ntax, node **nds)
 {
     /* Searches for an unused internal node */
     /* NB: This function needs to return some kind of error msg
@@ -64,7 +64,7 @@ struct node * seekInternal(int ntax, node **nds)
     }
 }
 
-void closeRing(node *n)
+void mfl_close_ring(node *n)
 {
     /* Makes sure there isn't a dangling next pointer*/
     node *p;
@@ -84,21 +84,21 @@ void closeRing(node *n)
     while (p != n);
 }
 
-void asRing(node *n)
+void mfl_as_ring(node *n)
 {
     
     if (n->next) {
-        closeRing(n);
+        mfl_close_ring(n);
         deletering(n);
     }
     
     newring(n);
 }
 
-void asNoring(node *n)
+void mfl_as_noring(node *n)
 {
     if (n->next) {
-        closeRing(n);
+        mfl_close_ring(n);
         deletering(n);
     }
 }
@@ -182,10 +182,10 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     }
     
     // Find available internal node(s) in nds
-    in = seekInternal(ntax, nds);
+    in = mfl_seek_internal(ntax, nds);
     in2 = in;
     if (in->next) {
-        asNoring(in);
+        mfl_as_noring(in);
     }
     if (in->outedge) {
         if (in->outedge->outedge) {

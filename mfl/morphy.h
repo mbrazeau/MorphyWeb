@@ -99,10 +99,10 @@ void wipe_Ig(int intaxa[], nodearray ingroup);
 void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], nodearray ingroup, bool *OGdefined);
 
 /*in tree.c*/
-struct node * seekInternal(int ntax, node **nds);
-void closeRing(node *n);
-void asRing(node *n);
-void asNoring(node *n);
+struct node * mfl_seek_internal(int ntax, node **nds);
+void mfl_close_ring(node *n);
+void mfl_as_ring(node *n);
+void mfl_as_noring(node *n);
 void mfl_reset_ring_to_n(node *n);
 void mfl_collapse(node *n, nodearray nds);
 int mfl_determ_order(node *n);

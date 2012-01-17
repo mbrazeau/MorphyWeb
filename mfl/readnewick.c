@@ -18,7 +18,7 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes,
     char tipbuf[10];
     node *n, *nlst, *p;
     
-    n = seekInternal(ntax - 1, nds);
+    n = mfl_seek_internal(ntax - 1, nds);
     n->initialized = 1;
     nlst = n;
     
