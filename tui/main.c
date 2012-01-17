@@ -31,7 +31,6 @@ void call_index(node *n)
     }   
 }
 
-
 void dump_nodearray(nodearray nds, int ntax, int numnodes)
 {
     int i;
@@ -54,6 +53,14 @@ void dump_nodearray(nodearray nds, int ntax, int numnodes)
         }
 
     }
+}
+
+void dump_tree(tree *t, int ntax, int numnodes)
+{
+    printf("Tree %i:\n", t->index);
+    printf("Root: %p\nLength: %i\n", t->root, t->length);
+    dump_nodearray(t->trnodes, ntax, numnodes);
+    printf("\n");
 }
 
 void close_all_rings(nodearray nds, int ntax, int numnodes)
@@ -648,7 +655,7 @@ void rand_tree (int ntax, int numnodes)
 
 void testNWKreading(void)
 {
-    bool isRooted = false;    
+    bool isRooted = true;    
     char *nwktree;
     tree *anewtree;
     
