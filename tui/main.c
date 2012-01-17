@@ -61,7 +61,7 @@ void close_all_rings(nodearray nds, int ntax, int numnodes)
     int i;
   
     for (i = ntax; i < numnodes; ++i) {
-        closeRing(nds[i]);
+        mfl_close_ring(nds[i]);
     }
 }
 
@@ -165,7 +165,7 @@ void freetree(tree *newtree, int numnodes)
     {
         if (newtree->trnodes[i]->next)
         {
-            closeRing(newtree->trnodes[i]);
+            mfl_close_ring(newtree->trnodes[i]);
             deletering(newtree->trnodes[i]);
         }
         free(newtree->trnodes[i]);
@@ -554,7 +554,7 @@ void unroot(int ntax, tree *rootedtree)
     {
         printf("derooting multifurcating node\n");
         
-        subnode = seekInternal(ntax, rootedtree->trnodes);
+        subnode = mfl_seek_internal(ntax, rootedtree->trnodes);
         
         /*grab the second branch in the ring*/
         
@@ -678,7 +678,7 @@ void testNWKreading(void)
 int main(void)
 {
     
-    int ntax = 10;
+    int ntax = 7;
     int numnodes;
     
     numnodes = numberOfNodes(ntax);
