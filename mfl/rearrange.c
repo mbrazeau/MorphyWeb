@@ -66,7 +66,7 @@ void mfl_insert_branch(node *br, node *target)
     
 }
 
-void mfl_nni_traversal(node *n, tree **treeset, int ntax, int numnodes, int *current)
+void mfl_nni_traversal(node *n, tree *currenttree, tree **treeset, int ntax, int numnodes, int *current)
 {
     node *p;
     
@@ -76,14 +76,17 @@ void mfl_nni_traversal(node *n, tree **treeset, int ntax, int numnodes, int *cur
     
     if (!n->outedge->tip && *current == 0)
     {
-        *current = *current + 1;
         mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
+        *current = *current + 1;
+        treeset[*current] = copytree(currenttree, ntax, numnodes);
+        mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
+        mfl_bswap(n->next->outedge, n->outedge->next->outedge);
         return;
     }
     
     p = n->next;
     while (p != n && *current == 0) {
-        mfl_nni_traversal(p, treeset, ntax, numnodes, current);
+        mfl_nni_traversal(p, currenttree, treeset, ntax, numnodes, current);
         p = p->next;
     }
 }
@@ -101,9 +104,11 @@ void test_nni(int ntax, int numnodes)
     //dump_tree(treeset[0], ntax, numnodes);
     printNewick(treeset[0]->trnodes[0]);
     printf("\nin test_nni\n");
-    mfl_nni_traversal(treeset[0]->trnodes[0]->outedge, treeset, ntax, numnodes, cptr);
+    mfl_nni_traversal(treeset[0]->trnodes[0]->outedge, treeset[0], treeset, ntax, numnodes, cptr);
     printNewick(treeset[0]->trnodes[0]);
-    printf("\n");
+    printf(";\n");
+    printNewick(treeset[1]->trnodes[0]);
+    printf(";\n");
     freetree(treeset[0], numnodes);
     free(treeset);
 }

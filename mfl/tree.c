@@ -122,7 +122,7 @@ void mfl_reindex_tree(nodearray nds, int ntax, int numnodes)
     }
 }
 
-void mfl_reset_ring_to_n(node *n)
+void mfl_set_ring_to_n(node *n)
 {
     node *p;
     
@@ -138,6 +138,26 @@ void mfl_reset_ring_to_n(node *n)
     }
     mfl_set_order(n);
     
+}
+
+void mfl_reset_ring(node *n)
+{
+    node *p;
+    
+    n->initialized = 0;
+    n->apomorphies = 0;
+    
+    if (n->next) {
+        p = n->next;
+        while (p != n) 
+        {
+            p->index = n->index;
+            p->apomorphies = n->apomorphies;
+            p->initialized = n->initialized;
+            p = p->next;
+        }
+    }
+    mfl_set_order(n);    
 }
 
 void mfl_collapse(node *n1, nodearray nds)

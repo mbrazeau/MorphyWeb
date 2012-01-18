@@ -20,8 +20,6 @@
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
 
-typedef char *statearray;
-
 /* For node and tree structures, this program follows the format recommended by
  * Felsenstein (2004. Inferring Phylogenies. Sinauer, Mass.) and implemented in 
  * Felsenstein et al.'s Phylip package. This includes representing internal nodes 
@@ -39,8 +37,9 @@ typedef struct node {
     bool dummy;
     int minsteps;
     int maxsteps;
+    int charstates;
     int numstates; //number of states of a character reconstructed at that node
-    statearray apomorphies;
+    int *apomorphies;
 } node;
 
 typedef node **nodearray;
@@ -106,7 +105,7 @@ struct node * mfl_seek_internal(int ntax,int numnodes, node **nds);
 void mfl_close_ring(node *n);
 void mfl_as_ring(node *n);
 void mfl_as_noring(node *n);
-void mfl_reset_ring_to_n(node *n);
+void mfl_set_ring_to_n(node *n);
 void mfl_collapse(node *n, nodearray nds);
 int mfl_determ_order(node *n);
 void mfl_set_order(node *n);
@@ -126,7 +125,7 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 /*in rearrange.c*/
 void mfl_bswap(node *p, node *q);
 void mfl_insert_branch(node *br, node *target);
-void mfl_nni_traversal(node *n, tree **treeset, int ntax, int numnodes, int *current);
+void mfl_nni_traversal(node *n, tree *currenttree, tree **treeset, int ntax, int numnodes, int *current);
 void test_nni(int ntax, int numnodes);
 
 /*End function prototypes*/
