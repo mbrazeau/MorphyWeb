@@ -59,10 +59,13 @@ typedef struct tree {
 
 /*in main.c*/
 
+void call_index(node *n);
 void dump_nodearray(nodearray nds, int ntax, int numnodes);
+void dump_tree(tree *t, int ntax, int numnodes);
 void init_taxarray(int *taxarray, int ntax);
 void joinNodes(node *n, node *p);
 struct tree *alloctree(int ntax, int numnodes);
+void freetree(tree *newtree, int numnodes);
 struct tree *alloc_noring(int ntax, int numnodes);
 struct node * allocnode(void);
 void printNewick(node *n);
@@ -75,7 +78,7 @@ void deletering(node *r1);
 void detree(node *n);
 void detree2(nodearray trnptr);
 void point_bottom(node *n, node **nodes, int *counter);
-void rootOnTerminal(tree *trtoroot, int root, int ntax);
+void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void unroot(int ntax, tree *rootedtree);
 
 /*in exhaustive.c*/ 
@@ -99,7 +102,7 @@ void wipe_Ig(int intaxa[], nodearray ingroup);
 void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], nodearray ingroup, bool *OGdefined);
 
 /*in tree.c*/
-struct node * mfl_seek_internal(int ntax, node **nds);
+struct node * mfl_seek_internal(int ntax,int numnodes, node **nds);
 void mfl_close_ring(node *n);
 void mfl_as_ring(node *n);
 void mfl_as_noring(node *n);
@@ -112,7 +115,7 @@ void mfl_set_index(node *n);
 void putBranchInRing(node *n, node *rnode);
 void insertBranch(node *br, node *target);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
-void mfl_deinit_tree(tree *t);
+void mfl_deinit_tree(tree *t, int numnodes);
 
 
 /*in readnewick.c*/
@@ -121,6 +124,9 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtre
 struct tree * readNWK (char *nwktr, bool isRooted);
 
 /*in rearrange.c*/
+void mfl_bswap(node *p, node *q);
 void mfl_insert_branch(node *br, node *target);
+void mfl_nni_traversal(node *n, tree **treeset, int ntax, int numnodes, int *current);
+void test_nni(int ntax, int numnodes);
 
 /*End function prototypes*/

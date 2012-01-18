@@ -8,7 +8,7 @@
 
 #include "morphy.h"
 
-struct node * mfl_seek_internal(int ntax, node **nds)
+struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
 {
     /* Searches for an unused internal node */
     /* NB: This function needs to return some kind of error msg
@@ -19,7 +19,7 @@ struct node * mfl_seek_internal(int ntax, node **nds)
     node *p;
     bool isUsed = false;
     
-    for (i = ntax + 1; nds[i]; ++i) {
+    for (i = ntax + 1; i < numnodes; ++i) {
         if (!nds[i]->next && !nds[i]->initialized && !nds[i]->outedge) {
             unused = nds[i];
             i = 2 * ntax;
@@ -28,7 +28,7 @@ struct node * mfl_seek_internal(int ntax, node **nds)
     
     if (!unused) 
     {
-        for (i = ntax + 1; nds[i]; ++i) 
+        for (i = ntax + 1; i < numnodes; ++i) 
         {
             isUsed = false;
             if (nds[i]->next) 
@@ -182,7 +182,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     }
     
     // Find available internal node(s) in nds
-    in = mfl_seek_internal(ntax, nds);
+    in = mfl_seek_internal(ntax, numnodes, nds);
     in2 = in;
     if (in->next) {
         mfl_as_noring(in);
@@ -311,12 +311,12 @@ void mfl_set_index(node *n)
     }   
 }
 
-void mfl_deinit_tree(tree *t)
+void mfl_deinit_tree(tree *t, int numnodes)
 {
     int i;
     node *p;
     
-    for (i = 0; t->trnodes[i]; ++i) 
+    for (i = 0; i < numnodes; ++i) 
     {
         t->trnodes[i]->initialized = 0;
         
