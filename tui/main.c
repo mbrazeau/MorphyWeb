@@ -13,7 +13,7 @@
 
 /*temporary defs for testing*/
 #define MORPHY_NUM_ITERATIONS 15
-#define MAXSTATES 5
+//#define MAXSTATES 5
 /**/
 
 void call_index(node *n)
@@ -37,7 +37,7 @@ void dump_nodearray(nodearray nds, int ntax, int numnodes)
     node *p; 
     
     for (i = 0; i < numnodes; ++i) {
-        mfl_reset_ring_to_n(nds[i]);
+        mfl_set_ring_to_n(nds[i]);
         printf("Index: %i, tip: %i, order: %i, address: %p, outedge %p", nds[i]->index, nds[i]->tip, nds[i]->order, nds[i], nds[i]->outedge);
         if (i >= ntax && nds[i]->next) {
             printf(", next: %p\n", nds[i]->next);
@@ -295,6 +295,11 @@ void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount)
     } 
 }
 
+void mfl_fitch_down(node *n, int *trlength)
+{
+    
+}
+
 void treelen(node *n, int *stepcount)
 {   
     node *p;
@@ -306,7 +311,7 @@ void treelen(node *n, int *stepcount)
     p = n->next;
     while (p != n) {
         treelen(p->outedge, stepcount);
-        printf("tip: %i; apomorphy: %s\n", p->outedge->tip, p->outedge->apomorphies);
+        printf("tip: %i; apomorphy: %p\n", p->outedge->tip, p->outedge->apomorphies);
         p = p->next;
     }
     
@@ -331,7 +336,7 @@ void nacount(node *n, int *stepcount)
     p = n->next;
     while (p != n) {
         nacount(p->outedge, stepcount);
-        printf("tip: %i; apomorphy: %s\n", p->outedge->tip, p->outedge->apomorphies);
+        printf("tip: %i; apomorphy: %p\n", p->outedge->tip, p->outedge->apomorphies);
         p = p->next;
     }
     
@@ -358,7 +363,7 @@ void newring(node *r1)
     r1->start = r2->start = r3->start = false;
     r1->dummy = r2->dummy = r3->dummy = false;
     
-    r1->apomorphies = r2->apomorphies = r3->apomorphies = (char*) malloc(MAXSTATES * sizeof(char));
+    r1->apomorphies = r2->apomorphies = r3->apomorphies = (int*) malloc(sizeof(int));
     r2->index = r1->index;
     r3->index = r1->index;
 }
@@ -386,7 +391,7 @@ void applyData(tree *currenttree, char **tipdata, int ntax, int *start)
     int i;
     
     for (i = 0; i < ntax; ++i) {
-        currenttree->trnodes[i]->apomorphies = tipdata[i + *start];
+        //currenttree->trnodes[i]->apomorphies = tipdata[i + *start];
     }
     
     *start = *start + i;    // Maybe i - 1
@@ -686,7 +691,7 @@ void testNWKreading(void)
 int main(void)
 {
     
-    int ntax = 4;
+    int ntax = 5;
     int numnodes;
     
     numnodes = numberOfNodes(ntax);
