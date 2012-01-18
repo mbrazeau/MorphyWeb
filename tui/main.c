@@ -490,13 +490,13 @@ void point_bottom(node *n, node **nodes, int *counter)
     
     p = n->next;
     while (p != n) {
-        point_bottom(p->outedge, nodes, counter);
+        point_bottom(p->outedge, nodes, counter);//<---BUG!!!!!!!!!!!!!!
         p = p->next;        
     }
     
 }
 
-void rootOnTerminal(tree *trtoroot, int root, int ntax)
+void mfl_root_tree(tree *trtoroot, int root, int ntax)
 {
     
     /*Roots the tree between a terminal (leaf) and an internal node*/
@@ -551,6 +551,7 @@ void collapseBiNode(node *n)
 
 void unroot(int ntax, tree *rootedtree)
 {
+    int lnumnodes = 2*ntax-1;
     node *proot, *leftdesc, *rightdesc, *subnode, *n, *m, *p, *q, *ftip;
     
     proot = rootedtree->root;
@@ -561,7 +562,7 @@ void unroot(int ntax, tree *rootedtree)
     {
         printf("derooting multifurcating node\n");
         
-        subnode = mfl_seek_internal(ntax, rootedtree->trnodes);
+        subnode = mfl_seek_internal(ntax, lnumnodes, rootedtree->trnodes);
         
         /*grab the second branch in the ring*/
         
@@ -685,7 +686,7 @@ void testNWKreading(void)
 int main(void)
 {
     
-    int ntax = 7;
+    int ntax = 4;
     int numnodes;
     
     numnodes = numberOfNodes(ntax);
@@ -695,6 +696,7 @@ int main(void)
     tree *originaltree;
     tree *copiedtree;
     
+    test_nni(ntax, numnodes);
     testNWKreading();
     
     /* This part is just for testing the collapseBiNode*/
@@ -703,6 +705,11 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     //dump_nodearray(anewtree->trnodes, ntax, numnodes);
+    
+    mfl_bswap(anewtree->trnodes[1], anewtree->trnodes[ntax + 2]);
+    printf("New tree: ");
+    printNewick(anewtree->root);
+    printf("\n");
     
     copiedtree = copytree(anewtree, ntax, numnodes);
     printNewick(copiedtree->root);
