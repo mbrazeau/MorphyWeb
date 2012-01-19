@@ -818,7 +818,8 @@ int main(void)
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
-    for (int i = 0; i < ntax; ++i) {
+    int i;
+    for (i = 0; i < ntax; ++i) {
         if (usrTipdata[i] == '?') {
             morphyTipdata[i] = -1;
         }
