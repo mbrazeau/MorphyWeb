@@ -101,7 +101,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int n
 void test_nni(int ntax, int numnodes)
 {
     
-    int i;
+    //int i;
     int branch_count = 1;   // The branch iteration of the NNI traversal
     int *bc_pointer = &branch_count;
     tree **treeset;

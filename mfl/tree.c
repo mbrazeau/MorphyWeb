@@ -250,7 +250,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
         {
             q = p;
             p = p->next;
-            if (p = n) 
+            if (p == n) 
             {
                 q = p;
                 p = p->next;
