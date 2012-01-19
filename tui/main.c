@@ -802,7 +802,6 @@ int main(void)
     int ntax = 12, treelength = 0;
     int numnodes;
     bool isRooted = true;
-    int i;
     
     numnodes = numberOfNodes(ntax);
     
@@ -815,12 +814,21 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    int usrTipdata[] = { 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1};
+    char usrTipdata[] = { '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '1', '1'};
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
-    for (i = 0; i < ntax; ++i) {
-        morphyTipdata[i] = 1 << usrTipdata[i];
+    for (int i = 0; i < ntax; ++i) {
+        if (usrTipdata[i] == '?') {
+            morphyTipdata[i] = -1;
+        }
+        else if (usrTipdata[i] == '-') {
+            morphyTipdata[i] = 0;
+        }
+        else {
+            morphyTipdata[i] = 1 << (usrTipdata[i] - '0');
+        }
+        
         anewtree->trnodes[i]->apomorphies = morphyTipdata[i];
     }
     
