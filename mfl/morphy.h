@@ -15,6 +15,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <stdint.h>
+
 /*#include <gsl/gsl_rng.h>*/
 
 #define MAX_OG_SIZE 20
@@ -25,6 +27,8 @@
  * Felsenstein et al.'s Phylip package. This includes representing internal nodes 
  * as a ring of (minmally) three nodes joined by the next pointer. The outedge 
  * pointer joins the node to either a leaf or the nearest internal node. */
+
+typedef int32_t charstate;
 
 typedef struct node {
     struct node *outedge, *next;
@@ -39,7 +43,7 @@ typedef struct node {
     int maxsteps;
     int charstates;
     int numstates; //number of states of a character reconstructed at that node
-    int *apomorphies;
+    charstate apomorphies;
 } node;
 
 typedef node **nodearray;
@@ -71,6 +75,7 @@ void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
 struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
+struct tree * copytree_II(tree *origtree, int ntax, int numnodes);
 void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
 void newring(node *r1);
 void deletering(node *r1);
@@ -102,6 +107,7 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], node
 
 /*in tree.c*/
 struct node * mfl_seek_internal(int ntax,int numnodes, node **nds);
+struct node * mfl_seek_ringnode(node *n, int ntax);
 void mfl_close_ring(node *n);
 void mfl_as_ring(node *n);
 void mfl_as_noring(node *n);
@@ -125,7 +131,7 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 /*in rearrange.c*/
 void mfl_bswap(node *p, node *q);
 void mfl_insert_branch(node *br, node *target);
-void mfl_nni_traversal(node *n, tree *currenttree, tree **treeset, int ntax, int numnodes, int *current);
+void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, int *current);
 void test_nni(int ntax, int numnodes);
 
 /*End function prototypes*/

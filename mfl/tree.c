@@ -64,6 +64,28 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
     }
 }
 
+struct node * mfl_seek_ringnode(node *n, int ntax)
+{
+    node *p;
+    bool rootnode = false;
+    
+    if (n->index == ntax) {
+        rootnode = true;
+    }
+    
+    if (!rootnode && !n->outedge) {
+        return n;
+    } else {
+        p = n->next;
+        while (p != n) {
+            if (!p->outedge) {
+                return p;
+            }
+            p = p->next;
+        }
+    }
+}
+
 void mfl_close_ring(node *n)
 {
     /* Makes sure there isn't a dangling next pointer*/
@@ -319,7 +341,7 @@ void mfl_set_index(node *n)
 {
     node *p;
     
-    printf("setting to index %i\n", n->index);
+    //printf("setting to index %i\n", n->index);
     
     if (n->next) {
         p = n->next;
