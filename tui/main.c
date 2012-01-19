@@ -55,6 +55,39 @@ void dump_nodearray(nodearray nds, int ntax, int numnodes)
     }
 }
 
+void dump_connections(nodearray nds, int ntax, int numnodes)
+{
+    int i, nbi;
+    node *p; 
+    
+    
+    for (i = 0; i < numnodes; ++i) {
+        //mfl_set_ring_to_n(nds[i]);
+        if (nds[i]->outedge) {
+            nbi = nds[i]->outedge->index;
+        }
+        else {
+            nbi = 999;
+        }
+
+        printf("Index: %i, tip: %i, OE index: %i\n", nds[i]->index, nds[i]->tip, nbi);
+        if (i >= ntax && nds[i]->next) {
+            p = nds[i]->next;
+            while (p != nds[i]) {
+                if (p->outedge) {
+                    nbi = p->outedge->index;
+                }
+                else {
+                    nbi = 999;
+                }
+                printf("In ring: index: %i, tip: %i, OE index %i\n", p->index, p->tip, nbi);
+                p = p->next;
+            }
+        }
+    }
+}
+
+
 void dump_tree(tree *t, int ntax, int numnodes)
 {
     printf("Tree %i:\n", t->index);
@@ -62,6 +95,15 @@ void dump_tree(tree *t, int ntax, int numnodes)
     dump_nodearray(t->trnodes, ntax, numnodes);
     printf("\n");
 }
+
+void dump_tree_connections(tree *t, int ntax, int numnodes)
+{
+    printf("Tree %i:\n", t->index);
+    printf("Root: %p\nLength: %i\n", t->root, t->length);
+    dump_connections(t->trnodes, ntax, numnodes);
+    printf("\n");
+}
+
 
 void close_all_rings(nodearray nds, int ntax, int numnodes)
 {
@@ -92,9 +134,11 @@ void joinNodes(node *n, node *p)
 {
     if (n->outedge) {
         n->outedge->outedge = NULL;
+        printf("terminating existing connection in n\n");
     }
     if (p->outedge) {
         p->outedge->outedge = NULL;
+        printf("terminating existing connection in p\n");
     }
     
     n->outedge = p;
@@ -255,94 +299,37 @@ void printNewick(node *n)
     printf(")");
 }
 
-void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount)
+
+
+void mfl_fitch_postorder(node *n, int *trlength)
 {
-    int i, j, k = 0;
-    char c;
+    node *p;
+    charstate ancstate;
+ 
     
-    /* Makes synapset of ancestor the intersection of set1 and set2
-     * if the set is non-null */
-    for (i = 0; leftdesc->apomorphies[i]; ++i) {
-        for (j = 0; rightdesc->apomorphies[j]; ++j) {
-            if (leftdesc->apomorphies[i] == rightdesc->apomorphies[j]) {
-                ancestor->apomorphies[k] = rightdesc->apomorphies[j];
-                ++k;
-                ancestor->apomorphies[k]= '\0';
-            }
+    if (n->tip) {
+        return;
+    }
+    
+    p = n->next;
+    ancstate = p->apomorphies;
+    while (p != n) {
+        mfl_fitch_postorder(n, trlength);
+        p = p->next;
+        if (ancstate & p->apomorphies) {
+            ancstate = ancstate & p->apomorphies;
         }
-    }
-    
-    /* Makes synapset of ancestor the union of set1 and set2 if 
-     * the intersection set is null */
-    if (k == 0) {
-        i = 0; 
-        j = 0;
-        
-        do {
-            c = leftdesc->apomorphies[i];
-            ancestor->apomorphies[i] = c;
-            ++i;
-        } while ( leftdesc->apomorphies[i] );
-        
-        while (rightdesc->apomorphies[j] ){
-            ancestor->apomorphies[i + j] = rightdesc->apomorphies[j];
-            ++j;
-        } 
-        
-        ancestor->apomorphies[i + j]= '\0';
-        
-        *stepcount = *stepcount + 1;
-    } 
-}
+        else 
+        {
+            ancstate = ancstate | p->apomorphies;
+            *trlength = *trlength + 1;
+        }
 
-void mfl_fitch_down(node *n, int *trlength)
-{
+    }
+    n->apomorphies = ancstate;
     
 }
 
-void treelen(node *n, int *stepcount)
-{   
-    node *p;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        treelen(p->outedge, stepcount);
-        printf("tip: %i; apomorphy: %p\n", p->outedge->tip, p->outedge->apomorphies);
-        p = p->next;
-    }
-    
-    fitchdown(n->next->outedge, n->next->next->outedge, n, stepcount);
-    printf("treelen returning\n");
-}
-
-void nacount(node *n, int *stepcount)
-{   
-    /* Will eventually become a function analogous to treelen but that checks 
-     * to see if a non-applicable score is used. In which case, it will skip 
-     * the call to fitchdown, and 'wait' to see if the next outgroup is 
-     * similarly sharing a non-applicable score before before generating the 
-     * synapset for the node. */
-    
-    node *p;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        nacount(p->outedge, stepcount);
-        printf("tip: %i; apomorphy: %p\n", p->outedge->tip, p->outedge->apomorphies);
-        p = p->next;
-    }
-    
-    fitchdown(n->next->outedge, n->next->next->outedge, n, stepcount);
-    printf("treelen returning\n");
-}
 
 void newring(node *r1)
 {
@@ -363,9 +350,39 @@ void newring(node *r1)
     r1->start = r2->start = r3->start = false;
     r1->dummy = r2->dummy = r3->dummy = false;
     
-    r1->apomorphies = r2->apomorphies = r3->apomorphies = (int*) malloc(sizeof(int));
+    r1->apomorphies = r2->apomorphies = r3->apomorphies = 0;
     r2->index = r1->index;
     r3->index = r1->index;
+}
+
+void newring_to_order(node *r1, int order)
+{
+    int i = 1;
+    node *p;
+    
+    if (order == 0 || order == 1) {
+        printf("Error in newring_to_order: no order specified or order too small\n");
+        return;
+    }
+    
+    p = r1;
+    do {
+        p->next = allocnode();
+        p = p->next;
+        p->tip = r1->tip;
+        p->start = r1->start;
+        p->index = r1->index;
+        p->apomorphies = r1->apomorphies;
+        ++i;
+    } while (i < order);
+    p->next = r1;
+    r1->order = i;
+    p = r1;
+    do {
+        p->order = r1->order;
+        p = p->next;
+    } while (p != r1);
+    p->order = r1->order;
 }
 
 /*
@@ -374,7 +391,7 @@ void newring(node *r1)
 void deletering(node *r1)
 {
     /* Note: apomorphies is only allocated once, r2 and r3 both point to the r1 apomorphies. */
-    free(r1->apomorphies);
+    //free(r1->apomorphies);
     
     node *p, *q;
     
@@ -412,11 +429,11 @@ void reIndex(node *n, int index_val)
     }
 }
 
-struct tree * copytree(tree *origtr, int ntax, int numnodes)
+/*struct tree * copytree(tree *origtr, int ntax, int numnodes)
 {
     int i, begin;
     tree *treecp; // Pointer to the tree copy
-    node *p, *q;
+    node *p, *q, *r;
     bool inring = false;
     
     treecp = alloc_noring(ntax, numnodes);
@@ -448,11 +465,18 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
             {
                 if (!q->next) {
                     q->next = allocnode();
+                    q->next->index = q->index;
                 }
                 
                 if (inring) {
                     if (!q->outedge) {
-                        joinNodes(q, treecp->trnodes[p->outedge->index]);
+                        r = treecp->trnodes[p->outedge->index];
+                        if (r->outedge) {
+                            do {
+                                r = r->next;
+                            } while (r->outedge);
+                        }
+                        joinNodes(q, r);   //For some reason, this call cuts off some existing conntionctions.
                     }
                 }
                 
@@ -462,15 +486,98 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
                 
                 if (p->next == origtr->trnodes[i] && inring) {
                     if (!q->outedge) {
-                        joinNodes(q, treecp->trnodes[p->outedge->index]);                    
+                        r = treecp->trnodes[p->outedge->index];
+                        if (r->outedge) {
+                            if (r->next) {
+                                while (r->next && r->outedge) {
+                                    r = r->next;
+                                }
+                            }
+                        }
+                        joinNodes(q, r);                    
                     }
                 }
                 
             } while (p->next != origtr->trnodes[i]);
             
             q->next = treecp->trnodes[i];
+            //mfl_set_index(treecp->trnodes[i]);
         }
     }
+    
+    //dump_tree_connections(origtr, ntax, numnodes);
+    //dump_tree_connections(treecp, ntax, numnodes);
+    return treecp;
+    
+}*/
+
+struct tree * copytree(tree *origtr, int ntax, int numnodes)
+{
+    int i, tmpltorder, begin;
+    tree *treecp; // Pointer to the tree copy
+    node *p, *q, *r;
+    bool isRooted = false;
+    
+    treecp = alloc_noring(ntax, numnodes);
+    
+    if (origtr->root)
+    {
+        mfl_set_order(origtr->trnodes[ntax]);
+        tmpltorder = origtr->trnodes[ntax]->order;
+        newring_to_order(treecp->trnodes[ntax], tmpltorder + 1);
+        treecp->trnodes[ntax]->order = treecp->trnodes[ntax]->order - 1;
+        treecp->root = treecp->trnodes[ntax];
+        isRooted = true;
+        begin = ntax;
+    }
+    else 
+    {
+        treecp->trnodes[0]->start = true;
+        begin = ntax + 1;
+    }
+    
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        mfl_set_order(origtr->trnodes[i]);
+        tmpltorder = origtr->trnodes[i]->order;
+        newring_to_order(treecp->trnodes[i], tmpltorder);
+    }
+    
+    // Add the tips first
+    for (i = begin; i < numnodes; ++i) {
+        p = origtr->trnodes[i];
+        q = treecp->trnodes[i];
+        if (p->next) {
+            if (p->order != q->order) {
+                printf("Error: template and copy have non-matching branch orders\n");
+            }
+            do {
+                if (p->outedge && p->outedge->tip) {
+                    joinNodes(q, treecp->trnodes[p->outedge->index]);
+                }
+                p = p->next;
+                q = q->next;
+            } while (p != origtr->trnodes[i] && q != treecp->trnodes[i]);
+        }
+    }
+    // Then connect the internal nodes to each other
+    for (i = begin; i < numnodes; ++i) {
+        p = origtr->trnodes[i];
+        q = treecp->trnodes[i];
+        if (p->next) {
+
+            do {
+                if (p->outedge && !q->outedge){
+                    r = mfl_seek_ringnode(treecp->trnodes[p->outedge->index], ntax);
+                    joinNodes(q, r);
+                }
+                p = p->next;
+                q = q->next;
+            } while (p != origtr->trnodes[i] && q != treecp->trnodes[i]);
+        }
+    }
+    //dump_tree_connections(origtr, ntax, numnodes);
+    //dump_tree_connections(treecp, ntax, numnodes);
     
     return treecp;
     
@@ -702,7 +809,7 @@ int main(void)
     tree *copiedtree;
     
     test_nni(ntax, numnodes);
-    testNWKreading();
+    //testNWKreading();
     
     /* This part is just for testing the collapseBiNode*/
     anewtree = randrooted(ntax, numnodes);
@@ -711,12 +818,18 @@ int main(void)
     printf("\n");
     //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
-    mfl_bswap(anewtree->trnodes[1], anewtree->trnodes[ntax + 2]);
-    printf("New tree: ");
+    copiedtree = copytree(anewtree, ntax, numnodes);
+    printf("A copied rooted tree: ");
+    printNewick(copiedtree->root);
+    printf("\n");
+    
+    mfl_bswap(anewtree->trnodes[1], anewtree->trnodes[2]);
+    printf("Original tree w swapped br: ");
     printNewick(anewtree->root);
     printf("\n");
     
     copiedtree = copytree(anewtree, ntax, numnodes);
+    printf("Copy with swapped branch: ");
     printNewick(copiedtree->root);
     printf("\n");
     
