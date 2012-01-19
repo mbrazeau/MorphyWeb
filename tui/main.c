@@ -814,21 +814,12 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    char usrTipdata[] = { '0', '0', '1', '1', '-', '-', '-', '-', '0', '0', '1', '1'};
+    int usrTipdata[] = { 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1};
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
     for (int i = 0; i < ntax; ++i) {
-        if (usrTipdata[i] == '?') {
-            morphyTipdata[i] = -1;
-        }
-        else if (usrTipdata[i] == '-') {
-            morphyTipdata[i] = 0;
-        }
-        else {
-            morphyTipdata[i] = 1 << usrTipdata[i];
-        }
-        
+        morphyTipdata[i] = 1 << usrTipdata[i];
         anewtree->trnodes[i]->apomorphies = morphyTipdata[i];
     }
     
