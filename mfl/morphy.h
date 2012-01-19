@@ -111,7 +111,9 @@ struct node * mfl_seek_ringnode(node *n, int ntax);
 void mfl_close_ring(node *n);
 void mfl_as_ring(node *n);
 void mfl_as_noring(node *n);
+void mfl_reindex_tree(nodearray nds, int ntax, int numnodes);
 void mfl_set_ring_to_n(node *n);
+void mfl_reset_ring(node *n);
 void mfl_collapse(node *n, nodearray nds);
 int mfl_determ_order(node *n);
 void mfl_set_order(node *n);
@@ -130,6 +132,7 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 
 /*in rearrange.c*/
 void mfl_bswap(node *p, node *q);
+struct node * mfl_remove_branch(node *n);
 void mfl_insert_branch(node *br, node *target);
 void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, int *current);
 void test_nni(int ntax, int numnodes);

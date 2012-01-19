@@ -84,6 +84,8 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
             p = p->next;
         }
     }
+    
+    return n;
 }
 
 void mfl_close_ring(node *n)
