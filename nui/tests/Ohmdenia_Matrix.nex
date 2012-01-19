@@ -1,0 +1,517 @@
+#NEXUS
+
+[ File saved by NDE version 0.5.0, Wed Jun 16 17:19:50 2010 ]
+
+BEGIN TAXA;
+	DIMENSIONS NTAX=28;
+	TAXLABELS
+		'Pteronisculus spp'
+		'Amia calva'
+		'Asthenocormus titanus'
+		'Australopachycormus hurleyi'
+		'Bonnerichthys gladius'
+		'Caturus spp'
+		'Discoserra pectinodon'
+		'Elops hawaiensis'
+		'Euthynotus spp'
+		'Hiodon alosoides'
+		'Hypsocormus insignis'
+		'Hypsocormus tenuirostris'
+		'Leedsichthys problematicus'
+		'Lepidotes spp'
+		'Lepisosteus platostomus'
+		'Macrepistius arenatus'
+		'Macrosemius rostratus'
+		'Martillichthys renwickae'
+		'Orthocormus spp'
+		'Pachycormus spp'
+		'Pholidophorus bechei'
+		'Protosphyraena spp'
+		'Rhinconichthys taylori'
+		'Semionotus elegans'
+		'Watsonulus eugnathoides'
+		'Oolite pachycormid'
+		'Saurostomus esocinus'
+		'Ohmdenia multidentata'
+		;
+ENDBLOCK;
+
+BEGIN CHARACTERS;
+	DIMENSIONS NCHAR=95;
+	FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="012345";
+	CHARLABELS
+		[1] 'Opisthotic [CS, H]'
+		[2] 'Pterotic [H]'
+		[3] 'Pterotic fused with dermopterotic [GML, H]'
+		[4] 'Epioccipital [GML, H]'
+		[5] 'Intercalar [P73, CS, H]'
+		[6] 'Membranous outgrowths of intercalar [GML, H]'
+		[7] 'Vagal foramen [GML, CS, H]'
+		[8] 'Lateral cranial canal [C]'
+		[9] 'Subtemporal fossa [GS, H]'
+		[10] 'Anterior myodome [P77, GML, A, C, CS, H]'
+		[11] 'Posterior myodome [P73, P77, GS, GML, C, CS, H]'
+		[12] 'Cranial fissures [PR, G, H]'
+		[13] 'Relationship of dorsal aorta to basicranial region [GML, A, C, H]'
+		[14] 'Lateral commissure breadth [H]'
+		[15] 'Posttemporal fossa and fossa Bridgei [P73, P77, GS, GML, CS, H]'
+		[16] 'Spiracular canal [P77, P82, GS, A, H]'
+		[17] 'Vomer(s) [P73, P77]'
+		[18] 'Parashenoid corpus in sphenethmoid region'
+		[19] 'Parasphenoid dentition [A]'
+		[20] 'Basipterygoid process [P73, GS, GML, H]'
+		[21] 'Internal carotid foramen through parasphenoid [P77, GML, H]'
+		[22] 'Efferent pseudobranchial foramina through parasphenoid [P77, GML, H]'
+		[23] 'Rostral bone [GML, L, H]'
+		[24] 'Rostrodermethmoid [M, L, Li]'
+		[25] 'Marginal teeth on rostrodermethmoid'
+		[26] 'Paramedial fangs on rostrodermethmoid [M, L, Li]'
+		[27] 'Parietals [A]'
+		[28] 'Posterior boss on skull roof [M, L, Li]'
+		[29] 'Posterior margin of skull roof'
+		[30] 'Slender posterior processes of dermopterotics'
+		[31] 'Dermosphenotic [P73, GML, H]'
+		[32] 'Demosphenotic forms dorsal margin of orbit [M, L, Li]'
+		[33] 'Supraorbitals [H]'
+		[34] 'Anterior supraorbitals meet infraorbitals [GML, H]'
+		[35] 'Suborbitals [P73, CS]'
+		[36] 'Suborbital size [M, L, Li]'
+		[37] 'Suborbital number [M, L, CS, Li, H]'
+		[38] 'Antorbital shape [H]'
+		[39] 'Infraorbitals behind orbit [L, Li]'
+		[40] 'Infraorbitals anterior to circumorbital ring [OM, CS, H]'
+		[41] 'Posteriorly extensive infraorbital'
+		[42] 'Preoperculum [OM, L, H]'
+		[43] 'Marginal dentition'
+		[44] 'Carinae extending length of teeth'
+		[45] 'Midline contact of premaxillae [L, Li]'
+		[46] 'Form of premaxillary dentition [L, Li]'
+		[47] 'Mobile premaxilla [P73, P77, GS, GML, CS, H]'
+		[48] 'Grooved, notched or perforated premaxillary ascending process [P73, GS, GML, CS, H]'
+		[49] 'Maxilla [P73, GS, GML, H]'
+		[50] 'Maxilla length [GML, L, CS, H]'
+		[51] 'Posterior margin of maxilla [GML, L, CS, H]'
+		[52] 'Thickened ridge on external surface of maxilla'
+		[53] 'Supramaxilla [P73, GS, GML, A, CS, H]'
+		[54] 'Supramaxilla position [L, Li]'
+		[55] 'Quadratojugal [P73, P77, GML, CS, H]'
+		[56] 'Symplectic articulation [P73, OM, GML, CS, H]'
+		[57] 'Position of jaw joint [M, L, A, CS, Li, ]'
+		[58] 'Quadrate with elongate posteroventral process [A, CS, H]'
+		[59] 'Dentary tooth row(s) [M, L, Li]'
+		[60] 'Form of anterior dentary dentition [M, L, Li]'
+		[61] 'Surangular in lower jaw [P77, PR, P82, GS, H]'
+		[62] 'Anterior coronoid plate [M]'
+		[63] 'Prearticular [P77, PR]'
+		[64] 'Prearticular dentition'
+		[65] 'Exposed dorsal projection of suboperculum between preoperculum and operculum'
+		[66] 'Hypohyal [P77]'
+		[67] 'Anterior ceratohyal [GML, H]'
+		[68] 'Gulars [L, A, GML, C, CS, H]'
+		[69] 'Epibranchials [P73, GS, GML, H]'
+		[70] 'Relative position of dorsal and anal fins [M, L, Li]'
+		[71] 'Caudal fin segmentation [L, Li]'
+		[72] 'Ossified vertebrae [L, Li]'
+		[73] 'Lateral keels of caudal peduncle (greatly expanded urodermals) [L]'
+		[74] 'Uroneurals [P73, P77, GML, A, CS, H]'
+		[75] 'Hypural plate [L, Li]'
+		[76] 'Shape of hypural plate'
+		[77] 'Main hypural plate notched posterodorsally (incomplete fusion with accessory hypurals)'
+		[78] 'Uppermost hypaxial-caudal rays [P73, GML, H]'
+		[79] 'Clavicle [P73, GML, L, H]'
+		[80] 'Clavicle morphology [P73, GML, L, H]'
+		[81] 'One or more accessory postcleithra [A, H]'
+		[82] 'Endoskeletal shoulder ossification reduced to mesocoracoid arch [OM, CS, H]'
+		[83] 'Pectoral propterygium [P77, P82, CS]'
+		[84] 'Pectoral-fin radial morphology'
+		[85] 'Scythe-like pectoral fins with lepidotrichia only segmented distally (if segments present) [M, L, Li]'
+		[86] 'Complete fusion of fin rays along length of leading edge of pectoral fin'
+		[87] 'Bifurcations in pectoral-fin rays'
+		[88] 'Asymmetrical ''Y''-type bifurcations in pectoral-fin lepidotrichia [L, Li]'
+		[89] 'Segmentation of pectoral-fin rays'
+		[90] 'Pelvic fins [M, L, Li]'
+		[91] 'Pelvic fin position'
+		[92] 'Ridge scales [GML, CS, H]'
+		[93] 'Scale morphology [P73, P77, PR]'
+		[94] Scales
+		[95] 'Fine spine-like ornament on dermal bones'
+		;
+	STATELABELS
+		1
+			Present.
+			Absent.,
+		2
+			Present.
+			Absent.,
+		3
+			Absent.
+			Present.,
+		4
+			'Epioccipital bordered anteriorly by cranial fissure.'
+			'Epioccipital contacts otic region.',
+		5
+			Present.
+			Absent.,
+		6
+			Mino¨
+			'Extensive and medial to jugular.'
+			'Extensive and lateral to jugular.',
+		7
+			'Anterior to exoccipital.'
+			'Lateral outgrowths from intercalar form posterior margin.'
+			'Ventral outgrowths from intercalar lateral margin enclose dorsal margin.'
+			'Enclosed by exoccipital.',
+		8
+			Present.
+			Absent.,
+		9
+			Absent.
+			Present.,
+		10
+			Present.
+			Absent.,
+		11
+			'Intramural, lined by endoskeletal floor.'
+			'With incompletely ossified (fenestrate) floor.'
+			Absent.,
+		12
+			'Ventral otic and otico-occipital fissure confluent via vestibular fontanelle.'
+			'Fissures non-persistent (closed), or pattern obscured by incomplete ossification.',
+		13
+			'Enclosed in an endoskskelatal canal.'
+			'Pronounced aortic groove.'
+			'Accommodated in a shallow depression in ventral midline of basioccipital.'
+			'Enclosed in parabasal canal between parasphenoid and basioccipital.',
+		14
+			'Anteroposteriorly broad.'
+			Slender.,
+		15
+			'Posttemporal fossa absent, fossa Bridgei rudimentary.'
+			'Posttemporal fossa small, fossa Bridgei discrete.'
+			'Posttemporal fossa large, fossa Bridgei discrete.'
+			'Posttemporal fossa communicates with fossa Bridgei.',
+		16
+			Present.
+			Absent.,
+		17
+			Paired.
+			'Unpaired (median).',
+		18
+			Narrow.
+			Broad.,
+		19
+			Present.
+			Absent.,
+		20
+			'Well-developed dermal process with endoskeletal component.'
+			'Basipterygoid process absent.',
+		21
+			Absent.
+			Present.,
+		22
+			'Absent. '
+			'Present. ',
+		23
+			'Cap on snout apex partially or wholly separating the nasals. '
+			'Of moderate to narrow size. '
+			'Reduced to a narrow tube with lateral process. '
+			'Composite ossification (rostrodermethmoid).',
+		24
+			'Terminates at anterior tip of mandibular symphysis.'
+			'Forms a produced rostrum, extending anterior to mandibular symphysis.',
+		25
+			Present.
+			Absent.,
+		26
+			Absent.
+			Present.,
+		27
+			Paired.
+			'Single midline ossification.',
+		28
+			Absent.
+			Present.,
+		29
+			'Straight or concave.'
+			'''W''-shaped.',
+		30
+			Absent.
+			Present.,
+		31
+			'Hinged to skull roof. '
+			'Bound or fused to anterior margin of sphenotic. ',
+		32
+			No.
+			Yes.,
+		33
+			'Absent. '
+			'Present. ',
+		34
+			'Absent. '
+			'Present. ',
+		35
+			Present.
+			Absent.,
+		36
+			'Equal in size or smaller than adjacent infraorbital(s).'
+			'Much larger than adjacent infraorbital(s).',
+		37
+			Two.
+			Single.
+			'Numerous bones.',
+		38
+			'Platelike, with minimal (if any) distinct anterior process. '
+			'Tapering towards slender anterior process; tri-radiate canal with broader, posterior portion. '
+			'Tubular. ',
+		39
+			'Six or fewer.'
+			'More than six.',
+		40
+			'Absent. '
+			'Present. ',
+		41
+			Present.
+			Absent.,
+		42
+			'With broad dorsal margin.'
+			'With narrow ascending limb.',
+		43
+			Present.
+			Absent.,
+		44
+			Absent.
+			Present.,
+		45
+			Present.
+			Absent.,
+		46
+			'Similar to maxillary teeth.'
+			'Enlarged relative to maxillary teeth.',
+		47
+			'Absent. '
+			'Present. ',
+		48
+			'Absent. '
+			Present.,
+		49
+			'Fixed to cheek. '
+			'Free. ',
+		50
+			'Long, extends beneath mid-orbit.'
+			Short.,
+		51
+			'Straight or convex.'
+			Indented.,
+		52
+			Absent.
+			Present.,
+		53
+			'Absent. '
+			'Present. ',
+		54
+			'Dorsal to maxilla.'
+			'Posterodorsal to maxilla.',
+		55
+			'Platelike, lateral to quadrate. '
+			'Splintlike, free along posterior border of quadrate. '
+			'Fused to quadrate. '
+			'Absent. ',
+		56
+			'On inner, medial surface of quadrate. '
+			'Behind quadrate, in loose contact with preoperculum. '
+			'Behind quadrate, with articular connection to lower jaw, may be bound to preoperculum with membrane bone. ',
+		57
+			'Well behind orbit.'
+			'Below or anterior to orbit.',
+		58
+			'Absent. '
+			'Present. ',
+		59
+			'Labial row plus lingual row.'
+			'Single row.',
+		60
+			'Similar to posterior teeth. '
+			'Enlarged, procumbent fangs. ',
+		61
+			'Present. '
+			'Absent. ',
+		62
+			'Not inflated.'
+			Inflated.,
+		63
+			Present.
+			Absent.,
+		64
+			Present.
+			Absent.,
+		65
+			Absent.
+			Present.,
+		66
+			'Single ossification.'
+			'Separate dorsal and ventral ossifications.',
+		67
+			'Long, relatively straight, same depth as posterior element. '
+			'Long, gently curved with very small posterior element. '
+			'Short and deep posteriorly. '
+			'With constricted shaft; hourglass-shaped in lateral view. ',
+		68
+			'Present. '
+			'Absent. ',
+		69
+			'Slender. '
+			'With uncinate processes. ',
+		70
+			'Overlap between dorsal- and anal-fin bases.'
+			'Dorsal-fin base lies anterior to anal-fin base.',
+		71
+			Segmented.
+			Unsegmented.,
+		72
+			Absent.
+			Present.,
+		73
+			Absent.
+			Present.,
+		74
+			'Absent. '
+			'Present. ',
+		75
+			Absent.
+			Present.,
+		76
+			Rhomboidal.
+			Oval.,
+		77
+			Present.
+			Absent.,
+		78
+			'Fin rays successively shorter from bottom to top. '
+			'Bundle of enlongate fin ray bases extending over several hypurals. '
+			'Dorsal and ventral fin-ray bases symmetrical. '
+			'Fin-rays one-to-one on hypurals. ',
+		79
+			Present.
+			Absent.,
+		80
+			'Large, caps anterior end of cleithrum. '
+			'Toothed plates on postbranchial lamina of cleithrum. '
+			'Clavicle reduced, often with a single row of denticles. '
+			'Serrated organ (with 12 or more ridges of denticles lateral to cleithrum). ',
+		81
+			'Absent. '
+			'Present. ',
+		82
+			'Absent. '
+			'Present. ',
+		83
+			Free.
+			'Fused to first pectoral-fin ray.',
+		84
+			Cylindrical.
+			'Broad distal area and narrow proximal stalk (paddle-shaped).',
+		85
+			Absent.
+			Present.,
+		86
+			Absent.
+			Present.,
+		87
+			Present.
+			Absent.,
+		88
+			Absent.
+			Present.,
+		89
+			Present.
+			Absent.,
+		90
+			Present.
+			Absent.,
+		91
+			'At or posterior to midpoint between anal and pectoral fins.'
+			'Anterior to midpoint between anal and pectoral fins.',
+		92
+			'Absent. '
+			'Present. ',
+		93
+			Rhombic.
+			Round.,
+		94
+			Present.
+			Absent.,
+		95
+			Absent
+			Present,
+	;
+	MATRIX
+		'Pteronisculus spp'              0000000000 0000000000 000---0000 000-000000 0000000000 000-0-0000 0000000000 00000--000 0000000000 0000?
+		'Amia calva'                     11-1012100 1120200001 001---0000 100-1--100 0100000110 1010320010 0000101000 01000--303 0000000000 0010?
+		'Asthenocormus titanus'          ?????????? ?????????? ??30--0010 ??0-?????? ??1-?-??10 0?0-??1?-- ????0?00?? 10??1112?? ????100111 -0-1?
+		'Australopachycormus hurleyi'    00??0????? ?????????? ??3111100? ?????????? ??011100?? 0???????11 ?1???????? 10?????2?? ????1?1-1? ?????
+		'Bonnerichthys gladius'          000?0????? ??11??0111 1030--???1 010-???0?? ??1---0-10 010-3?00-- ??010?000? ?0??111?1- ?0?111011? ???1?
+		'Caturus spp'                    11-1012010 11212?0001 002---0001 100-010100 1100000110 1010320010 0000101010 01000--103 1000000000 0000?
+		'Discoserra pectinodon'          00?100(02)??? 01?1(23)0???1 0?0---00?0 0010002?00 1100000001 000-31-010 ????-?30?0 00000--01- 0???00?000 0100?
+		'Elops hawaiensis'               1011023111 112131???1 100---0000 00101--200 0100001010 00103011?0 1-1-010011 01010?-11- 10??00?0?0 0010?
+		'Euthynotus spp'                 ?????????? ???????0?? ??3000?10? 010-0100?0 1100-0--10 0011300?10 ????0????0 010110021- 1???100110 1000?
+		'Hiodon alosoides'               1011023110 1111311001 110---0000 000-1---00 0100001010 000-301110 1-1-013110 01010--11- 0010000000 00100
+		'Hypsocormus insignis'           ?????????? ??????0??? ??3000?1?0 ??0-010?1? 1100100?10 0?11??0?00 ????0??0?0 00111002?? ????100110 10001
+		'Hypsocormus tenuirostris'       ?????????? ??????0001 ??3101?100 ????0????? ?100110010 0011??0?01 0100?????? 00??1002?? ??1?10???? ??001
+		'Leedsichthys problematicus'     ?????????? ??2????11? ????--???? ?????????? ??1-?-??1? ????????-- ?????0?00? 10?????2?? ???110011? ???10
+		'Lepidotes spp'                  11-11?301? 1111(23)?0010 002---0000 0011012101 1100000111 001011-010 ?0001?0110 00000--?02 1?00000000 01001
+		'Lepisosteus platostomus'        11-11?3001 2120000000 001---0000 0011002101 1100000101 000-11-000 0000100100 01000--101 110?000000 00000
+		'Macrepistius arenatus'          0011012?10 11?12??011 002---0000 1010002?00 1100000?10 1010??1??0 ??001?10?0 0100??-??? 1??0?????? ?0000
+		'Macrosemius rostratus'          1001??30?? 112???0010 01?---0000 000-1--201 1100000111 000-2?-010 0000102110 01000--002 1?00000000 00000
+		'Martillichthys renwickae'       ?????????? ???????11? ??30--0010 010-?????? ?11-?-??10 010-3010-- 0001?00000 10?????2?? ????10011? ?0-10
+		'Orthocormus spp'                0???0?1??1 ?0?1??00?? ??311111?? 010-0100?0 1100110010 0011??0?01 ??????0??0 0011???21- 101?1001(01)0 10001
+		'Pachycormus spp'                00000?1011 1011300001 1030000100 010-010010 1100100010 001?300010 0000000001 0{01}1110021- 101110?101 -0001
+		'Pholidophorus bechei'           0010000010 1011101000 110---0-00 0010011000 0100001010 0010301110 0?0?00?0?1 01010--11- 0?1?000000 00000
+		'Protosphyraena spp'             00000?1?1? ?0113?0001 1031111101 010-01?0?0 ??01110010 0?0-300001 0100?0?0?? 10?110(01)21- ?011111-10 10?11
+		'Rhinconichthys taylori'         ?00?????1? 1?213?01?1 ????--0011 ?????????? ??1-?-??10 010-??0?-- ??0??0000? ?0???????? ?????????? ????0
+		'Semionotus elegans'             11-11?3??? 1?2???0000 00?---0000 0011011101 1100000111 001011-010 0000100110 00000--002 11??000000 01000
+		'Watsonulus eugnathoides'        00?00000?0 1021100000 002---0000 10111--100 1000000110 1010320010 00001000?0 01000--100 10??00?000 00000
+		'Oolite pachycormid'             ?????????? ?????????? ??30--???? ?????????? ??1-?????0 ?????????? ??0????0?? ?????????? ?????????? ????0
+		'Saurostomus esocinus'           ?????????? ???????1?1 ??3000?0?1 ????010??? ?1001???10 0011??0??0 00??0??0?0 00??11021- 1??1100111 -0001
+		'Ohmdenia multidentata'          ?????????? ?????????? ?????????? ?????????? ?100?????? ???????0?0 00??????0? 00?????21- ???1100111 ---1?
+	;
+ENDBLOCK;
+
+BEGIN ASSUMPTIONS;
+	OPTIONS DEFTYPE=UNORD POLYTCOUNT=MINSTEPS;
+ENDBLOCK;
+
+BEGIN NOTES;
+	[Taxon comments]
+
+	[Character comments]
+
+	[Character state comments]
+
+	[Attribute comments]
+	TEXT TAXON=3 CHARACTER=67 TEXT='Check this character.';
+	TEXT TAXON=4 CHARACTER=78 TEXT='Based on BMNH specimen.';
+	TEXT TAXON=6 CHARACTER=81 TEXT='Changed from ''?''.';
+	TEXT TAXON=6 CHARACTER=82 TEXT='Changed from ''?''.';
+	TEXT TAXON=7 CHARACTER=49 TEXT='Changed from 0+2.';
+	TEXT TAXON=9 CHARACTER=28 TEXT='Changed coding from ''0'' on basis of AMNH specimen.';
+	TEXT TAXON=11 CHARACTER=26 TEXT='Changed from Friedman et al. (2010).';
+	TEXT TAXON=11 CHARACTER=27 TEXT='CHANGED!!!!!';
+	TEXT TAXON=12 CHARACTER=46 TEXT='This difference is quite subtle.';
+	TEXT TAXON=12 CHARACTER=62 TEXT='Changed from Friedman et al. 2010.';
+	TEXT TAXON=12 CHARACTER=86 TEXT='First few rays are fused.';
+	TEXT TAXON=17 CHARACTER=72 TEXT='Not clear if perichordal or chordal.';
+	TEXT TAXON=20 CHARACTER=38 TEXT='Changed from 0+2.';
+	TEXT TAXON=20 CHARACTER=89 TEXT='Check Manwaring et al.';
+	TEXT TAXON=21 CHARACTER=23 TEXT='CORRECTED!';
+	TEXT TAXON=23 CHARACTER=67 TEXT='Check this character.';
+	TEXT TAXON=25 CHARACTER=72 TEXT='Check to make sure these are not just arches.';
+
+	[Taxon pictures]
+
+	[Character pictures]
+
+	[Character state pictures]
+
+	[Attribute pictures]
+ENDBLOCK;
+
