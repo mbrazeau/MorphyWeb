@@ -7,7 +7,6 @@
  *
  */
 
-#include <ctype.h>
 #include "morphy.h"
 
 struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, 
@@ -18,7 +17,7 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes,
     char tipbuf[10];
     node *n, *nlst, *p;
     
-    n = mfl_seek_internal(ntax - 1, nds);
+    n = mfl_seek_internal(ntax - 1, numnodes, nds);
     n->initialized = 1;
     nlst = n;
     
@@ -163,7 +162,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 	numnodes_a = 2 * numtaxa - 1;
 	
 	newtree = alloc_noring(numtaxa, numnodes_a);
-    mfl_deinit_tree(newtree);
+    mfl_deinit_tree(newtree, numnodes_a);
 	
     i = 0;
     position = &i;
