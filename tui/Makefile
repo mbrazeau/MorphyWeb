@@ -1,3 +1,5 @@
+TUIEXE=$(ODIR)/morphy
+INCLUDEDIRS =. ../mfl
 include ../Makefile.inc
 
 _OBJ = main.o randtree.o
@@ -10,7 +12,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) -g
 
 $(TUIEXE): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+	gcc -o $@ $^ $(CFLAGS) $(LIBS) ../mfl/$(MFLLIB)
 
 .PHONY: clean
 

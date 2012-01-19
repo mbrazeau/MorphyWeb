@@ -802,6 +802,7 @@ int main(void)
     int ntax = 12, treelength = 0;
     int numnodes;
     bool isRooted = true;
+    int i;
     
     numnodes = numberOfNodes(ntax);
     
@@ -818,7 +819,7 @@ int main(void)
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
-    for (int i = 0; i < ntax; ++i) {
+    for (i = 0; i < ntax; ++i) {
         morphyTipdata[i] = 1 << usrTipdata[i];
         anewtree->trnodes[i]->apomorphies = morphyTipdata[i];
     }

@@ -1,30 +1,18 @@
-IDIR =.
-CC=gcc
-CFLAGS=-I$(IDIR) -Wall
+include ../Makefile.inc
 
-ODIR=obj
-LDIR =.
-
-LIBS=-lm
-EXE=morphy
-
-_DEPS = morphy.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-_OBJ = main.o randtree.o taxpart.o
+_OBJ = rearrange.o taxpart.o tree.o readnewick.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-all: $(EXE)
+all: $(MFLLIB)
 
 $(ODIR)/%.o: %.c $(DEPS)
-	-@mkdir -p obj
+	-@mkdir -p $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS) -g
 
-$(EXE): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+$(MFLLIB): $(OBJ)
+	$(AR) rcs $@ $^
 
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(EXE)
-
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(MFLLIB)

@@ -1,4 +1,4 @@
-SUBDIRS = mfl tui
+SUBDIRS = mfl tui nui
 
 all: $(SUBDIRS)
 
