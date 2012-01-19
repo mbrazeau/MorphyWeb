@@ -312,19 +312,17 @@ void mfl_fitch_postorder(node *n, int *trlength)
     }
     
     p = n->next;
-    ancstate = p->apomorphies;
     while (p != n) {
-        mfl_fitch_postorder(n, trlength);
+        mfl_fitch_postorder(p->outedge, trlength);
         p = p->next;
-        if (ancstate & p->apomorphies) {
-            ancstate = ancstate & p->apomorphies;
-        }
-        else 
-        {
-            ancstate = ancstate | p->apomorphies;
-            *trlength = *trlength + 1;
-        }
-
+    }
+    if (n->next->outedge->apomorphies & n->next->next->outedge->apomorphies) {
+        ancstate = n->next->outedge->apomorphies & n->next->next->outedge->apomorphies;
+    }
+    else 
+    {
+        ancstate = n->next->outedge->apomorphies | n->next->next->outedge->apomorphies;
+        *trlength = *trlength + 1;
     }
     n->apomorphies = ancstate;
     
@@ -562,6 +560,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
             } while (p != origtr->trnodes[i] && q != treecp->trnodes[i]);
         }
     }
+    
     // Then connect the internal nodes to each other
     for (i = begin; i < numnodes; ++i) {
         p = origtr->trnodes[i];
@@ -800,84 +799,44 @@ void testNWKreading(void)
 int main(void)
 {
     
-    int ntax = 5;
+    int ntax = 12, treelength = 0;
     int numnodes;
+    bool isRooted = true;
     
     numnodes = numberOfNodes(ntax);
     
     numberOfNodes(ntax);
     tree *anewtree;
-    tree *originaltree;
-    tree *copiedtree;
     
-    test_nni(ntax, numnodes);
-    //testNWKreading();
+    char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
-    /* This part is just for testing the collapseBiNode*/
-    anewtree = randrooted(ntax, numnodes);
-    printf("New tree: ");
-    printNewick(anewtree->root);
-    printf("\n");
-    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
-    
-    copiedtree = copytree(anewtree, ntax, numnodes);
-    printf("A copied rooted tree: ");
-    printNewick(copiedtree->root);
-    printf("\n");
-    
-    mfl_bswap(anewtree->trnodes[1], anewtree->trnodes[2]);
-    printf("Original tree w swapped br: ");
+    anewtree = readNWK(aNewickTree, isRooted);
     printNewick(anewtree->root);
     printf("\n");
     
-    copiedtree = copytree(anewtree, ntax, numnodes);
-    printf("Copy with swapped branch: ");
-    printNewick(copiedtree->root);
-    printf("\n");
+    char usrTipdata[] = { '0', '0', '1', '1', '-', '-', '-', '-', '0', '0', '1', '1'};
     
-    freetree(copiedtree, numnodes);
+    charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
-    mfl_collapse(anewtree->trnodes[ntax + 1], anewtree->trnodes); // Magic number just for testing
-    printf("With collapsed node: ");
-    printNewick(anewtree->root);
-    printf("\n");    
-    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
+    for (int i = 0; i < ntax; ++i) {
+        if (usrTipdata[i] == '?') {
+            morphyTipdata[i] = -1;
+        }
+        else if (usrTipdata[i] == '-') {
+            morphyTipdata[i] = 0;
+        }
+        else {
+            morphyTipdata[i] = 1 << usrTipdata[i];
+        }
+        
+        anewtree->trnodes[i]->apomorphies = morphyTipdata[i];
+    }
     
-    copiedtree = copytree(anewtree, ntax, numnodes);
-    //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
-    printf("Copying with collapsed node: ");
-    printNewick(copiedtree->root);
-    printf("\n");
+    int *treelength_p = &treelength;
     
-    freetree(copiedtree, numnodes);
+    mfl_fitch_postorder(anewtree->root, treelength_p);
     
-    mfl_arb_resolve(anewtree->trnodes[ntax], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
-    printf("With resolved node: ");
-    printNewick(anewtree->root);
-    printf("\n");
-    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
-    
-    copiedtree = copytree(anewtree, ntax, numnodes);
-    //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
-    printf("Copying with resolved node: ");
-    printNewick(copiedtree->root);
-    printf("\n");
-    
-    freetree(anewtree, numnodes);
-    freetree(copiedtree, numnodes);
-    
-    originaltree = randunrooted(ntax, numnodes);
-    printf("unrooted test: ");
-    printNewick(originaltree->trnodes[0]);
-    printf("\n");
-    
-    copiedtree = copytree(originaltree, ntax, numnodes);
-    printf("Copying of unrooted tree: ");
-    printNewick(copiedtree->trnodes[0]);
-    printf("\n");
-    
-    freetree(originaltree, numnodes);
-    freetree(copiedtree, numnodes);
+    printf("The length of the tree: %i\n", *treelength_p);
     
     return 0;
 }

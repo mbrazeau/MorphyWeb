@@ -57,7 +57,7 @@ struct tree *randrooted (int ntax, int numnodes)
     tree *randtree;
     randtree = randunrooted(ntax, numnodes);
     randtree->trnodes[0]->start = false;
-    rootOnTerminal(randtree, 1, ntax);    // The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
+    mfl_root_tree(randtree, 1, ntax);    // The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
     
     return (randtree);
 }
