@@ -538,9 +538,11 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     
     
     for (i = ntax + 1; i < numnodes; ++i) {
-        mfl_set_order(origtr->trnodes[i]);
-        tmpltorder = origtr->trnodes[i]->order;
-        newring_to_order(treecp->trnodes[i], tmpltorder);
+        if (origtr->trnodes[i]->next) {
+            mfl_set_order(origtr->trnodes[i]);
+            tmpltorder = origtr->trnodes[i]->order;
+            newring_to_order(treecp->trnodes[i], tmpltorder);
+        }
     }
     
     // Add the tips first
