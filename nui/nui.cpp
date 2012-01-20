@@ -1,4 +1,4 @@
-#include "ncl.h"
+#include "ncl/ncl.h"
 
 class MyReader : public NxsReader
     {
