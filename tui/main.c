@@ -316,6 +316,7 @@ void mfl_fitch_postorder(node *n, int *trlength)
         mfl_fitch_postorder(p->outedge, trlength);
         p = p->next;
     }
+    
     if (n->next->outedge->apomorphies & n->next->next->outedge->apomorphies) 
     {
         ancstate = n->next->outedge->apomorphies & n->next->next->outedge->apomorphies;
@@ -772,6 +773,70 @@ void rand_tree (int ntax, int numnodes)
     
 }
 
+void mini_test_analysis(void)
+{
+    
+    int i, j = 0;
+    int ntax = 12, nchar = 12, treelength = 0;
+    int numnodes;
+    bool isRooted = true;
+    
+    numnodes = numberOfNodes(ntax);
+    
+    numberOfNodes(ntax);
+    tree *anewtree;
+    
+    char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
+    
+    anewtree = readNWK(aNewickTree, isRooted);
+    printNewick(anewtree->root);
+    printf("\n");
+    
+    char usrTipdata[] = {   '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
+                            '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
+                            '0', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
+                            '0', '0', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
+                            '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '1',
+                            '0', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '1',
+                            '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '0',
+                            '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '0',
+                            '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '0',
+                            '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '0',
+                            '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '0',
+                            '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '0',};
+    
+    printf("User tip data:\n");
+    for (i = 0; i < ntax; ++i) {
+        for (j = 0; j < nchar; ++j) {
+            printf("%c", usrTipdata[j + i * nchar]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    
+    charstate *morphyTipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
+    
+    int *treelength_p = &treelength;
+    
+    for (i = 0; i < nchar; ++i) {
+        for (j = 0; j < ntax; ++j) {
+            if (usrTipdata[i + j * nchar] == '?') {
+                morphyTipdata[i + j * nchar] = -1;
+            }
+            else if (usrTipdata[i + j * nchar] == '-') {
+                morphyTipdata[i + j * nchar] = 1;
+            }
+            else {
+                morphyTipdata[i + j * nchar] = 1 << (usrTipdata[i + j * nchar] - '0' + 1);
+            }
+            anewtree->trnodes[j]->apomorphies = morphyTipdata[i + j * nchar]; // Normally, this would be done separately of the conversion
+        }
+        mfl_fitch_postorder(anewtree->root, treelength_p);
+    }
+    
+    printf("The length of the tree: %i\n", *treelength_p);
+}
+
 void testNWKreading(void)
 {
     bool isRooted = true;    
@@ -803,53 +868,18 @@ void testNWKreading(void)
 
 int main(void)
 {
-    int i;
-    int ntax = 12, treelength = 0;
+    int ntax = 12;
     int numnodes;
-    bool isRooted = true;
+    //bool isRooted = true;
     
     numnodes = numberOfNodes(ntax);
     
     numberOfNodes(ntax);
-    tree *anewtree;
-    
-    char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
-    
-    anewtree = readNWK(aNewickTree, isRooted);
-    printNewick(anewtree->root);
-    printf("\n");
-    
-    char usrTipdata[] = { '0', '0', '1', '1', '-', '-', '-', '-', '0', '0', '1', '1'};
-    printf("User tip data:");
-    for (i = 0; i < ntax; ++i) {
-        printf(" %c", usrTipdata[i]);
-    }
-    printf("\n");
-    
-    charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
-    
-    for (i = 0; i < ntax; ++i) {
-        if (usrTipdata[i] == '?') {
-            morphyTipdata[i] = -1;
-        }
-        else if (usrTipdata[i] == '-') {
-            morphyTipdata[i] = 1;
-        }
-        else {
-            morphyTipdata[i] = 1 << (usrTipdata[i] - '0' + 1);
-        }
-        
-        anewtree->trnodes[i]->apomorphies = morphyTipdata[i];
-    }
-    
-    int *treelength_p = &treelength;
-    
-    mfl_fitch_postorder(anewtree->root, treelength_p);
-    
-    printf("The length of the tree: %i\n", *treelength_p);
-    
+    tree *anewtree;    
     tree *originaltree;
     tree *copiedtree;
+    
+    mini_test_analysis();
     
     test_nni(ntax, numnodes);
     //testNWKreading();
