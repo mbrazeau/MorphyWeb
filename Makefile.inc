@@ -8,7 +8,7 @@ CFLAGS     += $(patsubst %,-I%,$(INCLUDEDIRS)) -Wall -g
 MFLLIB      = $(ODIR)/libmfl.a
 ifndef VERBOSE
 SILENT=@
-NICEOUTPUT=@echo Building $(notdir $(CURDIR))/$@
+NICEOUTPUT=@echo "  Building $(notdir $(CURDIR))/$@"
 endif
 
 all: $(OUTEXE) $(OUTLIB)
