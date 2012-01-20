@@ -11,7 +11,7 @@ SILENT=@
 NICEOUTPUT=@echo Building $(notdir $(CURDIR))/$@
 endif
 
-all: $(OUTEXE)
+all: $(OUTEXE) $(OUTLIB)
 
 $(ODIR)/%.o: %.cpp $(DEPS)
 	-@mkdir -p $(ODIR)
@@ -23,9 +23,17 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(SILENT)$(CC) -c -o $@ $< $(CFLAGS)
 	$(NICEOUTPUT)
 
+$(OUTLIB): $(OBJECTS)
+	$(SILENT)$(AR) rcs $@ $^
+	$(NICEOUTPUT)
+
+$(OUTEXE): $(OBJECTS)
+	$(SILENT)$(CC) -o $@ $^ $(CFLAGS) $(LIBRARIES) 
+	$(NICEOUTPUT)
+
 .PHONY: clean
 
 clean:
-	$(SILENT)rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(OUTEXE)
+	$(SILENT)rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB)
 
 
