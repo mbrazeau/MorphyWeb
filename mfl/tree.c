@@ -186,11 +186,11 @@ void mfl_reset_ring(node *n)
 
 void mfl_collapse(node *n1, nodearray nds)
 {
-    node *an1, *an2, *n2, *tmp;
+    node *an1, *an2, *n2/*, *tmp*/;
     
     an1 = n1->outedge;
     an2 = an1->next;
-    tmp = an2;
+    //tmp = an2;
     while (an2->next != an1) {
         an2 = an2->next;
     }

@@ -116,7 +116,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
                                         // respectively
 	int numnodes_a = 0, numtaxa = 0; // numnodes_a is the actual number of nodes 
                                      // used, numnodes_p is the number possible
-	int *position; // Position counter for the nwk string in cpyfromNWK
+	//int *position; // Position counter for the nwk string in cpyfromNWK
     bool intaxname = false;
     tree *newtree;
 
@@ -165,7 +165,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
     mfl_deinit_tree(newtree, numnodes_a);
 	
     i = 0;
-    position = &i;
+    //position = &i;
     
     NWK_roothandl(nwktr, nwklen, numtaxa, numnodes_a, newtree, isRooted);
     

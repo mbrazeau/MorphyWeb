@@ -514,7 +514,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     int i, tmpltorder, begin;
     tree *treecp; // Pointer to the tree copy
     node *p, *q, *r;
-    bool isRooted = false;
+    //bool isRooted = false;
     
     treecp = alloc_noring(ntax, numnodes);
     
@@ -525,7 +525,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
         newring_to_order(treecp->trnodes[ntax], tmpltorder + 1);
         treecp->trnodes[ntax]->order = treecp->trnodes[ntax]->order - 1;
         treecp->root = treecp->trnodes[ntax];
-        isRooted = true;
+        //isRooted = true;
         begin = ntax;
     }
     else 

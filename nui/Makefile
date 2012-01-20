@@ -1,7 +1,6 @@
 NUIEXE=$(ODIR)/nui
-NCLLIB=ncl-2.1.17
-INCLUDEDIRS=. ../$(NCLLIB)/ncl ../$(NCLLIB)
-LIBDIRS=../$(NCLLIB)/ncl/.libs
+INCLUDEDIRS=. 
+LIBDIRS=/usr/local/lib/ncl
 _LIBS=ncl
 LIBS=$(patsubst %,-l%,$(_LIBS)) $(patsubst %,-L%,$(LIBDIRS))
 
