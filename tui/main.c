@@ -305,8 +305,7 @@ void mfl_fitch_postorder(node *n, int *trlength)
 {
     node *p;
     charstate ancstate;
- 
-    
+     
     if (n->tip) {
         return;
     }
@@ -316,16 +315,18 @@ void mfl_fitch_postorder(node *n, int *trlength)
         mfl_fitch_postorder(p->outedge, trlength);
         p = p->next;
     }
-    if (n->next->outedge->apomorphies & n->next->next->outedge->apomorphies) {
+    if (n->next->outedge->apomorphies & n->next->next->outedge->apomorphies) 
+    {
         ancstate = n->next->outedge->apomorphies & n->next->next->outedge->apomorphies;
     }
-    else 
+    else
     {
         ancstate = n->next->outedge->apomorphies | n->next->next->outedge->apomorphies;
-        *trlength = *trlength + 1;
+        if (!(n->next->outedge->apomorphies & 1) && !(n->next->next->outedge->apomorphies & 1)) {
+            *trlength = *trlength + 1;
+        }
     }
     n->apomorphies = ancstate;
-    
 }
 
 
@@ -814,7 +815,7 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    char usrTipdata[] = { '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '1', '1'};
+    char usrTipdata[] = { '0', '1', '-', '0', '1', '-', '-', '-', '0', '0', '1', '1'};
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
@@ -824,10 +825,10 @@ int main(void)
             morphyTipdata[i] = -1;
         }
         else if (usrTipdata[i] == '-') {
-            morphyTipdata[i] = 0;
+            morphyTipdata[i] = 1;
         }
         else {
-            morphyTipdata[i] = 1 << (usrTipdata[i] - '0');
+            morphyTipdata[i] = 1 << (usrTipdata[i] - '0' + 1);
         }
         
         anewtree->trnodes[i]->apomorphies = morphyTipdata[i];
