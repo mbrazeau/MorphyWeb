@@ -841,8 +841,14 @@ void mini_test_analysis(void)
         mfl_fitch_postorder(arandomtree->root, treelength_q);
     }
     
-    printf("The length of the user tree: %i\n", *treelength_p);
-    printf("The length of the random tree: %i\n", *treelength_q);
+    printf("The 'user' tree:\n");
+    printNewick(anewtree->root);
+    printf("\n");
+    printf("The length of the user tree: %i\n\n", *treelength_p);
+    printf("The random tree:\n");
+    printNewick(arandomtree->root);
+    printf("\n");
+    printf("The length of the random tree: %i\n\n", *treelength_q);
 }
 
 void testNWKreading(void)
