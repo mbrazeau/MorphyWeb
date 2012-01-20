@@ -2,11 +2,14 @@ SUBDIRS = mfl tui nui
 
 all: $(SUBDIRS)
 
-.PHONY: $(SUBDIRS) clean
+
+.PHONY: $(SUBDIRS) clean depend
+
 MFLAGS += --no-print-directory
+
 $(SUBDIRS):
 	@echo Switching to $@
-	@cd $@; $(MAKE) $(MFLAGS) 
+	@cd $@; $(MAKE) $(MFLAGS)
 
 clean:
 	@for i in $(SUBDIRS); do \

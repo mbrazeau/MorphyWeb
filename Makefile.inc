@@ -6,34 +6,50 @@ OBJECTS     = $(patsubst %,$(ODIR)/%,$(OBJS))
 LIBRARIES  += $(patsubst %,-l%,$(LIBS)) $(patsubst %,-L%,$(LIBDIRS))
 CFLAGS     += $(patsubst %,-I%,$(INCLUDEDIRS)) -Wall -g
 MFLLIB      = $(ODIR)/libmfl.a
+DEPS        = $(patsubst %,$(ODIR)/%,$(OBJS:.o=.d))
+MAKEDEPEND  = $(SILENT)$(CC) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.d=.o)" "$<" $(CFLAGS) 
+MKODIR      = -@mkdir -p $(ODIR)
 ifndef VERBOSE
 SILENT=@
-NICEOUTPUT=@echo "  Building $(notdir $(CURDIR))/$@"
+NICEDEPOUTPUT=@echo "  Dependency $(notdir $(CURDIR))/$@"
+NICEBLDOUTPUT=@echo "  Building $(notdir $(CURDIR))/$@"
 endif
 
 all: $(OUTEXE) $(OUTLIB)
 
-$(ODIR)/%.o: %.cpp $(DEPS)
-	-@mkdir -p $(ODIR)
-	$(SILENT)$(CPP) -c -o $@ $< $(CFLAGS)
-	$(NICEOUTPUT)
+$(ODIR)/%.d: %.cpp 
+	$(NICEDEPOUTPUT)
+	$(MKODIR)
+	$(MAKEDEPEND)
 
-$(ODIR)/%.o: %.c $(DEPS)
-	-@mkdir -p $(ODIR)
+$(ODIR)/%.d: %.c
+	$(NICEDEPOUTPUT)
+	$(MKODIR)
+	$(MAKEDEPEND)
+
+$(ODIR)/%.o: %.cpp 
+	$(NICEBLDOUTPUT)
+	$(MKODIR)
+	$(SILENT)$(CPP) -c -o $@ $< $(CFLAGS)
+
+$(ODIR)/%.o: %.c 
+	$(NICEBLDOUTPUT)
+	$(MKODIR)
 	$(SILENT)$(CC) -c -o $@ $< $(CFLAGS)
-	$(NICEOUTPUT)
 
 $(OUTLIB): $(OBJECTS)
+	$(NICEBLDOUTPUT)
+	$(MKODIR)
 	$(SILENT)$(AR) rcs $@ $^
-	$(NICEOUTPUT)
 
 $(OUTEXE): $(OBJECTS)
+	$(NICEBLDOUTPUT)
+	$(MKODIR)
 	$(SILENT)$(CC) -o $@ $^ $(CFLAGS) $(LIBRARIES) 
-	$(NICEOUTPUT)
 
 .PHONY: clean
 
 clean:
-	$(SILENT)rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB)
+	$(SILENT)rm -f $(ODIR)/*.o $(ODIR)/depends depends $(ODIR)/*.d *.d *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB)
 
 
