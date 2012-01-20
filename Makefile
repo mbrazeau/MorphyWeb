@@ -3,9 +3,9 @@ SUBDIRS = mfl tui nui
 all: $(SUBDIRS)
 
 .PHONY: $(SUBDIRS) clean
-
+MFLAGS += --no-print-directory
 $(SUBDIRS):
-	cd $@; $(MAKE) $(MFLAGS)
+	@cd $@; $(MAKE) $(MFLAGS) 
 
 clean:
 	@for i in $(SUBDIRS); do \
