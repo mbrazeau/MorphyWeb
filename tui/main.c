@@ -777,18 +777,23 @@ void mini_test_analysis(void)
 {
     
     int i, j = 0;
-    int ntax = 12, nchar = 12, treelength = 0;
+    int ntax = 12, nchar = 12, treelength1 = 0, treelength2 = 0;
     int numnodes;
     bool isRooted = true;
+    
+    int *treelength_p = &treelength1;
+    int *treelength_q = &treelength2;
     
     numnodes = numberOfNodes(ntax);
     
     numberOfNodes(ntax);
     tree *anewtree;
+    tree *arandomtree;
     
     char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
     anewtree = readNWK(aNewickTree, isRooted);
+    arandomtree = randrooted(ntax, numnodes);
     printNewick(anewtree->root);
     printf("\n");
     
@@ -816,7 +821,7 @@ void mini_test_analysis(void)
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
     
-    int *treelength_p = &treelength;
+    
     
     for (i = 0; i < nchar; ++i) {
         for (j = 0; j < ntax; ++j) {
@@ -830,11 +835,14 @@ void mini_test_analysis(void)
                 morphyTipdata[i + j * nchar] = 1 << (usrTipdata[i + j * nchar] - '0' + 1);
             }
             anewtree->trnodes[j]->apomorphies = morphyTipdata[i + j * nchar]; // Normally, this would be done separately of the conversion
+            arandomtree->trnodes[j]->apomorphies = morphyTipdata[i + j * nchar];
         }
         mfl_fitch_postorder(anewtree->root, treelength_p);
+        mfl_fitch_postorder(arandomtree->root, treelength_q);
     }
     
-    printf("The length of the tree: %i\n", *treelength_p);
+    printf("The length of the user tree: %i\n", *treelength_p);
+    printf("The length of the random tree: %i\n", *treelength_q);
 }
 
 void testNWKreading(void)
