@@ -1,7 +1,7 @@
-CC   = gcc
-CPP  = g++
-AR   = ar
-ODIR = obj
+CC          = gcc
+CPP         = g++
+AR          = ar
+ODIR        = obj
 OBJECTS     = $(patsubst %,$(ODIR)/%,$(OBJS))
 LIBRARIES  += $(patsubst %,-l%,$(LIBS)) $(patsubst %,-L%,$(LIBDIRS))
 CFLAGS     += $(patsubst %,-I%,$(INCLUDEDIRS)) -Wall -g
@@ -50,6 +50,6 @@ $(OUTEXE): $(OBJECTS)
 .PHONY: clean
 
 clean:
-	$(SILENT)rm -f $(ODIR)/*.o $(ODIR)/depends depends $(ODIR)/*.d *.d *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB)
+	$(SILENT)rm -f $(ODIR)/*.o $(ODIR)/*.d *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB)
 
 
