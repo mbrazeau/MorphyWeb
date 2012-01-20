@@ -304,6 +304,7 @@ void printNewick(node *n)
 void mfl_fitch_postorder(node *n, int *trlength)
 {
     node *p;
+    charstate lft_chars, rt_chars;
     charstate ancstate;
      
     if (n->tip) {
@@ -321,8 +322,11 @@ void mfl_fitch_postorder(node *n, int *trlength)
     }
     else
     {
-        ancstate = n->next->outedge->apomorphies | n->next->next->outedge->apomorphies;
-        if (!(n->next->outedge->apomorphies & 1) && !(n->next->next->outedge->apomorphies & 1)) {
+        lft_chars = n->next->outedge->apomorphies;
+        rt_chars = n->next->next->outedge->apomorphies;
+        ancstate = lft_chars | rt_chars;
+        if ((ancstate & (-1 ^ 1)) && ( ((ancstate & (-1 ^ 1)) & lft_chars) && ((ancstate & (-1 ^ 1)) & rt_chars) )) {
+            ancstate = (ancstate & (-1 ^ 1));
             *trlength = *trlength + 1;
         }
     }
@@ -799,7 +803,7 @@ void testNWKreading(void)
 
 int main(void)
 {
-    
+    int i;
     int ntax = 12, treelength = 0;
     int numnodes;
     bool isRooted = true;
@@ -815,11 +819,15 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    char usrTipdata[] = { '0', '1', '-', '0', '1', '-', '-', '-', '0', '0', '1', '1'};
+    char usrTipdata[] = { '0', '0', '1', '1', '-', '-', '-', '-', '0', '0', '1', '1'};
+    printf("User tip data:");
+    for (i = 0; i < ntax; ++i) {
+        printf(" %c", usrTipdata[i]);
+    }
+    printf("\n");
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * sizeof(charstate));
     
-    int i;
     for (i = 0; i < ntax; ++i) {
         if (usrTipdata[i] == '?') {
             morphyTipdata[i] = -1;
