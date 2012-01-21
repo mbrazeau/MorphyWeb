@@ -84,6 +84,7 @@ void detree2(nodearray trnptr);
 void point_bottom(node *n, node **nodes, int *counter);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void unroot(int ntax, tree *rootedtree);
+void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar, int currentchar);
 
 /*in exhaustive.c*/ 
 void allunrooted(void /*tree *treearray, int ntaxa*/);

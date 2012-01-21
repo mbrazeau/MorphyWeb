@@ -407,15 +407,13 @@ void deletering(node *r1)
     }
 }
 
-void applyData(tree *currenttree, char **tipdata, int ntax, int *start)
+void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar, int currentchar)
 {   
     int i;
     
     for (i = 0; i < ntax; ++i) {
-        //currenttree->trnodes[i]->apomorphies = tipdata[i + *start];
+        currenttree->trnodes[i]->apomorphies = tipdata[currentchar + i * nchar];
     }
-    
-    *start = *start + i;    // Maybe i - 1
 }
 
 void reIndex(node *n, int index_val)
@@ -777,7 +775,8 @@ void mini_test_analysis(void)
 {
     
     int i, j = 0;
-    int ntax = 12, nchar = 12, treelength1 = 0, treelength2 = 0;
+    int ntax = 12, nchar = 20; // These values would be supplied by the datafile
+    int treelength1 = 0, treelength2 = 0;
     int numnodes;
     bool isRooted = true;
     
@@ -786,10 +785,11 @@ void mini_test_analysis(void)
     
     numnodes = numberOfNodes(ntax);
     
-    numberOfNodes(ntax);
     tree *anewtree;
     tree *arandomtree;
     
+    /* A completely balanced tree topology. 
+     * This is simple enough to create a 'rigged' dataset for.*/
     char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
     anewtree = readNWK(aNewickTree, isRooted);
@@ -797,18 +797,21 @@ void mini_test_analysis(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    char usrTipdata[] = {   '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
-                            '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
-                            '0', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
-                            '0', '0', '1', '1', '1', '0', '0', '0', '0', '0', '0', '1',
-                            '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '1',
-                            '0', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '1',
-                            '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '0',
-                            '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '0',
-                            '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '0',
-                            '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '0',
-                            '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '0',
-                            '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '0',};
+    /* A search with this dataset rigged to favour the topology of aNewickTree */
+    char usrTipdata[] = {  
+        '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
+    };
     
     printf("User tip data:\n");
     for (i = 0; i < ntax; ++i) {
@@ -821,8 +824,7 @@ void mini_test_analysis(void)
     
     charstate *morphyTipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
     
-    
-    
+    /* Convert the tip data to a form that mfl_fitch_postorder can use */
     for (i = 0; i < nchar; ++i) {
         for (j = 0; j < ntax; ++j) {
             if (usrTipdata[i + j * nchar] == '?') {
@@ -834,21 +836,31 @@ void mini_test_analysis(void)
             else {
                 morphyTipdata[i + j * nchar] = 1 << (usrTipdata[i + j * nchar] - '0' + 1);
             }
-            anewtree->trnodes[j]->apomorphies = morphyTipdata[i + j * nchar]; // Normally, this would be done separately of the conversion
-            arandomtree->trnodes[j]->apomorphies = morphyTipdata[i + j * nchar];
         }
-        mfl_fitch_postorder(anewtree->root, treelength_p);
-        mfl_fitch_postorder(arandomtree->root, treelength_q);
     }
     
+    int *currentchar = &j;
+    
+    for (i = 0, *currentchar = 0; i < nchar; ++i) {
+        mfl_apply_tipdata(anewtree, morphyTipdata, ntax, nchar, *currentchar);
+        *currentchar = *currentchar + 1;
+        mfl_fitch_postorder(anewtree->root, treelength_p);
+    }
+    
+    for (i = 0, *currentchar = 0; i < nchar; ++i) {
+        mfl_apply_tipdata(arandomtree, morphyTipdata, ntax, nchar, *currentchar);
+        *currentchar = *currentchar + 1;
+        mfl_fitch_postorder(arandomtree->root, treelength_q);
+    }
+
     printf("The 'user' tree:\n");
     printNewick(anewtree->root);
     printf("\n");
-    printf("The length of the user tree: %i\n\n", *treelength_p);
+    printf("The length of the user tree: %i steps\n\n", *treelength_p);
     printf("The random tree:\n");
     printNewick(arandomtree->root);
     printf("\n");
-    printf("The length of the random tree: %i\n\n", *treelength_q);
+    printf("The length of the random tree: %i steps\n\n", *treelength_q);
 }
 
 void testNWKreading(void)
