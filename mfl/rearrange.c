@@ -63,76 +63,75 @@ void mfl_insert_branch(node *br, node *target)
     
     joinNodes(br, target);
     joinNodes(bout, tdesc);
-    
 }
 
-void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, int *current)
+void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, long int *current, bool *undertreelimit)
 {
     node *p;
     
-    if (n->tip) {
+    if (n->tip || !(*undertreelimit)) {
         return;
     }
     
     if (!n->outedge->tip)
     {
-        mfl_bswap(n->next->outedge, n->outedge->next->outedge);
-        treeset[*current] = copytree(swapingon, ntax, numnodes);
-        treeset[*current]->index = *current;
-        *current = *current + 1;
-        mfl_bswap(n->next->outedge, n->outedge->next->outedge);
+        if ((*current < TREELIMIT) && ((*current + 2) < TREELIMIT)) {
+            mfl_bswap(n->next->outedge, n->outedge->next->outedge);
+            printNewick(swapingon->trnodes[0]);
+            printf("\n");
+            treeset[*current] = copytree(swapingon, ntax, numnodes);
+            treeset[*current]->index = *current;
+            *current = *current + 1;
+            mfl_bswap(n->next->outedge, n->outedge->next->outedge);
+            printf("current: %li\n", *current);
+            
+            mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
+            printNewick(swapingon->trnodes[0]);
+            printf("\n");
+            treeset[*current] = copytree(swapingon, ntax, numnodes);
+            treeset[*current]->index = *current;
+            *current = *current + 1;
+            mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
+            printf("current: %li\n", *current);
+        }
+        else {
+            *undertreelimit = false;
+            return;
+        }
 
-
-        mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
-        treeset[*current] = copytree(swapingon, ntax, numnodes);
-        treeset[*current]->index = *current;
-        *current = *current + 1;
-        mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
         //return;
     }
     
     p = n->next;
     while (p != n) {
-        mfl_nni_traversal(p->outedge, swapingon, treeset, ntax, numnodes, current);
+        mfl_nni_traversal(p->outedge, swapingon, treeset, ntax, numnodes, current, undertreelimit);
         p = p->next;
     }
 }
 
 void test_nni(int ntax, int numnodes)
 {
-    
-    //int i;
-    int branch_count = 1;   // The branch iteration of the NNI traversal
-    int *bc_pointer = &branch_count;
+    long int i, travlimit = 1;
+    long int branch_count = 0;   // The branch iteration of the NNI traversal
+    long int *bc_pointer = &branch_count;
+    long int numreps = TREELIMIT;
     tree **treeset;
+    bool undertreelimit = true, *undertreelimit_p = &undertreelimit;
     
     treeset = (tree**) malloc(TREELIMIT * sizeof(tree*));
     
     treeset[0] = randunrooted(ntax, numnodes);
     treeset[0]->index = 0;
 
+    for (i = 0; i < 10 /*numreps && undertreelimit*/; ++i) {
+        mfl_nni_traversal(treeset[i]->trnodes[0]->outedge, treeset[i], treeset, ntax, numnodes, bc_pointer, undertreelimit_p);
+    }
     
-    mfl_nni_traversal(treeset[0]->trnodes[0]->outedge, treeset[0], treeset, ntax, numnodes, bc_pointer);
-    
-    /*//dump_tree(treeset[0], ntax, numnodes);
-    printNewick(treeset[0]->trnodes[0]);
-    printf("\nin test_nni\n");
-    mfl_nni_traversal(treeset[0]->trnodes[0]->outedge, treeset[0], treeset, ntax, numnodes, cptr);
-    printNewick(treeset[0]->trnodes[0]);
-    printf(";\n");
-    //dump_tree(treeset[0], ntax, numnodes);
-    printNewick(treeset[1]->trnodes[0]);
-    printf(";\n");
-    //dump_tree(treeset[1], ntax, numnodes);
-    printNewick(treeset[2]->trnodes[0]);
-    printf(";\n");
-    //dump_tree(treeset[2], ntax, numnodes);
-    printNewick(treeset[3]->trnodes[0]);
-    printf(";\n");
-    //dump_tree(treeset[3], ntax, numnodes);
-    printNewick(treeset[4]->trnodes[0]);
-    printf(";\n");
-    //dump_tree(treeset[4], ntax, numnodes);*/
+    for (i = 0; i < *bc_pointer; ++i) {
+        printf("Tree %i:\n", i + 1);
+        printNewick(treeset[i]->trnodes[0]);
+        printf(";\n");
+    }
     
     freetree(treeset[0], numnodes);
     free(treeset);

@@ -66,6 +66,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
 
 struct node * mfl_seek_ringnode(node *n, int ntax)
 {
+    /*-Used by copytree-*/
     node *p;
     bool rootnode = false;
     
@@ -85,6 +86,7 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
         }
     }
     
+    printf("did not find an available node in ring\n");
     return n;
 }
 

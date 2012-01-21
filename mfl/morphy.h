@@ -138,7 +138,7 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 void mfl_bswap(node *p, node *q);
 struct node * mfl_remove_branch(node *n);
 void mfl_insert_branch(node *br, node *target);
-void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, int *current);
+void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, long int *current, bool *undertreelimit);
 void test_nni(int ntax, int numnodes);
 
 /*End function prototypes*/

@@ -553,10 +553,11 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
         q = treecp->trnodes[i];
         if (p->next) {
             if (p->order != q->order) {
-                printf("Error: template and copy have non-matching branch orders\n");
+                //printf("Error: template and copy have non-matching branch orders\n");
             }
             do {
                 if (p->outedge && p->outedge->tip) {
+                    //printf("joining %i and %i\n", q->index, treecp->trnodes[p->outedge->index]->index);
                     joinNodes(q, treecp->trnodes[p->outedge->index]);
                 }
                 p = p->next;
@@ -570,11 +571,21 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
         p = origtr->trnodes[i];
         q = treecp->trnodes[i];
         if (p->next) {
-
             do {
-                if (p->outedge && !q->outedge){
-                    r = mfl_seek_ringnode(treecp->trnodes[p->outedge->index], ntax);
-                    joinNodes(q, r);
+                if (p->outedge && !p->outedge->tip && !q->outedge){
+                    if (treecp->trnodes[p->outedge->index]->outedge) {
+                        r = mfl_seek_ringnode(treecp->trnodes[p->outedge->index], ntax);
+                        if (r->outedge) {
+                            printf("Error: r has an outedge!\n");
+                            printf("Details for r: index %i, oe index %i\n", r->index, r->outedge->index);
+                        }
+                        else {
+                            joinNodes(q, r);
+                        }
+                    }
+                    else {
+                        joinNodes(q, treecp->trnodes[p->outedge->index]);
+                    }
                 }
                 p = p->next;
                 q = q->next;
@@ -784,7 +795,7 @@ void mini_test_analysis(void)
     int treelimit = 1000; // Will always start its life as a default value and be 
                          // changed by the user (or automatically, as a 
                          // condition of user preference)
-    int treelength1 = 0, treelength2 = 0, bestreelen = 0;
+    int treelength1 = 0, treelength2 = 0, besttreelen = 0;
     int numnodes;
     bool isRooted = true;
     
@@ -858,19 +869,25 @@ void mini_test_analysis(void)
     
     savedtrees[0] = randrooted(ntax, numnodes);
     //Get a length for the starting tree.
-    int *bestreelen_p = &bestreelen;
+    int *besttreelen_p = &besttreelen;
     for (i = 0, *currentchar = 0; i < nchar; ++i) {
         mfl_apply_tipdata(savedtrees[0], morphyTipdata, ntax, nchar, *currentchar);
         *currentchar = *currentchar + 1;
-        mfl_fitch_postorder(savedtrees[0]->root, bestreelen_p);
+        mfl_fitch_postorder(savedtrees[0]->root, besttreelen_p);
     }
     
-    //mfl_clear_treebuffer(savedtrees[0], 1, numnodes);
+    // Now start making rearrangements to the starting tree and test them against
+    // the random tree. If a shorter tree is found, discard the random tree and
+    // keep only the shortest tree. Reset besttreelen_p to the length of the new
+    // shortest tree. Continue swapping until a maximum number of iterations is
+    // hit, or maxtrees is hit, or there are no more possible re-arrangments.
     
     printf("The starting tree:\n");
     printNewick(savedtrees[0]->root);
     printf("\n");
-    printf("The length of the starting tree: %i steps\n\n", *bestreelen_p);
+    printf("The length of the starting tree: %i steps\n\n", *besttreelen_p);
+    
+    //mfl_clear_treebuffer(savedtrees, 1, numnodes);
     
     for (i = 0, *currentchar = 0; i < nchar; ++i) {
         mfl_apply_tipdata(anewtree, morphyTipdata, ntax, nchar, *currentchar);
@@ -925,7 +942,7 @@ void testNWKreading(void)
 
 int main(void)
 {
-    int ntax = 12;
+    int ntax = 7;
     int numnodes;
     //bool isRooted = true;
     
@@ -935,9 +952,9 @@ int main(void)
     tree *originaltree;
     tree *copiedtree;
     
-    mini_test_analysis();
+    //mini_test_analysis();
     
-    //test_nni(ntax, numnodes);
+    test_nni(ntax, numnodes);
     //testNWKreading();
     
     /* This part is just for testing the collapseBiNode*/
@@ -945,7 +962,7 @@ int main(void)
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
-    dump_connections(anewtree->trnodes, ntax, numnodes);
+    //dump_connections(anewtree->trnodes, ntax, numnodes);
     //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
@@ -965,8 +982,6 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
-    printf("just beofre collapse: \n");
-    dump_connections(anewtree->trnodes, ntax, numnodes);
     mfl_collapse(anewtree->trnodes[ntax + 1], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
