@@ -436,6 +436,5 @@ void mfl_clear_treebuffer(tree **treebuffer, int numsavedtrees, int numnodes)
     int i;
     for (i = 0; i < numsavedtrees; ++i) {
         freetree(treebuffer[i], numnodes);
-        memset(treebuffer[i], 0, sizeof(tree));
     }
 }
