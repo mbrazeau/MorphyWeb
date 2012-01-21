@@ -385,7 +385,7 @@ void mfl_deinit_tree(tree *t, int numnodes)
     }
 }
 
-void putBranchInRing(node *n, node *rnode)
+void mfl_put_branch_in_ring(node *n, node *rnode)
 {
     /* Given a branch (two nodes joined by their outedge pointers), places the 
      * branch in a ring */
@@ -407,4 +407,35 @@ void putBranchInRing(node *n, node *rnode)
     
     rnode->order = rnode->order + 1;
     mfl_set_order(rnode);
+}
+
+
+int mfl_tree_enumerator(void)
+{
+    static long long int treenum = 0;
+    
+    return ++treenum;
+}
+
+void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
+{
+    tree **newtreebuffer;
+    newtreebuffer = (tree **)realloc(treebuffer, (*treelimit + sizeincrease));
+    if (!newtreebuffer) {
+        printf("Insufficient memory for new treelimit\n");
+        newtreebuffer = treebuffer;
+    }
+    else {
+        *treelimit = *treelimit + sizeincrease;
+        printf("Treelimit changed to %i\n", *treelimit);
+    }
+}
+
+void mfl_clear_treebuffer(tree **treebuffer, int numsavedtrees, int numnodes)
+{
+    int i;
+    for (i = 0; i < numsavedtrees; ++i) {
+        freetree(treebuffer[i], numnodes);
+        memset(treebuffer[i], 0, sizeof(tree));
+    }
 }
