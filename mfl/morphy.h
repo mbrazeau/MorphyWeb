@@ -17,7 +17,7 @@
 #include <ctype.h>
 #include <stdint.h>
 
-/*#include <gsl/gsl_rng.h>*/
+//#include <gsl/gsl_rng.h>
 
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
@@ -119,10 +119,13 @@ int mfl_determ_order(node *n);
 void mfl_set_order(node *n);
 void mfl_clear_order(node *n);
 void mfl_set_index(node *n);
-void putBranchInRing(node *n, node *rnode);
-void insertBranch(node *br, node *target);
+void mfl_put_branch_in_ring(node *n, node *rnode);
+void mfl_insert_branch(node *br, node *target);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
 void mfl_deinit_tree(tree *t, int numnodes);
+int mfl_tree_enumerator(void);
+void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease);
+void mfl_clear_treebuffer(tree **treebuffer, int numsavedtrees, int numnodes);
 
 
 /*in readnewick.c*/
