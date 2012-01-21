@@ -110,8 +110,8 @@ struct tree *randunrooted (int ntax, int numnodes)
     randtree->trnodes[2 * ntax - 2]->next->next->outedge = randtree->trnodes[taxarray[i] - 1];
     randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[2 * ntax - 2]->next->next;
     
-    count_ptr = &counter;
-    point_bottom(randtree->trnodes[0]->outedge, randtree->trnodes, count_ptr);
+    //count_ptr = &counter;
+    //mfl_point_bottom(randtree->trnodes[0]->outedge, randtree->trnodes, ntax, count_ptr);
     
     free(taxarray);
     

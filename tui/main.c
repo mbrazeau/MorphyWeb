@@ -588,7 +588,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     
 }
 
-void point_bottom(node *n, node **nodes, int *counter)
+void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration)
 {
     /* Re-sets the pointers to the internal nodes in the tree's
      * node array to point to the 'bottom' (rootward) node in the ring*/
@@ -600,45 +600,44 @@ void point_bottom(node *n, node **nodes, int *counter)
     }
     
     if (n->outedge) {
-        nodes[*counter] = n;
-        reIndex(n, *counter);
-        *counter = *counter + 1;
-    }   
+        nodes[*iteration] = n;
+        n->index = *iteration;
+        mfl_set_ring_to_n(n);
+        *iteration = *iteration + 1;
+    }
     
     p = n->next;
     while (p != n) {
-        point_bottom(p->outedge, nodes, counter);//<---BUG!!!!!!!!!!!!!!
+        mfl_point_bottom(p->outedge, nodes, ntax, iteration);
         p = p->next;        
     }
     
 }
 
-void mfl_root_tree(tree *trtoroot, int root, int ntax)
-{
-    
+void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
+{    
     /*Roots the tree between a terminal (leaf) and an internal node*/
-    
+ 
     int counter = ntax + 1;
-    int *count_ptr;
+    int *count_ptr = &counter;
+    
     node *nodeptr, *r2, *r3;
     
     if (!trtoroot->trnodes[ntax]->next) {
         newring(trtoroot->trnodes[ntax]->next);
     }
     
-    nodeptr = trtoroot->trnodes[root]->outedge;
+    nodeptr = trtoroot->trnodes[nRoot]->outedge;
     r2 = trtoroot->trnodes[ntax]->next;
     r3 = trtoroot->trnodes[ntax]->next->next;
     
-    joinNodes(r2, trtoroot->trnodes[root]);
+    joinNodes(r2, trtoroot->trnodes[nRoot]);
     joinNodes(r3, nodeptr);
     
     trtoroot->root = trtoroot->trnodes[ntax];
     trtoroot->trnodes[ntax]->outedge = NULL;
-    
-    count_ptr = &counter;
-    
-    point_bottom(trtoroot->root, trtoroot->trnodes, count_ptr);
+        
+    mfl_point_bottom(trtoroot->root, trtoroot->trnodes, ntax, count_ptr);
     
 }
 
@@ -772,11 +771,20 @@ void rand_tree (int ntax, int numnodes)
 }
 
 void mini_test_analysis(void)
-{
+{    
+    /* The content of this function will model a simple analysis. Obviously,
+     * of the content of this function will be moved to other functions or 
+     * will be stored differently. For now, it's just one place for stuff that 
+     * needs to be available to the search algorithms before they can find the 
+     * shortest tree. The analysis should converge towards a tree like the one
+     * in the Newick string below. */
     
     int i, j = 0;
     int ntax = 12, nchar = 20; // These values would be supplied by the datafile
-    int treelength1 = 0, treelength2 = 0;
+    int treelimit = 1000; // Will always start its life as a default value and be 
+                         // changed by the user (or automatically, as a 
+                         // condition of user preference)
+    int treelength1 = 0, treelength2 = 0, bestreelen = 0;
     int numnodes;
     bool isRooted = true;
     
@@ -841,6 +849,29 @@ void mini_test_analysis(void)
     
     int *currentchar = &j;
     
+    /* Initialize the tree array that will store optimal trees */
+    tree **savedtrees = (tree**) malloc(treelimit * sizeof(tree*));
+    
+    // Start with a (random, in this case) starting tree. 
+    // Different algorithms will be written for doing this (as there are better
+    // ways to do it) but we'll use randunrooted for now.
+    
+    savedtrees[0] = randrooted(ntax, numnodes);
+    //Get a length for the starting tree.
+    int *bestreelen_p = &bestreelen;
+    for (i = 0, *currentchar = 0; i < nchar; ++i) {
+        mfl_apply_tipdata(savedtrees[0], morphyTipdata, ntax, nchar, *currentchar);
+        *currentchar = *currentchar + 1;
+        mfl_fitch_postorder(savedtrees[0]->root, bestreelen_p);
+    }
+    
+    //mfl_clear_treebuffer(savedtrees[0], 1, numnodes);
+    
+    printf("The starting tree:\n");
+    printNewick(savedtrees[0]->root);
+    printf("\n");
+    printf("The length of the starting tree: %i steps\n\n", *bestreelen_p);
+    
     for (i = 0, *currentchar = 0; i < nchar; ++i) {
         mfl_apply_tipdata(anewtree, morphyTipdata, ntax, nchar, *currentchar);
         *currentchar = *currentchar + 1;
@@ -900,14 +931,13 @@ int main(void)
     
     numnodes = numberOfNodes(ntax);
     
-    numberOfNodes(ntax);
     tree *anewtree;    
     tree *originaltree;
     tree *copiedtree;
     
     mini_test_analysis();
     
-    test_nni(ntax, numnodes);
+    //test_nni(ntax, numnodes);
     //testNWKreading();
     
     /* This part is just for testing the collapseBiNode*/
@@ -915,6 +945,7 @@ int main(void)
     printf("New tree: ");
     printNewick(anewtree->root);
     printf("\n");
+    dump_connections(anewtree->trnodes, ntax, numnodes);
     //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
@@ -934,6 +965,8 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
+    printf("just beofre collapse: \n");
+    dump_connections(anewtree->trnodes, ntax, numnodes);
     mfl_collapse(anewtree->trnodes[ntax + 1], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);

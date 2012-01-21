@@ -81,7 +81,7 @@ void newring(node *r1);
 void deletering(node *r1);
 void detree(node *n);
 void detree2(nodearray trnptr);
-void point_bottom(node *n, node **nodes, int *counter);
+void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void unroot(int ntax, tree *rootedtree);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar, int currentchar);
