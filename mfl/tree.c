@@ -420,7 +420,7 @@ int mfl_tree_enumerator(void)
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
 {
     tree **newtreebuffer;
-    newtreebuffer = (tree **)realloc(treebuffer, (*treelimit + sizeincrease));
+    newtreebuffer = (tree **)realloc(treebuffer, (*treelimit + sizeincrease) * sizeof(tree*));
     if (!newtreebuffer) {
         printf("Insufficient memory for new treelimit\n");
         newtreebuffer = treebuffer;
