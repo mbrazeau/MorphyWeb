@@ -517,7 +517,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
 {
     int i, tmpltorder, begin;
     tree *treecp; // Pointer to the tree copy
-    node *p, *q, *r;
+    node *p, *q, *r, *s;
     //bool isRooted = false;
     
     treecp = alloc_noring(ntax, numnodes);
@@ -553,39 +553,21 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
         q = treecp->trnodes[i];
         if (p->next) {
             if (p->order != q->order) {
-                //printf("Error: template and copy have non-matching branch orders\n");
+                printf("Error: template and copy have non-matching branch orders\n");
             }
             do {
                 if (p->outedge && p->outedge->tip) {
                     //printf("joining %i and %i\n", q->index, treecp->trnodes[p->outedge->index]->index);
                     joinNodes(q, treecp->trnodes[p->outedge->index]);
                 }
-                p = p->next;
-                q = q->next;
-            } while (p != origtr->trnodes[i] && q != treecp->trnodes[i]);
-        }
-    }
-    
-    // Then connect the internal nodes to each other
-    for (i = begin; i < numnodes; ++i) {
-        p = origtr->trnodes[i];
-        q = treecp->trnodes[i];
-        if (p->next) {
-            do {
-                if (p->outedge && !p->outedge->tip && !q->outedge){
-                    if (treecp->trnodes[p->outedge->index]->outedge) {
-                        r = mfl_seek_ringnode(treecp->trnodes[p->outedge->index], ntax);
-                        if (r->outedge) {
-                            printf("Error: r has an outedge!\n");
-                            printf("Details for r: index %i, oe index %i\n", r->index, r->outedge->index);
-                        }
-                        else {
-                            joinNodes(q, r);
-                        }
+                if (p->outedge && !p->outedge->tip && !q->outedge) {
+                    r = origtr->trnodes[p->outedge->index];
+                    s = treecp->trnodes[p->outedge->index];
+                    while (r->outedge->index != p->index) {
+                        r = r->next;
+                        s = s->next;
                     }
-                    else {
-                        joinNodes(q, treecp->trnodes[p->outedge->index]);
-                    }
+                    joinNodes(q, s);
                 }
                 p = p->next;
                 q = q->next;
@@ -881,11 +863,15 @@ void mini_test_analysis(void)
     // keep only the shortest tree. Reset besttreelen_p to the length of the new
     // shortest tree. Continue swapping until a maximum number of iterations is
     // hit, or maxtrees is hit, or there are no more possible re-arrangments.
-    
+
     printf("The starting tree:\n");
     printNewick(savedtrees[0]->root);
     printf("\n");
     printf("The length of the starting tree: %i steps\n\n", *besttreelen_p);
+    
+    // The exact type of rearrangment alogrithm (NNI, SPR, or TBR) will be set by the user
+    mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees);
+    
     
     //mfl_clear_treebuffer(savedtrees, 1, numnodes);
     
@@ -942,7 +928,7 @@ void testNWKreading(void)
 
 int main(void)
 {
-    int ntax = 7;
+    int ntax = 12;
     int numnodes;
     //bool isRooted = true;
     
