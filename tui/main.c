@@ -631,7 +631,7 @@ void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
     trtoroot->trnodes[ntax]->outedge = NULL;
         
     mfl_point_bottom(trtoroot->root, trtoroot->trnodes, ntax, count_ptr);
-    
+    trtoroot->trnodes[0]->start = false;
 }
 
 void collapseBiNode(node *n)
