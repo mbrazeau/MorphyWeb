@@ -188,11 +188,11 @@ void mfl_reset_ring(node *n)
 
 void mfl_collapse(node *n1, nodearray nds)
 {
-    node *an1, *an2, *n2/*, *tmp*/;
+    node *an1, *an2, *n2, *tmp;
     
     an1 = n1->outedge;
     an2 = an1->next;
-    //tmp = an2;
+    tmp = an2;
     while (an2->next != an1) {
         an2 = an2->next;
     }
@@ -209,7 +209,7 @@ void mfl_collapse(node *n1, nodearray nds)
     an1->outedge = NULL;
     free(an1);
     nds[n1->index] = n1;
-    //mfl_reset_ring_to_n(tmp);
+    mfl_set_order(tmp);
 }
 
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
@@ -437,6 +437,8 @@ void mfl_clear_treebuffer(tree **treebuffer, int numsavedtrees, int numnodes)
 {
     int i;
     for (i = 0; i < numsavedtrees; ++i) {
-        freetree(treebuffer[i], numnodes);
+        if (treebuffer[i]) {
+            freetree(treebuffer[i], numnodes);
+        }
     }
 }

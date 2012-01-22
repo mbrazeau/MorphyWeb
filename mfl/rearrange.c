@@ -7,7 +7,7 @@
  */
 
 #include "morphy.h"
-#define TREELIMIT 500
+#define TREELIMIT 400
 
 void mfl_bswap(node *p, node *q)
 {
@@ -65,8 +65,12 @@ void mfl_insert_branch(node *br, node *target)
     joinNodes(bout, tdesc);
 }
 
-void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, long int *current, bool *undertreelimit)
+void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
+                       int nchar, int numnodes, long int *current, 
+                       charstate *tipdata, bool *undertreelimit, 
+                       long int *currentbesttree, bool *foundbettertree)
 {
+    int trlength = 0;
     node *p;
     
     if (n->tip || !(*undertreelimit)) {
@@ -75,41 +79,93 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int n
     
     if (!n->outedge->tip)
     {
-        if ((*current < TREELIMIT) && ((*current + 2) < TREELIMIT)) {
+        /* Nearly identical steps are conducted twice because all nearest-
+         * neighbor interchanges produce two distinct tree topologies */
+        
+        if ((*current + 1 <= TREELIMIT) && ((*current + 2) <= TREELIMIT)) {
             mfl_bswap(n->next->outedge, n->outedge->next->outedge);
-            printNewick(swapingon->trnodes[0]);
-            printf("\n");
-            treeset[*current] = copytree(swapingon, ntax, numnodes);
-            treeset[*current]->index = *current;
-            *current = *current + 1;
+            mfl_root_tree(swapingon, 1, ntax);
+            trlength = mfl_get_treelen(swapingon, tipdata, ntax, nchar);
+            unroot(ntax, swapingon);
+            if (trlength <= *currentbesttree) {
+                *foundbettertree = true;
+                *currentbesttree = trlength;
+                treeset[*current] = copytree(swapingon, ntax, numnodes);
+                treeset[*current]->index = *current;
+                treeset[*current]->length = trlength;
+                trlength = 0;
+                *current = *current + 1;
+            }
             mfl_bswap(n->next->outedge, n->outedge->next->outedge);
-            printf("current: %li\n", *current);
+            //printf("current: %li\n", *current);
             
             mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
-            printNewick(swapingon->trnodes[0]);
-            printf("\n");
-            treeset[*current] = copytree(swapingon, ntax, numnodes);
-            treeset[*current]->index = *current;
-            *current = *current + 1;
+            mfl_root_tree(swapingon, 1, ntax);
+            trlength = mfl_get_treelen(swapingon, tipdata, ntax, nchar);
+            unroot(ntax, swapingon);
+            if (trlength <= *currentbesttree) {
+                *foundbettertree = true;
+                *currentbesttree = trlength;
+                treeset[*current] = copytree(swapingon, ntax, numnodes);
+                treeset[*current]->index = *current;
+                treeset[*current]->length = trlength;
+                trlength = 0;
+                *current = *current + 1;
+            }
             mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
-            printf("current: %li\n", *current);
+            //printf("current: %li\n", *current);
         }
         else {
+            printf("Hit tree limit\n");
             *undertreelimit = false;
             return;
         }
-
-        //return;
     }
     
     p = n->next;
     while (p != n) {
-        mfl_nni_traversal(p->outedge, swapingon, treeset, ntax, numnodes, current, undertreelimit);
+        mfl_nni_traversal(p->outedge, swapingon, treeset, ntax, nchar, numnodes, 
+                          current, tipdata, undertreelimit, currentbesttree,
+                          foundbettertree);
         p = p->next;
     }
 }
 
-void test_nni(int ntax, int numnodes)
+
+void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
+                    tree **treeset, int starttreelen)
+{
+    long int i, currentbest;
+    long int branch_count = 0;   // The branch iteration of the NNI traversal
+    long int *bc_pointer = &branch_count, *currentbest_p = &currentbest;
+    long int numreps = 1000;
+    bool undertreelimit = true, *undertreelimit_p = &undertreelimit;
+    bool foundbettertree = false, *foundbettertree_p = &foundbettertree;
+    
+    for (i = 0; i < numreps && *undertreelimit_p; ++i) {
+        mfl_nni_traversal(treeset[i]->trnodes[0]->outedge, treeset[i], treeset, 
+                          ntax, nchar, numnodes, bc_pointer, tipdata, 
+                          undertreelimit_p, currentbest_p, foundbettertree_p);
+        if (!foundbettertree_p) {
+            freetree(treeset[i], numnodes);
+            treeset[i] = randunrooted(ntax, numnodes);
+        }
+    }
+    
+    printf("bc_pointer: %li\n", *bc_pointer);
+    
+    for (i = 0; i < *bc_pointer; ++i) {
+        printf("Tree %li:\n", i + 1);
+        printNewick(treeset[i]->trnodes[0]);
+        printf(";\n");
+        printf("Length: %i\n", treeset[i]->length);
+    }
+    
+    freetree(treeset[0], numnodes);
+    free(treeset);
+}
+
+/*void test_nni(int ntax, int numnodes)
 {
     long int i, travlimit = 1;
     long int branch_count = 0;   // The branch iteration of the NNI traversal
@@ -123,16 +179,19 @@ void test_nni(int ntax, int numnodes)
     treeset[0] = randunrooted(ntax, numnodes);
     treeset[0]->index = 0;
 
-    for (i = 0; i < 10 /*numreps && undertreelimit*/; ++i) {
+    for (i = 0; i < numreps && undertreelimit_p; ++i) {
         mfl_nni_traversal(treeset[i]->trnodes[0]->outedge, treeset[i], treeset, ntax, numnodes, bc_pointer, undertreelimit_p);
     }
     
+    printf("bc_pointer: %li\n", *bc_pointer);
+    
     for (i = 0; i < *bc_pointer; ++i) {
-        printf("Tree %i:\n", i + 1);
+
+        printf("Tree %li:\n", i + 1);
         printNewick(treeset[i]->trnodes[0]);
         printf(";\n");
     }
     
     freetree(treeset[0], numnodes);
     free(treeset);
-}
+}*/

@@ -134,11 +134,11 @@ void joinNodes(node *n, node *p)
 {
     if (n->outedge) {
         n->outedge->outedge = NULL;
-        printf("terminating existing connection in n\n");
+        //printf("terminating existing connection in n\n");
     }
     if (p->outedge) {
         p->outedge->outedge = NULL;
-        printf("terminating existing connection in p\n");
+        //printf("terminating existing connection in p\n");
     }
     
     n->outedge = p;
@@ -536,6 +536,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     {
         treecp->trnodes[0]->start = true;
         begin = ntax + 1;
+        newring(treecp->trnodes[ntax]);
     }
     
     
@@ -557,7 +558,6 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
             }
             do {
                 if (p->outedge && p->outedge->tip) {
-                    //printf("joining %i and %i\n", q->index, treecp->trnodes[p->outedge->index]->index);
                     joinNodes(q, treecp->trnodes[p->outedge->index]);
                 }
                 if (p->outedge && !p->outedge->tip && !q->outedge) {
@@ -763,6 +763,22 @@ void rand_tree (int ntax, int numnodes)
     
 }
 
+int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar)
+{
+    int i;
+    int treelen = 0;
+    int *treelen_p = &treelen;
+    int currenchar = 0;
+    int *currentchar_p = &currenchar;
+    
+    for (i = 0, *currentchar_p = 0; i < nchar; ++i) {
+        mfl_apply_tipdata(testtree, tipdata, ntax, nchar, *currentchar_p);
+        *currentchar_p = *currentchar_p + 1;        
+        mfl_fitch_postorder(testtree->root, treelen_p);
+    }
+    return *treelen_p;
+}
+
 void mini_test_analysis(void)
 {    
     /* The content of this function will model a simple analysis. Obviously,
@@ -849,14 +865,14 @@ void mini_test_analysis(void)
     // Different algorithms will be written for doing this (as there are better
     // ways to do it) but we'll use randunrooted for now.
     
-    savedtrees[0] = randrooted(ntax, numnodes);
+    savedtrees[0] = randunrooted(ntax, numnodes);
     //Get a length for the starting tree.
+    mfl_root_tree(savedtrees[0], 1, ntax);
     int *besttreelen_p = &besttreelen;
-    for (i = 0, *currentchar = 0; i < nchar; ++i) {
-        mfl_apply_tipdata(savedtrees[0], morphyTipdata, ntax, nchar, *currentchar);
-        *currentchar = *currentchar + 1;
-        mfl_fitch_postorder(savedtrees[0]->root, besttreelen_p);
-    }
+
+    *besttreelen_p = mfl_get_treelen(savedtrees[0], morphyTipdata, ntax, nchar);
+    
+    unroot(ntax, savedtrees[0]);
     
     // Now start making rearrangements to the starting tree and test them against
     // the random tree. If a shorter tree is found, discard the random tree and
@@ -865,12 +881,13 @@ void mini_test_analysis(void)
     // hit, or maxtrees is hit, or there are no more possible re-arrangments.
 
     printf("The starting tree:\n");
-    printNewick(savedtrees[0]->root);
+    printNewick(savedtrees[0]->trnodes[0]);
     printf("\n");
     printf("The length of the starting tree: %i steps\n\n", *besttreelen_p);
     
     // The exact type of rearrangment alogrithm (NNI, SPR, or TBR) will be set by the user
-    mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees);
+    
+    mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
     
     
     //mfl_clear_treebuffer(savedtrees, 1, numnodes);
@@ -938,9 +955,9 @@ int main(void)
     tree *originaltree;
     tree *copiedtree;
     
-    //mini_test_analysis();
+    mini_test_analysis();
     
-    test_nni(ntax, numnodes);
+    //test_nni(ntax, numnodes);
     //testNWKreading();
     
     /* This part is just for testing the collapseBiNode*/

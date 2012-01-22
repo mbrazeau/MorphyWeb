@@ -74,6 +74,7 @@ struct node * allocnode(void);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
+void mfl_fitch_postorder(node *n, int *trlength);
 struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
 struct tree * copytree_II(tree *origtree, int ntax, int numnodes);
 void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
@@ -85,6 +86,7 @@ void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void unroot(int ntax, tree *rootedtree);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar, int currentchar);
+int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar);
 
 /*in exhaustive.c*/ 
 void allunrooted(void /*tree *treearray, int ntaxa*/);
@@ -138,7 +140,10 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 void mfl_bswap(node *p, node *q);
 struct node * mfl_remove_branch(node *n);
 void mfl_insert_branch(node *br, node *target);
-void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, int numnodes, long int *current, bool *undertreelimit);
+void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
+                       int nchar, int numnodes, long int *current, 
+                       charstate *tipdata, bool *undertreelimitlong, 
+                       long int *currentbesttree, bool *foundbettertree);
 void test_nni(int ntax, int numnodes);
 
 /*End function prototypes*/
