@@ -7,7 +7,7 @@
  */
 
 #include "morphy.h"
-#define TREELIMIT 400
+#define TREELIMIT 450
 
 void mfl_bswap(node *p, node *q)
 {
@@ -143,6 +143,7 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     bool foundbettertree = false, *foundbettertree_p = &foundbettertree;
     
     for (i = 0; i < numreps && *undertreelimit_p; ++i) {
+        *foundbettertree_p = false;
         mfl_nni_traversal(treeset[i]->trnodes[0]->outedge, treeset[i], treeset, 
                           ntax, nchar, numnodes, bc_pointer, tipdata, 
                           undertreelimit_p, currentbest_p, foundbettertree_p);
@@ -156,7 +157,8 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     
     for (i = 0; i < *bc_pointer; ++i) {
         printf("Tree %li:\n", i + 1);
-        printNewick(treeset[i]->trnodes[0]);
+        mfl_root_tree(treeset[i], treeset[i]->trnodes[6]->outedge->index, ntax);
+        printNewick(treeset[i]->root);
         printf(";\n");
         printf("Length: %i\n", treeset[i]->length);
     }
@@ -164,34 +166,3 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     freetree(treeset[0], numnodes);
     free(treeset);
 }
-
-/*void test_nni(int ntax, int numnodes)
-{
-    long int i, travlimit = 1;
-    long int branch_count = 0;   // The branch iteration of the NNI traversal
-    long int *bc_pointer = &branch_count;
-    long int numreps = TREELIMIT;
-    tree **treeset;
-    bool undertreelimit = true, *undertreelimit_p = &undertreelimit;
-    
-    treeset = (tree**) malloc(TREELIMIT * sizeof(tree*));
-    
-    treeset[0] = randunrooted(ntax, numnodes);
-    treeset[0]->index = 0;
-
-    for (i = 0; i < numreps && undertreelimit_p; ++i) {
-        mfl_nni_traversal(treeset[i]->trnodes[0]->outedge, treeset[i], treeset, ntax, numnodes, bc_pointer, undertreelimit_p);
-    }
-    
-    printf("bc_pointer: %li\n", *bc_pointer);
-    
-    for (i = 0; i < *bc_pointer; ++i) {
-
-        printf("Tree %li:\n", i + 1);
-        printNewick(treeset[i]->trnodes[0]);
-        printf(";\n");
-    }
-    
-    freetree(treeset[0], numnodes);
-    free(treeset);
-}*/
