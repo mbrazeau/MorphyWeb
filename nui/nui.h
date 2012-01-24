@@ -3,6 +3,7 @@
 #include <vector>
 #include "NexusParse.h"
 
+class CNexusUserInterface;
 
 class CNexusMenuBase
 {
@@ -11,42 +12,38 @@ public:
     {
         m_strCommand = strCommand;
         m_strHelpText = strHelpText;
-    };
-    virtual int MenuFunction() = 0;
+        transform(m_strCommand.begin(), m_strCommand.end(), m_strCommand.begin(), ::toupper);
+    }
+
     string GetMenuOutput()
     {
         return m_strCommand + ") " + m_strHelpText;
     }
+
     bool IsSelection(string strInput)
     {
+        transform(strInput.begin(), strInput.end(), strInput.begin(), ::toupper);        
         return strInput == m_strCommand;
     }
+
+    virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface) = 0;
 private:
     string m_strCommand;
     string m_strHelpText;
 };
 
-class CNexusMenuOpenFile : public CNexusMenuBase
-{
-public:
-    CNexusMenuOpenFile(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){};
-    int MenuFunction()
-    {
-        cout<<"OPEN FILE"<<endl;
-        return 0;
+#define NEW_COMMAND_DEFINE(type) \
+    class type : public CNexusMenuBase \
+    { \
+    public:\
+        type(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){}\
+        bool MenuFunction(CNexusUserInterface *pNexusUserInterface);\
     };
-};
 
-class CNexusMenuCloseFile : public CNexusMenuBase
-{
-public:
-    CNexusMenuCloseFile(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){};
-    int MenuFunction()
-    {
-        cout<<"CLOSE FILE"<<endl;
-        return 0;
-    };
-};
+NEW_COMMAND_DEFINE(CNexusMenuOpenFile)
+NEW_COMMAND_DEFINE(CNexusMenuCloseFile)
+NEW_COMMAND_DEFINE(CNexusMenuHelp)
+NEW_COMMAND_DEFINE(CNexusMenuQuit)
 
 class CNexusUserInterface
 {
@@ -56,8 +53,8 @@ public:
     ~CNexusUserInterface();
 
     void PrintMenu();
-    void DoMenu(bool bPrintMenu);
-    void RunSelection(string strInput);
+    void DoMenu();
+    bool RunSelection(string strInput);
 
 private:
     vector <CNexusMenuBase*> m_vMenu;
