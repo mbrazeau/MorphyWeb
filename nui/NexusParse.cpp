@@ -25,8 +25,7 @@ CNexusParse::~CNexusParse()
 
 void CNexusParse::ReadNexusFile()
 {
-    ostream &oStream = m_cNexus->GetOutStream();
-    MyToken token(m_cNexus->m_fIn, oStream);
+    MyToken token(m_cNexus->GetInStream(), m_cNexus->GetOutStream());
     m_cNexus->Execute(token);
 }
 

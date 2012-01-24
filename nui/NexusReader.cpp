@@ -2,8 +2,18 @@
 
 CNexusReader::CNexusReader(char *infname, char *outfname) : NxsReader()
 {
-    m_fIn.open(infname, ios::binary);
-    m_fOut.open(outfname);
+    if (infname)
+    {
+        m_fIn.open(infname, ios::binary);
+    }
+    if (outfname)
+    {
+        m_fOut.open(outfname);
+    }
+    if (!m_fIn)
+    {
+        GetOutStream()<<"No input file supplied, using stdin"<<endl;
+    }
 }
 
 CNexusReader::~CNexusReader()
@@ -22,17 +32,16 @@ void CNexusReader::ExecuteStopping()
 
 bool CNexusReader::EnteringBlock(NxsString blockName)
 {
-    m_fOut << "Reading \"" << blockName << "\" block..." << endl;
+    GetOutStream() << "Reading \"" << blockName << "\" block..." << endl;
 
     // Returning true means it is ok to delete any data associated with 
     // blocks of this type read in previously
-    //
     return true;    
 }
 
 void CNexusReader::SkippingBlock(NxsString blockName)
 {
-    m_fOut << "Skipping unknown block (" << blockName << ")..." << endl;
+    GetOutStream() << "Skipping unknown block (" << blockName << ")..." << endl;
 }
 
 void CNexusReader::SkippingDisabledBlock(NxsString blockName) 
@@ -41,27 +50,36 @@ void CNexusReader::SkippingDisabledBlock(NxsString blockName)
 
 void CNexusReader::OutputComment(const NxsString &msg)
 {
-    m_fOut << msg;
+    GetOutStream() << msg;
 }
 
 void CNexusReader::NexusError(NxsString msg, file_pos pos, unsigned line, unsigned col)
 {
-    m_fOut << endl;
-    m_fOut << "Error found at line " << line;
-    m_fOut << ", column " << col;
-    m_fOut << " (file position " << pos << "):" << endl;
-    m_fOut << msg << endl;
+    GetOutStream() << endl;
+    GetOutStream() << "Error found at line " << line;
+    GetOutStream() << ", column " << col;
+    GetOutStream() << " (file position " << pos << "):" << endl;
+    GetOutStream() << msg << endl;
 
     exit(0);
 }
 
-ostream &CNexusReader::GetOutStream() 
+ostream &CNexusReader::GetOutStream()
 {
     if (m_fOut)
     {
         return m_fOut;
     }
     return cout;
+}
+
+istream &CNexusReader::GetInStream() 
+{
+    if (m_fIn)
+    {
+        return m_fIn;
+    }
+    return cin;
 }
 
 void CNexusReader::statusMessage(const std::string & m) const
@@ -73,11 +91,9 @@ void CNexusReader::statusMessage(const std::string & m) const
      * which we dont want...
      */
     /*
-    ostream &oStream = GetOutStream();
-    
 	if (alwaysReportStatusMessages || currentWarningLevel == UNCOMMON_SYNTAX_WARNING) 
     {
-	    oStream << m << std::endl;
+	    GetOutStream() << m << endl;
 	}
     */
 }
