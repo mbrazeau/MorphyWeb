@@ -23,11 +23,11 @@ private:
     ifstream m_fIn;
 };
 
-class MyToken : public NxsToken
+class CNexusToken : public NxsToken
 {
 public:
 
-    MyToken(istream &is, ostream &os) : NxsToken(is), m_fOut(os){}
+    CNexusToken(istream &is, ostream &os) : NxsToken(is), m_fOut(os){}
 
     void OutputComment(const NxsString &msg)
     {
