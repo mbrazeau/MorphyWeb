@@ -1,6 +1,6 @@
 #include "NexusParse.h"
 
-CNexusParse::CNexusParse(char *infname, char *outfname)
+CNexusParse::CNexusParse(string *infname, string *outfname)
 {
     m_cNexus = new CNexusReader(infname, outfname);
     m_cTaxa  = new NxsTaxaBlock();
@@ -23,10 +23,17 @@ CNexusParse::~CNexusParse()
     delete m_cNexus;
 }
 
-void CNexusParse::ReadNexusFile()
+bool CNexusParse::ReadNexusFile()
 {
-    CNexusToken token(m_cNexus->GetInStream(), m_cNexus->GetOutStream());
-    m_cNexus->Execute(token);
+    bool bRet = false;
+    istream &iStream = m_cNexus->GetInStream();
+    if (iStream != cin)
+    {
+        CNexusToken token(iStream, m_cNexus->GetOutStream());
+        m_cNexus->Execute(token);
+        bRet = true;
+    }
+    return bRet;
 }
 
 void CNexusParse::Report()

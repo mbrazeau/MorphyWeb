@@ -42,43 +42,6 @@ private:
     string m_strHelpText;
 };
 
-#define NEW_COMMAND_DEFINE(type) \
-    class type : public CNexusMenuBase \
-    { \
-    public:\
-        type(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){}\
-        bool MenuFunction(CNexusUserInterface *pNexusUserInterface);\
-    };
-
-NEW_COMMAND_DEFINE(CNexusMenuSpacer         )
-                                            
-NEW_COMMAND_DEFINE(CNexusMenuOpenFile       )
-NEW_COMMAND_DEFINE(CNexusMenuSaveFile       )
-NEW_COMMAND_DEFINE(CNexusMenuCloseFile      )
-                                            
-NEW_COMMAND_DEFINE(CNexusMenuHelp           )
-NEW_COMMAND_DEFINE(CNexusMenuQuit           )
-NEW_COMMAND_DEFINE(CNexusMenuAbout          )
-NEW_COMMAND_DEFINE(CNexusMenuLog            )
-NEW_COMMAND_DEFINE(CNexusMenuStatus         )
-NEW_COMMAND_DEFINE(CNexusMenuChdir          )
-                                            
-NEW_COMMAND_DEFINE(CNexusMenuExclude        )
-NEW_COMMAND_DEFINE(CNexusMenuInclude        )
-NEW_COMMAND_DEFINE(CNexusMenuOutgroup       )
-NEW_COMMAND_DEFINE(CNexusMenuIngroup        )
-NEW_COMMAND_DEFINE(CNexusMenuChar           )
-
-NEW_COMMAND_DEFINE(CNexusMenuHeuristicSearch)
-NEW_COMMAND_DEFINE(CNexusMenuExhaust        )
-NEW_COMMAND_DEFINE(CNexusMenuBNB            )
-NEW_COMMAND_DEFINE(CNexusMenuBootstrap      )
-NEW_COMMAND_DEFINE(CNexusMenuJackknife      )
-NEW_COMMAND_DEFINE(CNexusMenuSTR            )
-                                            
-NEW_COMMAND_DEFINE(CNexusMenuConsens        )
-NEW_COMMAND_DEFINE(CNexusMenuCollapse       )
-
 class CNexusUserInterface
 {
 public:
@@ -86,12 +49,46 @@ public:
     CNexusUserInterface();
     ~CNexusUserInterface();
 
-    void PrintMenu();
     void DoMenu();
     bool RunSelection(string strInput);
 
+    bool Spacer() 
+    {
+        return false;
+    }
+    bool OpenFile       ();
+    bool SaveFile       ();
+    bool CloseFile      ();
+               
+    bool Help           ();
+    bool Quit           ();
+    bool About          ();
+    bool Log            ();
+    bool Status         ();
+    bool Chdir          ();
+               
+    bool Exclude        ();
+    bool Include        ();
+    bool Outgroup       ();
+    bool Ingroup        ();
+    bool Char           ();
+               
+    bool HeuristicSearch();
+    bool Exhaust        ();
+    bool BNB            ();
+    bool Bootstrap      ();
+    bool Jackknife      ();
+    bool STR            ();
+               
+    bool Consens        ();
+    bool Collapse       ();
+    bool Report         ();
+
+
 private:
     vector <CNexusMenuBase*> m_vMenu;
+
+    CNexusParse *m_pNexusParse;
 };
 
 

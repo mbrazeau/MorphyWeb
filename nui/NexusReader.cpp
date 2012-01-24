@@ -1,14 +1,14 @@
 #include "NexusReader.h"
 
-CNexusReader::CNexusReader(char *infname, char *outfname) : NxsReader()
+CNexusReader::CNexusReader(string *infname, string *outfname) : NxsReader()
 {
     if (infname)
     {
-        m_fIn.open(infname, ios::binary);
+        m_fIn.open(infname->c_str(), ios::binary);
     }
     if (outfname)
     {
-        m_fOut.open(outfname);
+        m_fOut.open(outfname->c_str());
     }
     if (!m_fIn)
     {

@@ -1,147 +1,49 @@
 #include "nui.h"
 
-bool CNexusMenuSpacer::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    return true;
-}
+#define NEW_COMMAND_DEFINE(type) \
+    class CNexusMenu##type : public CNexusMenuBase \
+    { \
+    public:\
+        CNexusMenu##type(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){}\
+        bool MenuFunction(CNexusUserInterface *pNexusUserInterface)\
+        {\
+            return pNexusUserInterface->type();\
+        }\
+    };
 
-bool CNexusMenuOpenFile::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"OPEN FILE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
+NEW_COMMAND_DEFINE(Spacer         )
+NEW_COMMAND_DEFINE(OpenFile       )
+NEW_COMMAND_DEFINE(SaveFile       )
+NEW_COMMAND_DEFINE(CloseFile      )
 
-bool CNexusMenuSaveFile::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"SAVE FILE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
+NEW_COMMAND_DEFINE(Help           )
+NEW_COMMAND_DEFINE(Quit           )
+NEW_COMMAND_DEFINE(About          )
+NEW_COMMAND_DEFINE(Log            )
+NEW_COMMAND_DEFINE(Status         )
+NEW_COMMAND_DEFINE(Chdir          )
 
-bool CNexusMenuCloseFile::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"CLOSE FILE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
+NEW_COMMAND_DEFINE(Exclude        )
+NEW_COMMAND_DEFINE(Include        )
+NEW_COMMAND_DEFINE(Outgroup       )
+NEW_COMMAND_DEFINE(Ingroup        )
+NEW_COMMAND_DEFINE(Char           )
 
-bool CNexusMenuHelp::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    pNexusUserInterface->PrintMenu();
-    return true;
-}
+NEW_COMMAND_DEFINE(HeuristicSearch)
+NEW_COMMAND_DEFINE(Exhaust        )
+NEW_COMMAND_DEFINE(BNB            )
+NEW_COMMAND_DEFINE(Bootstrap      )
+NEW_COMMAND_DEFINE(Jackknife      )
+NEW_COMMAND_DEFINE(STR            )
 
-bool CNexusMenuQuit::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"Thanks for visiting..."<<endl;
-    return false;
-}
-
-bool CNexusMenuAbout::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"ABOUT STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuLog::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"LOG STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuStatus::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"STATUS STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuChdir::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"CHDIR STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuExclude::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"EXCLUDE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuInclude::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"INCLUDE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuOutgroup::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"OUTGROUP STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuIngroup::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"INGROUP STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuChar::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"CHAR STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-                         
-bool CNexusMenuHeuristicSearch::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"HEURISTIC SEARCH STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuExhaust::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"EXHAUST STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuBNB::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"BNB STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuBootstrap::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"BOOTSTRAP STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuJackknife::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"JACKKNIFE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuSTR::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"STR STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-                         
-bool CNexusMenuConsens::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"CONSENS STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
-bool CNexusMenuCollapse::MenuFunction(CNexusUserInterface *pNexusUserInterface)
-{
-    cout<<"COLLAPSE STILL NEEDS TO BE IMPLEMENTED"<<endl;
-    return true;
-}
-
+NEW_COMMAND_DEFINE(Consens        )
+NEW_COMMAND_DEFINE(Collapse       )
+NEW_COMMAND_DEFINE(Report         )
 
 CNexusUserInterface::CNexusUserInterface()
 {
+    m_pNexusParse = NULL;
+
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "File"));
     m_vMenu.push_back(new CNexusMenuOpenFile        ("O", "Open a file"));
     m_vMenu.push_back(new CNexusMenuCloseFile       ("C", "Close a file"));
@@ -173,6 +75,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Results"));
     m_vMenu.push_back(new CNexusMenuConsens         ("CONSENS" , "Compute consensus tree for trees in memory"));
     m_vMenu.push_back(new CNexusMenuCollapse        ("COLLAPSE", "Collapse zero-length branches, condense the tree set"));
+    m_vMenu.push_back(new CNexusMenuReport          ("REPORT", "Print a report about the current open file"));
 }
 
 CNexusUserInterface::~CNexusUserInterface()
@@ -191,25 +94,10 @@ CNexusUserInterface::~CNexusUserInterface()
     m_vMenu.clear();
 }
 
-void CNexusUserInterface::PrintMenu()
-{
-    vector<CNexusMenuBase*>::iterator it;
-    CNexusMenuBase* pMenu;
-
-    for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
-    {
-        pMenu = *it;
-        if (pMenu)
-        {
-            cout<<pMenu->GetMenuOutput()<<endl;
-        }
-    }
-}
-
 void CNexusUserInterface::DoMenu()
 {
     string strInput;
-    PrintMenu();
+    Help();
     do
     {
         cout<<"Enter selection# ";
@@ -234,15 +122,187 @@ bool CNexusUserInterface::RunSelection(string strInput)
     return true;
 }
 
+bool CNexusUserInterface::OpenFile()
+{
+    string strFilename;
+
+    cout<<" Enter filename: ";
+    cin>>strFilename;
+    m_pNexusParse = new CNexusParse(&strFilename, NULL);
+    if (m_pNexusParse)
+    {
+        if (m_pNexusParse->ReadNexusFile())
+        {
+            cout<<endl<<" "<<strFilename<<" open successfully"<<endl<<endl;
+        }
+        else
+        {
+            delete m_pNexusParse;
+            m_pNexusParse = NULL;
+            cout<<"Error: Unable to read "<<strFilename<<endl;
+        }
+    }
+    else
+    {
+        cout<<"Error: Unable to open "<<strFilename<<endl;
+    }
+    return true;
+}
+
+bool CNexusUserInterface::SaveFile       ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::CloseFile      ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Help           ()
+{
+    vector<CNexusMenuBase*>::iterator it;
+    CNexusMenuBase* pMenu;
+
+    for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
+    {
+        pMenu = *it;
+        if (pMenu)
+        {
+            cout<<pMenu->GetMenuOutput()<<endl;
+        }
+    }
+    return true;
+}
+
+bool CNexusUserInterface::Quit           ()
+{
+    return false;
+}
+
+bool CNexusUserInterface::About          ()
+{
+    cout<<endl<<"Copyright 2012 (C) Martin Brazeau, and Chris Desjardins. All rights reserved."<<endl;
+    cout<<"This program uses the NCL by Paul O. Lewis."<<endl<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Log            ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Status         ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Chdir          ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Exclude        ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Include        ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Outgroup       ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Ingroup        ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Char           ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::HeuristicSearch()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Exhaust        ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::BNB            ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Bootstrap      ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Jackknife      ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::STR            ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Consens        ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Collapse       ()
+{
+    cout<<"Not implemented"<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::Report()
+{
+    if (m_pNexusParse)
+    {
+        m_pNexusParse->Report();
+    }
+    else
+    {
+        cout<<endl<<"No file is currently open"<<endl<<endl;
+    }
+    return true;
+}
+
 int main(int argc, char *argv[])
 {
     CNexusUserInterface ui;
     ui.DoMenu();
-    /*
-    CNexusParse cNexusParse(argv[1], argv[2]);
-    cNexusParse.ReadNexusFile();
-    cNexusParse.Report();
-    */
+    
     return 0;
 }
 

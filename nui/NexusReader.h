@@ -5,7 +5,7 @@
 class CNexusReader : public NxsReader
 {
 public:
-    CNexusReader(char *infname, char *outfname);
+    CNexusReader(string *infname, string *outfname);
     ~CNexusReader();
     void ExecuteStarting();
     void ExecuteStopping();
