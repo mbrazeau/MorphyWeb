@@ -34,6 +34,15 @@ CNexusUserInterface::CNexusUserInterface()
 
 CNexusUserInterface::~CNexusUserInterface()
 {
+    vector<CNexusMenuBase*>::iterator it;
+    CNexusMenuBase* pMenu;
+
+    for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
+    {
+        pMenu = *it;
+        delete(pMenu);
+    }
+    m_vMenu.clear();
 }
 
 void CNexusUserInterface::PrintMenu()
