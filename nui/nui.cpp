@@ -92,6 +92,11 @@ CNexusUserInterface::~CNexusUserInterface()
         }
     }
     m_vMenu.clear();
+    if (m_pNexusParse)
+    {
+        delete m_pNexusParse;
+        m_pNexusParse = NULL;
+    }    
 }
 
 void CNexusUserInterface::DoMenu()
@@ -157,7 +162,16 @@ bool CNexusUserInterface::SaveFile       ()
 
 bool CNexusUserInterface::CloseFile      ()
 {
-    cout<<"Not implemented"<<endl;
+    if (m_pNexusParse)
+    {
+        delete m_pNexusParse;
+        m_pNexusParse = NULL;
+        cout<<endl<<"Successfully closed open file..."<<endl<<endl;
+    }
+    else
+    {
+        cout<<endl<<"No file is currently open"<<endl<<endl;
+    }
     return true;
 }
 

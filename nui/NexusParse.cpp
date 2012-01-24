@@ -27,6 +27,7 @@ bool CNexusParse::ReadNexusFile()
 {
     bool bRet = false;
     istream &iStream = m_cNexus->GetInStream();
+    /* This needs to be improved... */
     if (iStream != cin)
     {
         CNexusToken token(iStream, m_cNexus->GetOutStream());
