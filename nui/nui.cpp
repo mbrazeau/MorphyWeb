@@ -40,7 +40,10 @@ CNexusUserInterface::~CNexusUserInterface()
     for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
     {
         pMenu = *it;
-        delete(pMenu);
+        if (pMenu)
+        {
+            delete(pMenu);
+        }
     }
     m_vMenu.clear();
 }
@@ -53,7 +56,10 @@ void CNexusUserInterface::PrintMenu()
     for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
     {
         pMenu = *it;
-        cout<<pMenu->GetMenuOutput()<<endl;
+        if (pMenu)
+        {
+            cout<<pMenu->GetMenuOutput()<<endl;
+        }
     }
 }
 
@@ -76,7 +82,7 @@ bool CNexusUserInterface::RunSelection(string strInput)
     for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
     {
         pMenu = *it;
-        if (pMenu->IsSelection(strInput))
+        if ((pMenu) && (pMenu->IsSelection(strInput)))
         {
             return pMenu->MenuFunction(this);
         }
