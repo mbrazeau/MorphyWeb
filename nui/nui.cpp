@@ -1,107 +1,11 @@
-#include "ncl/ncl.h"
+#include "NexusParse.h"
 
-class MyReader : public NxsReader
-    {
-    public:
-        ifstream inf;
-        ofstream outf;
-
-        MyReader(char *infname, char *outfname) : NxsReader()
-        {
-            inf.open(infname, ios::binary);
-            outf.open(outfname);
-        }
-
-        ~MyReader()
-        {
-            inf.close();
-            outf.close();
-        }
-
-    void ExecuteStarting() {}
-    void ExecuteStopping() {}
-
-    bool EnteringBlock(NxsString blockName)
-    {
-        cout << "Reading \"" << blockName << "\" block..." << endl;
-        outf << "Reading \"" << blockName << "\" block..." << endl;
-
-        // Returning true means it is ok to delete any data associated with 
-        // blocks of this type read in previously
-        //
-        return true;    
-    }
-
-    void SkippingBlock(NxsString blockName)
-    {
-        cout << "Skipping unknown block (" << blockName << ")..." << endl;
-        outf << "Skipping unknown block (" << blockName << ")..." << endl;
-    }
-
-    void SkippingDisabledBlock(NxsString blockName) {}
-
-    void OutputComment(const NxsString &msg)
-    {
-        outf << msg;
-    }
-
-    void NexusError(NxsString msg, file_pos pos, unsigned line, unsigned col)
-    {
-        cerr << endl;
-        cerr << "Error found at line " << line;
-        cerr << ", column " << col;
-        cerr << " (file position " << pos << "):" << endl;
-        cerr << msg << endl;
-
-        outf << endl;
-        outf << "Error found at line " << line;
-        outf << ", column " << col;
-        outf << " (file position " << pos << "):" << endl;
-        outf << msg << endl;
-
-        exit(0);
-    }
-};
-
-class MyToken : public NxsToken
-{
-    public:
-
-        MyToken(istream &is, ostream &os) : NxsToken(is), out(os){}
-
-        void OutputComment(const NxsString &msg)
-        {
-            cout << msg << endl;
-            out << msg << endl;
-        }
-
-    private:
-        ostream &out;
-};
 
 int main(int argc, char *argv[])
 {
-    NxsCharactersBlock  *chars = NULL;
-    NxsTaxaBlock        *taxa  = NULL;
-    NxsTreesBlock       *trees = NULL;
-    NxsDataBlock        *data = NULL;
-    taxa  = new NxsTaxaBlock();
-    chars = new NxsCharactersBlock(0, 0);
-    trees = new NxsTreesBlock(taxa);
-    data  = new NxsDataBlock(0, 0);
-
-    MyReader nexus(argv[1], argv[2]);
-    nexus.Add(taxa);
-    nexus.Add(trees);
-    nexus.Add(chars);
-    nexus.Add(data);
-
-    MyToken token(nexus.inf, nexus.outf);
-    nexus.Execute(token);
-
-    taxa->Report(nexus.outf);
-    trees->Report(nexus.outf);
-
+    CNexusParse cNexusParse(argv[1], argv[2]);
+    cNexusParse.ReadNexusFile();
+    cNexusParse.Report();
     return 0;
 }
 
