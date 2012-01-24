@@ -7,8 +7,8 @@ NAME	SHORTCUT	DESCRIPTION
 
 File Commands:
 ===========================================================================
-OPEN	C	opens a file
-CLOSE	O	closes a file
+OPEN	O	opens a file
+CLOSE	C	closes a file
 SAVE	S	saves according to the options
 
 Program Commands:
