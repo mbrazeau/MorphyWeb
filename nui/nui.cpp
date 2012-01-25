@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include "nui.h"
 
 /* 
@@ -41,7 +42,7 @@ NEW_COMMAND_DEFINE(CloseFile      )
 NEW_COMMAND_DEFINE(Help           )
 NEW_COMMAND_DEFINE(Quit           )
 NEW_COMMAND_DEFINE(About          )
-NEW_COMMAND_DEFINE(Log            )
+NEW_COMMAND_DEFINE(CommandLog     )
 NEW_COMMAND_DEFINE(Status         )
 NEW_COMMAND_DEFINE(Chdir          )
 
@@ -69,6 +70,7 @@ NEW_COMMAND_DEFINE(Report         )
 CNexusUserInterface::CNexusUserInterface()
 {
     m_pNexusParse = NULL;
+    m_strCwd = "./";
 
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "File"));
     m_vMenu.push_back(new CNexusMenuOpenFile        ("O", "Open a file"));
@@ -76,7 +78,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_vMenu.push_back(new CNexusMenuSaveFile        ("S", "Save according to the options"));
 
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Program"));
-    m_vMenu.push_back(new CNexusMenuLog             ("LOG" ,"Toggles record of commands, variable states, etc"));
+    m_vMenu.push_back(new CNexusMenuCommandLog      ("LOG" ,"Toggles record of commands, variable states, etc"));
     m_vMenu.push_back(new CNexusMenuStatus          ("STAT","Prints status of all current settings, eg. logmode on/off"));
     m_vMenu.push_back(new CNexusMenuChdir           ("CD"  ,"change working directory"));
     m_vMenu.push_back(new CNexusMenuHelp            ("H"   , "Help"));
@@ -122,6 +124,20 @@ CNexusUserInterface::~CNexusUserInterface()
     }
     m_vMenu.clear();
     CloseFile(false);
+    if (m_fCommandLog)
+    {
+        m_fCommandLog.close();
+    }
+}
+
+void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
+{
+    cout<<strPrompt;
+    cin>>*strInput;
+    if (m_fCommandLog)
+    {
+        m_fCommandLog<<*strInput<<endl;
+    }
 }
 
 /*
@@ -133,8 +149,7 @@ void CNexusUserInterface::DoMenu()
     Help();
     do
     {
-        cout<<"Enter selection# ";
-        cin>>strInput;
+        GetUserInput("Enter selection# " ,&strInput);
     } while (RunSelection(strInput));
 }
 
@@ -157,7 +172,7 @@ bool CNexusUserInterface::RunSelection(string strInput)
             return pMenu->MenuFunction(this);
         }
     }
-    cout<<"Unknown command: "<<strInput<<endl;
+    cout<<" Unknown command: "<<strInput<<endl;
     return true;
 }
 
@@ -169,8 +184,8 @@ bool CNexusUserInterface::OpenFile()
 {
     string strFilename;
 
-    cout<<" Enter filename: ";
-    cin>>strFilename;
+    GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
+    strFilename = m_strCwd + strFilename;
     m_pNexusParse = new CNexusParse();
     if (m_pNexusParse)
     {
@@ -240,6 +255,7 @@ bool CNexusUserInterface::Help           ()
 
 bool CNexusUserInterface::Quit           ()
 {
+    cout<<endl;
     return false;
 }
 
@@ -252,9 +268,22 @@ bool CNexusUserInterface::About          ()
     return true;
 }
 
-bool CNexusUserInterface::Log            ()
+bool CNexusUserInterface::CommandLog     ()
 {
-    cout<<"Not implemented"<<endl;
+    string strFilename;
+    
+    GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+    strFilename = m_strCwd + strFilename;
+
+    m_fCommandLog.open(strFilename.c_str());
+    if (m_fCommandLog)
+    {
+        cout<<endl<<" Successfully opened '"<<strFilename<<"'"<<endl<<endl;
+    }
+    else
+    {
+        cout<<endl<<" Error: Unable to open '"<<strFilename<<"'"<<endl<<endl;
+    }
     return true;
 }
 
@@ -266,7 +295,23 @@ bool CNexusUserInterface::Status         ()
 
 bool CNexusUserInterface::Chdir          ()
 {
-    cout<<"Not implemented"<<endl;
+    string strCwd;
+    struct stat st;
+
+    GetUserInput(" Enter new working directory: ", &strCwd);
+    if (strCwd[strCwd.length() - 1] != '/')
+    {
+        strCwd += "/";
+    }
+    if ((stat(strCwd.c_str(), &st) == 0) && (S_ISDIR(st.st_mode)))
+    {
+        cout<<" Setting working directory to: "<<strCwd<<endl<<endl;
+        m_strCwd = strCwd;
+    }
+    else
+    {
+        cout<<" Error: Invalid directory '"<<strCwd<<"'"<<endl<<endl;
+    }
     return true;
 }
 

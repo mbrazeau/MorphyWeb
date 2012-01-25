@@ -51,8 +51,7 @@ bool CNexusParse::ReadNexusFile(string *infname, string *outfname)
             m_cNexus->Add(m_cData);
            
             istream &iStream = m_cNexus->GetInStream();
-            /* This needs to be improved... */
-            if (iStream != cin)
+            if (iStream)
             {
                 CNexusToken token(iStream, m_cNexus->GetOutStream());
                 m_cNexus->Execute(token);

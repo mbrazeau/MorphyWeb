@@ -66,7 +66,7 @@ public:
     bool Help           ();
     bool Quit           ();
     bool About          ();
-    bool Log            ();
+    bool CommandLog     ();
     bool Status         ();
     bool Chdir          ();
                
@@ -89,9 +89,11 @@ public:
 
 
 private:
+    void GetUserInput(string strPrompt, string *strInput);
     vector <CNexusMenuBase*> m_vMenu;
-
     CNexusParse *m_pNexusParse;
+    string m_strCwd;
+    ofstream m_fCommandLog;
 };
 
 

@@ -10,16 +10,18 @@ CNexusReader::CNexusReader(string *infname, string *outfname) : NxsReader()
     {
         m_fOut.open(outfname->c_str());
     }
-    if (!m_fIn)
-    {
-        GetOutStream()<<"No input file supplied, using stdin"<<endl;
-    }
 }
 
 CNexusReader::~CNexusReader()
 {
-    m_fIn.close();
-    m_fOut.close();
+    if (m_fIn)
+    {
+        m_fIn.close();
+    }
+    if (m_fOut)
+    {
+        m_fOut.close();
+    }
 }
 
 void CNexusReader::ExecuteStarting()
@@ -75,11 +77,7 @@ ostream &CNexusReader::GetOutStream()
 
 istream &CNexusReader::GetInStream() 
 {
-    if (m_fIn)
-    {
-        return m_fIn;
-    }
-    return cin;
+    return m_fIn;
 }
 
 void CNexusReader::statusMessage(const std::string & m) const
