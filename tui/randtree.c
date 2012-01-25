@@ -131,9 +131,22 @@ struct tree *randunrooted(int ntax, int numnodes)
     return (randtree);
 }
 
-void mfl_tryall_traversal(node *n, int ntax, int numnodes, tree *treebuffer, charstate *tipdata)
+void mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int nchar, 
+                int numnodes, int *bestlen, tree *starttree, tree **treebuffer, 
+                charstate *tipdata)
 {
+    int trlen;
     node *p;
+    
+    if (n->start) {
+        bestpos = n->outedge;
+        mfl_insert_branch(newbranch, n->outedge);
+        trlen = mfl_get_treelen(starttree, tipdata, ntax, nchar);
+        mfl_remove_branch(newbranch);
+        mfl_tryall(n->outedge, newbranch, bestpos, ntax, nchar, numnodes, 
+                   bestlen, starttree, treebuffer, tipdata);
+        return;
+    }
     
     if (n->tip) {
         return;
@@ -141,21 +154,18 @@ void mfl_tryall_traversal(node *n, int ntax, int numnodes, tree *treebuffer, cha
     
     p = p->next;
     while (p != n) {
-        mfl_tryall_traversal(p->outedge, ntax, numnodes, treebuffer, tipdata);
+        mfl_tryall(p->outedge, newbranch, bestpos, ntax, nchar, numnodes, 
+                   bestlen, starttree, treebuffer, tipdata);
         p = p->next;
     }
 }
 
-void mfl_tryall(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
+struct tree *mfl_addseq_AsIs(int ntax, int nchar, int numnodes, 
+                             tree **treebuffer, charstate *tipdata)
 {
-    int bestlen;
-    int *bstln_p = &bestlen;
-}
-
-struct tree *mfl_addseq_AsIs(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
-{
-    int i;
-    node *p, *arbroot;
+    int i, nbeslen = 0;
+    int *bestlen = &nbeslen;
+    node *p, *arbroot, *bestpos=NULL;
     tree *asistree;
     
     asistree = alloctree(ntax, numnodes);
@@ -172,14 +182,18 @@ struct tree *mfl_addseq_AsIs(int ntax, int numnodes, tree **treebuffer, charstat
     } while (p != asistree->trnodes[ntax + 1]);
     
     for (i = 3; i < ntax; ++i) {
-        joinNodes(asistree->trnodes[i], asistree->trnodes[ntax + 2]->next);
+        joinNodes(asistree->trnodes[i], asistree->trnodes[ntax + i - 1]->next);
     }
     
     arbroot = asistree->trnodes[0];
+    arbroot->start = true;
     treebuffer[0] = asistree;
     
     for (i = 3; i < ntax; ++i) {
-        mfl_try_all_placements(ntax, numnodes, treebuffer, tipdata);
+        mfl_tryall(arbroot, asistree->trnodes[i], bestpos, ntax, nchar, numnodes, bestlen, asistree, treebuffer, tipdata);
+        //Join the nodes//
+        // joinNodes(asistree->trnodes[i], bestpos);
+        bestpos = NULL;
     }
     
     return asistree;
