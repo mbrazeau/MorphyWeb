@@ -131,10 +131,31 @@ struct tree *randunrooted(int ntax, int numnodes)
     return (randtree);
 }
 
-struct tree *mfl_stree_asis(int ntax, int numnodes, tree *treebuffer, charstate *tipdata)
+void mfl_tryall_traversal(node *n, int ntax, int numnodes, tree *treebuffer, charstate *tipdata)
+{
+    node *p;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    p = p->next;
+    while (p != n) {
+        mfl_tryall_traversal(p->outedge, ntax, numnodes, treebuffer, tipdata);
+        p = p->next;
+    }
+}
+
+void mfl_tryall(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
+{
+    int bestlen;
+    int *bstln_p = &bestlen;
+}
+
+struct tree *mfl_addseq_AsIs(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
 {
     int i;
-    node *p;
+    node *p, *arbroot;
     tree *asistree;
     
     asistree = alloctree(ntax, numnodes);
@@ -143,13 +164,22 @@ struct tree *mfl_stree_asis(int ntax, int numnodes, tree *treebuffer, charstate 
     /* The 'magic number' 3 appears here because that is all the value can ever
      * be. The smallest non-trivial rooted bifurcating tree has three leaves */
     p = asistree->trnodes[ntax + 1];
-    for (i = 0; i < 3; ++i) {
-        joinNodes(asistree->trnodes[0], p);
+    i = 0;
+    do {
+        joinNodes(asistree->trnodes[i], p);
         p = p->next;
-    }
+        ++i;
+    } while (p != asistree->trnodes[ntax + 1]);
     
     for (i = 3; i < ntax; ++i) {
-        printf("something will happen here\n");
+        joinNodes(asistree->trnodes[i], asistree->trnodes[ntax + 2]->next);
+    }
+    
+    arbroot = asistree->trnodes[0];
+    treebuffer[0] = asistree;
+    
+    for (i = 3; i < ntax; ++i) {
+        mfl_try_all_placements(ntax, numnodes, treebuffer, tipdata);
     }
     
     return asistree;
