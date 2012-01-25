@@ -94,7 +94,7 @@ struct tree *randunrooted(int ntax, int numnodes)
     node *p, *q;
     tree *randtree;
 
-    taxarray = malloc(ntax * sizeof(int));
+    taxarray =(int*) malloc(ntax * sizeof(int));
     init_taxarray(taxarray, ntax);
     
     shuffle(taxarray, ntax);

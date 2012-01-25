@@ -103,7 +103,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Results"));
     m_vMenu.push_back(new CNexusMenuConsens         ("CONSENS" , "Compute consensus tree for trees in memory"));
     m_vMenu.push_back(new CNexusMenuCollapse        ("COLLAPSE", "Collapse zero-length branches, condense the tree set"));
-    m_vMenu.push_back(new CNexusMenuReport          ("REPORT", "Print a report about the current open file"));
+    m_vMenu.push_back(new CNexusMenuReport          ("REPORT"  , "Print a report about the current open nexus file"));
 }
 
 /*

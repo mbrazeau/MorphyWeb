@@ -156,6 +156,8 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
                        int nchar, int numnodes, long int *current, 
                        charstate *tipdata, bool *undertreelimitlong, 
                        long int *currentbesttree, bool *foundbettertree);
+void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
+                    tree **treeset, int starttreelen);
 void test_nni(int ntax, int numnodes);
 
 /*End function prototypes*/

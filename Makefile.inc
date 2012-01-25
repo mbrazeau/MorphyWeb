@@ -1,3 +1,4 @@
+CC = g++
 AR          = ar
 ODIR        = obj
 OBJECTS     = $(patsubst %,$(ODIR)/%,$(OBJS))
