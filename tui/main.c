@@ -727,11 +727,7 @@ void mini_test_analysis(void)
      * This is simple enough to create a 'rigged' dataset for.*/
     char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
-    anewtree = readNWK(aNewickTree, isRooted);
-    arandomtree = randrooted(ntax, numnodes);
-    printf("\nThis is the target tree: \n");
-    printNewick(anewtree->root);
-    printf("\n\n");
+    
     
     /* A search with this dataset rigged to favour the topology of aNewickTree */
     char usrTipdata[] = {  
@@ -795,12 +791,22 @@ void mini_test_analysis(void)
     
     /* Initialize the tree array that will store optimal trees */
     tree **savedtrees = (tree**) malloc(treelimit * sizeof(tree*));
+    anewtree = readNWK(aNewickTree, isRooted);
+    arandomtree = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 0);  //randrooted(ntax, numnodes);
+    printf("\nThis is the target tree: \n");
+    printNewick(anewtree->root);
+    printf("\n\n");
+    
+    mfl_root_tree(arandomtree, 1, ntax);
+    printf("\nThis is a tree by random addition sequence: \n");
+    printNewick(arandomtree->root);
+    printf("\n\n");
     
     // Start with a (random, in this case) starting tree. 
     // Different algorithms will be written for doing this (as there are better
     // ways to do it) but we'll use randunrooted for now.
     
-    savedtrees[0] = randunrooted(ntax, numnodes);
+    savedtrees[0] = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 0);
     //Get a length for the starting tree.
     mfl_root_tree(savedtrees[0], 1, ntax);
     int *besttreelen_p = &besttreelen;
@@ -833,17 +839,16 @@ void mini_test_analysis(void)
         *currentchar = *currentchar + 1;
         mfl_fitch_postorder(anewtree->root, treelength_p);
     }
+    printf("The 'user' tree:\n");
+    printNewick(anewtree->root);
+    printf("\n");
+    printf("The length of the user tree: %i steps\n\n", *treelength_p);
     
     for (i = 0, *currentchar = 0; i < nchar; ++i) {
         mfl_apply_tipdata(arandomtree, morphyTipdata, ntax, nchar, *currentchar);
         *currentchar = *currentchar + 1;
         mfl_fitch_postorder(arandomtree->root, treelength_q);
     }
-
-    printf("The 'user' tree:\n");
-    printNewick(anewtree->root);
-    printf("\n");
-    printf("The length of the user tree: %i steps\n\n", *treelength_p);
     printf("The random tree:\n");
     printNewick(arandomtree->root);
     printf("\n");
@@ -881,7 +886,7 @@ void testNWKreading(void)
 
 int main(void)
 {
-    int ntax = 12;
+    int ntax = 9;
     int numnodes;
     //bool isRooted = true;
     
@@ -935,11 +940,10 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
-    mfl_arb_resolve(anewtree->trnodes[ntax], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
+    mfl_arb_resolve(anewtree->trnodes[ntax+1], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
     printf("With resolved node: ");
     printNewick(anewtree->root);
     printf("\n");
-    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
     //dump_nodearray(copiedtree->trnodes, ntax, numnodes);

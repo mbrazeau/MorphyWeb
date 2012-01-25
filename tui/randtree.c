@@ -11,9 +11,9 @@
 
 #include "morphy.h"
 
-/*bool isodd (float seedn)
+bool mfl_headtail (void)
 {
-    if (seedn % 2 == 0)
+    if (rand()% 2 == 0)
     {
         return false;
     }
@@ -21,8 +21,7 @@
     {
         return true;
     }
-    
-}*/
+}
 
 /* Taxon shuffle using array shuffle by Ben Pfaff http://benpfaff.org/writings/clc/shuffle.html 
  * ****NOTE******: Will be modified to employ the GSL random number generator*/
@@ -72,8 +71,9 @@ struct tree *randrooted(int ntax, int numnodes)
     tree *randtree;
     randtree = randunrooted(ntax, numnodes);
     randtree->trnodes[0]->start = false;
-    mfl_root_tree(randtree, 1, ntax);    // The second argument should eventually be replaced by a randomly drawn number between 0 and ntax-1
-    
+    mfl_root_tree(randtree, 1, ntax);    // The second argument should 
+                                         // eventually be replaced by a randomly 
+                                         // drawn number between 0 and ntax-1
     return (randtree);
 }
 
@@ -131,44 +131,93 @@ struct tree *randunrooted(int ntax, int numnodes)
     return (randtree);
 }
 
-void mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int nchar, 
-                int numnodes, int *bestlen, tree *starttree, tree **treebuffer, 
-                charstate *tipdata)
+struct node *mfl_breaktie_intryall(node *bestpos, node *n)
 {
-    int trlen;
+    if (mfl_headtail()) {
+        bestpos = n;
+    }
+    
+    return bestpos;
+}
+
+void mfl_temproot(tree *trtoroot, int root, int ntax)
+{
+    node *lftbr, *rtbr;
+    
+    lftbr = trtoroot->trnodes[root];
+    rtbr = lftbr->outedge;
+    
+    joinNodes(lftbr, trtoroot->trnodes[ntax]->next);
+    joinNodes(rtbr, trtoroot->trnodes[ntax]->next->next);
+    
+    trtoroot->root = trtoroot->trnodes[ntax];
+    trtoroot->trnodes[0]->start = false;
+}
+
+void mfl_undo_temproot(int ntax, tree *trtounroot)
+{
+    node *lftbr, *rtbr;
+    
+    lftbr = trtounroot->trnodes[ntax]->next->outedge;
+    rtbr = trtounroot->trnodes[ntax]->next->next->outedge;
+    
+    joinNodes(lftbr, rtbr);
+    
+    trtounroot->root = NULL;
+    trtounroot->trnodes[0]->start = true;
+    
+}
+
+void mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int nchar, 
+                int numnodes, int *bestlen, tree *starttree, charstate *tipdata)
+{
+    int trlen = 0;
     node *p;
     
-    if (n->start) {
-        bestpos = n->outedge;
-        mfl_insert_branch(newbranch, n->outedge);
+    if (n->outedge) {
+        mfl_insert_branch(newbranch, n, ntax);
         trlen = mfl_get_treelen(starttree, tipdata, ntax, nchar);
+        starttree->length = trlen;
+        if (trlen < *bestlen) {
+            bestpos = n;
+            *bestlen = trlen;
+        }
+        if (trlen == *bestlen) {
+            bestpos = mfl_breaktie_intryall(bestpos, n);
+        }
         mfl_remove_branch(newbranch);
-        mfl_tryall(n->outedge, newbranch, bestpos, ntax, nchar, numnodes, 
-                   bestlen, starttree, treebuffer, tipdata);
-        return;
     }
     
     if (n->tip) {
         return;
-    }
+    }    
     
-    p = p->next;
+    p = n->next;
     while (p != n) {
         mfl_tryall(p->outedge, newbranch, bestpos, ntax, nchar, numnodes, 
-                   bestlen, starttree, treebuffer, tipdata);
+                   bestlen, starttree, tipdata);
         p = p->next;
     }
 }
 
-struct tree *mfl_addseq_AsIs(int ntax, int nchar, int numnodes, 
-                             tree **treebuffer, charstate *tipdata)
+struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
+                                 charstate *tipdata, bool addRandom)
 {
-    int i, nbeslen = 0;
+    int i, nbeslen = 1000;
     int *bestlen = &nbeslen;
-    node *p, *arbroot, *bestpos=NULL;
+    int *taxarray;
+    node *p, *arbroot, *bestpos;
     tree *asistree;
     
     asistree = alloctree(ntax, numnodes);
+    
+    taxarray = (int*)malloc(ntax * sizeof(int));
+    init_taxarray(taxarray, ntax);
+    
+    if (addRandom) {
+        printf("Using random addition sequence\n");
+        shuffle(taxarray, ntax);
+    }
     
     /* create the base star */
     /* The 'magic number' 3 appears here because that is all the value can ever
@@ -176,25 +225,37 @@ struct tree *mfl_addseq_AsIs(int ntax, int nchar, int numnodes,
     p = asistree->trnodes[ntax + 1];
     i = 0;
     do {
-        joinNodes(asistree->trnodes[i], p);
+        joinNodes(asistree->trnodes[taxarray[i] - 1], p);
         p = p->next;
         ++i;
     } while (p != asistree->trnodes[ntax + 1]);
     
     for (i = 3; i < ntax; ++i) {
-        joinNodes(asistree->trnodes[i], asistree->trnodes[ntax + i - 1]->next);
+        joinNodes(asistree->trnodes[taxarray[i] - 1], asistree->trnodes[ntax + i - 1]->next);
     }
     
-    arbroot = asistree->trnodes[0];
-    arbroot->start = true;
-    treebuffer[0] = asistree;
+    mfl_temproot(asistree, 0, ntax);
+    asistree->length = *bestlen;
+    bestpos = asistree->trnodes[0];
     
     for (i = 3; i < ntax; ++i) {
-        mfl_tryall(arbroot, asistree->trnodes[i], bestpos, ntax, nchar, numnodes, bestlen, asistree, treebuffer, tipdata);
+        mfl_tryall(asistree->root, asistree->trnodes[taxarray[i] - 1], bestpos, ntax, nchar, 
+                   numnodes, bestlen, asistree, tipdata);
         //Join the nodes//
-        // joinNodes(asistree->trnodes[i], bestpos);
-        bestpos = NULL;
+        printf("Length of current addseq tree: %i\n", asistree->length);
+        mfl_insert_branch(asistree->trnodes[taxarray[i] - 1], bestpos, ntax);
+        *bestlen = 0;
     }
     
+    printf("The starting tree by stepwise addition\n");
+    printNewick(asistree->root);
+    printf("\n");
+    mfl_undo_temproot(ntax, asistree);
+    
+    printf("The starting tree by stepwise addition\n");
+    printNewick(asistree->trnodes[0]);
+    printf("\n");
+    
+    free(taxarray);
     return asistree;
 }

@@ -75,6 +75,7 @@ typedef struct char_data {
 
 void call_index(node *n);
 void dump_nodearray(nodearray nds, int ntax, int numnodes);
+void dump_connections(nodearray nds, int ntax, int numnodes);
 void dump_tree(tree *t, int ntax, int numnodes);
 void init_taxarray(int *taxarray, int ntax);
 void joinNodes(node *n, node *p);
@@ -105,14 +106,15 @@ void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
 long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
 
-/*in random.c*/
+/*in randtree.c*/
 void allunrooted(void /*tree *treearray, int ntaxa*/);
 void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
 long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
 struct tree *randrooted (int ntax, int numnodes);
 struct tree *randunrooted (int ntax, int numnodes);
-
+struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
+                                 charstate *tipdata, bool addRandom);
 /*in taxpart*/
 int strToInt (char string[]);
 void wipe_Og(int outtaxa[], nodearray outgroup);
@@ -134,7 +136,7 @@ void mfl_set_order(node *n);
 void mfl_clear_order(node *n);
 void mfl_set_index(node *n);
 void mfl_put_branch_in_ring(node *n, node *rnode);
-void mfl_insert_branch(node *br, node *target);
+void mfl_insert_branch(node *br, node *target, int ntax);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
 void mfl_deinit_tree(tree *t, int numnodes);
 int mfl_tree_enumerator(void);
@@ -150,7 +152,7 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 
 /*in rearrange.c*/
 void mfl_bswap(node *p, node *q);
-struct node * mfl_remove_branch(node *n);
+void mfl_remove_branch(node *n);
 void mfl_insert_branch(node *br, node *target);
 void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
                        int nchar, int numnodes, long int *current, 

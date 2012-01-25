@@ -282,7 +282,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
         n = n->next->next;
     }
     
-    mfl_insert_branch(in, n);
+    mfl_insert_branch(in, n, ntax);
 }
 
 int mfl_determ_order(node *n)

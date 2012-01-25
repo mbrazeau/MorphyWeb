@@ -25,44 +25,43 @@ void mfl_bswap(node *p, node *q)
     
 }
 
-struct node * mfl_remove_branch(node *n)
+void mfl_remove_branch(node *n)
 {
     node *p, *q, *nb;
     
     nb = n->outedge;
-    
     p = nb->next->outedge;
     q = nb->next->next->outedge;
     nb->next->outedge = NULL;
     nb->next->next->outedge = NULL;
     joinNodes(p, q);
-    
-    nb = nb->next;
-    return nb;
+    //nb = nb->next;
 }
 
-void mfl_insert_branch(node *br, node *target)
+void mfl_insert_branch(node *br, node *target, int ntax)
 {
     // Inserts a branch with a ring base into another branch
     
-    node *p, *bout, *tdesc;
+    node *br1, *br2, *bout, *tdesc, *p;
     
     tdesc = target->outedge;
     
-    // Find an available node in the ring 
-    p = br->next;
-    while (p != br) {
-        if (!p->outedge) {
-            bout = p;
-            p = br;
-        }
-        else {
-            p = p->next;
-        }
+    if (br->tip) {
+        br1 = br->outedge->next;
+        br2 = br1->next;
+    }
+    else {
+        br1 = mfl_seek_ringnode(br, ntax);
+        br2 = mfl_seek_ringnode(br, ntax);
+    }
+
+    if (br1->outedge || br2->outedge) {
+        printf("Error in branch insertion\n");
+        return;
     }
     
-    joinNodes(br, target);
-    joinNodes(bout, tdesc);
+    joinNodes(br1, target);
+    joinNodes(br2, tdesc);
 }
 
 void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
