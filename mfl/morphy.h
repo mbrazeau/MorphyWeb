@@ -19,6 +19,7 @@
 
 //#include <gsl/gsl_rng.h>
 
+#define MORPHY_MAX_STATES 31
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
 
@@ -57,6 +58,16 @@ typedef struct tree {
     int length;
     int index;
 } tree;
+
+typedef struct char_data {
+    int *transeries;
+    int optim_type;
+    bool included;
+    bool informative;
+    int numstates;
+    int *stepmatrix[MORPHY_MAX_STATES][MORPHY_MAX_STATES];
+    void (*optimzation_algo)(node *n, int *trlength);
+} char_data;
 
 /*Function prototypes*/
 
@@ -128,7 +139,8 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
 void mfl_deinit_tree(tree *t, int numnodes);
 int mfl_tree_enumerator(void);
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease);
-void mfl_clear_treebuffer(tree **treebuffer, int numsavedtrees, int numnodes);
+void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes);
+void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes);
 
 
 /*in readnewick.c*/

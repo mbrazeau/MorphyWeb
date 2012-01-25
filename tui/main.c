@@ -431,88 +431,6 @@ void reIndex(node *n, int index_val)
     }
 }
 
-/*struct tree * copytree(tree *origtr, int ntax, int numnodes)
-{
-    int i, begin;
-    tree *treecp; // Pointer to the tree copy
-    node *p, *q, *r;
-    bool inring = false;
-    
-    treecp = alloc_noring(ntax, numnodes);
-    
-    if (origtr->root)
-    {
-        treecp->root = treecp->trnodes[ntax];
-        treecp->trnodes[ntax]->outedge = NULL;
-        begin = ntax;
-    }
-    else 
-    {
-        treecp->trnodes[0]->start = true;
-        begin = ntax + 1;
-        treecp->trnodes[ntax + 1]->outedge = treecp->trnodes[origtr->trnodes[ntax + 1]->outedge->index];
-        treecp->trnodes[origtr->trnodes[ntax + 1]->outedge->index]->outedge = treecp->trnodes[ntax + 1];
-    }
-    
-    for (i = begin; i < numnodes; ++i) 
-    {
-        
-        inring = false;
-        p = origtr->trnodes[i];
-        q = treecp->trnodes[i];
-        
-        if (p->next && p->next->outedge)
-        {
-            do 
-            {
-                if (!q->next) {
-                    q->next = allocnode();
-                    q->next->index = q->index;
-                }
-                
-                if (inring) {
-                    if (!q->outedge) {
-                        r = treecp->trnodes[p->outedge->index];
-                        if (r->outedge) {
-                            do {
-                                r = r->next;
-                            } while (r->outedge);
-                        }
-                        joinNodes(q, r);   //For some reason, this call cuts off some existing conntionctions.
-                    }
-                }
-                
-                p = p->next;
-                q = q->next;
-                inring = true;
-                
-                if (p->next == origtr->trnodes[i] && inring) {
-                    if (!q->outedge) {
-                        r = treecp->trnodes[p->outedge->index];
-                        if (r->outedge) {
-                            if (r->next) {
-                                while (r->next && r->outedge) {
-                                    r = r->next;
-                                }
-                            }
-                        }
-                        joinNodes(q, r);                    
-                    }
-                }
-                
-            } while (p->next != origtr->trnodes[i]);
-            
-            q->next = treecp->trnodes[i];
-            //mfl_set_index(treecp->trnodes[i]);
-        }
-    }
-    
-    //dump_tree_connections(origtr, ntax, numnodes);
-    //dump_tree_connections(treecp, ntax, numnodes);
-    return treecp;
-    
-}*/
-
 struct tree * copytree(tree *origtr, int ntax, int numnodes)
 {
     int i, tmpltorder, begin;
@@ -811,11 +729,14 @@ void mini_test_analysis(void)
     
     anewtree = readNWK(aNewickTree, isRooted);
     arandomtree = randrooted(ntax, numnodes);
+    printf("\nThis is the target tree: \n");
     printNewick(anewtree->root);
-    printf("\n");
+    printf("\n\n");
     
     /* A search with this dataset rigged to favour the topology of aNewickTree */
     char usrTipdata[] = {  
+        
+        /* a 'clean' dataset */
         '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
         '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
         '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
@@ -828,6 +749,20 @@ void mini_test_analysis(void)
         '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1',
         '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
         '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
+
+        /* a 'noisier' dataset */
+        /*'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1',
+        '0', '0', '?', '1', '0', '0', '1', '?', '?', '?', '0', '0', '0', '0', '0', '1', '1', '0', '1', '1',
+        '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '0',
+        '0', '0', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '0',
+        '0', '0', '1', '0', '0', '0', '0', '0', '1', '0', '0', '0', '1', '1', '1', '?', '1', '1', '0', '1',
+        '0', '0', '0', '0', '0', '1', '0', '1', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '0', '1',
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',*/
     };
     
     printf("User tip data:\n");
@@ -871,6 +806,7 @@ void mini_test_analysis(void)
     int *besttreelen_p = &besttreelen;
 
     *besttreelen_p = mfl_get_treelen(savedtrees[0], morphyTipdata, ntax, nchar);
+    savedtrees[0]->length = *besttreelen_p;
     
     unroot(ntax, savedtrees[0]);
     
