@@ -433,12 +433,30 @@ void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
     }
 }
 
-void mfl_clear_treebuffer(tree **treebuffer, int numsavedtrees, int numnodes)
+void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes)
 {
     int i;
-    for (i = 0; i < numsavedtrees; ++i) {
+    for (i = 0; i < *numsavedtrees; ++i) {
         if (treebuffer[i]) {
             freetree(treebuffer[i], numnodes);
         }
     }
+}
+
+void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes)
+{    
+    printf("Found shorter tree. Reinitializing the treebuffer\n");
+    printf("Best tree length: %i\n", newbest->length);
+    int i;
+    for (i = 0; i < *numsavedtrees; ++i) {
+        if (treebuffer[i] && treebuffer[i] != newbest) {
+            freetree(treebuffer[i], numnodes);
+        }
+        if (treebuffer[i] == newbest) {
+            treebuffer[i] = NULL;
+        }
+    }
+    
+    treebuffer[0] = newbest;
+    *numsavedtrees = 0;
 }

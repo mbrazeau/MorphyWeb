@@ -27,14 +27,29 @@
 /* Taxon shuffle using array shuffle by Ben Pfaff http://benpfaff.org/writings/clc/shuffle.html 
  * ****NOTE******: Will be modified to employ the GSL random number generator*/
 
-void shuffle(int *taxarray, int length)
+void shuffle(int *taxarray, int ntax)
 {
     int i, j, t;
     
     
-    if (length > 1) {
-        for (i = 0; i < length - 1; i++) {
-            j = i + rand() / (RAND_MAX / (length - i) + 1);
+    if (ntax > 1) {
+        for (i = 0; i < ntax - 1; i++) {
+            j = i + rand() / (RAND_MAX / (ntax - i) + 1);
+            t = taxarray[j];
+            taxarray[j] = taxarray[i];
+            taxarray[i] = t;
+        }
+    }
+}
+
+void shuffle_w_outgroup(int *taxarray, int ntax, int outtaxa[])
+{
+    int i, j, t;
+    
+    
+    if (ntax > 1) {
+        for (i = 0; i < ntax - 1; i++) {
+            j = i + rand() / (RAND_MAX / (ntax - i) + 1);
             t = taxarray[j];
             taxarray[j] = taxarray[i];
             taxarray[i] = t;
@@ -50,7 +65,7 @@ struct tree *randtrunk(tree *newtrunk, node *startn)
     return (newtrunk);
 }
 
-struct tree *randrooted (int ntax, int numnodes)
+struct tree *randrooted(int ntax, int numnodes)
 {
     /* Returns a random tree with an arbitrary root*/
     
@@ -62,7 +77,7 @@ struct tree *randrooted (int ntax, int numnodes)
     return (randtree);
 }
 
-//struct tree *rand_w_root (int root)
+//struct tree *rand_w_outgroup (int root)
 //{
     /* Returns a random ingroup topology on a given root
      * and will arbitrarily resolve the outgroup*/
@@ -70,14 +85,12 @@ struct tree *randrooted (int ntax, int numnodes)
     
 //}
 
-struct tree *randunrooted (int ntax, int numnodes)
+struct tree *randunrooted(int ntax, int numnodes)
 {
     /* Returns a random unrooted tree*/
     
     int i;
     int *taxarray;
-    int counter = ntax + 1;
-    int *count_ptr;
     node *p, *q;
     tree *randtree;
 
@@ -110,13 +123,34 @@ struct tree *randunrooted (int ntax, int numnodes)
     randtree->trnodes[2 * ntax - 2]->next->next->outedge = randtree->trnodes[taxarray[i] - 1];
     randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[2 * ntax - 2]->next->next;
     
-    //count_ptr = &counter;
-    //mfl_point_bottom(randtree->trnodes[0]->outedge, randtree->trnodes, ntax, count_ptr);
-    
     free(taxarray);
     
     printNewick(randtree->trnodes[0]);
     printf(";\n");
     
     return (randtree);
+}
+
+struct tree *mfl_stree_asis(int ntax, int numnodes, tree *treebuffer, charstate *tipdata)
+{
+    int i;
+    node *p;
+    tree *asistree;
+    
+    asistree = alloctree(ntax, numnodes);
+    
+    /* create the base star */
+    /* The 'magic number' 3 appears here because that is all the value can ever
+     * be. The smallest non-trivial rooted bifurcating tree has three leaves */
+    p = asistree->trnodes[ntax + 1];
+    for (i = 0; i < 3; ++i) {
+        joinNodes(asistree->trnodes[0], p);
+        p = p->next;
+    }
+    
+    for (i = 3; i < ntax; ++i) {
+        printf("something will happen here\n");
+    }
+    
+    return asistree;
 }

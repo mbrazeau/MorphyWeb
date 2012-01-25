@@ -127,3 +127,9 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[],
 	printf("\n");
 	
 }
+
+/* Add a sequential outgroup */
+
+/* Add a polychotomous outgroup */
+
+/* Add a constrained outgroup topology */
