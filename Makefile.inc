@@ -1,5 +1,3 @@
-CC          = gcc
-CPP         = g++
 AR          = ar
 ODIR        = obj
 OBJECTS     = $(patsubst %,$(ODIR)/%,$(OBJS))
@@ -30,7 +28,7 @@ $(ODIR)/%.d: %.c
 $(ODIR)/%.o: %.cpp 
 	$(NICEBLDOUTPUT)
 	$(MKODIR)
-	$(SILENT)$(CPP) -c -o $@ $< $(CFLAGS)
+	$(SILENT)$(CC) -c -o $@ $< $(CFLAGS)
 
 $(ODIR)/%.o: %.c 
 	$(NICEBLDOUTPUT)
