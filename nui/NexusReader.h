@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ncl/ncl.h"
+#include "myostream.h"
 
 class CNexusReader : public NxsReader
 {
@@ -16,11 +17,13 @@ public:
     void NexusError(NxsString msg, file_pos pos, unsigned line, unsigned col);
     ostream &GetOutStream();
     istream &GetInStream();
+    string &GetOutFileName();
+    string &GetInFileName();
     void statusMessage(const std::string & m) const;
 
 private:
-    ofstream m_fOut;
-    ifstream m_fIn;
+    myofstream m_fOut;
+    myifstream m_fIn;
 };
 
 class CNexusToken : public NxsToken

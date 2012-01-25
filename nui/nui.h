@@ -93,7 +93,8 @@ private:
     vector <CNexusMenuBase*> m_vMenu;
     CNexusParse *m_pNexusParse;
     string m_strCwd;
-    ofstream m_fCommandLog;
+
+    myofstream m_fCommandLog;
 };
 
 

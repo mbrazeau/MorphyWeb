@@ -130,6 +130,9 @@ CNexusUserInterface::~CNexusUserInterface()
     }
 }
 
+/*
+ * Anytime the user is to give input, the input must come through this function.
+ */
 void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
 {
     cout<<strPrompt;
@@ -146,6 +149,7 @@ void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
 void CNexusUserInterface::DoMenu()
 {
     string strInput;
+    About();
     Help();
     do
     {
@@ -250,6 +254,7 @@ bool CNexusUserInterface::Help           ()
             cout<<pMenu->GetMenuOutput()<<endl;
         }
     }
+    cout<<endl;
     return true;
 }
 
@@ -289,7 +294,22 @@ bool CNexusUserInterface::CommandLog     ()
 
 bool CNexusUserInterface::Status         ()
 {
-    cout<<"Not implemented"<<endl;
+    CNexusReader *pNexusReader;
+    string strNexusFile = "File not open";
+
+    if (m_pNexusParse)
+    {
+        pNexusReader = m_pNexusParse->GetNexusReader();
+        if (pNexusReader)
+        {
+            strNexusFile = pNexusReader->GetInFileName();
+        }
+    }
+    cout<<endl;
+    cout<<"Nexus file: "<<strNexusFile<<endl;
+    cout<<"Command log file: "<<m_fCommandLog.GetFileName()<<endl;
+    cout<<"Working directory: "<<m_strCwd<<endl;
+    cout<<endl;
     return true;
 }
 

@@ -80,6 +80,16 @@ istream &CNexusReader::GetInStream()
     return m_fIn;
 }
 
+string &CNexusReader::GetOutFileName()
+{
+    return m_fOut.GetFileName();
+}
+
+string &CNexusReader::GetInFileName()
+{
+    return m_fIn.GetFileName();
+}
+
 void CNexusReader::statusMessage(const std::string & m) const
 {
     /* 
