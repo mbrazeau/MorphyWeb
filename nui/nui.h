@@ -3,6 +3,9 @@
 #include <vector>
 #include "NexusParse.h"
 
+#define NUI_MAJOR_VERSION   0
+#define NUI_MINOR_VERSION   1
+
 class CNexusUserInterface;
 
 class CNexusMenuBase
@@ -58,7 +61,7 @@ public:
     }
     bool OpenFile       ();
     bool SaveFile       ();
-    bool CloseFile      ();
+    bool CloseFile      (bool bVerbose = true);
                
     bool Help           ();
     bool Quit           ();

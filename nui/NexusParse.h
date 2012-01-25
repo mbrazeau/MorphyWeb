@@ -6,9 +6,9 @@
 class CNexusParse
 {
 public:
-    CNexusParse(string *infname, string *outfname);
+    CNexusParse();
     ~CNexusParse();
-    bool ReadNexusFile();
+    bool ReadNexusFile(string *infname, string *outfname);
     void Report();
 
 private:

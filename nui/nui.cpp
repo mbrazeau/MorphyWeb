@@ -1,5 +1,24 @@
 #include "nui.h"
 
+/* 
+ * Use the preprocessor to define a derived class for each command,
+ * the derived class implements what some people would call a functionoid.
+ * A functionoid is basically a pure virtual function in a base class
+ * that is overloaded a bunch of times in derived classes, with each
+ * derived class implementing different functionality. In this case
+ * the different functionality is all of the commands... The overloaded
+ * functioniod MenuFunction simply calls a function in the CNexusUserInterface
+ * class, that function is different for each derived class and is always takes
+ * the name of the "type" parameter (Ex: Spacer, OpenFile, SaveFile, etc...)
+ *
+ * The behavior of the MenuFunction is defined to return true if the
+ * program is to continue to operate, and false if the program should
+ * terminate. Possibly due to errors, or if the user selects the quit 
+ * command.
+ *
+ * Note: The preprocessor ## concatenation operator is used to create
+ * the class name based on the value of the "type" macro parameter
+ */
 #define NEW_COMMAND_DEFINE(type) \
     class CNexusMenu##type : public CNexusMenuBase \
     { \
@@ -11,6 +30,9 @@
         }\
     };
 
+/*
+ * The followind actually defines the derived class for each command
+ */
 NEW_COMMAND_DEFINE(Spacer         )
 NEW_COMMAND_DEFINE(OpenFile       )
 NEW_COMMAND_DEFINE(SaveFile       )
@@ -40,6 +62,10 @@ NEW_COMMAND_DEFINE(Consens        )
 NEW_COMMAND_DEFINE(Collapse       )
 NEW_COMMAND_DEFINE(Report         )
 
+/*
+ * The UI constructor puts the menu together, it stores each
+ * menu option in a stl vector.
+ */
 CNexusUserInterface::CNexusUserInterface()
 {
     m_pNexusParse = NULL;
@@ -78,6 +104,9 @@ CNexusUserInterface::CNexusUserInterface()
     m_vMenu.push_back(new CNexusMenuReport          ("REPORT", "Print a report about the current open file"));
 }
 
+/*
+ * The UI destructor deletes all memory.
+ */
 CNexusUserInterface::~CNexusUserInterface()
 {
     vector<CNexusMenuBase*>::iterator it;
@@ -92,13 +121,12 @@ CNexusUserInterface::~CNexusUserInterface()
         }
     }
     m_vMenu.clear();
-    if (m_pNexusParse)
-    {
-        delete m_pNexusParse;
-        m_pNexusParse = NULL;
-    }    
+    CloseFile(false);
 }
 
+/*
+ * Actually read input from the user, and issue the selected commands
+ */
 void CNexusUserInterface::DoMenu()
 {
     string strInput;
@@ -110,6 +138,12 @@ void CNexusUserInterface::DoMenu()
     } while (RunSelection(strInput));
 }
 
+/*
+ * Loop through the menu vector and look for the command entered by the user.
+ * If the command is found then run the command by calling the overloaded 
+ * functionoid MenuFunction() with the current CNexusUserInterface instance
+ * as the parameter.
+ */
 bool CNexusUserInterface::RunSelection(string strInput)
 {
     vector<CNexusMenuBase*>::iterator it;
@@ -127,23 +161,26 @@ bool CNexusUserInterface::RunSelection(string strInput)
     return true;
 }
 
+/*
+ * Run the open file command, just prompt the user for input
+ * and attempt to read the nexus file
+ */
 bool CNexusUserInterface::OpenFile()
 {
     string strFilename;
 
     cout<<" Enter filename: ";
     cin>>strFilename;
-    m_pNexusParse = new CNexusParse(&strFilename, NULL);
+    m_pNexusParse = new CNexusParse();
     if (m_pNexusParse)
     {
-        if (m_pNexusParse->ReadNexusFile())
+        if (m_pNexusParse->ReadNexusFile(&strFilename, NULL))
         {
             cout<<endl<<" "<<strFilename<<" open successfully"<<endl<<endl;
         }
         else
         {
-            delete m_pNexusParse;
-            m_pNexusParse = NULL;
+            CloseFile(false);
             cout<<"Error: Unable to read "<<strFilename<<endl;
         }
     }
@@ -160,21 +197,31 @@ bool CNexusUserInterface::SaveFile       ()
     return true;
 }
 
-bool CNexusUserInterface::CloseFile      ()
+/*
+ * Close a file opened with the OpenFile command
+ * bVerbose is defaulted to = true
+ */
+bool CNexusUserInterface::CloseFile(bool bVerbose)
 {
     if (m_pNexusParse)
     {
         delete m_pNexusParse;
         m_pNexusParse = NULL;
-        cout<<endl<<"Successfully closed open file..."<<endl<<endl;
+        if (bVerbose)
+        {
+            cout<<endl<<"Successfully closed file..."<<endl<<endl;
+        }
     }
-    else
+    else if (bVerbose)
     {
         cout<<endl<<"No file is currently open"<<endl<<endl;
     }
     return true;
 }
 
+/*
+ * Print the menu
+ */
 bool CNexusUserInterface::Help           ()
 {
     vector<CNexusMenuBase*>::iterator it;
@@ -198,8 +245,10 @@ bool CNexusUserInterface::Quit           ()
 
 bool CNexusUserInterface::About          ()
 {
-    cout<<endl<<"Copyright 2012 (C) Martin Brazeau, and Chris Desjardins. All rights reserved."<<endl;
-    cout<<"This program uses the NCL by Paul O. Lewis."<<endl<<endl;
+    cout<<endl<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
+    cout<<"Copyright 2012 (C) Martin Brazeau, and Chris Desjardins. All rights reserved."<<endl;
+    cout<<"This program uses the NCL by Paul O. Lewis."<<endl;
+    cout<<"Build time: "<<__DATE__<<" "<<__TIME__<<endl<<endl;
     return true;
 }
 
