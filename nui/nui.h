@@ -59,9 +59,9 @@ public:
     {
         return false;
     }
-    bool OpenFile       ();
+    bool OpenNexusFile  ();
     bool SaveFile       ();
-    bool CloseFile      (bool bVerbose = true);
+    bool CloseNexusFile (bool bVerbose = true);
                
     bool Help           ();
     bool Quit           ();

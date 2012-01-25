@@ -10,7 +10,7 @@
  * the different functionality is all of the commands... The overloaded
  * functioniod MenuFunction simply calls a function in the CNexusUserInterface
  * class, that function is different for each derived class and is always takes
- * the name of the "type" parameter (Ex: Spacer, OpenFile, SaveFile, etc...)
+ * the name of the "type" parameter (Ex: Spacer, OpenNexusFile, SaveFile, etc...)
  *
  * The behavior of the MenuFunction is defined to return true if the
  * program is to continue to operate, and false if the program should
@@ -35,9 +35,9 @@
  * The followind actually defines the derived class for each command
  */
 NEW_COMMAND_DEFINE(Spacer         )
-NEW_COMMAND_DEFINE(OpenFile       )
+NEW_COMMAND_DEFINE(OpenNexusFile  )
 NEW_COMMAND_DEFINE(SaveFile       )
-NEW_COMMAND_DEFINE(CloseFile      )
+NEW_COMMAND_DEFINE(CloseNexusFile )
 
 NEW_COMMAND_DEFINE(Help           )
 NEW_COMMAND_DEFINE(Quit           )
@@ -73,8 +73,8 @@ CNexusUserInterface::CNexusUserInterface()
     m_strCwd = "./";
 
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "File"));
-    m_vMenu.push_back(new CNexusMenuOpenFile        ("O", "Open a file"));
-    m_vMenu.push_back(new CNexusMenuCloseFile       ("C", "Close a file"));
+    m_vMenu.push_back(new CNexusMenuOpenNexusFile   ("O", "Open a nexus file"));
+    m_vMenu.push_back(new CNexusMenuCloseNexusFile  ("C", "Close a nexus file"));
     m_vMenu.push_back(new CNexusMenuSaveFile        ("S", "Save according to the options"));
 
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Program"));
@@ -123,7 +123,7 @@ CNexusUserInterface::~CNexusUserInterface()
         }
     }
     m_vMenu.clear();
-    CloseFile(false);
+    CloseNexusFile(false);
     if (m_fCommandLog)
     {
         m_fCommandLog.close();
@@ -180,7 +180,7 @@ bool CNexusUserInterface::RunSelection(string strInput)
  * Run the open file command, just prompt the user for input
  * and attempt to read the nexus file
  */
-bool CNexusUserInterface::OpenFile()
+bool CNexusUserInterface::OpenNexusFile()
 {
     string strFilename;
 
@@ -195,7 +195,7 @@ bool CNexusUserInterface::OpenFile()
         }
         else
         {
-            CloseFile(false);
+            CloseNexusFile(false);
             cout<<"Error: Unable to read "<<strFilename<<endl;
         }
     }
@@ -213,10 +213,10 @@ bool CNexusUserInterface::SaveFile       ()
 }
 
 /*
- * Close a file opened with the OpenFile command
+ * Close a file opened with the OpenNexusFile command
  * bVerbose is defaulted to = true
  */
-bool CNexusUserInterface::CloseFile(bool bVerbose)
+bool CNexusUserInterface::CloseNexusFile(bool bVerbose)
 {
     if (m_pNexusParse)
     {
