@@ -152,7 +152,7 @@ void mfl_tryall(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
     int *bstln_p = &bestlen;
 }
 
-struct tree *mfl_sttree_AsIs(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
+struct tree *mfl_addseq_AsIs(int ntax, int numnodes, tree **treebuffer, charstate *tipdata)
 {
     int i;
     node *p, *arbroot;
