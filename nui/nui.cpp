@@ -200,12 +200,12 @@ bool CNexusUserInterface::OpenNexusFile()
         else
         {
             CloseNexusFile(false);
-            cout<<"Error: Unable to read "<<strFilename<<endl;
+            cout<<" Error: Unable to read "<<strFilename<<endl<<endl;
         }
     }
     else
     {
-        cout<<"Error: Unable to open "<<strFilename<<endl;
+        cout<<" Error: Unable to open "<<strFilename<<endl<<endl;
     }
     return true;
 }
