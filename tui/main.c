@@ -792,7 +792,7 @@ void mini_test_analysis(void)
     /* Initialize the tree array that will store optimal trees */
     tree **savedtrees = (tree**) malloc(treelimit * sizeof(tree*));
     anewtree = readNWK(aNewickTree, isRooted);
-    arandomtree = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 0);  //randrooted(ntax, numnodes);
+    arandomtree = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1);  //randrooted(ntax, numnodes);
     printf("\nThis is the target tree: \n");
     printNewick(anewtree->root);
     printf("\n\n");
@@ -806,7 +806,7 @@ void mini_test_analysis(void)
     // Different algorithms will be written for doing this (as there are better
     // ways to do it) but we'll use randunrooted for now.
     
-    savedtrees[0] = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 0);
+    savedtrees[0] = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1);
     //Get a length for the starting tree.
     mfl_root_tree(savedtrees[0], 1, ntax);
     int *besttreelen_p = &besttreelen;
@@ -926,11 +926,11 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
-    mfl_collapse(anewtree->trnodes[ntax + 1], anewtree->trnodes); // Magic number just for testing
+    mfl_collapse(anewtree->trnodes[ntax + 2], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
     printNewick(anewtree->root);
     printf("\n");    
-    //dump_nodearray(anewtree->trnodes, ntax, numnodes);
+    dump_connections(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
     //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
@@ -940,7 +940,8 @@ int main(void)
     
     freetree(copiedtree, numnodes);
     
-    mfl_arb_resolve(anewtree->trnodes[ntax+1], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
+    mfl_arb_resolve(anewtree->trnodes[ntax + 1], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
+    dump_connections(anewtree->trnodes, ntax, numnodes);
     printf("With resolved node: ");
     printNewick(anewtree->root);
     printf("\n");
