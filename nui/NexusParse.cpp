@@ -74,10 +74,13 @@ bool CNexusParse::ReadNexusFile(string *infname, string *outfname)
 
 void CNexusParse::Report()
 {
-    ostream &oStream = m_cNexusReader->GetOutStream();
-    m_cTaxa->Report (oStream);
-    m_cChars->Report(oStream);
-    m_cTrees->Report(oStream);
-    m_cData->Report (oStream);
+    if (m_cNexusReader)
+    {
+        ostream &oStream = m_cNexusReader->GetOutStream();
+        m_cTaxa->Report (oStream);
+        m_cChars->Report(oStream);
+        m_cTrees->Report(oStream);
+        m_cData->Report (oStream);
+    }
 }
 
