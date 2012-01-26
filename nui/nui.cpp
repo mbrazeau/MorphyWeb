@@ -173,7 +173,11 @@ bool CNexusUserInterface::RunSelection(string strInput)
         pMenu = *it;
         if ((pMenu) && (pMenu->IsSelection(strInput)))
         {
-            return pMenu->MenuFunction(this);
+            bool bRet;
+            cout<<endl;
+            bRet = pMenu->MenuFunction(this);
+            cout<<endl;
+            return bRet;
         }
     }
     cout<<" Unknown command: "<<strInput<<endl;
@@ -188,24 +192,31 @@ bool CNexusUserInterface::OpenNexusFile()
 {
     string strFilename;
 
-    GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
-    strFilename = m_strCwd + strFilename;
-    m_pNexusParse = new CNexusParse();
-    if (m_pNexusParse)
+    if (!m_pNexusParse)
     {
-        if (m_pNexusParse->ReadNexusFile(&strFilename, NULL))
+        GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
+        strFilename = m_strCwd + strFilename;
+        m_pNexusParse = new CNexusParse();
+        if (m_pNexusParse)
         {
-            cout<<endl<<" "<<strFilename<<" open successfully"<<endl<<endl;
+            if (m_pNexusParse->ReadNexusFile(&strFilename, NULL))
+            {
+                cout<<" "<<strFilename<<" open successfully"<<endl;
+            }
+            else
+            {
+                CloseNexusFile(false);
+                cout<<" Error: Unable to read "<<strFilename<<endl;
+            }
         }
         else
         {
-            CloseNexusFile(false);
-            cout<<" Error: Unable to read "<<strFilename<<endl<<endl;
+            cout<<" Error: Unable to open "<<strFilename<<endl;
         }
     }
     else
     {
-        cout<<" Error: Unable to open "<<strFilename<<endl<<endl;
+        cout<<" Error: Nexus file "<<m_pNexusParse->m_cNexusReader->GetInFileName()<<" is already open"<<endl;
     }
     return true;
 }
@@ -228,12 +239,12 @@ bool CNexusUserInterface::CloseNexusFile(bool bVerbose)
         m_pNexusParse = NULL;
         if (bVerbose)
         {
-            cout<<endl<<"Successfully closed file..."<<endl<<endl;
+            cout<<" Successfully closed file..."<<endl;
         }
     }
     else if (bVerbose)
     {
-        cout<<endl<<"No file is currently open"<<endl<<endl;
+        cout<<" Error: No file is currently open"<<endl;
     }
     return true;
 }
@@ -260,16 +271,15 @@ bool CNexusUserInterface::Help           ()
 
 bool CNexusUserInterface::Quit           ()
 {
-    cout<<endl;
     return false;
 }
 
 bool CNexusUserInterface::About          ()
 {
-    cout<<endl<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
+    cout<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
     cout<<"Copyright 2012 (C) Martin Brazeau, and Chris Desjardins. All rights reserved."<<endl;
     cout<<"This program uses the NCL by Paul O. Lewis."<<endl;
-    cout<<"Build time: "<<__DATE__<<" "<<__TIME__<<endl<<endl;
+    cout<<"Build time: "<<__DATE__<<" "<<__TIME__<<endl;
     return true;
 }
 
@@ -277,33 +287,35 @@ bool CNexusUserInterface::CommandLog     ()
 {
     string strFilename;
     
-    GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
-    strFilename = m_strCwd + strFilename;
-
-    m_fCommandLog.open(strFilename.c_str());
-    if (m_fCommandLog)
+    if (!m_fCommandLog)
     {
-        cout<<endl<<" Successfully opened '"<<strFilename<<"'"<<endl<<endl;
+        GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+        strFilename = m_strCwd + strFilename;
+       
+        m_fCommandLog.open(strFilename.c_str());
+        if (m_fCommandLog)
+        {
+            cout<<" Successfully opened '"<<strFilename<<"'"<<endl;
+        }
+        else
+        {
+            cout<<" Error: Unable to open '"<<strFilename<<"'"<<endl;
+        }
     }
     else
     {
-        cout<<endl<<" Error: Unable to open '"<<strFilename<<"'"<<endl<<endl;
+        cout<<" Error: Log file "<<m_fCommandLog.GetFileName()<<" is already open"<<endl;
     }
     return true;
 }
 
 bool CNexusUserInterface::Status         ()
 {
-    CNexusReader *pNexusReader;
     string strNexusFile = "File not open";
 
-    if (m_pNexusParse)
+    if ((m_pNexusParse) && (m_pNexusParse->m_cNexusReader))
     {
-        pNexusReader = m_pNexusParse->GetNexusReader();
-        if (pNexusReader)
-        {
-            strNexusFile = pNexusReader->GetInFileName();
-        }
+        strNexusFile = m_pNexusParse->m_cNexusReader->GetInFileName();
     }
     cout<<endl;
     cout<<"Nexus file: "<<strNexusFile<<endl;
@@ -325,12 +337,12 @@ bool CNexusUserInterface::Chdir          ()
     }
     if ((stat(strCwd.c_str(), &st) == 0) && (S_ISDIR(st.st_mode)))
     {
-        cout<<" Setting working directory to: "<<strCwd<<endl<<endl;
+        cout<<" Setting working directory to: "<<strCwd<<endl;
         m_strCwd = strCwd;
     }
     else
     {
-        cout<<" Error: Invalid directory '"<<strCwd<<"'"<<endl<<endl;
+        cout<<" Error: Invalid directory '"<<strCwd<<"'"<<endl;
     }
     return true;
 }
@@ -421,7 +433,7 @@ bool CNexusUserInterface::Report()
     }
     else
     {
-        cout<<endl<<"No file is currently open"<<endl<<endl;
+        cout<<"No file is currently open"<<endl;
     }
     return true;
 }
