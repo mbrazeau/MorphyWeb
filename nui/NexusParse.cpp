@@ -2,6 +2,11 @@
 
 CNexusParse::CNexusParse()
 {
+    m_cChars = NULL;
+    m_cTaxa = NULL;
+    m_cTrees = NULL;
+    m_cData = NULL;
+    m_cNexusReader = NULL;
 }
 
 CNexusParse::~CNexusParse()
@@ -9,22 +14,27 @@ CNexusParse::~CNexusParse()
     if (m_cTaxa)
     {
         delete m_cTaxa;
+        m_cTaxa = NULL;
     }
     if (m_cChars)
     {
         delete m_cChars;
+        m_cChars = NULL;
     }
     if (m_cTrees)
     {
         delete m_cTrees;
+        m_cTrees = NULL;
     }
     if (m_cData)
     {
         delete m_cData;
+        m_cData = NULL;
     }
     if (m_cNexusReader)
     {
         delete m_cNexusReader;
+        m_cNexusReader = NULL;
     }
 }
 
