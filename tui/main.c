@@ -930,7 +930,7 @@ int main(void)
     printf("With collapsed node: ");
     printNewick(anewtree->root);
     printf("\n");    
-    dump_connections(anewtree->trnodes, ntax, numnodes);
+    //dump_connections(anewtree->trnodes, ntax, numnodes);
     
     copiedtree = copytree(anewtree, ntax, numnodes);
     //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
@@ -941,7 +941,7 @@ int main(void)
     freetree(copiedtree, numnodes);
     
     mfl_arb_resolve(anewtree->trnodes[ntax + 1], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
-    dump_connections(anewtree->trnodes, ntax, numnodes);
+    //dump_connections(anewtree->trnodes, ntax, numnodes);
     printf("With resolved node: ");
     printNewick(anewtree->root);
     printf("\n");
