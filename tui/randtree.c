@@ -212,6 +212,7 @@ struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     asistree = alloctree(ntax, numnodes);
     
     taxarray = (int*)malloc(ntax * sizeof(int));
+    memset(taxarray, 0, ntax * sizeof(int));  // This is to see if I can fix the problem
     init_taxarray(taxarray, ntax);
     
     if (addRandom) {
@@ -234,9 +235,9 @@ struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
         joinNodes(asistree->trnodes[taxarray[i] - 1], asistree->trnodes[ntax + i - 1]->next);
     }
     
-    mfl_temproot(asistree, 0, ntax);
+    mfl_temproot(asistree, taxarray[0] - 1, ntax);
     asistree->length = *bestlen;
-    bestpos = asistree->trnodes[0];
+    bestpos = asistree->trnodes[taxarray[0] - 1];
     
     for (i = 3; i < ntax; ++i) {
         mfl_tryall(asistree->root, asistree->trnodes[taxarray[i] - 1], bestpos, ntax, nchar, 
