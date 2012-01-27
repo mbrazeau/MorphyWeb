@@ -32,7 +32,7 @@ mfl_jackknife(int ntax, int numnodes, int nchar, int *list_of_included taxa, int
 mfl_safe_taxonomic_reduction(list_of_ordered_characters);
 mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast heuristic search, but is subordinate to mfl_heuristic
 mfl_consensus(tree **savedtrees, bool strict, bool majority_rule, int majority_rule_optional_cutoff, int adams);
-mfl_collapse(during_search, if_min_zero_length, if_max_zero_length);
+mfl_collapse_zerolength(during_search, if_min_zero_length, if_max_zero_length);
 mfl_set_treelimit(int max_number_of_trees_in_mem, tree **savedtrees);
 mfl_save_trees_to_file(tree **savedtrees); // Depends on there being trees in memory
 mfl_show_all_trees(tree **savedtrees); // Prints out all the trees in memory, if any
