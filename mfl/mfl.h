@@ -42,8 +42,8 @@ mfl_analysis_environment(data_from_input_file); // When morphy has data from the
  * what the impact is of doing it in NCL versus MFL...
  *
  * MDB: Ah yes. I see. That would work. Although, the only caveat I would add is
- * that the user still wipes the mfl trees. I'd generally prefer a 'trust the
- * user' approach. And, as most users will be scientists, so will they.
+ * that the user still wipes the mfl trees themselves. I'd generally prefer a 
+ * 'trust the user' approach. And, as most users will be scientists, so will they.
  *
  */
 mfl_set_excludes(mfl_handle*, taxa_to_exclude, chars_to_exclude); // Optionally remove some taxa or characters from the analysis.
