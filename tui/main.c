@@ -845,7 +845,7 @@ void mini_test_analysis(void)
     tree **savedtrees = (tree**) malloc(treelimit * sizeof(tree*));
     anewtree = readNWK(aNewickTree, isRooted);
     arandomtree = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1);  //randrooted(ntax, numnodes);
-    printf("\nThis is the target tree: \n");
+    printf("\nThis is a balanced, rooted tree: \n");
     printNewick(anewtree->root);
     printf("\n\n");
     
