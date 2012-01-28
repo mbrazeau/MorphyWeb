@@ -31,20 +31,6 @@ void mfl_destroy_handle(mfl_handle*);
 mfl_analysis_environment(data_from_input_file); // When morphy has data from the reader, this starts up otherwise, the user gets an error msg that there's no active data file
 
 /* 
- * The excludes and includes can be handled by the library NCL... 
- * As such I dont think these functions are necessary in mfl.
- * In other words the data I provide to mfl will already have 
- * all the exclusions excluded... :D
- *
- * MDB: Not necessarily. For instance, I might run an analysis. Find that 
- * there's crappy resolution in the strict consensus tree. But an adams 
- * consensus might show me that that's because one taxon is 'jumping around'. I 
- * might therefore decide to re-run the analysis with a smaller set of the taxa
- * in the datafile. I wouldn't want to have to go back to the datafile and
- * re-write it just to do the experiment.
- *
- * This could actually be under mfl_set_param, actually.
- *
  * CJD: I am don't see why you would have to go back are rewrite the datafile
  * All I would do is call the exclude/include functions in NCL then free the
  * mfl trees, and recreate them with the updated matrix... It might not be the
@@ -52,29 +38,34 @@ mfl_analysis_environment(data_from_input_file); // When morphy has data from the
  * don't have to reinvent the wheel (meaning we can make use of code that already
  * does what you want...) Anyways, we can keep these in here for now and see
  * what the impact is of doing it in NCL versus MFL...
+ *
+ * MDB: Ah yes. I see. That would work. Although, the only caveat I would add is
+ * that the user still wipes the mfl trees. I'd generally prefer a 'trust the
+ * user' approach. And, as most users will be scientists, so will they.
+ *
  */
 mfl_set_excludes(mfl_handle*, taxa_to_exclude, chars_to_exclude); // Optionally remove some taxa or characters from the analysis.
 mfl_set_includes(mfl_handle*, taxa_to_include, chars_to_include); // Optionally reinstate removed taxa or characters to the analysis
 
 /*
- * What is the command the user will enter in the Morphy_commands.txt that defines the outgroup taxa?
- *
  * MDB: Haven't added those yet. The list in the txt file wasn't incomplete.
  * Would be something like "outgroup" and a list of taxon names or tip numbers.
  * So it might be "outgroup 3 4 10" or "outgroup Polyodon Acipenser"
  *
  * CJD: Sounds good, to limit the scope of work right now, might we consider putting this in v 2.0?
+ *
+ * MDB: Defining the topology is definitely more work, as it would be if we allow the user
+ * to type in the taxon names. However, if we stick with just the taxon numbers,
+ * it should be pretty easy to store that to an array. I can then use that info
+ * in the branch-swapping and tip-addition procedures.
+ *
  */
+
 mfl_define_outgroup_taxa(list_of_taxon_names OR int tip_numbers); // Partition the taxon set into ingroup and outgroup
 /*
- * Again, what command is used for this? 
- * 
- * MDB: This might be something like the above. But the option would be a partial
- * Newick string. "ogtopol (4,((3,10),(Ingroup))". This would create a 
- * constraint tree in memory that would constrain the search to trees that only
- * have the predefined subtree in it. 
- *
  * CJD: Sounds good, to limit the scope of work right now, might we consider putting this in v 2.0?
+ *
+ * MDB: vide supra.
  */
 mfl_constrain_outgroup_topology(); // user constrains the search to always include a particular subtree topology
 /*
