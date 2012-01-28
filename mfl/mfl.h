@@ -26,6 +26,8 @@ void mfl_destroy_handle(mfl_handle*);
  * CJD: Still don't fully understand this function... is it possibly similar to
  * the functionality provided by mfl_set_parameter? If so, is it really necessary 
  * to have both functions?
+ *
+ * MDB: It's all clearer to me now, so this becomes irrelevant.
  */
 
 mfl_analysis_environment(data_from_input_file); // When morphy has data from the reader, this starts up otherwise, the user gets an error msg that there's no active data file
