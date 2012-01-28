@@ -7,6 +7,13 @@
  *
  */
 
+/*
+ * CJD: Added these two functions... the create will allocate a mfl_handle 
+ * struct and set all of the defaults.
+ */
+mfl_handle* mfl_create_handle();
+void mfl_destroy_handle(mfl_handle*);
+
 /* 
  * The underlying model here is that a datafile has been opened, parsed, and 
  * read. mfl_analysis_environment has a series of variables within it set 
@@ -16,6 +23,9 @@
  * command-line input. Others would be values available within the scope of 
  * mfl_analysis_environment, set either by the input file data or by functions
  *
+ * CJD: Still don't fully understand this function... is it possibly similar to
+ * the functionality provided by mfl_set_parameter? If so, is it really necessary 
+ * to have both functions?
  */
 
 mfl_analysis_environment(data_from_input_file); // When morphy has data from the reader, this starts up otherwise, the user gets an error msg that there's no active data file
@@ -35,9 +45,16 @@ mfl_analysis_environment(data_from_input_file); // When morphy has data from the
  *
  * This could actually be under mfl_set_param, actually.
  *
+ * CJD: I am don't see why you would have to go back are rewrite the datafile
+ * All I would do is call the exclude/include functions in NCL then free the
+ * mfl trees, and recreate them with the updated matrix... It might not be the
+ * most efficient, but I am guessing the overhead wont be too bad, and we
+ * don't have to reinvent the wheel (meaning we can make use of code that already
+ * does what you want...) Anyways, we can keep these in here for now and see
+ * what the impact is of doing it in NCL versus MFL...
  */
-mfl_set_excludes(taxa_to_exclude, chars_to_exclude); // Optionally remove some taxa or characters from the analysis.
-mfl_set_includes(taxa_to_include, chars_to_include); // Optionally reinstate removed taxa or characters to the analysis
+mfl_set_excludes(mfl_handle*, taxa_to_exclude, chars_to_exclude); // Optionally remove some taxa or characters from the analysis.
+mfl_set_includes(mfl_handle*, taxa_to_include, chars_to_include); // Optionally reinstate removed taxa or characters to the analysis
 
 /*
  * What is the command the user will enter in the Morphy_commands.txt that defines the outgroup taxa?
@@ -45,6 +62,8 @@ mfl_set_includes(taxa_to_include, chars_to_include); // Optionally reinstate rem
  * MDB: Haven't added those yet. The list in the txt file wasn't incomplete.
  * Would be something like "outgroup" and a list of taxon names or tip numbers.
  * So it might be "outgroup 3 4 10" or "outgroup Polyodon Acipenser"
+ *
+ * CJD: Sounds good, to limit the scope of work right now, might we consider putting this in v 2.0?
  */
 mfl_define_outgroup_taxa(list_of_taxon_names OR int tip_numbers); // Partition the taxon set into ingroup and outgroup
 /*
@@ -55,6 +74,7 @@ mfl_define_outgroup_taxa(list_of_taxon_names OR int tip_numbers); // Partition t
  * constraint tree in memory that would constrain the search to trees that only
  * have the predefined subtree in it. 
  *
+ * CJD: Sounds good, to limit the scope of work right now, might we consider putting this in v 2.0?
  */
 mfl_constrain_outgroup_topology(); // user constrains the search to always include a particular subtree topology
 /*
