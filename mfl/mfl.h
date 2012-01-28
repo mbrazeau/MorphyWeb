@@ -28,6 +28,7 @@ mfl_heuristic(int ntax, int numnodes, int nchar, int *list_of_included taxa, int
 mfl_exhaustive(int ntax, int numnodes, int nchar, int *list_of_included taxa, int *list_of_included_characters, int *tipdata);
 mfl_branchandbound(int ntax, int numnodes, int nchar, int *list_of_included taxa, int *list_of_included_characters, int *tipdata);
 mfl_bootstrap(int ntax, int numnodes, int nchar, int *list_of_included taxa, int *list_of_included_characters, int *tipdata);
+mfl_decay(int ntax, int numnodes, int nchar, int *list_of_included taxa, int *list_of_included_characters, int *tipdata);
 mfl_jackknife(int ntax, int numnodes, int nchar, int *list_of_included taxa, int *list_of_included_characters, int *tipdata);
 mfl_safe_taxonomic_reduction(list_of_ordered_characters);
 mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast heuristic search, but is subordinate to mfl_heuristic
