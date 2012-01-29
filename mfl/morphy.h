@@ -23,6 +23,8 @@
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
 
+#define IS_APPLIC (-1^1)
+
 /* For node and tree structures, this program follows the format recommended by
  * Felsenstein (2004. Inferring Phylogenies. Sinauer, Mass.) and implemented in 
  * Felsenstein et al.'s Phylip package. This includes representing internal nodes 
