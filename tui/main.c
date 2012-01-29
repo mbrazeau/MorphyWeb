@@ -845,6 +845,21 @@ void mini_test_analysis(void)
     //mfl_clear_treebuffer(savedtrees, , numnodes);    
 }
 
+void test_spr(void)
+{
+    
+    char atree[] = "(1,(2,((6,7),(3,(4,5)))));";
+    
+    tree *treetoswap = readNWK(atree, 0);
+    
+    printf("SPR start tree:");
+    printNewick(treetoswap->trnodes[0]);
+    printf("\n");
+    
+    mfl_pruning_traversal(treetoswap->trnodes[0], treetoswap);
+    
+}
+
 
 int main(void)
 {
@@ -858,10 +873,9 @@ int main(void)
     tree *originaltree;
     tree *copiedtree;
     
-    mini_test_analysis();
+    //mini_test_analysis();
     
-    //test_nni(ntax, numnodes);
-    //testNWKreading();
+    test_spr();
     
     /* This part is just for testing the collapseBiNode*/
     anewtree = randrooted(ntax, numnodes);

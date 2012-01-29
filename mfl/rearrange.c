@@ -2,7 +2,7 @@
  *  rearrange.c
  *  Morphy
  *
- *  Functions useful to tree rearrangements
+ *  Functions used in tree rearrangements for heuristic searches.
  *
  */
 
@@ -35,14 +35,13 @@ void mfl_remove_branch(node *n)
     nb->next->outedge = NULL;
     nb->next->next->outedge = NULL;
     joinNodes(p, q);
-    //nb = nb->next;
 }
 
 void mfl_insert_branch(node *br, node *target, int ntax)
 {
     // Inserts a branch with a ring base into another branch
     
-    node *br1, *br2, *bout, *tdesc, *p;
+    node *br1, *br2, *tdesc, *p;
     
     tdesc = target->outedge;
     
@@ -52,7 +51,7 @@ void mfl_insert_branch(node *br, node *target, int ntax)
     }
     else {
         br1 = mfl_seek_ringnode(br, ntax);
-        br2 = mfl_seek_ringnode(br, ntax);
+        br2 = mfl_seek_ringnode(br1->next, ntax);
     }
 
     if (br1->outedge || br2->outedge) {
@@ -63,6 +62,8 @@ void mfl_insert_branch(node *br, node *target, int ntax)
     joinNodes(br1, target);
     joinNodes(br2, tdesc);
 }
+
+/* Nearest-neighbor interchange (NNI) */
 
 void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
                        int nchar, int numnodes, long int *current, 
@@ -89,8 +90,6 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
          * neighbor interchanges produce two distinct tree topologies */
         
         if (*current + 1 <= TREELIMIT) {
-            /* ^ This double condition might be preventing the last replicate */
-            
             mfl_bswap(n->next->outedge, n->outedge->next->outedge);
             mfl_root_tree(swapingon, 1, ntax);
             trlength = mfl_get_treelen(swapingon, tipdata, ntax, nchar);
@@ -105,6 +104,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
                 return;
             }
             if (trlength == *currentbesttree) {
+                *foundbettertree = false;
                 treeset[*current] = copytree(swapingon, ntax, numnodes);
                 treeset[*current]->index = *current;
                 treeset[*current]->length = trlength;
@@ -128,6 +128,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
                     return;
                 }
                 if (trlength == *currentbesttree) {
+                    *foundbettertree = false;
                     treeset[*current] = copytree(swapingon, ntax, numnodes);
                     treeset[*current]->index = *current;
                     treeset[*current]->length = trlength;
@@ -153,13 +154,16 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
     }
 }
 
+
+/* Quite a lot about this function will change. For now, it interfaces with the
+ * test in main.c but that won't always be the case. */
 void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **treeset, int starttreelen)
 {
     long int i, j, currentbest;
-    long int trbufpos = 0;   // The branch iteration of the NNI traversal
+    long int trbufpos = 0;
     long int *nxtintrbuf = &trbufpos, *currentbest_p = &currentbest;
-    long int numreps = 1000;
+    long int numreps = 100;
     bool undertreelimit = true, *undertreelimit_p = &undertreelimit;
     bool foundbettertree = false, *foundbettertree_p = &foundbettertree;
     
@@ -177,7 +181,7 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     printf("\nThe optimal tree(s) found by nearest neighbor interchange:\n");
     for (i = 0; i < *nxtintrbuf; ++i) {
         printf("Tree %li:\n", i + 1);
-        mfl_root_tree(treeset[i], treeset[i]->trnodes[6]->outedge->index, ntax);
+        mfl_root_tree(treeset[i], 0, ntax);
         printNewick(treeset[i]->root);
         printf(";\n");
         printf("Length: %i\n", treeset[i]->length);
@@ -187,3 +191,66 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     
     free(treeset);
 }
+
+/* Subtree pruning and regrafting (SPR) */
+
+void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon)
+{
+    node *p, *up;
+    
+    if (n->start) {
+        mfl_regrafting_traversal(n->outedge, subtr, swapingon);
+        return;
+    }
+    
+    up = n->outedge;
+    joinNodes(n, subtr->next);
+    joinNodes(up, subtr);
+    printNewick(swapingon->trnodes[0]);
+    printf("\n");
+    joinNodes(n, up);
+    subtr->outedge = NULL;
+    subtr->next->outedge = NULL;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        mfl_regrafting_traversal(p->outedge, subtr, swapingon);
+        p = p->next;
+    }
+}
+
+void mfl_pruning_traversal(node *n, tree *swapingon)
+{
+    node *p, *up, *dn;
+    
+    if (n->start) {
+        mfl_pruning_traversal(n->outedge, swapingon);
+        return;
+    }
+    
+    if (n->tip) {
+        return;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        mfl_pruning_traversal(p->outedge, swapingon);
+        up = p->next->outedge;
+        p->next->outedge = NULL;
+        up->outedge = NULL;
+        dn = p->next->next->outedge;
+        p->next->next->outedge = NULL;
+        dn->outedge = NULL;
+        joinNodes(up, dn);
+        mfl_regrafting_traversal(swapingon->trnodes[0], p->next, swapingon);
+        joinNodes(p->next, up);
+        joinNodes(p->next->next, dn);
+        p = p->next;
+    }    
+}
+
+/* Tree bisection and reconnection (TBR) */
