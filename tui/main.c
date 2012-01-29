@@ -324,8 +324,8 @@ void mfl_fitch_postorder(node *n, int *trlength)
         lft_chars = n->next->outedge->apomorphies;
         rt_chars = n->next->next->outedge->apomorphies;
         ancstate = lft_chars | rt_chars;
-        if ((ancstate & (-1 ^ 1)) && ( ((ancstate & (-1 ^ 1)) & lft_chars) && ((ancstate & (-1 ^ 1)) & rt_chars) )) {
-            ancstate = (ancstate & (-1 ^ 1));
+        if ((ancstate & IS_APPLIC) && ( ((ancstate & IS_APPLIC) & lft_chars) && ((ancstate & IS_APPLIC) & rt_chars) )) {
+            ancstate = (ancstate & IS_APPLIC);
             *trlength = *trlength + 1;
         }
     }
@@ -719,13 +719,10 @@ void mini_test_analysis(void)
     numnodes = numberOfNodes(ntax);
     
     tree *anewtree;
-    tree *arandomtree;
     
     /* A completely balanced tree topology. 
      * This is simple enough to create a 'rigged' dataset for.*/
-    char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
-    
-    
+    //char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
     /* A search with this dataset rigged to favour the topology of aNewickTree */
     char usrTipdata[] = /*real data*/"0000000000?00000100000000000000000000000000000100000100010000000000000101000101000000000010201100-0?0100--0--0000000010000000001320-?0????\
@@ -762,48 +759,20 @@ void mini_test_analysis(void)
 00000000001111111111";*/
         
         /* a noisier dataset */
-        /*11111111110000000011
-         00?1001???0000011011
-         00111111110000000000
-         00001111110000000000
-         00000011110000000000
-         00000000110000000000
-         00100000000000000000
-         00001100000000001110
-         00000001100000111110
-         001000001000111?1101
-         00000101001111111101
-         00000000001111111111;*/
+        /*"11111111110000000011
+00?1001???0000011011
+00111111110000000000
+00001111110000000000
+00000011110000000000
+00000000110000000000
+00100000000000000000
+00001100000000001110
+00000001100000111110
+001000001000111?1101
+00000101001111111101
+00000000001111111111";*/
         
         
-        /* a 'clean' dataset */
-        /*1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, , 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 00, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,*/
-
-        /* a 'noisier' dataset */
-        /*1, , 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-        0, 0, ?, 1, 0, 0, 1, ?, ?, ?, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1,
-        0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 1, , 11, 0, 0, 00, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,
-        0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0,
-        0, 0, 1, 0, 0, 0, '0', '0', '1', '0', '0', '0', '1', '1', '1', '?', '1', '1', '0', '1',
-        '0', '0', '0', '0', '0', '1', '0', '1', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '0', '1',
-        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',*/
-    //};
     
     printf("User tip data:\n");
     for (i = 0; i < ntax; ++i) {
@@ -843,17 +812,7 @@ void mini_test_analysis(void)
     
     /* Initialize the tree array that will store optimal trees */
     tree **savedtrees = (tree**) malloc(treelimit * sizeof(tree*));
-    anewtree = readNWK(aNewickTree, isRooted);
-    arandomtree = mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1);  //randrooted(ntax, numnodes);
-    printf("\nThis is a balanced, rooted tree: \n");
-    printNewick(anewtree->root);
-    printf("\n\n");
-    
-    mfl_root_tree(arandomtree, 1, ntax);
-    printf("\nThis is a tree by random addition sequence: \n");
-    printNewick(arandomtree->root);
-    printf("\n\n");
-    
+        
     // Start with a (random, in this case) starting tree. 
     // Different algorithms will be written for doing this (as there are better
     // ways to do it) but we'll use randunrooted for now.
@@ -883,58 +842,9 @@ void mini_test_analysis(void)
     
     mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
     
-    
-    //mfl_clear_treebuffer(savedtrees, 1, numnodes);
-    
-    for (i = 0, *currentchar = 0; i < nchar; ++i) {
-        mfl_apply_tipdata(anewtree, morphyTipdata, ntax, nchar, *currentchar);
-        *currentchar = *currentchar + 1;
-        mfl_fitch_postorder(anewtree->root, treelength_p);
-    }
-    printf("The 'user' tree:\n");
-    printNewick(anewtree->root);
-    printf("\n");
-    printf("The length of the user tree: %i steps\n\n", *treelength_p);
-    
-    for (i = 0, *currentchar = 0; i < nchar; ++i) {
-        mfl_apply_tipdata(arandomtree, morphyTipdata, ntax, nchar, *currentchar);
-        *currentchar = *currentchar + 1;
-        mfl_fitch_postorder(arandomtree->root, treelength_q);
-    }
-    printf("The random tree:\n");
-    printNewick(arandomtree->root);
-    printf("\n");
-    printf("The length of the random tree: %i steps\n\n", *treelength_q);
+    //mfl_clear_treebuffer(savedtrees, , numnodes);    
 }
 
-void testNWKreading(void)
-{
-    bool isRooted = true;    
-    char *nwktree;
-    tree *anewtree;
-    
-    char newickTree1[] = "(2,(1,4,3,5,6));";  
-    printf("The newick string: %s\n", newickTree1);
-    char newickTree2[] = "(2,((1,4,3),(5,6)));";  
-    printf("The newick string: %s\n", newickTree2);
-    char newickTree3[] = "(((1,2,4),3),(5,6));";  
-    printf("The newick string: %s\n", newickTree3);
-    char newickTree4[] = "((((1,2),4),3),(5,6));";  
-    printf("The newick string: %s\n", newickTree4);
-    
-    nwktree = newickTree1;
-    anewtree = readNWK(nwktree, isRooted);
-    freetree(anewtree, 2*6-1);
-    nwktree = newickTree2;
-    anewtree = readNWK(nwktree, isRooted);
-    freetree(anewtree, 2*6-1);
-    nwktree = newickTree3;
-    anewtree = readNWK(nwktree, isRooted);
-    freetree(anewtree, 2*6-1);
-    nwktree = newickTree4;
-    anewtree = readNWK(nwktree, isRooted);
-    freetree(anewtree, 2*6-1);
-}
 
 int main(void)
 {
