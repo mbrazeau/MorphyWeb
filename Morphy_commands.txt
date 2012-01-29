@@ -27,6 +27,7 @@ INCLUDE	 INC	include excluded taxa or characters
 OUTGROUP OUTG	assign taxa to outgroup
 INGROUP  ING	return taxa from outgroup to ingroup
 CHAR		modify a character's type
+SYNAPS	 SA	compute syapomorphies (ancestral states), print to screen
 
 Analysis Commands:
 ===========================================================================
