@@ -7,7 +7,7 @@
  */
 
 #include "morphy.h"
-#define TREELIMIT 500
+#define TREELIMIT 100
 
 void mfl_bswap(node *p, node *q)
 {
@@ -160,7 +160,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
 void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **treeset, int starttreelen)
 {
-    long int i, j, currentbest;
+    long int i = 0, j, currentbest = starttreelen;
     long int trbufpos = 0;
     long int *nxtintrbuf = &trbufpos, *currentbest_p = &currentbest;
     long int numreps = 100;
@@ -194,51 +194,97 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
 
 /* Subtree pruning and regrafting (SPR) */
 
-void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon)
+void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **treeset, int ntax, 
+                              int nchar, int numnodes, long int *current, 
+                              charstate *tipdata, bool *undertreelimit, 
+                              long int *currentbesttree, bool *foundbettertree)
 {
+    int trlength;
     node *p, *up;
-    
+
     if (n->start) {
-        mfl_regrafting_traversal(n->outedge, subtr, swapingon);
+        mfl_regrafting_traversal(n->outedge, subtr, swapingon, treeset, ntax,
+                                 nchar, numnodes, current, tipdata, 
+                                 undertreelimit, currentbesttree, foundbettertree);
         return;
     }
     
-    up = n->outedge;
-    joinNodes(n, subtr->next);
-    joinNodes(up, subtr);
-    printNewick(swapingon->trnodes[0]);
-    printf("\n");
-    joinNodes(n, up);
-    subtr->outedge = NULL;
-    subtr->next->outedge = NULL;
     
-    if (n->tip) {
+    if (n->tip || !(*undertreelimit)) {
+        return;
+    }
+    
+    if (*current + 1 <= TREELIMIT) {
+        up = n->outedge;
+        joinNodes(n, subtr->next);
+        joinNodes(up, subtr);
+        mfl_temproot(swapingon, 1, ntax);
+        trlength = mfl_get_treelen(swapingon, tipdata, ntax, nchar);
+        mfl_undo_temproot(ntax, swapingon);
+        if (trlength < *currentbesttree) {
+            //dump_connections(swapingon->trnodes, ntax, numnodes);
+            *foundbettertree = true;
+            *currentbesttree = trlength;
+            swapingon->length = trlength;
+            mfl_reinit_treebuffer(treeset, swapingon, current, numnodes);
+            //dump_connections(swapingon->trnodes, ntax, numnodes);
+            trlength = 0;
+            *current = *current + 1;
+            return;
+        }
+        *foundbettertree = false;
+        if (trlength == *currentbesttree) {
+            treeset[*current] = copytree(swapingon, ntax, numnodes);
+            treeset[*current]->index = *current;
+            treeset[*current]->length = trlength;
+            trlength = 0;
+            *current = *current + 1;
+        }
+        joinNodes(n, up);
+        subtr->outedge = NULL;
+        subtr->next->outedge = NULL;
+    }
+    else {
+        printf("Hit tree limit\n");
+        *undertreelimit = false;
         return;
     }
     
     p = n->next;
     while (p != n) {
-        mfl_regrafting_traversal(p->outedge, subtr, swapingon);
+        mfl_regrafting_traversal(p->outedge, subtr, swapingon, treeset, ntax,
+                                 nchar, numnodes, current, tipdata, 
+                                 undertreelimit, currentbesttree, foundbettertree);
+        if (*foundbettertree) {
+            return;
+        }
         p = p->next;
     }
 }
 
-void mfl_pruning_traversal(node *n, tree *swapingon)
+void mfl_pruning_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
+                           int nchar, int numnodes, long int *current, 
+                           charstate *tipdata, bool *undertreelimit, 
+                           long int *currentbesttree, bool *foundbettertree)
 {
     node *p, *up, *dn;
     
     if (n->start) {
-        mfl_pruning_traversal(n->outedge, swapingon);
+        mfl_pruning_traversal(n->outedge, swapingon, treeset, ntax,
+                              nchar, numnodes, current, tipdata, 
+                              undertreelimit, currentbesttree, foundbettertree);
         return;
     }
     
-    if (n->tip) {
+    if (n->tip || *foundbettertree || !(*undertreelimit)) {
         return;
     }
     
     p = n->next;
     while (p != n) {
-        mfl_pruning_traversal(p->outedge, swapingon);
+        mfl_pruning_traversal(p->outedge, swapingon, treeset, ntax,
+                              nchar, numnodes, current, tipdata, 
+                              undertreelimit, currentbesttree, foundbettertree);
         up = p->next->outedge;
         p->next->outedge = NULL;
         up->outedge = NULL;
@@ -246,11 +292,60 @@ void mfl_pruning_traversal(node *n, tree *swapingon)
         p->next->next->outedge = NULL;
         dn->outedge = NULL;
         joinNodes(up, dn);
-        mfl_regrafting_traversal(swapingon->trnodes[0], p->next, swapingon);
+        mfl_regrafting_traversal(swapingon->trnodes[0], p->next, swapingon, treeset, ntax,
+                                 nchar, numnodes, current, tipdata, 
+                                 undertreelimit, currentbesttree, foundbettertree);
+        if (*foundbettertree){
+            return;
+        }
         joinNodes(p->next, up);
         joinNodes(p->next->next, dn);
         p = p->next;
+
     }    
 }
+
+void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
+                    tree **treeset, int starttreelen)
+{
+    long int i = 0, j, currentbest = starttreelen;
+    long int trbufpos = 0;
+    long int *nxtintrbuf = &trbufpos, *currentbest_p = &currentbest;
+    long int numreps = 100;
+    bool undertreelimit = true, *undertreelimit_p = &undertreelimit;
+    bool foundbettertree = false, *foundbettertree_p = &foundbettertree;
+    
+    do {
+        for (j = 0; j == 0 || j < *nxtintrbuf; ++j) {
+            mfl_pruning_traversal(treeset[j]->trnodes[0], treeset[j], treeset, 
+                                  ntax, nchar, numnodes, nxtintrbuf, tipdata, 
+                                  undertreelimit_p, currentbest_p, 
+                                  foundbettertree_p);
+            if (!*foundbettertree_p) {
+                j = *nxtintrbuf + 1;
+            }
+            
+            *foundbettertree_p = false;
+            //printf("Exiting the traversal at: j = %i\n", j);
+        }
+        ++i;
+    } while (i < numreps);
+    
+    printf("Next in trbuf: %li\n", *nxtintrbuf);
+    
+    printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
+    for (i = 0; i < 3; ++i) {
+        printf("Tree %li:\n", i + 1);
+        mfl_root_tree(treeset[i], 0, ntax);
+        printNewick(treeset[i]->root);
+        printf(";\n");
+        printf("Length: %i\n", treeset[i]->length);
+    }
+    printf("\n\n");
+    mfl_clear_treebuffer(treeset, nxtintrbuf, numnodes);
+    
+    free(treeset);
+}
+
 
 /* Tree bisection and reconnection (TBR) */

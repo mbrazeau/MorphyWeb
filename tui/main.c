@@ -840,25 +840,27 @@ void mini_test_analysis(void)
     
     // The exact type of rearrangment alogrithm (NNI, SPR, or TBR) will be set by the user
     
-    mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
+    //mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
+    
+    mfl_spr_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
     
     //mfl_clear_treebuffer(savedtrees, , numnodes);    
 }
 
-void test_spr(void)
+/*void test_spr(void)
 {
     
-    char atree[] = "(1,(2,((6,7),(3,(4,5)))));";
+    int tempntx = 12;
     
-    tree *treetoswap = readNWK(atree, 0);
+    tree *treetoswap = randunrooted(tempntx, 2*tempntx-1);//readNWK(atree, 0);
     
-    printf("SPR start tree:");
+    printf("SPR start tree:\n");
     printNewick(treetoswap->trnodes[0]);
-    printf("\n");
+    printf("\n\n");
     
     mfl_pruning_traversal(treetoswap->trnodes[0], treetoswap);
     
-}
+}*/
 
 
 int main(void)
@@ -873,9 +875,9 @@ int main(void)
     tree *originaltree;
     tree *copiedtree;
     
-    //mini_test_analysis();
+    mini_test_analysis();
     
-    test_spr();
+    //test_spr();
     
     /* This part is just for testing the collapseBiNode*/
     anewtree = randrooted(ntax, numnodes);

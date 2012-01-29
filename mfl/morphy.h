@@ -141,6 +141,8 @@ void mfl_put_branch_in_ring(node *n, node *rnode);
 void mfl_insert_branch(node *br, node *target, int ntax);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
 void mfl_deinit_tree(tree *t, int numnodes);
+void mfl_temproot(tree *trtoroot, int root, int ntax);
+void mfl_undo_temproot(int ntax, tree *trtounroot);
 int mfl_tree_enumerator(void);
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease);
 void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes);
@@ -163,5 +165,16 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax,
 void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **treeset, int starttreelen);
 void test_nni(int ntax, int numnodes);
+void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
+void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **treeset, int ntax, 
+                              int nchar, int numnodes, long int *current, 
+                              charstate *tipdata, bool *undertreelimit, 
+                              long int *currentbesttree, bool *foundbettertree);
+void mfl_pruning_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
+                           int nchar, int numnodes, long int *current, 
+                           charstate *tipdata, bool *undertreelimit, 
+                           long int *currentbesttree, bool *foundbettertree);
+void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
+                    tree **treeset, int starttreelen);
 
 /*End function prototypes*/
