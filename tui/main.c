@@ -303,40 +303,6 @@ void printNewick(node *n)
     printf(")");
 }
 
-void mfl_fitch_postorder(node *n, int *trlength)
-{
-    node *p;
-    charstate lft_chars, rt_chars;
-    charstate ancstate;
-     
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        mfl_fitch_postorder(p->outedge, trlength);
-        p = p->next;
-    }
-    
-    if (n->next->outedge->apomorphies & n->next->next->outedge->apomorphies) 
-    {
-        ancstate = n->next->outedge->apomorphies & n->next->next->outedge->apomorphies;
-    }
-    else
-    {
-        lft_chars = n->next->outedge->apomorphies;
-        rt_chars = n->next->next->outedge->apomorphies;
-        ancstate = lft_chars | rt_chars;
-        if ((ancstate & IS_APPLIC) && ( ((ancstate & IS_APPLIC) & lft_chars) && ((ancstate & IS_APPLIC) & rt_chars) )) {
-            ancstate = (ancstate & IS_APPLIC);
-            *trlength = *trlength + 1;
-        }
-    }
-    n->apomorphies = ancstate;
-}
-
-
 void newring(node *r1, int ntax)
 {
     /* Generates a new internal node composed of a ring of node structures
@@ -356,7 +322,7 @@ void newring(node *r1, int ntax)
     r1->start = r2->start = r3->start = false;
     r1->dummy = r2->dummy = r3->dummy = false;
     
-    r1->apomorphies = r2->apomorphies = r3->apomorphies = 0;
+    r1->apomorphies = r2->apomorphies = r3->apomorphies;
     r2->index = r1->index;
     r3->index = r1->index;
     
@@ -403,7 +369,6 @@ void newring_to_order(node *r1, int order, int ntax)
  */
 void deletering(node *r1)
 {
-    /* Note: apomorphies is only allocated once, r2 and r3 both point to the r1 apomorphies. */
     free(r1->tipsabove);
     
     node *p, *q;
@@ -414,15 +379,6 @@ void deletering(node *r1)
         free(p->tipsabove);
         free(p);
         p = q;
-    }
-}
-
-void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar, int currentchar)
-{   
-    int i;
-    
-    for (i = 0; i < ntax; ++i) {
-        currenttree->trnodes[i]->apomorphies = tipdata[currentchar + i * nchar];
     }
 }
 
@@ -691,20 +647,110 @@ void rand_tree (int ntax, int numnodes)
     
 }
 
+void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar)
+{   
+    int i;
+    
+    for (i = 0; i < ntax; ++i) {
+        currenttree->trnodes[i]->apomorphies = &tipdata[i * nchar];
+    }
+}
+
+void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
+{
+    int i;
+    charstate lft_chars, rt_chars;
+    
+    for (i = 0; i < nchar; ++i) {
+        if (leftdesc->apomorphies[i] & rightdesc->apomorphies[i]) 
+        {
+            ancestor->apomorphies[i] = leftdesc->apomorphies[i] & rightdesc->apomorphies[i];
+        }
+        else
+        {
+            lft_chars = leftdesc->apomorphies[i];
+            rt_chars = rightdesc->apomorphies[i];
+            ancestor->apomorphies[i] = lft_chars | rt_chars;
+            if ((ancestor->apomorphies[i] & IS_APPLIC) && ( ((ancestor->apomorphies[i] & IS_APPLIC) & lft_chars) && ((ancestor->apomorphies[i] & IS_APPLIC) & rt_chars) )) {
+                ancestor->apomorphies[i] = (ancestor->apomorphies[i] & IS_APPLIC);
+                *trlength = *trlength + 1;
+            }
+        }
+        //n->apomorphies = ancstate;
+    }
+}
+
+void mfl_fitch_postorder(node *n, int *trlength, int nchar)
+{
+    node *p;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        mfl_fitch_postorder(p->outedge, trlength, nchar);
+        p = p->next;
+    }
+    if (!n->apomorphies) {
+        n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+    }
+    mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength);
+}
+
+
 int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar)
 {
     int i;
     int treelen = 0;
     int *treelen_p = &treelen;
     int currenchar = 0;
-    int *currentchar_p = &currenchar;
     
-    for (i = 0, *currentchar_p = 0; i < nchar; ++i) {
-        mfl_apply_tipdata(testtree, tipdata, ntax, nchar, *currentchar_p);
-        *currentchar_p = *currentchar_p + 1;        
-        mfl_fitch_postorder(testtree->root, treelen_p);
-    }
+    mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
+    mfl_fitch_postorder(testtree->root, treelen_p, nchar);
+    
     return *treelen_p;
+}
+
+charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
+{
+    int i, j;
+    
+    charstate *tipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
+    
+    for (i = 0, j = 0; txtsrc[i]; ++i) {
+        if ((txtsrc[i] - '0') >= 0 && (txtsrc[i] - '0') <= 9) {
+            tipdata[j] = 1 << (txtsrc[i] - '0' + 1);
+            
+        }
+        else if (txtsrc[i] == '{' || txtsrc[i] == '(') {
+            ++i;
+            tipdata[j] = 0;
+            while (txtsrc[i] != '}' && txtsrc[i] != ')') {
+                if ((txtsrc[i] - '0') >= 0 && (txtsrc[i] - '0') <= 9) {
+                    tipdata[j] = tipdata[j] | (1 << (txtsrc[i] - '0' + 1));
+                    ++i;
+                }
+            }
+        }
+        else if (txtsrc[i] == '?') {
+            tipdata[j] = -1;
+        }
+        else if (txtsrc[i] == '-') {
+            tipdata[j] = 1;
+        }
+        else if (txtsrc[i] == '\n') {
+            ++i;
+        }
+        else {
+            ++i;
+        }
+        
+        ++j;
+    }
+    
+    return tipdata;
 }
 
 void mini_test_analysis(void)
@@ -716,21 +762,15 @@ void mini_test_analysis(void)
      * shortest tree. The analysis should converge towards a tree like the one
      * in the Newick string below. */
     
-    int i, j = 0, c;
+    int i, j = 0;
     int ntax = 17, nchar = 138; // These values would be supplied by the datafile
     int treelimit = 10000; // Will always start its life as a default value and be 
                          // changed by the user (or automatically, as a 
                          // condition of user preference)
-    int treelength1 = 0, treelength2 = 0, besttreelen = 0;
+    int besttreelen = 0;
     int numnodes;
-    bool isRooted = true;
-    
-    int *treelength_p = &treelength1;
-    int *treelength_q = &treelength2;
     
     numnodes = numberOfNodes(ntax);
-    
-    tree *anewtree;
     
     /* A completely balanced tree topology. 
      * This is simple enough to create a 'rigged' dataset for.*/
@@ -795,32 +835,9 @@ void mini_test_analysis(void)
     }
     printf("\n");
     
-    charstate *morphyTipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
+    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar);
     
-    /* Convert the tip data to a form that mfl_fitch_postorder can use */
-    for (i = 0; i < nchar; ++i) {
-        for (j = 0; j < ntax; ++j) {
-            if (usrTipdata[i + j * nchar] == '?') {
-                morphyTipdata[i + j * nchar] = -1;
-            }
-            else if (usrTipdata[i + j * nchar] == '-') {
-                morphyTipdata[i + j * nchar] = 1;
-            }
-            else if (usrTipdata[i + j * nchar] == '{' || usrTipdata[i + j * nchar] == '(') {
-                ++i;
-                c = 1 << (usrTipdata[i + j * nchar] - '0' + 1);
-                ++i;
-                do {
-                    c = c | (1 << (usrTipdata[i + j * nchar] - '0' + 1));
-                } while (usrTipdata[i + j * nchar] != '}' && usrTipdata[i + j * nchar] != ')');
-            }
-            else {
-                morphyTipdata[i + j * nchar] = 1 << (usrTipdata[i + j * nchar] - '0' + 1);
-            }
-        }
-    }
-    
-    int *currentchar = &j;
+    //int *currentchar = &j;
     
     /* Initialize the tree array that will store optimal trees */
     tree **savedtrees = (tree**) malloc(treelimit * sizeof(tree*));

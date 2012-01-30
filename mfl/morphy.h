@@ -32,6 +32,7 @@
  * pointer joins the node to either a leaf or the nearest internal node. */
 
 typedef int32_t charstate;
+typedef int32_t *statearray;
 
 typedef struct node {
     struct node *outedge, *next;
@@ -40,6 +41,7 @@ typedef struct node {
     int index;
     int initialized;
     int order;
+    int lengthatnode;
     bool *tipsabove;
     bool start;
     bool dummy;
@@ -47,7 +49,7 @@ typedef struct node {
     int maxsteps;
     int charstates;
     int numstates; //number of states of a character reconstructed at that node
-    charstate apomorphies;
+    charstate *apomorphies;
 } node;
 
 typedef node **nodearray;
@@ -60,7 +62,6 @@ typedef struct tree {
     node *root;
     int length;
     bool **bipartitions;
-    int *bpfreqs;
     int index;
 } tree;
 
@@ -92,8 +93,8 @@ struct tree *alloc_noring(int ntax, int numnodes);
 struct node * allocnode(void);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
-void fitchdown(node *leftdesc, node *rightdesc, node *ancestor, int *stepcount); // The Fitch process for the downpass
-void mfl_fitch_postorder(node *n, int *trlength);
+void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
+void mfl_fitch_postorder(node *n, int *trlength, int nchar);
 struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
 struct tree * copytree_II(tree *origtree, int ntax, int numnodes);
 void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
@@ -104,7 +105,7 @@ void detree2(nodearray trnptr);
 void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void unroot(int ntax, tree *rootedtree);
-void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar, int currentchar);
+void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar);
 
 /*in exhaustive.c*/ 
