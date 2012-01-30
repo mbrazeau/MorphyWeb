@@ -76,6 +76,45 @@ string mfl_get_trees(mfl_handle_t* mfl_handle);
  * functions to present different formats... or maybe there are parameters for different
  * formats... but just returning some complex data struct and expecting random programmers
  * not to screw it up is asking for trouble.
+ *
+ * MDB: Ignoring the struct I suggested, I think all of the data I listed above 
+ * needs to be saved to file when any resultant trees are saved to file. 
+ * The user may choose to save all of their results trees, or just the
+ * consensus tree(s). Either way, they would be saved as Newick strings
+ * in a Nexus-formatted file that just has a TREES block and (optionally) a TAXA 
+ * block if the taxon names are not inlined in the Newick trees (i.e. if only 
+ * leaf numbers are used in the Newick strings). As a default for tree searches, 
+ * the output to screen should be fairly limited. It should report the length of 
+ * the shortest tree found, the number of trees saved and the number of 
+ * rearrangements tried (also, number of replicates if random addition sequence 
+ * was used). So, the search ends, and the user might get output like this:
+ *
+ *      Heuristic search completed:
+ *          rearrangments tried: 2998374571630 
+ *          number of trees saved: 299
+ *          shortest tree length: 180
+ *
+ * The main thing the user is going to want to save are the trees. The trees are 
+ * saved as Newick-formatted strings, as described above. The file also has to 
+ * contain all of the above information, plus the search parameters.
+ *
+ * Trees should be printed to screen only when the user asks or when a consensus
+ * tree is computed. At present, the only function we have for printing to 
+ * screen is printNewick (in main.c, but that'll get moved obviously). Nobody
+ * wants to read those. Ideally, we'd print them out as text trees like:
+ *
+ * taxon_1_name --\
+ *                +--\
+ * taxon_3_name --/  |
+ *                   +-  
+ * taxon_2_name -----/
+ *
+ * Printing either Newick trees or a tree like this requires (for each saved 
+ * tree) a traversal on the original tree struct. So, whatever does the printing
+ * to screen needs that data OR receives the char string(s) ready for printing. 
+ *
+ * So, this looks like multiple function calls to the handle.
+ *
  */
 mfl_heuristic       (mfl_handle_t* mfl_handle);
 mfl_exhaustive      (mfl_handle_t* mfl_handle);
