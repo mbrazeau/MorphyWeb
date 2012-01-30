@@ -110,7 +110,7 @@ void mfl_close_ring(node *n)
     while (p != n);
 }
 
-void mfl_as_ring(node *n)
+void mfl_as_ring(node *n, int ntax)
 {
     
     if (n->next) {
@@ -118,7 +118,7 @@ void mfl_as_ring(node *n)
         deletering(n);
     }
     
-    newring(n);
+    newring(n, ntax);
 }
 
 void mfl_as_noring(node *n)
@@ -409,6 +409,35 @@ void mfl_put_branch_in_ring(node *n, node *rnode)
     
     rnode->order = rnode->order + 1;
     mfl_set_order(rnode);
+}
+
+
+void mfl_temproot(tree *trtoroot, int root, int ntax)
+{
+    node *lftbr, *rtbr;
+    
+    lftbr = trtoroot->trnodes[root];
+    rtbr = lftbr->outedge;
+    
+    joinNodes(lftbr, trtoroot->trnodes[ntax]->next);
+    joinNodes(rtbr, trtoroot->trnodes[ntax]->next->next);
+    
+    trtoroot->root = trtoroot->trnodes[ntax];
+    trtoroot->trnodes[0]->start = false;
+}
+
+void mfl_undo_temproot(int ntax, tree *trtounroot)
+{
+    node *lftbr, *rtbr;
+    
+    lftbr = trtounroot->trnodes[ntax]->next->outedge;
+    rtbr = trtounroot->trnodes[ntax]->next->next->outedge;
+    
+    joinNodes(lftbr, rtbr);
+    
+    trtounroot->root = NULL;
+    trtounroot->trnodes[0]->start = true;
+    
 }
 
 

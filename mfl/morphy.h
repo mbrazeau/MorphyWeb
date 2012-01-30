@@ -40,6 +40,7 @@ typedef struct node {
     int index;
     int initialized;
     int order;
+    bool *tipsabove;
     bool start;
     bool dummy;
     int minsteps;
@@ -58,12 +59,16 @@ typedef struct tree {
      * are internal nodes and not the root node. */
     node *root;
     int length;
+    bool **bipartitions;
+    int *bpfreqs;
     int index;
 } tree;
 
 typedef struct char_data {
     int *transeries;
     int optim_type;
+    int maxvalue;
+    int minvalue;
     bool included;
     bool informative;
     int numstates;
@@ -92,7 +97,7 @@ void mfl_fitch_postorder(node *n, int *trlength);
 struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
 struct tree * copytree_II(tree *origtree, int ntax, int numnodes);
 void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
-void newring(node *r1);
+void newring(node *r1, int ntax);
 void deletering(node *r1);
 void detree(node *n);
 void detree2(nodearray trnptr);
@@ -127,7 +132,7 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], node
 struct node * mfl_seek_internal(int ntax,int numnodes, node **nds);
 struct node * mfl_seek_ringnode(node *n, int ntax);
 void mfl_close_ring(node *n);
-void mfl_as_ring(node *n);
+void mfl_as_ring(node *n, int ntax);
 void mfl_as_noring(node *n);
 void mfl_reindex_tree(nodearray nds, int ntax, int numnodes);
 void mfl_set_ring_to_n(node *n);

@@ -140,34 +140,6 @@ struct node *mfl_breaktie_intryall(node *bestpos, node *n)
     return bestpos;
 }
 
-void mfl_temproot(tree *trtoroot, int root, int ntax)
-{
-    node *lftbr, *rtbr;
-    
-    lftbr = trtoroot->trnodes[root];
-    rtbr = lftbr->outedge;
-    
-    joinNodes(lftbr, trtoroot->trnodes[ntax]->next);
-    joinNodes(rtbr, trtoroot->trnodes[ntax]->next->next);
-    
-    trtoroot->root = trtoroot->trnodes[ntax];
-    trtoroot->trnodes[0]->start = false;
-}
-
-void mfl_undo_temproot(int ntax, tree *trtounroot)
-{
-    node *lftbr, *rtbr;
-    
-    lftbr = trtounroot->trnodes[ntax]->next->outedge;
-    rtbr = trtounroot->trnodes[ntax]->next->next->outedge;
-    
-    joinNodes(lftbr, rtbr);
-    
-    trtounroot->root = NULL;
-    trtounroot->trnodes[0]->start = true;
-    
-}
-
 void mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int nchar, 
                 int numnodes, int *bestlen, tree *starttree, charstate *tipdata)
 {
@@ -203,10 +175,10 @@ void mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int nchar,
 struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
                                  charstate *tipdata, bool addRandom)
 {
-    int i, nbeslen = 1000;
+    int i, nbeslen = 0;
     int *bestlen = &nbeslen;
     int *taxarray;
-    node *p, *arbroot, *bestpos;
+    node *p, *bestpos;
     tree *asistree;
     
     asistree = alloctree(ntax, numnodes);
@@ -216,9 +188,13 @@ struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     init_taxarray(taxarray, ntax);
     
     if (addRandom) {
-        printf("Using random addition sequence\n");
+        printf("Joining taxa by random addition sequence\n");
         shuffle(taxarray, ntax);
     }
+    else {
+        printf("Joining taxa according to order in matrix\n");
+    }
+
     
     /* create the base star */
     /* The 'magic number' 3 appears here because that is all the value can ever
@@ -243,20 +219,10 @@ struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
         mfl_tryall(asistree->root, asistree->trnodes[taxarray[i] - 1], bestpos, ntax, nchar, 
                    numnodes, bestlen, asistree, tipdata);
         //Join the nodes//
-        printf("Length of current addseq tree: %i\n", asistree->length);
         mfl_insert_branch(asistree->trnodes[taxarray[i] - 1], bestpos, ntax);
         *bestlen = 0;
     }
-    
-    printf("The starting tree by stepwise addition\n");
-    printNewick(asistree->root);
-    printf("\n");
     mfl_undo_temproot(ntax, asistree);
-    
-    printf("The starting tree by stepwise addition\n");
-    printNewick(asistree->trnodes[0]);
-    printf("\n");
-    
     free(taxarray);
     return asistree;
 }

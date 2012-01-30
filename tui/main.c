@@ -192,7 +192,8 @@ struct tree *alloctree(int ntax, int numnodes)
         else /* second half are allocated as a newring */
         {
             newtree->trnodes[i]->index = i;
-            newring(newtree->trnodes[i]);
+            newring(newtree->trnodes[i], ntax);
+            newtree->trnodes[i]->tipsabove = (bool*)malloc(ntax * sizeof(bool));
         }
         
         newtree->trnodes[i]->outedge = NULL;
@@ -249,6 +250,9 @@ struct tree *alloc_noring(int ntax, int numnodes)
         if (i < ntax) 
         {
             newtree->trnodes[i]->tip = i + 1;
+        }
+        else {
+            newtree->trnodes[i]->tipsabove = (bool*)malloc(ntax * sizeof(bool));
         }
         newtree->trnodes[i]->index = i;
     }
@@ -333,7 +337,7 @@ void mfl_fitch_postorder(node *n, int *trlength)
 }
 
 
-void newring(node *r1)
+void newring(node *r1, int ntax)
 {
     /* Generates a new internal node composed of a ring of node structures
      * joined in a unidirectional manner by their next pointers. Used by any
@@ -355,9 +359,14 @@ void newring(node *r1)
     r1->apomorphies = r2->apomorphies = r3->apomorphies = 0;
     r2->index = r1->index;
     r3->index = r1->index;
+    
+    r2->tipsabove = (bool*)malloc(ntax * sizeof(bool));
+    memset(r2->tipsabove, 0, (ntax * sizeof(bool)));
+    r3->tipsabove = (bool*)malloc(ntax * sizeof(bool));
+    memset(r3->tipsabove, 0, (ntax * sizeof(bool)));
 }
 
-void newring_to_order(node *r1, int order)
+void newring_to_order(node *r1, int order, int ntax)
 {
     int i = 1;
     node *p;
@@ -375,6 +384,8 @@ void newring_to_order(node *r1, int order)
         p->start = r1->start;
         p->index = r1->index;
         p->apomorphies = r1->apomorphies;
+        p->tipsabove = (bool*)malloc(ntax * sizeof(bool));
+        memset(p->tipsabove, 0, (ntax * sizeof(bool)));
         ++i;
     } while (i < order);
     p->next = r1;
@@ -393,13 +404,14 @@ void newring_to_order(node *r1, int order)
 void deletering(node *r1)
 {
     /* Note: apomorphies is only allocated once, r2 and r3 both point to the r1 apomorphies. */
-    //free(r1->apomorphies);
+    free(r1->tipsabove);
     
     node *p, *q;
     
     p = r1->next;
     while (p != r1) {
         q = p->next;
+        free(p->tipsabove);
         free(p);
         p = q;
     }
@@ -442,7 +454,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     {
         mfl_set_order(origtr->trnodes[ntax]);
         tmpltorder = origtr->trnodes[ntax]->order;
-        newring_to_order(treecp->trnodes[ntax], tmpltorder + 1);
+        newring_to_order(treecp->trnodes[ntax], tmpltorder + 1, ntax);
         treecp->trnodes[ntax]->order = treecp->trnodes[ntax]->order - 1;
         treecp->root = treecp->trnodes[ntax];
         //isRooted = true;
@@ -452,7 +464,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     {
         treecp->trnodes[0]->start = true;
         begin = ntax + 1;
-        newring(treecp->trnodes[ntax]);
+        newring(treecp->trnodes[ntax], ntax);
     }
     
     
@@ -460,7 +472,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
         if (origtr->trnodes[i]->next) {
             mfl_set_order(origtr->trnodes[i]);
             tmpltorder = origtr->trnodes[i]->order;
-            newring_to_order(treecp->trnodes[i], tmpltorder);
+            newring_to_order(treecp->trnodes[i], tmpltorder, ntax);
         }
     }
     
@@ -533,7 +545,7 @@ void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
     node *nodeptr, *r2, *r3;
     
     if (!trtoroot->trnodes[ntax]->next) {
-        newring(trtoroot->trnodes[ntax]->next);
+        newring(trtoroot->trnodes[ntax]->next, ntax);
     }
     
     nodeptr = trtoroot->trnodes[nRoot]->outedge;
