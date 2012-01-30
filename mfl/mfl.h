@@ -65,6 +65,17 @@ string mfl_get_trees(mfl_handle_t* mfl_handle);
  * saved) or they'll want compute full ancestral states reconstructions. These will
  * require the original tree structs in memory.
  *
+ * We can save all of the necessary data in the mfl handle, that is not an issue
+ * The issue is: what does the end user actually need to see with his two eyes?
+ * What needs to be saved to a file? What format? All of the details of datastructures
+ * should be hidden from the end user, if the user wants to compute consensus trees
+ * then they will be able to do a mfl_compute_consensus(mfl_handle_t*) and that should
+ * return some data that is ready for direct I/O. OR there should be extra functions
+ * that pulls the results out of the handle and formats them in such a way that it can
+ * be cleanly presented to the end user, or stored to disk... Maybe there are different
+ * functions to present different formats... or maybe there are parameters for different
+ * formats... but just returning some complex data struct and expecting random programmers
+ * not to screw it up is asking for trouble.
  */
 mfl_heuristic       (mfl_handle_t* mfl_handle);
 mfl_exhaustive      (mfl_handle_t* mfl_handle);
