@@ -141,19 +141,18 @@ int mfl_get_resultant_data(mfl_handle_t* mfl_handle, mfl_resultant_data_t result
 string mfl_get_saved_trees_newick(mfl_handle_t* mfl_handle);
 string mfl_get_saved_trees       (mfl_handle_t* mfl_handle);
 
-mfl_heuristic       (mfl_handle_t* mfl_handle);
-mfl_exhaustive      (mfl_handle_t* mfl_handle);
-mfl_branchandbound  (mfl_handle_t* mfl_handle);
+mfl_heuristic           (mfl_handle_t* mfl_handle);
+mfl_exhaustive          (mfl_handle_t* mfl_handle);
+mfl_branchandbound      (mfl_handle_t* mfl_handle);
+mfl_consensus           (mfl_handle_t* mfl_handle);
+mfl_collapse_zerolength (mfl_handle_t* mfl_handle);
+
+#ifdef VERSION_1_5
 mfl_bootstrap       (mfl_handle_t* mfl_handle);
 mfl_decay           (mfl_handle_t* mfl_handle);
 mfl_jackknife       (mfl_handle_t* mfl_handle);
-
-
-#ifdef VERSION_1_5
 mfl_safe_taxonomic_reduction(list_of_ordered_characters);
 mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast heuristic search, but is subordinate to mfl_heuristic
-mfl_consensus(tree **savedtrees, bool strict, bool majority_rule, int majority_rule_optional_cutoff, int adams);
-mfl_collapse_zerolength(during_search, if_min_zero_length, if_max_zero_length);
 #endif
 
 /* 
