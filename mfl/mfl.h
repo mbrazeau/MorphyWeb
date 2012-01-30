@@ -20,6 +20,13 @@ typedef enum
     MFL_PT_ADD_SEQUENCE_TYPE,
 } mfl_param_t;
 
+typedef enum
+{
+    MFL_RT_NUM_REARRANGMENTS,
+    MFL_RT_NUM_SAVED_TREES,
+    MFL_RT_SHORTEST_TREE_LEN,
+} mfl_resultant_data_t;
+
 mfl_handle_t* mfl_create_handle();
 void mfl_destroy_handle(mfl_handle_t* mfl_handle);
 
@@ -115,7 +122,25 @@ string mfl_get_trees(mfl_handle_t* mfl_handle);
  *
  * So, this looks like multiple function calls to the handle.
  *
+ * CJD: Yes, this all sounds good, the basic idea is that the mfl API does the 
+ * heavy lifting and provides APIs that can be easily used by higher level code,
+ * and the APIs just return ready to use information. So I see things like the 
+ * following, assuming all of data is of type int, which might not be the case:
  */
+int mfl_get_resultant_data(mfl_handle_t* mfl_handle, mfl_resultant_data_t resultant_data);
+/* 
+ * note: the string datatype is a real C++ datatype, like char* 
+ * but much easier to use, no malloc/free necessary, and it is 
+ * always big enough to store whatever string you put in it... like magic...
+ * it is part of the std c++ library, which you can now use in mfl 
+ * because it is compiled with the c++ compiler :D tho it requires the line:
+ using namespace std;
+ * before the string datatype can be used in the code, otherwise you must
+ * refer to it as std::string
+ */
+string mfl_get_saved_trees_newick(mfl_handle_t* mfl_handle);
+string mfl_get_saved_trees       (mfl_handle_t* mfl_handle);
+
 mfl_heuristic       (mfl_handle_t* mfl_handle);
 mfl_exhaustive      (mfl_handle_t* mfl_handle);
 mfl_branchandbound  (mfl_handle_t* mfl_handle);
