@@ -25,6 +25,9 @@
 
 #define IS_APPLIC (-1^1)
 
+#define TREELIMIT 4000 //A temporary tree limit for testing.
+
+
 /* For node and tree structures, this program follows the format recommended by
  * Felsenstein (2004. Inferring Phylogenies. Sinauer, Mass.) and implemented in 
  * Felsenstein et al.'s Phylip package. This includes representing internal nodes 
@@ -175,11 +178,11 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **treeset, int ntax, 
                               int nchar, int numnodes, long int *current, 
                               charstate *tipdata, bool *undertreelimit, 
-                              long int *currentbesttree, bool *foundbettertree);
+                              long int *currentbesttree, bool *foundbettertree, long int *iterations);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
                            int nchar, int numnodes, long int *current, 
                            charstate *tipdata, bool *undertreelimit, 
-                           long int *currentbesttree, bool *foundbettertree);
+                           long int *currentbesttree, bool *foundbettertree, long int *iterations);
 void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **treeset, int starttreelen);
 

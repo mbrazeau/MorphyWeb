@@ -437,7 +437,6 @@ void mfl_undo_temproot(int ntax, tree *trtounroot)
     
     trtounroot->root = NULL;
     trtounroot->trnodes[0]->start = true;
-    
 }
 
 
@@ -470,6 +469,7 @@ void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnod
             freetree(treebuffer[i], numnodes);
         }
     }
+    *numsavedtrees = 0;
 }
 
 void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes)
