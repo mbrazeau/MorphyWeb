@@ -25,7 +25,7 @@
 
 #define IS_APPLIC (-1^1)
 
-#define TREELIMIT 4000 //A temporary tree limit for testing.
+#define TREELIMIT 200 //A temporary tree limit for testing.
 
 
 /* For node and tree structures, this program follows the format recommended by
@@ -47,11 +47,10 @@ typedef struct node {
     int lengthatnode;
     bool *tipsabove;
     bool start;
-    bool dummy;
+    bool skip;
     int minsteps;
     int maxsteps;
     int charstates;
-    int numstates; //number of states of a character reconstructed at that node
     charstate *apomorphies;
 } node;
 
@@ -64,11 +63,18 @@ typedef struct tree {
      * are internal nodes and not the root node. */
     node *root;
     int length;
+    bool swapped;
     bool **bipartitions;
     int index;
 } tree;
 
-typedef struct char_data {
+typedef struct treeset {
+    tree **savedtrees;
+    int nsaved;
+    int bestlen;
+} treeset;
+
+typedef struct chardata {
     int *transeries;
     int optim_type;
     int maxvalue;
@@ -78,7 +84,7 @@ typedef struct char_data {
     int numstates;
     int *stepmatrix[MORPHY_MAX_STATES][MORPHY_MAX_STATES];
     void (*optimzation_algo)(node *n, int *trlength);
-} char_data;
+} chardata;
 
 /*Function prototypes*/
 
@@ -124,8 +130,8 @@ long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
 struct tree *randrooted (int ntax, int numnodes);
 struct tree *randunrooted (int ntax, int numnodes);
-struct tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
-                                 charstate *tipdata, bool addRandom);
+void mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
+                                 charstate *tipdata, bool addRandom, tree** savedtrees);
 /*in taxpart*/
 int strToInt (char string[]);
 void wipe_Og(int outtaxa[], nodearray outgroup);
@@ -167,23 +173,24 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 void mfl_bswap(node *p, node *q);
 void mfl_remove_branch(node *n);
 void mfl_insert_branch(node *br, node *target);
-void mfl_nni_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
+void mfl_nni_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                        int nchar, int numnodes, long int *current, 
                        charstate *tipdata, bool *undertreelimitlong, 
                        long int *currentbesttree, bool *foundbettertree);
 void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
-                    tree **treeset, int starttreelen);
+                    tree **savedtrees, int starttreelen);
 void test_nni(int ntax, int numnodes);
+long int mfl_spr_leftotry(int ntax);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
-void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **treeset, int ntax, 
+void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **savedtrees, int ntax, 
                               int nchar, int numnodes, long int *current, 
                               charstate *tipdata, bool *undertreelimit, 
-                              long int *currentbesttree, bool *foundbettertree, long int *iterations);
-void mfl_pruning_traversal(node *n, tree *swapingon, tree **treeset, int ntax, 
+                              long int *currentbesttree, bool *foundbettertree, long int *leftotry);
+void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, long int *current, 
                            charstate *tipdata, bool *undertreelimit, 
-                           long int *currentbesttree, bool *foundbettertree, long int *iterations);
+                           long int *currentbesttree, bool *foundbettertree, long int *leftotry);
 void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
-                    tree **treeset, int starttreelen);
+                    tree **savedtrees, int starttreelen);
 
 /*End function prototypes*/

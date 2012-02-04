@@ -20,7 +20,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
     bool isUsed = false;
     
     for (i = ntax + 1; i < numnodes; ++i) {
-        if (!nds[i]->next && !nds[i]->initialized && !nds[i]->outedge) {
+        if (!nds[i]->next /*&& !nds[i]->initialized*/ && !nds[i]->outedge) {
             unused = nds[i];
             i = 2 * ntax;
         }
@@ -59,7 +59,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
         return unused;
     }
     else {
-        unused->initialized = 1;
+        //unused->initialized = 1;
         return unused;
     }
 }
@@ -159,6 +159,7 @@ void mfl_set_ring_to_n(node *n)
             p->index = n->index;
             p->apomorphies = n->apomorphies;
             p->initialized = n->initialized;
+            p->skip = n->skip;
             p = p->next;
         }
     }
@@ -172,6 +173,7 @@ void mfl_reset_ring(node *n)
     
     n->initialized = 0;
     n->apomorphies = 0;
+    n->skip = 0;
     
     if (n->next) {
         p = n->next;
@@ -180,6 +182,7 @@ void mfl_reset_ring(node *n)
             p->index = n->index;
             p->apomorphies = n->apomorphies;
             p->initialized = n->initialized;
+            p->skip = n->skip;
             p = p->next;
         }
     }
@@ -419,6 +422,10 @@ void mfl_temproot(tree *trtoroot, int root, int ntax)
     lftbr = trtoroot->trnodes[root];
     rtbr = lftbr->outedge;
     
+    if (!trtoroot->trnodes[ntax]->next) {
+        newring(trtoroot->trnodes[ntax], ntax);
+    }
+    
     joinNodes(lftbr, trtoroot->trnodes[ntax]->next);
     joinNodes(rtbr, trtoroot->trnodes[ntax]->next->next);
     
@@ -486,6 +493,7 @@ void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedt
         }
     }
     
+    newbest->swapped = 0;
     treebuffer[0] = newbest;
     *numsavedtrees = 0;
 }
