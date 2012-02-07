@@ -212,16 +212,17 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     int trlength;
     node *p, *up;
     
-    if (!n->initialized || !n->outedge->initialized) {
+    //if (!n->initialized || !n->outedge->initialized) {
         up = n->outedge;
         mfl_insert_branch(subtr, up, ntax);
+        subtr->skip = 1;
+        subtr->next->skip = 1;
+        subtr->next->next->skip = 1;    
         mfl_temproot(swapingon, 0, ntax);
         trlength = mfl_get_treelen(swapingon, tipdata, ntax, nchar);
         mfl_undo_temproot(ntax, swapingon);
         *leftotry = *leftotry - 1;
-        subtr->skip = 1;
-        subtr->next->skip = 1;
-        subtr->next->next->skip = 1;
+        //printf("Left to try: %li\n", *leftotry);
         if (trlength < *currentbesttree) {
             *foundbettertree = true;
             swapingon->length = trlength;
@@ -236,17 +237,17 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         if (trlength == *currentbesttree) {
             printf("saving an equally parsimonious tree of length: %i\n", trlength);
             printf("copying into position: %li\n", *current);
-            //subtr->skip = 1;
-            //subtr->next->skip = 1;
-            //subtr->next->next->skip = 1;
             savedtrees[*current] = copytree(swapingon, ntax, numnodes);
             savedtrees[*current]->index = *current;
             savedtrees[*current]->length = trlength;
+            //subtr->skip = 0;
+            //subtr->next->skip = 0;
+            //subtr->next->next->skip = 0;
             trlength = 0;
             *current = *current + 1;
         }
         joinNodes(n, up);
-    }
+    //}
     
     if (n->start) {
         mfl_regrafting_traversal(n->outedge, subtr, swapingon, savedtrees, ntax,
@@ -285,33 +286,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                               nchar, numnodes, current, tipdata, 
                               undertreelimit, currentbesttree, foundbettertree, 
                               leftotry);
-        if (*foundbettertree) {
-            return;
-        }
-        *leftotry = *leftotry - 1;
-        //printf("pruning a subtree\n");
-        up = n->outedge->next->outedge;
-        dn = n->outedge->next->next->outedge;
-        subtr = n->outedge->next->next;
-        up->initialized = 1;
-        dn->initialized = 1;
-        joinNodes(up, dn);
-        *leftotry = *leftotry - 1;
-        swapingon->trnodes[1]->start = true;
-        n->start = false;
-        mfl_regrafting_traversal(swapingon->trnodes[1], subtr, swapingon, 
-                                 savedtrees, ntax, nchar, numnodes, current, 
-                                 tipdata, undertreelimit, currentbesttree, 
-                                 foundbettertree, leftotry);
-        up->initialized = 0;
-        dn->initialized = 0;
-        swapingon->trnodes[1]->start = false;
-        n->start = true;
-        if (*foundbettertree) {
-            return;
-        }
-        joinNodes(up, n->outedge->next);
-        joinNodes(dn, n->outedge->next->next);
         return;
     }
     
@@ -352,9 +326,9 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         }
         else {
             printf("Skipping already swapped clade\n");
-            //p->outedge->skip = 0;
-            //p->outedge->next->skip = 0;
-            //p->outedge->next->next->skip = 0;
+            p->outedge->skip = 0;
+            p->outedge->next->skip = 0;
+            p->outedge->next->next->skip = 0;
         }
         p = p->next;
     }   
@@ -380,30 +354,28 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
         printf("number of trees in buffer: %li\n", *nxtintrbuf+1);
         remaining = *nxtintrbuf + 1;
         c_in = *nxtintrbuf;
-        printf("current IN: %li\n", c_in);
-        printf("Looking for shorter trees on all saved trees:\n");
         *foundbettertree_p = false;
+        printf("Swapping on tree: %li\n", j);
         mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                 ntax, nchar, numnodes, nxtintrbuf, tipdata, 
                                 undertreelimit_p, currentbest_p, 
                                 foundbettertree_p, leftotry_p);
         savedtrees[*nxtintrbuf-1]->swapped = true;
-        printf("j = %li\n", j);
-        printf("current: %li\n", *nxtintrbuf);                      
         if (*foundbettertree_p) {
+            *leftotry_p = mfl_spr_leftotry(ntax);
             j = 0;
         }
         else {
             ++j;
         }
-    } while (/*!quit*/j < 10);
+    } while (*leftotry_p >= 0);
     
     printf("Next in trbuf: %li\n", *nxtintrbuf);
     
     printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
     for (i = 0; i < *nxtintrbuf; ++i) {
         //printf("Tree %li:\n", i + 1);
-        printf("TREE str_%li = [&u] ", i+1);
+        printf("TREE str_%li = [&U] ", i+1);
         mfl_root_tree(savedtrees[i], 0, ntax);
         printNewick(savedtrees[i]->root);
         printf(";\n");

@@ -35,7 +35,6 @@
  * pointer joins the node to either a leaf or the nearest internal node. */
 
 typedef int32_t charstate;
-typedef int32_t *statearray;
 
 typedef struct node {
     struct node *outedge, *next;
@@ -75,12 +74,17 @@ typedef struct treeset {
 } treeset;
 
 typedef struct chardata {
-    int *transeries;
+    int charnum;
+    charstate *transeries;
     int optim_type;
     int maxvalue;
     int minvalue;
     bool included;
     bool informative;
+    double cIndex;
+    double rIndex;
+    double retIndex;
+    double hIndex;
     int numstates;
     int *stepmatrix[MORPHY_MAX_STATES][MORPHY_MAX_STATES];
     void (*optimzation_algo)(node *n, int *trlength);
