@@ -90,6 +90,15 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
     return n;
 }
 
+void mfl_set_vweight(node *n)
+{
+    node *p;
+    p = n->next;
+    while (p != n) {
+        n->vweight = n->vweight + p->outedge->vweight;
+    }
+}
+
 void mfl_close_ring(node *n)
 {
     /* Makes sure there isn't a dangling next pointer*/
@@ -213,6 +222,7 @@ void mfl_collapse(node *n1, nodearray nds)
     free(an1);
     nds[n1->index] = n1;
     mfl_set_order(tmp);
+    mfl_set_vweight(tmp);
 }
 
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
@@ -493,7 +503,8 @@ void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedt
         }
     }
     
-    newbest->swapped = 0;
+    newbest->index = 0;
+    newbest->swapped = false;
     treebuffer[0] = newbest;
     *numsavedtrees = 0;
 }

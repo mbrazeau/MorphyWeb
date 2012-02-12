@@ -189,12 +189,12 @@ struct tree *alloctree(int ntax, int numnodes)
             newtree->trnodes[i]->tip = i + 1;
             newtree->trnodes[i]->index = i;
             newtree->trnodes[i]->next = NULL;
+            newtree->trnodes[i]->vweight = 1;
         }
         else /* second half are allocated as a newring */
         {
             newtree->trnodes[i]->index = i;
             newring(newtree->trnodes[i], ntax);
-            newtree->trnodes[i]->tipsabove = (bool*)malloc(ntax * sizeof(bool));
         }
         
         newtree->trnodes[i]->outedge = NULL;
@@ -251,9 +251,7 @@ struct tree *alloc_noring(int ntax, int numnodes)
         if (i < ntax) 
         {
             newtree->trnodes[i]->tip = i + 1;
-        }
-        else {
-            newtree->trnodes[i]->tipsabove = (bool*)malloc(ntax * sizeof(bool));
+            newtree->trnodes[i]->vweight = 1;
         }
         newtree->trnodes[i]->index = i;
     }
@@ -326,11 +324,6 @@ void newring(node *r1, int ntax)
     r1->apomorphies = r2->apomorphies = r3->apomorphies;
     r2->index = r1->index;
     r3->index = r1->index;
-    
-    r2->tipsabove = (bool*)malloc(ntax * sizeof(bool));
-    memset(r2->tipsabove, 0, (ntax * sizeof(bool)));
-    r3->tipsabove = (bool*)malloc(ntax * sizeof(bool));
-    memset(r3->tipsabove, 0, (ntax * sizeof(bool)));
 }
 
 void newring_to_order(node *r1, int order, int ntax)
@@ -351,8 +344,6 @@ void newring_to_order(node *r1, int order, int ntax)
         p->start = r1->start;
         p->index = r1->index;
         p->apomorphies = r1->apomorphies;
-        p->tipsabove = (bool*)malloc(ntax * sizeof(bool));
-        memset(p->tipsabove, 0, (ntax * sizeof(bool)));
         ++i;
     } while (i < order);
     p->next = r1;
@@ -370,14 +361,21 @@ void newring_to_order(node *r1, int order, int ntax)
  */
 void deletering(node *r1)
 {
-    free(r1->tipsabove);
+    if (r1->tipsabove) {
+        free(r1->tipsabove);
+    }
+    if (r1->apomorphies) {
+        free(r1->apomorphies);
+    }
     
     node *p, *q;
     
     p = r1->next;
     while (p != r1) {
         q = p->next;
-        free(p->tipsabove);
+        if (p->tipsabove) {
+            free(p->tipsabove);
+        }
         free(p);
         p = q;
     }
@@ -474,6 +472,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     }
     //dump_tree_connections(origtr, ntax, numnodes);
     //dump_tree_connections(treecp, ntax, numnodes);
+    treecp->bipartitions = mfl_tree_biparts(treecp, ntax, numnodes);
     return treecp;
 }
 
@@ -668,7 +667,23 @@ void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int ncha
     }
 }
 
-void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
+/*int mfl_pg_shortcut(node *src, node *t1, node *t2, node *subtr, tree *swapingon, int nchar)
+{
+    int i;
+    int length;
+    
+    for (i = 0; i < nchar; ++i) {
+        subtr->apomorphies[i] = t1->apomorphies[i] | t2->apomorphies[i];
+        
+        if (src->a) {
+            //stuff
+        }
+        
+    }
+    
+}*/
+
+void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
 {
     int i;
     charstate lft_chars, rt_chars;
@@ -683,18 +698,20 @@ void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, 
             lft_chars = leftdesc->apomorphies[i];
             rt_chars = rightdesc->apomorphies[i];
             ancestor->apomorphies[i] = lft_chars | rt_chars;
-            if ((ancestor->apomorphies[i] & IS_APPLIC) && 
-                ( ((ancestor->apomorphies[i] & IS_APPLIC) & lft_chars) && 
-                 ((ancestor->apomorphies[i] & IS_APPLIC) & rt_chars) )) {
+            if ((ancestor->apomorphies[i] & IS_APPLIC) && ( ((ancestor->apomorphies[i] & IS_APPLIC) & lft_chars) && ((ancestor->apomorphies[i] & IS_APPLIC) & rt_chars) )) 
+            {
                 ancestor->apomorphies[i] = (ancestor->apomorphies[i] & IS_APPLIC);
                 *trlength = *trlength + 1;
+                if (*trlength > *besttreelen) 
+                {
+                    return;
+                }
             }
         }
-        //n->apomorphies = ancstate;
     }
 }
 
-void mfl_fitch_postorder(node *n, int *trlength, int nchar)
+void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
 {
     node *p;
     
@@ -704,23 +721,87 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar)
     
     p = n->next;
     while (p != n) {
-        mfl_fitch_postorder(p->outedge, trlength, nchar);
+        mfl_fitch_postorder(p->outedge, trlength, nchar, besttreelen);
         p = p->next;
     }
+    
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
     }
-    mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength);
+    mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength, besttreelen);
 }
 
+void mfl_combine_up(node *n, node *anc, int nchar)
+{
+    int i;
+    charstate lft_chars, rt_chars;
+    
+    for (i = 0; i < nchar; ++i) {
+        
+        if ((n->apomorphies[i] & anc->apomorphies[i]) == anc->apomorphies[i]) 
+        {
+            n->apomorphies[i] = n->apomorphies[i] & anc->apomorphies[i];
+        }
+        else
+        {
+            lft_chars = n->next->outedge->apomorphies[i];
+            rt_chars = n->next->next->outedge->apomorphies[i];
+            
+            if (lft_chars | rt_chars == n->apomorphies[i]) 
+            {
+                n->apomorphies[i] = n->apomorphies[i] | anc->apomorphies[i];
+            }
+            else 
+            {
+                n->apomorphies[i] = n->apomorphies[i] | (anc->apomorphies[i] & (lft_chars & rt_chars));
+            }
+        }
+    }
+}
 
-int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar)
+void mfl_fitch_preorder(node *n, int *trlength, int nchar, int *besttreelen)
+{
+    node *p, *dl, *dr;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    p = n->next;
+    dl = p->outedge;
+    dr = p->next->outedge;
+    if (!dl->tip) {
+        mfl_combine_up(dl, n, nchar);
+    }
+    if (!dr->tip) {
+        mfl_combine_up(dr, n, nchar);
+    }
+    
+    while (p != n) {
+        mfl_fitch_preorder(p->outedge, trlength, nchar, besttreelen);
+        p = p->next;
+    }
+    
+}
+
+int mfl_get_subtreelen(node *n, charstate *tipdata, int ntax, int nchar, int *besttreelen)
 {
     int treelen = 0;
     int *treelen_p = &treelen;
     
-    mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
-    mfl_fitch_postorder(testtree->root, treelen_p, nchar);
+    mfl_subtree_postorder(n, treelen_p, nchar, besttreelen);
+    mfl_fitch_preorder(n, treelen_p, nchar, besttreelen);
+    
+    return *treelen_p;
+}
+
+int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen)
+{
+    int treelen = 0;
+    int *treelen_p = &treelen;
+    
+    mfl_fitch_postorder(testtree->root, treelen_p, nchar, besttreelen);
+    mfl_fitch_preorder(testtree->root, treelen_p, nchar, besttreelen);
     
     return *treelen_p;
 }
@@ -750,7 +831,7 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
             tipdata[j] = -1;
         }
         else if (txtsrc[i] == '-') {
-            tipdata[j] = -1;
+            tipdata[j] = 1;
         }
         else if (txtsrc[i] == '\n') {
             ++i;
@@ -915,12 +996,12 @@ void mini_test_analysis(void)
     // Different algorithms will be written for doing this (as there are better
     // ways to do it) but we'll use randunrooted for now.
     
-    mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 0, savedtrees);
+    mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1, savedtrees);
     //Get a length for the starting tree.
     mfl_root_tree(savedtrees[0], 1, ntax);
     int *besttreelen_p = &besttreelen;
 
-    *besttreelen_p = mfl_get_treelen(savedtrees[0], morphyTipdata, ntax, nchar);
+    *besttreelen_p = mfl_get_sttreelen(savedtrees[0], morphyTipdata, ntax, nchar, besttreelen_p);
     savedtrees[0]->length = *besttreelen_p;
     
     unroot(ntax, savedtrees[0]);
@@ -950,6 +1031,8 @@ int main(void)
     int ntax = 9;
     int numnodes;
     //bool isRooted = true;
+    
+    test_tree_comparison();
     
     numnodes = numberOfNodes(ntax);
     
