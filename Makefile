@@ -7,12 +7,14 @@ endif
 
 all: $(SUBDIRS)
 
-.PHONY: $(SUBDIRS) clean
+.PHONY: $(SUBDIRS) clean cscope
 
 MFLAGS += --no-print-directory
 
-$(SUBDIRS): cscope.out
+$(SUBDIRS):
 	@cd $@; $(MAKE) $(MFLAGS)
+
+cscope: cscope.out
 
 cscope.out: $(wildcard $(ALLFILES))
 	$(NICECSCOUTPUT)
