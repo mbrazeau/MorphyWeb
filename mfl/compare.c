@@ -47,9 +47,9 @@ bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields)
     int i, j;
     bool eqtrees = false;
     
-    for (i = 0; i < ntax - 1; ++i) {
+    for (i = 0; i < ntax - 3; ++i) {
         eqtrees = false;
-        for (j = 0; j < ntax - 1; ++j) {
+        for (j = 0; j < ntax - 2; ++j) {
             /*if (mfl_comp_bipartition(t1[i], t2[j], numfields)) {
                 eqtrees = true;
             }*/
@@ -143,31 +143,17 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
         hashtab[i] = (taxbipart*) malloc(numfields * sizeof(taxbipart));
     }
     
-    mfl_temproot(t, 0, ntax);
-    mfl_set_tipsabove(t->root, numfields, hashtab, bpcounter);
-    mfl_undo_temproot(ntax, t);
+    if (!t->root) {
+        mfl_temproot(t, 0, ntax);
+        mfl_set_tipsabove(t->root, numfields, hashtab, bpcounter);
+        mfl_undo_temproot(ntax, t);
+    }
+    else {
+        mfl_set_tipsabove(t->root, numfields, hashtab, bpcounter);
+    }
+
     
     return hashtab;
-}
-
-void print_hashtab(taxbipart **hashtab, int numbiparts)
-{
-    int i;
-    taxbipart tempht;
-    
-    for (i = 0; i < numbiparts; ++i) {
-        tempht = *hashtab[i];
-        /*do {
-         if (tempht & 1) {
-         printf("*");
-         }
-         else {
-         printf(".");
-         }
-         tempht >> 1;
-         } while (tempht != 0);*/
-        printf("%i\n", tempht);
-    }
 }
 
 bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *current)
@@ -175,13 +161,11 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     int i = 0;
     int numfields = mfl_count_fields(ntax);
     taxbipart **temphashtab;
-    taxbipart **tph2;
     bool foundtr = false;
     
     temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
     
-    for (i = 0; i < *current; ++i) {
-        //tph2 = mfl_tree_biparts(savedtrees[i], ntax, numnodes);
+    for (i = *current; i--; ) {
         if (mfl_compare_trees(temphashtab, savedtrees[i]->bipartitions, ntax, numfields)) {
             if (newtopol != savedtrees[i]) {
                 foundtr = true;
@@ -191,7 +175,12 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
         //mfl_free_hashtab(tph2, ntax - 1);
     }
     
-    mfl_free_hashtab(temphashtab, ntax - 1);
+    if (!foundtr) {
+        newtopol->hashtabholder = temphashtab;
+    }
+    else {
+        mfl_free_hashtab(temphashtab, ntax - 1);
+    }
     
     return foundtr;
 }
@@ -200,8 +189,8 @@ void test_tree_comparison(void)
 {
     
     
-    char tree1[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((9,(27,(28,(5,(26,((23,(18,3)),13)))))),(20,((((4,22),19),12),11))))));"/*"(1,((2,5),(3,4)));"*/;
-    char tree2[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((20,((((4,22),19),12),11)),(9,(27,(28,(5,(26,((23,(18,3)),13))))))))));"/*"(1,((4,5),(3,2)));"*/;
+    char tree1[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((9,(27,(28,(5,(26,((23,(18,3)),13)))))),(20,((((4,22),19),12),11))))));"; /*"(1,((2,5),(3,4)));";*/
+    char tree2[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((20,((((4,19),22),12),11)),(9,(27,(28,(5,(26,((23,(18,3)),13))))))))));"; /*"(1,((4,5),(3,2)));"; */
     /*char tree3[] = "(1,((3,4),(2,5)));";
     char tree4[] = "(1,(2,(3,(4,5))));";
     char tree5[] = "((2,((5,4),3)),1);";*/
@@ -230,11 +219,11 @@ void test_tree_comparison(void)
     
     // Get bipartitions for t1
     t1->bipartitions = mfl_tree_biparts(t1, ntax, numnodes);
-    print_hashtab(t1->bipartitions, ntax - 1);
+    print_hashtab(t1->bipartitions, ntax);
     
     // Get bipartitions for t2
     t2->bipartitions = mfl_tree_biparts(t2, ntax, numnodes);
-    print_hashtab(t2->bipartitions, ntax - 1);
+    print_hashtab(t2->bipartitions, ntax);
     
     // Get bipartitions for t3
     /*t3->bipartitions = mfl_tree_biparts(t3, ntax, numnodes);

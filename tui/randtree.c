@@ -175,11 +175,13 @@ void mfl_subtree_postorder(node *n, int *trlength, int nchar, int *besttreelen)
     
     p = n->next;
     while (p != n) {
-        mfl_fitch_postorder(p->outedge, trlength, nchar, besttreelen);
+        mfl_subtree_postorder(p->outedge, trlength, nchar, besttreelen);
         p = p->next;
     }
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+        n->next->apomorphies = n->apomorphies;
+        n->next->next->apomorphies = n->apomorphies;
     }
     mfl_subtree_count(n->next->outedge, n->next->next->outedge, n, nchar, trlength);
 }

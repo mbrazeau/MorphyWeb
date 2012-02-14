@@ -104,6 +104,108 @@ void dump_tree_connections(tree *t, int ntax, int numnodes)
     printf("\n");
 }
 
+void print_bipartition(taxbipart bipartition, int ntax)
+{
+    int i = 0;
+    while (bipartition) {
+        
+        ++i;
+        if (bipartition & 1) 
+        {
+            printf("*");
+        }
+        else 
+        {
+            printf(".");
+        }
+        bipartition = bipartition >> 1;
+        if (bipartition == 0) {
+            while (ntax - i) {
+                ++i;
+                printf(".");
+            }
+        }
+    }
+    printf("\n");
+}
+
+void print_hashtab(taxbipart **hashtab, int ntax)
+{
+    int i;
+    int numbiparts = ntax - 1;
+    taxbipart tempht;
+    
+    for (i = 0; i < numbiparts; ++i) {
+        tempht = *hashtab[i];
+        print_bipartition(tempht, ntax);
+    }
+    //printf("\n");
+}
+
+void print_charstates(node *n, int nchar)
+{
+    int i, j;
+    charstate c;
+    if (!n->tip) {
+        printf("break\n");
+    }
+    
+    for (i = 0; i < nchar; ++i) {
+        printf("C%i: ", i + 1);
+        //printf("as int % i, ", c);
+        c = n->apomorphies[i];
+        
+        if (c == -1) {
+            printf("?; ");
+            continue;
+        }
+        else 
+        {
+            if (c & 1) {
+                printf("-");
+            }
+            if ((c & IS_APPLIC)) {
+                j = 0;
+                c = c >> 1;
+                while (c) 
+                {
+                    if (c & 1) {
+                        printf("%i", j);
+                    }
+                    ++j;
+                    c = c >> 1;
+                }
+            }
+        }
+        printf("; ");
+    }
+    printf("\n");
+}
+
+void print_nodedata(node *n, int nchar, int ntax)
+{
+    node *p;
+    
+    if (n->tip) {
+        printf("Tip: %i\n", n->tip);
+        print_charstates(n, nchar);
+        printf("\n");
+        return;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        print_nodedata(p->outedge, nchar, ntax);
+        p = p->next;
+    }
+    
+    printf("Node: %i\n", n->index);
+    if (n->tipsabove) {
+        print_bipartition(*n->tipsabove, ntax);
+    }
+    print_charstates(n, nchar);
+    printf("\n");
+}
 
 void close_all_rings(nodearray nds, int ntax, int numnodes)
 {
@@ -201,6 +303,7 @@ struct tree *alloctree(int ntax, int numnodes)
     }
     
     newtree->root = NULL;
+    newtree->hashtabholder = NULL;
     
     return (newtree);
 }
@@ -236,7 +339,8 @@ struct tree *alloc_noring(int ntax, int numnodes)
     tree *newtree;
     
     newtree = (tree*)malloc(sizeof(tree));
-    
+    memset(newtree, 0, sizeof(tree));
+
     if (newtree == NULL)
     {
         printf("Error: failed to allocate new tree.\n");
@@ -257,6 +361,7 @@ struct tree *alloc_noring(int ntax, int numnodes)
     }
     
     newtree->root = NULL;
+    newtree->hashtabholder = NULL;
     return (newtree);
     
 }
@@ -309,6 +414,7 @@ void newring(node *r1, int ntax)
      * function that might dynamically add branches at run-time. */
     
     node *r2, *r3;
+    charstate *r1apos = r1->apomorphies;
     
     r2 = allocnode();
     r3 = allocnode();
@@ -321,7 +427,7 @@ void newring(node *r1, int ntax)
     r1->start = r2->start = r3->start = false;
     r1->skip = r2->skip = r3->skip = false;
     
-    r1->apomorphies = r2->apomorphies = r3->apomorphies;
+    r2->apomorphies = r3->apomorphies = &(*r1apos);
     r2->index = r1->index;
     r3->index = r1->index;
 }
@@ -343,7 +449,7 @@ void newring_to_order(node *r1, int order, int ntax)
         p->tip = r1->tip;
         p->start = r1->start;
         p->index = r1->index;
-        p->apomorphies = r1->apomorphies;
+        p->apomorphies = &(*r1->apomorphies);
         ++i;
     } while (i < order);
     p->next = r1;
@@ -472,7 +578,11 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     }
     //dump_tree_connections(origtr, ntax, numnodes);
     //dump_tree_connections(treecp, ntax, numnodes);
-    treecp->bipartitions = mfl_tree_biparts(treecp, ntax, numnodes);
+    if (origtr->hashtabholder) {
+        treecp->bipartitions = origtr->hashtabholder;
+        origtr->hashtabholder = NULL;
+    }
+    //treecp->bipartitions = mfl_tree_biparts(treecp, ntax, numnodes);
     return treecp;
 }
 
@@ -667,21 +777,51 @@ void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int ncha
     }
 }
 
-/*int mfl_pg_shortcut(node *src, node *t1, node *t2, node *subtr, tree *swapingon, int nchar)
+void mfl_reopt_subtr(node *src, int nchar)
 {
     int i;
-    int length;
+    
+    charstate lft_chars, rt_chars;
     
     for (i = 0; i < nchar; ++i) {
-        subtr->apomorphies[i] = t1->apomorphies[i] | t2->apomorphies[i];
-        
-        if (src->a) {
-            //stuff
-        }
-        
+        lft_chars =  src->next->outedge->apomorphies[i];
+        rt_chars = src->next->next->outedge->apomorphies[i];
+        src->apomorphies[i] = lft_chars | rt_chars;
+        /*if ((src->apomorphies[i] & IS_APPLIC) && ( ((src->apomorphies[i] & IS_APPLIC) & lft_chars) && ((src->apomorphies[i] & IS_APPLIC) & rt_chars) )) {
+            src->apomorphies[i] = (src->apomorphies[i] & IS_APPLIC);
+        }*/
+    }
+}
+
+int mfl_reopt_shortcut(node *src, node *t1, node *t2, int nchar, int *trlength, int templen)
+{
+    int i;
+    //int length = *trlength;
+    int al = 0;
+    
+    if (!src->tip && (src->next->outedge->tip && src->next->next->outedge->tip)) {
+        mfl_reopt_subtr(src, nchar);
     }
     
-}*/
+    for (i = 0; i < nchar; ++i) {
+        if ( !(src->apomorphies[i] & (t1->apomorphies[i] | t2->apomorphies[i])) ) {
+            al = al + 1;
+            /*if (al > ((*trlength - (src->nodelen + templen)))) {
+                break;
+            }*/
+        }
+    }
+
+    /*if (al > 0) {
+        printf("Would result in longer tree by %i steps\n", al);
+    }
+    else if (al == 0) {
+        printf("Equally good or better tree\n");
+    }*/
+    
+    //printf("\ntreelen according to shortcut: %i\n", al + src->nodelen + templen);
+    return al + src->nodelen + templen;
+}
 
 void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
 {
@@ -702,10 +842,10 @@ void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, 
             {
                 ancestor->apomorphies[i] = (ancestor->apomorphies[i] & IS_APPLIC);
                 *trlength = *trlength + 1;
-                if (*trlength > *besttreelen) 
+                /*if (*trlength > *besttreelen) 
                 {
                     return;
-                }
+                }*/
             }
         }
     }
@@ -727,6 +867,8 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
     
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+        n->next->apomorphies = n->apomorphies;
+        n->next->next->apomorphies = n->apomorphies;
     }
     mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength, besttreelen);
 }
@@ -781,7 +923,6 @@ void mfl_fitch_preorder(node *n, int *trlength, int nchar, int *besttreelen)
         mfl_fitch_preorder(p->outedge, trlength, nchar, besttreelen);
         p = p->next;
     }
-    
 }
 
 int mfl_get_subtreelen(node *n, charstate *tipdata, int ntax, int nchar, int *besttreelen)
@@ -791,6 +932,16 @@ int mfl_get_subtreelen(node *n, charstate *tipdata, int ntax, int nchar, int *be
     
     mfl_subtree_postorder(n, treelen_p, nchar, besttreelen);
     mfl_fitch_preorder(n, treelen_p, nchar, besttreelen);
+    
+    return *treelen_p;
+}
+
+int mfl_get_trlonepass(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen)
+{
+    int treelen = 0;
+    int *treelen_p = &treelen;
+    
+    mfl_fitch_postorder(testtree->root, treelen_p, nchar, besttreelen);
     
     return *treelen_p;
 }
@@ -812,7 +963,7 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
     
     charstate *tipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
     
-    for (i = 0, j = 0; txtsrc[i]; ++i) {
+    for (i = 0, j = 0; txtsrc[i]; ++i, ++j) {
         if ((txtsrc[i] - '0') >= 0 && (txtsrc[i] - '0') <= 9) {
             tipdata[j] = 1 << (txtsrc[i] - '0' + 1);
             
@@ -834,16 +985,55 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
             tipdata[j] = 1;
         }
         else if (txtsrc[i] == '\n') {
-            ++i;
+            --j;
         }
         else {
-            ++i;
+            --j;
         }
-        
-        ++j;
     }
     
     return tipdata;
+}
+
+void test_char_optimization(void)
+{
+    char trstring[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
+    tree *testtree = readNWK(trstring, 1);
+    
+    printf("The test tree:\n");
+    printNewick(testtree->root);
+    printf("\n");
+    
+    int ntax = 12;
+    int nchar = 20;
+    int trl = 0;
+    int *trlength = &trl;
+    int numnodes = numberOfNodes(ntax);
+    charstate *tipdata;
+    
+    char usrTipdata[] = "11111111110000000000\n\
+11111111110000000000\n\
+00111111110000000000\n\
+00001111110000000000\n\
+?0000011110000000000\n\
+-0000000110000000000\n\
+?0000000000000000011\n\
+?0000000000000001111\n\
+10000000000000111111\n\
+10000000000011111111\n\
+00000000001111111111\n\
+00000000001111111111";
+    
+    tipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar);
+    mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
+    
+    trl = mfl_get_treelen(testtree, tipdata, ntax, nchar, trlength);
+    testtree->bipartitions = mfl_tree_biparts(testtree, ntax, numnodes);
+    
+    printf("tree length: %i\n", trl);
+    
+    print_nodedata(testtree->root, nchar, ntax);
+    
 }
 
 void mini_test_analysis(void)
@@ -870,33 +1060,33 @@ void mini_test_analysis(void)
     //char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
     /* A search with this dataset rigged to favour the topology of aNewickTree */
-    char usrTipdata[] = "00000000000000000000000---0000000-0000000000000000000-0-0000000000000000000--00000000000000000?\
-11-10121001120200001001---0000100-1--10001000001101010320010000010100001000--30300000000000010?\
-??????????????????????30--0010??0-????????1-?-??100?0-??1?--????0?00??10??1112??????100111-0-1?\
-00??0?????????????????3111100?????????????011100??0???????11?1????????10?????2??????1?1-1??????\
-000?0???????11??01111030--???1010-???0????1---0-10010-3?00--??010?000??0??111?1-?0?111011????1?\
-11-101201011212?0001002---0001100-01010011000001101010320010000010101001000--10310000000000000?\
-00?100(02)???01?1(23)0???10?0---00?00010002?001100000001000-31-010????-?30?000000--01-0???00?0000100?\
-1011023111112131???1100---000000101--200010000101000103011?01-1-01001101010?-11-10??00?0?00010?\
-?????????????????0????3000?10?010-0100?01100-0--100011300?10????0????0010110021-1???1001101000?\
-10110231101111311001110---0000000-1---000100001010000-3011101-1-01311001010--11-001000000000100\
-????????????????0?????3000?1?0??0-010?1?1100100?100?11??0?00????0??0?000111002??????10011010001\
-????????????????0001??3101?100????0??????1001100100011??0?010100??????00??1002????1?10??????001\
-????????????2????11?????--????????????????1-?-??1?????????--?????0?00?10?????2?????110011????10\
-11-11?301?1111(23)?0010002---000000110121011100000111001011-010?0001?011000000--?021?0000000001001\
-11-11?30012120000000001---000000110021011100000101000-11-000000010010001000--101110?00000000000\
-0011012?1011?12??011002---00001010002?001100000?101010??1??0??001?10?00100??-???1??0???????0000\
-1001??30??112???001001?---0000000-1--2011100000111000-2?-010000010211001000--0021?0000000000000\
-?????????????????11???30--0010010-???????11-?-??10010-3010--0001?0000010?????2??????10011??0-10\
-0???0?1??1?0?1??00????311111??010-0100?011001100100011??0?01??????0??00011???21-101?1001(01)010001\
-00000?101110113000011030000100010-0100101100100010001?30001000000000010{01}1110021-101110?101-0001\
-00100000101011101000110---0-000010011000010000101000103011100?0?00?0?101010--11-0?1?00000000000\
-00000?1?1??0113?00011031111101010-01?0?0??011100100?0-3000010100?0?0??10?110(01)21-?011111-1010?11\
-?00?????1?1?213?01?1????--0011????????????1-?-??10010-??0?--??0??0000??0??????????????????????0\
-11-11?3???1?2???000000?---000000110111011100000111001011-010000010011000000--00211??00000001000\
-00?00000?01021100000002---000010111--1001000000110101032001000001000?001000--10010??00?00000000\
-??????????????????????30--????????????????1-?????0????????????0????0??????????????????????????0\
-?????????????????1?1??3000?0?1????010????1001???100011??0??000??0??0?000??11021-1??1100111-0001\
+    char usrTipdata[] = "00000000000000000000000---0000000-0000000000000000000-0-0000000000000000000--00000000000000000?\n\
+11-10121001120200001001---0000100-1--10001000001101010320010000010100001000--30300000000000010?\n\
+??????????????????????30--0010??0-????????1-?-??100?0-??1?--????0?00??10??1112??????100111-0-1?\n\
+00??0?????????????????3111100?????????????011100??0???????11?1????????10?????2??????1?1-1??????\n\
+000?0???????11??01111030--???1010-???0????1---0-10010-3?00--??010?000??0??111?1-?0?111011????1?\n\
+11-101201011212?0001002---0001100-01010011000001101010320010000010101001000--10310000000000000?\n\
+00?100(02)???01?1(23)0???10?0---00?00010002?001100000001000-31-010????-?30?000000--01-0???00?0000100?\n\
+1011023111112131???1100---000000101--200010000101000103011?01-1-01001101010?-11-10??00?0?00010?\n\
+?????????????????0????3000?10?010-0100?01100-0--100011300?10????0????0010110021-1???1001101000?\n\
+10110231101111311001110---0000000-1---000100001010000-3011101-1-01311001010--11-001000000000100\n\
+????????????????0?????3000?1?0??0-010?1?1100100?100?11??0?00????0??0?000111002??????10011010001\n\
+????????????????0001??3101?100????0??????1001100100011??0?010100??????00??1002????1?10??????001\n\
+????????????2????11?????--????????????????1-?-??1?????????--?????0?00?10?????2?????110011????10\n\
+11-11?301?1111(23)?0010002---000000110121011100000111001011-010?0001?011000000--?021?0000000001001\n\
+11-11?30012120000000001---000000110021011100000101000-11-000000010010001000--101110?00000000000\n\
+0011012?1011?12??011002---00001010002?001100000?101010??1??0??001?10?00100??-???1??0???????0000\n\
+1001??30??112???001001?---0000000-1--2011100000111000-2?-010000010211001000--0021?0000000000000\n\
+?????????????????11???30--0010010-???????11-?-??10010-3010--0001?0000010?????2??????10011??0-10\n\
+0???0?1??1?0?1??00????311111??010-0100?011001100100011??0?01??????0??00011???21-101?1001(01)010001\n\
+00000?101110113000011030000100010-0100101100100010001?30001000000000010{01}1110021-101110?101-0001\n\
+00100000101011101000110---0-000010011000010000101000103011100?0?00?0?101010--11-0?1?00000000000\n\
+00000?1?1??0113?00011031111101010-01?0?0??011100100?0-3000010100?0?0??10?110(01)21-?011111-1010?11\n\
+?00?????1?1?213?01?1????--0011????????????1-?-??10010-??0?--??0??0000??0??????????????????????0\n\
+11-11?3???1?2???000000?---000000110111011100000111001011-010000010011000000--00211??00000001000\n\
+00?00000?01021100000002---000010111--1001000000110101032001000001000?001000--10010??00?00000000\n\
+??????????????????????30--????????????????1-?????0????????????0????0??????????????????????????0\n\
+?????????????????1?1??3000?0?1????010????1001???100011??0??000??0??0?000??11021-1??1100111-0001\n\
 ?????????????????????????????????????????100?????????????0?000??????0?00?????21-???1100111---1?";
     
     /*real data*/ /*"0000000000?00000100000000000000000000000000000100000100010000000000000101000101000000000010201100-0?0100--0--0000000010000000001320-?0????\
@@ -977,11 +1167,12 @@ void mini_test_analysis(void)
         
     
     printf("User tip data:\n");
-    for (i = 0; i < ntax; ++i) {
-        for (j = 0; j < nchar; ++j) {
+    for (i = 0; usrTipdata[i]; ++i) {
+        printf("%c", usrTipdata[i]);
+        /*for (j = 0; j < nchar; ++j) {
             printf("%c", usrTipdata[j + i * nchar]);
         }
-        printf("\n");
+        printf("\n");*/
     }
     printf("\n");
     
@@ -1033,14 +1224,15 @@ int main(void)
     //bool isRooted = true;
     
     test_tree_comparison();
+    test_char_optimization();
     
     numnodes = numberOfNodes(ntax);
     
-    tree *anewtree;    
-    tree *originaltree;
-    tree *copiedtree;
+    //tree *anewtree;    
+    //tree *originaltree;
+    //tree *copiedtree;
     
-    mini_test_analysis();
+    //mini_test_analysis();
     
     //test_spr();
     
