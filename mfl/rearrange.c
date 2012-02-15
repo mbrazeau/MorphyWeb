@@ -263,8 +263,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         q = q->next;
     }
     
-    if (!mfl_reopt_shortcut(q->outedge, n, n->outedge, nchar, currentbesttree, swapingon->templen))
-    {
+    //if (!mfl_reopt_shortcut(q->outedge, n, n->outedge, nchar, currentbesttree, swapingon->templen))
+    //{
         if (/*!n->initialized ||*/ !n->outedge->initialized) {
             //trlength = 
             up = n->outedge;
@@ -323,7 +323,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                 mfl_reopt_subtr(q->outedge, nchar);
             }*/
         }
-    }
+    //}
     
     if (n->start) {
         mfl_regrafting_traversal(n->outedge, subtr, swapingon, savedtrees, ntax,
