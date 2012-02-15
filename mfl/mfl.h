@@ -9,22 +9,70 @@
 
 typedef enum
 {
+    /* MFL_PT_NUM_TAX (int) Number of taxa in the dataset, and the maximum number of
+     * leaves in any tree used by Morphy.*/
     MFL_PT_NUM_TAX,
-    MFL_PT_NUM_NODES,
+    
+    /* Deleting MFL_PT_NUM_NODES. The number of nodes can be calculated by
+     * a library routine */
+    //MFL_PT_NUM_NODES,
+    
+    /* MFL_PT_NUM_CHAR (int) the number of columns ('transformation series') in 
+     * the character matrix. Note that polymorphisms (i.e. {01}) only count as a 
+     * single cell. Thus it's important to take this value from NCHAR in the 
+     * Nexus file and then check for errors */
     MFL_PT_NUM_CHAR,
+    
+    /* MFL_PT_NUM_ITERATIONS (int) the number of iterations in a in a heuristic 
+     * search that uses a random addition sequence. */
     MFL_PT_NUM_ITERATIONS,
+    
+    /* MFL_PT_NUM_TREES (int) maximum number of trees allowed to be stored in
+     * memory. This should start as some default value (100 to 500 is certainly
+     * safe). The user may choose a different value prior to the search and 
+     * and also choose to allow the program to automatically increase the limit
+     * (or simply have no limit). It should also be possible to change this
+     * value in the middle of a search. For instance, if the user has not 
+     * instructed the program to use automatically resize the tree list, then
+     * if the analysis runs out of space (i.e. needs a bigger array to save more
+     * trees, then the user would be prompted to increase the tree limit, and 
+     * to choose whether they would like that limit to automatically increase*/
     MFL_PT_NUM_TREES,
+    
+    /* MFL_PT_BRANCH_SWAP_TYPE (int, TBR=0; SPR=1; NNI=2) There are three main 
+     * types of branch swapping algorithm use ONLY in a heuristic search: 
+     * nearest-neighbor interchange (NNI), subtree pruning and regrafting (SPR), 
+     * and tree bisection and reconnection (TBR). One of these options would be 
+     * chosen when the user chooses to initiate a heuristic search. The default 
+     * value should be TBR, but that is complicated and so I've not yet written 
+     * it. */
     MFL_PT_BRANCH_SWAP_TYPE,
+    
+    /* MFL_PT_RATCHET_SEARCH (bool) this is an option for speeding up the 
+     * heuristic search. It involves initial modifications to the data matrix
+     * before searching, followed by a search on the 'normal', unperturbed data.
+     * It would be selected when the user enters commands for heuristic search*/
     MFL_PT_RATCHET_SEARCH,
+    
+    /* MFL_PT_TIP_DATA (char*). The sequence of characters in the data matrix. 
+     * These get converted to the charstate int32_t by functions in the Morphy
+     * library immediately before a search is initiated. The reason why we do it
+     * this way is because the way the data gets converted will depend on some 
+     * other options set by the user. */
     MFL_PT_TIP_DATA,
+    
+    /* MFL_PT_ADD_SEQUENCE_TYPE (int, simple=0; random=1; asis=2; closest=3). 
+     * Selects the manner in which branches are added during the generation of
+     * starting trees. */
     MFL_PT_ADD_SEQUENCE_TYPE,
 } mfl_param_t;
 
 typedef enum
 {
-    MFL_RT_NUM_REARRANGMENTS,
-    MFL_RT_NUM_SAVED_TREES,
-    MFL_RT_SHORTEST_TREE_LEN,
+    MFL_RT_NUM_REARRANGMENTS, // (long, or long long) number of swaps made in heuristic search
+    MFL_RT_NUM_SAVED_TREES,   // (long int) number of trees saved during search
+    MFL_RT_SHORTEST_TREE_LEN, // (int) number of steps of shortest tree found in search
+    MFL_RT_SEARCH_TIME,       // (time_t) amount of time taken for the search
 } mfl_resultant_data_t;
 
 mfl_handle_t* mfl_create_handle();
