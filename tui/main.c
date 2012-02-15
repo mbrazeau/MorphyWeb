@@ -107,6 +107,7 @@ void dump_tree_connections(tree *t, int ntax, int numnodes)
 void print_bipartition(taxbipart bipartition, int ntax)
 {
     int i = 0;
+    //printf("%i\n", bipartition);
     while (bipartition) {
         
         ++i;
@@ -427,7 +428,7 @@ void newring(node *r1, int ntax)
     r1->start = r2->start = r3->start = false;
     r1->skip = r2->skip = r3->skip = false;
     
-    r2->apomorphies = r3->apomorphies = &(*r1apos);
+    r2->apomorphies = r3->apomorphies = r1->apomorphies;
     r2->index = r1->index;
     r3->index = r1->index;
 }
@@ -449,7 +450,7 @@ void newring_to_order(node *r1, int order, int ntax)
         p->tip = r1->tip;
         p->start = r1->start;
         p->index = r1->index;
-        p->apomorphies = &(*r1->apomorphies);
+        p->apomorphies = r1->apomorphies;
         ++i;
     } while (i < order);
     p->next = r1;
@@ -867,8 +868,8 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
     
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-        n->next->apomorphies = n->apomorphies;
-        n->next->next->apomorphies = n->apomorphies;
+        n->next->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+        n->next->next->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
     }
     mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength, besttreelen);
 }
@@ -884,20 +885,23 @@ void mfl_combine_up(node *n, node *anc, int nchar)
         {
             n->apomorphies[i] = n->apomorphies[i] & anc->apomorphies[i];
         }
-        else
-        {
+        else {
+            
             lft_chars = n->next->outedge->apomorphies[i];
             rt_chars = n->next->next->outedge->apomorphies[i];
             
-            if (lft_chars | rt_chars == n->apomorphies[i]) 
+            if (!lft_chars & rt_chars) 
             {
                 n->apomorphies[i] = n->apomorphies[i] | anc->apomorphies[i];
             }
             else 
             {
-                n->apomorphies[i] = n->apomorphies[i] | (anc->apomorphies[i] & (lft_chars & rt_chars));
+                n->apomorphies[i] = (n->apomorphies[i] | (anc->apomorphies[i] & (lft_chars & rt_chars))) & IS_APPLIC;
             }
+
         }
+
+        
     }
 }
 
@@ -1015,9 +1019,9 @@ void test_char_optimization(void)
 11111111110000000000\n\
 00111111110000000000\n\
 00001111110000000000\n\
-?0000011110000000000\n\
--0000000110000000000\n\
-?0000000000000000011\n\
+-0000011110000000000\n\
+?0000000110000000000\n\
+-0000000000000000011\n\
 ?0000000000000001111\n\
 10000000000000111111\n\
 10000000000011111111\n\
@@ -1223,7 +1227,7 @@ int main(void)
     int numnodes;
     //bool isRooted = true;
     
-    test_tree_comparison();
+    //test_tree_comparison();
     test_char_optimization();
     
     numnodes = numberOfNodes(ntax);
