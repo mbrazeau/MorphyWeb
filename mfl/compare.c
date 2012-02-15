@@ -9,6 +9,21 @@
 
 #include "morphy.h"
 
+int mfl_compare_ints(const void * a, const void * b)
+{
+    
+    return ( **(taxbipart**)a - **(taxbipart**)b );
+}
+
+int mfl_compare_ints2(const void * a, const void * b)
+{
+    
+    int i1=*(int*)a;
+    int i2=**(taxbipart**)b; 
+    return i1 - i2;
+    //return ( **(taxbipart**)a - **(taxbipart**)b );
+}
+
 int mfl_count_fields(int ntax)
 {
     int i, numfields;
@@ -44,19 +59,15 @@ bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields)
 
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields)
 {
-    int i, j;
+    int i;
     bool eqtrees = false;
     
     for (i = 0; i < ntax - 3; ++i) {
         eqtrees = false;
-        for (j = 0; j < ntax - 2; ++j) {
-            /*if (mfl_comp_bipartition(t1[i], t2[j], numfields)) {
-                eqtrees = true;
-            }*/
-            if (*t1[i] == *t2[j]) {
-                eqtrees = true;
-                break;
-            }
+        //tbp = *t1[i];
+        if (bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2)) {
+            eqtrees = true;
+            continue;
         }
         if (!eqtrees) {
             break;
@@ -152,6 +163,7 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
         mfl_set_tipsabove(t->root, numfields, hashtab, bpcounter);
     }
 
+    qsort(hashtab, ntax - 1, sizeof(taxbipart*), mfl_compare_ints);
     
     return hashtab;
 }
@@ -189,8 +201,8 @@ void test_tree_comparison(void)
 {
     
     
-    char tree1[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((9,(27,(28,(5,(26,((23,(18,3)),13)))))),(20,((((4,22),19),12),11))))));"; /*"(1,((2,5),(3,4)));";*/
-    char tree2[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((20,((((4,19),22),12),11)),(9,(27,(28,(5,(26,((23,(18,3)),13))))))))));"; /*"(1,((4,5),(3,2)));"; */
+    char tree1[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((9,(27,(28,(5,(26,((23,(18,13)),3)))))),(20,((((4,22),19),12),11))))));"; /*"(1,((2,5),(3,4)));";*/
+    char tree2[] = "(1,((((25,(16,(6,2))),(((24,14),17),15)),7),((21,(10,8)),((20,((((4,22),19),12),11)),(9,(27,(28,(5,(26,((23,(18,3)),13))))))))));"; /*"(1,((4,5),(3,2)));"; */
     /*char tree3[] = "(1,((3,4),(2,5)));";
     char tree4[] = "(1,(2,(3,(4,5))));";
     char tree5[] = "((2,((5,4),3)),1);";*/
