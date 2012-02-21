@@ -277,7 +277,7 @@ bool CNexusUserInterface::Quit           ()
 bool CNexusUserInterface::About          ()
 {
     cout<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
-    cout<<"Copyright 2012 (C) Martin Brazeau, and Chris Desjardins. All rights reserved."<<endl;
+    cout<<"Copyright 2012 (C) Martin Brazeau and Chris Desjardins. All rights reserved."<<endl;
     cout<<"This program uses the NCL by Paul O. Lewis."<<endl;
     cout<<"Build time: "<<__DATE__<<" "<<__TIME__<<endl;
     return true;
