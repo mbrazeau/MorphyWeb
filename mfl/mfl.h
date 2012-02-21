@@ -23,6 +23,15 @@ typedef enum
      * Nexus file and then check for errors */
     MFL_PT_NUM_CHAR,
     
+    /* MFL_PT_SEARCH_TYPE (int, 0=exhaustive, 1=branch-and-bound, 2=heuristic) 
+     * the type of search procedure used, whether it is exhaustive, 
+     * branch-and-bound, or heuristic. The type of search would be a command by
+     * itself OR would be a command option when either a bootstrap (BTS) or 
+     * jackknife (JK) search is conducted (since these analyses are just 
+     * iterative searches, and thus require the user to set a type of search
+     * algorithm. */
+    MFL_PT_SEARCH_TYPE, 
+    
     /* MFL_PT_NUM_ITERATIONS (int) the number of iterations in a in a heuristic 
      * search that uses a random addition sequence. */
     MFL_PT_NUM_ITERATIONS,
@@ -36,7 +45,7 @@ typedef enum
      * instructed the program to use automatically resize the tree list, then
      * if the analysis runs out of space (i.e. needs a bigger array to save more
      * trees, then the user would be prompted to increase the tree limit, and 
-     * to choose whether they would like that limit to automatically increase*/
+     * to choose whether they would like that limit to automatically increase */
     MFL_PT_NUM_TREES,
     
     /* MFL_PT_BRANCH_SWAP_TYPE (int, TBR=0; SPR=1; NNI=2) There are three main 
@@ -51,7 +60,7 @@ typedef enum
     /* MFL_PT_RATCHET_SEARCH (bool) this is an option for speeding up the 
      * heuristic search. It involves initial modifications to the data matrix
      * before searching, followed by a search on the 'normal', unperturbed data.
-     * It would be selected when the user enters commands for heuristic search*/
+     * It would be selected when the user enters commands for heuristic search */
     MFL_PT_RATCHET_SEARCH,
     
     /* MFL_PT_TIP_DATA (char*). The sequence of characters in the data matrix. 
@@ -65,6 +74,18 @@ typedef enum
      * Selects the manner in which branches are added during the generation of
      * starting trees. */
     MFL_PT_ADD_SEQUENCE_TYPE,
+    
+    /* MFL_PT_COLLAPSE (bool) collapse zero-length branches option is in effect
+     * during search. */
+    MFL_PT_COLLAPSE,
+    
+    /* MFL_PT_COLLAP_AT (int, ) sets whether to collapse branches with minimum 
+     * length 0, with maximum length 0, or have two incident nodes with equal 
+     * apomorphies reconstruction sets. Default is to collapse nodes if their 
+     * MAXIMUM length is 0 */
+    MFL_PT_COLLAP_AT,
+    
+    
 } mfl_param_t;
 
 typedef enum
