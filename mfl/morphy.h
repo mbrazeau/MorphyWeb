@@ -25,7 +25,7 @@
 
 #define IS_APPLIC (-1^1)
 
-#define TREELIMIT 200 //A temporary tree limit for testing.
+#define TREELIMIT 6000 //A temporary tree limit for testing.
 
 
 /* For node and tree structures, this program follows the format recommended by
@@ -43,7 +43,7 @@ typedef struct node {
     char *tipname;
     int tip;
     int index;
-    long visited;
+    int visited;
     int compindex;
     int vweight;
     int initialized;
@@ -51,6 +51,7 @@ typedef struct node {
     int nodelen;
     bool start;
     bool skip;
+    bool clip;
     int minsteps;
     int maxsteps;
     int charstates;
@@ -118,8 +119,6 @@ struct node * allocnode(void);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
-void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen);
-void mfl_fitch_preorder(node *n, int *trlength, int nchar, int *besttreelen);
 struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
 struct tree * copytree_II(tree *origtree, int ntax, int numnodes);
 void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
@@ -130,13 +129,6 @@ void detree2(nodearray trnptr);
 void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void unroot(int ntax, tree *rootedtree);
-void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
-void mfl_reopt_subtr(node *src, int nchar);
-int mfl_reopt_shortcut(node *src, node *t1, node *t2, int nchar, int *trlength, int templen);
-void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
-int mfl_get_trlonepass(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
-int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *bestreelen);
-int mfl_get_subtreelen(node *n, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 
 /*in compare.c*/
 int mfl_count_fields(int ntax);
@@ -148,6 +140,26 @@ void mfl_free_hashtab(taxbipart **hashtab, int numbiparts);
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes);
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
 void test_tree_comparison(void);
+
+/*in coptim.c*/
+void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
+void mfl_reopt_subtr(node *src, int nchar);
+void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
+void mfl_subtree_postorder(node *n, int *trlength, int nchar);
+int mfl_reopt_shortcut(node *src, node *t1, node *t2, int nchar, int *trlength, int templen);
+void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
+int mfl_get_trlonepass(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
+int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
+int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
+void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen);
+void mfl_combine_up(node *n, node *anc, int nchar);
+void mfl_fitch_preorder(node *n, int nchar);
+int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
+
+void mfl_reopt_postorder(node *n, int nchar);
+void mfl_reopt_preorder(node *n, int nchar);
+int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar);
+void mfl_compute_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 
 /*in exhaustive.c*/ 
 void allunrooted(void /*tree *treearray, int ntaxa*/);
@@ -161,7 +173,6 @@ void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
 long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
-void mfl_subtree_postorder(node *n, int *trlength, int nchar, int *besttreelen);
 struct tree *randrooted (int ntax, int numnodes);
 struct tree *randunrooted (int ntax, int numnodes);
 void mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
@@ -187,6 +198,7 @@ int mfl_determ_order(node *n);
 void mfl_set_order(node *n);
 void mfl_clear_order(node *n);
 void mfl_set_index(node *n);
+void mfl_devisit_tree(nodearray nds, int numnodes);
 void mfl_put_branch_in_ring(node *n, node *rnode);
 void mfl_insert_branch(node *br, node *target, int ntax);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
@@ -220,7 +232,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **savedtrees, int ntax, 
                               int nchar, int numnodes, long int *current, 
                               charstate *tipdata, bool *undertreelimit, 
-                              int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
+                              int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, long int *current, 
                            charstate *tipdata, bool *undertreelimit, 

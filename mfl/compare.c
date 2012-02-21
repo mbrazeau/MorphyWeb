@@ -5,9 +5,17 @@
  *  Created by Martin Brazeau and Chris Desjardins on 2/8/12.
  *  Copyright 2012. All rights reserved.
  *
+ *  Tree comparison functions. These break down the tree into bipartition hash
+ *  tables and search for tree equality by comparing the hash tables. This is
+ *  used to check whether a new tree is already found in memory. 
+ *
+ *  The routine is both slow and crude, and probably has polynomial time 
+ *  complexity. For now, it suffices for testing purposes.
+ *
  */
 
 #include "morphy.h"
+#include <time.h>
 
 int mfl_compare_ints(const void * a, const void * b)
 {
@@ -26,6 +34,8 @@ int mfl_compare_ints2(const void * a, const void * b)
 
 int mfl_count_fields(int ntax)
 {
+    /*counts the number of int64_t needed to cover all taxa in the tree */
+    
     int i, numfields;
     bool quit = false;
     
@@ -47,6 +57,8 @@ int mfl_count_fields(int ntax)
 
 bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields)
 {
+    /* Compares one bipartition array against another*/
+    
     int i = 0;
     bool same = true;
     do {
@@ -59,12 +71,16 @@ bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields)
 
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields)
 {
+    /* Performs a binary search for each hashcode of t1 in t2.
+     *
+     **** This should be supplemented by a function that compares number
+     **** of bipartitions first and returns false if they are different */
+    
     int i;
     bool eqtrees = false;
     
     for (i = 0; i < ntax - 3; ++i) {
         eqtrees = false;
-        //tbp = *t1[i];
         if (bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2)) {
             eqtrees = true;
             continue;
@@ -100,6 +116,9 @@ void mfl_set_bipartition(node *n, node *d)
 
 void mfl_set_tipsabove(node *n, int numfields, taxbipart **hashtab, int *bpcounter)
 {
+    /* Traverses an n-ary tree, allocating memory for an attendant hashcode for 
+     * each node and calls mfl_set_bipartition to set the hashcode for the 
+     * above that node. */
     node *p;
     
     if (n->tip) {
@@ -140,6 +159,9 @@ void mfl_free_hashtab(taxbipart **hashtab, int numbiparts)
 
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
 {
+    /* Creates a hashtable describing the tree as a series of taxon 
+     * bipartitions. These bipartitions are then sorted in ascending order
+     * */
     int i;
     int numbiparts = ntax - 1;
     int bpcount = 0;
@@ -175,6 +197,8 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     taxbipart **temphashtab;
     bool foundtr = false;
     
+    //printf("time in: %i\n", (int)(clock() / CLOCKS_PER_SEC));
+    
     temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
     
     for (i = *current; i--; ) {
@@ -193,6 +217,8 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     else {
         mfl_free_hashtab(temphashtab, ntax - 1);
     }
+    
+    //printf("time out: %i\n", (int)(clock() / CLOCKS_PER_SEC));
     
     return foundtr;
 }

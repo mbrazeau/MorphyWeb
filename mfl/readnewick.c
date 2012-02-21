@@ -87,7 +87,7 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes,
     }
     
     /* debugging print */
-    printf("[&");
+    /*printf("[&");
     if (newtree->root) 
     {
         printf("R] = ");
@@ -98,7 +98,7 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes,
         printf("U] = ");
         printNewick(newtree->trnodes[0]);
     }
-    printf("\n");
+    printf("\n");*/
     /* end debugging print */    
 
 }
@@ -168,6 +168,9 @@ struct tree * readNWK (char *nwktr, bool isRooted)
     //position = &i;
     
     NWK_roothandl(nwktr, nwklen, numtaxa, numnodes_a, newtree, isRooted);
+    for (i = numtaxa; i < numnodes_a; ++i) {
+        mfl_set_index(newtree->trnodes[i]);
+    }
     
     return newtree;
 }

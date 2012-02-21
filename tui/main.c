@@ -143,7 +143,7 @@ void print_hashtab(taxbipart **hashtab, int ntax)
     //printf("\n");
 }
 
-void print_charstates(node *n, int nchar)
+void print_f_states(node *n, int nchar)
 {
     int i, j;
     charstate c;
@@ -151,7 +151,7 @@ void print_charstates(node *n, int nchar)
         printf("break\n");
     }
     
-    for (i = 0; i < nchar; ++i) {
+    for (i = nchar-1; i < nchar; ++i) {
         printf("C%i: ", i + 1);
         //printf("as int % i, ", c);
         c = n->apomorphies[i];
@@ -183,13 +183,54 @@ void print_charstates(node *n, int nchar)
     printf("\n");
 }
 
+void print_dp_states(node *n, int nchar)
+{
+    int i, j;
+    charstate c;
+    if (!n->tip) {
+        printf("break\n");
+    }
+    
+    for (i = nchar-1; i < nchar; ++i) {
+        printf("C%i: ", i + 1);
+        //printf("as int % i, ", c);
+        c = n->tempapos[i];
+        
+        if (c == -1) {
+            printf("?; ");
+            continue;
+        }
+        else 
+        {
+            if (c & 1) {
+                printf("-");
+            }
+            if ((c & IS_APPLIC)) {
+                j = 0;
+                c = c >> 1;
+                while (c) 
+                {
+                    if (c & 1) {
+                        printf("%i", j);
+                    }
+                    ++j;
+                    c = c >> 1;
+                }
+            }
+        }
+        printf("; ");
+    }
+    printf("\n");
+}
+
+
 void print_nodedata(node *n, int nchar, int ntax)
 {
     node *p;
     
     if (n->tip) {
         printf("Tip: %i\n", n->tip);
-        print_charstates(n, nchar);
+        print_f_states(n, nchar);
         printf("\n");
         return;
     }
@@ -204,7 +245,9 @@ void print_nodedata(node *n, int nchar, int ntax)
     if (n->tipsabove) {
         print_bipartition(*n->tipsabove, ntax);
     }
-    print_charstates(n, nchar);
+    printf("nodelen %i\n", n->nodelen);
+    print_dp_states(n, nchar);
+    print_f_states(n, nchar);
     printf("\n");
 }
 
@@ -415,7 +458,6 @@ void newring(node *r1, int ntax)
      * function that might dynamically add branches at run-time. */
     
     node *r2, *r3;
-    charstate *r1apos = r1->apomorphies;
     
     r2 = allocnode();
     r3 = allocnode();
@@ -427,8 +469,9 @@ void newring(node *r1, int ntax)
     r1->tip = r2->tip = r3->tip = 0;
     r1->start = r2->start = r3->start = false;
     r1->skip = r2->skip = r3->skip = false;
+    r1->clip = r2->clip = r3->clip = false;
     
-    r2->apomorphies = r3->apomorphies = r1->apomorphies;
+    //r2->apomorphies = r3->apomorphies = r1->apomorphies;
     r2->index = r1->index;
     r3->index = r1->index;
 }
@@ -450,7 +493,7 @@ void newring_to_order(node *r1, int order, int ntax)
         p->tip = r1->tip;
         p->start = r1->start;
         p->index = r1->index;
-        p->apomorphies = r1->apomorphies;
+        //p->apomorphies = r1->apomorphies;
         ++i;
     } while (i < order);
     p->next = r1;
@@ -474,6 +517,9 @@ void deletering(node *r1)
     if (r1->apomorphies) {
         free(r1->apomorphies);
     }
+    if (r1->tempapos) {
+        free(r1->tempapos);
+    }
     
     node *p, *q;
     
@@ -482,6 +528,12 @@ void deletering(node *r1)
         q = p->next;
         if (p->tipsabove) {
             free(p->tipsabove);
+        }
+        if (p->apomorphies) {
+            free(p->apomorphies);
+        }
+        if (p->tempapos) {
+            free(p->tempapos);
         }
         free(p);
         p = q;
@@ -546,6 +598,7 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
         p = origtr->trnodes[i];
         q = treecp->trnodes[i];
         q->initialized = p->initialized;
+        q->visited = p->visited;
         q->skip = p->skip;
         if (p->next) 
         {
@@ -766,200 +819,9 @@ void rand_tree (int ntax, int numnodes)
     }
     
     free(randtrees);
-    
 }
 
-void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar)
-{   
-    int i;
-    
-    for (i = 0; i < ntax; ++i) {
-        currenttree->trnodes[i]->apomorphies = &tipdata[i * nchar];
-    }
-}
 
-void mfl_reopt_subtr(node *src, int nchar)
-{
-    int i;
-    
-    charstate lft_chars, rt_chars;
-    
-    for (i = 0; i < nchar; ++i) {
-        lft_chars =  src->next->outedge->apomorphies[i];
-        rt_chars = src->next->next->outedge->apomorphies[i];
-        src->apomorphies[i] = lft_chars | rt_chars;
-        /*if ((src->apomorphies[i] & IS_APPLIC) && ( ((src->apomorphies[i] & IS_APPLIC) & lft_chars) && ((src->apomorphies[i] & IS_APPLIC) & rt_chars) )) {
-            src->apomorphies[i] = (src->apomorphies[i] & IS_APPLIC);
-        }*/
-    }
-}
-
-int mfl_reopt_shortcut(node *src, node *t1, node *t2, int nchar, int *trlength, int templen)
-{
-    int i;
-    //int length = *trlength;
-    int al = 0;
-    
-    if (!src->tip && (src->next->outedge->tip && src->next->next->outedge->tip)) {
-        mfl_reopt_subtr(src, nchar);
-    }
-    
-    for (i = 0; i < nchar; ++i) {
-        if ( !(src->apomorphies[i] & (t1->apomorphies[i] | t2->apomorphies[i])) ) {
-            al = al + 1;
-            /*if (al > ((*trlength - (src->nodelen + templen)))) {
-                break;
-            }*/
-        }
-    }
-
-    /*if (al > 0) {
-        printf("Would result in longer tree by %i steps\n", al);
-    }
-    else if (al == 0) {
-        printf("Equally good or better tree\n");
-    }*/
-    
-    //printf("\ntreelen according to shortcut: %i\n", al + src->nodelen + templen);
-    return al + src->nodelen + templen;
-}
-
-void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
-{
-    int i;
-    charstate lft_chars, rt_chars;
-    
-    for (i = 0; i < nchar; ++i) {
-        if (leftdesc->apomorphies[i] & rightdesc->apomorphies[i]) 
-        {
-            ancestor->apomorphies[i] = leftdesc->apomorphies[i] & rightdesc->apomorphies[i];
-        }
-        else
-        {
-            lft_chars = leftdesc->apomorphies[i];
-            rt_chars = rightdesc->apomorphies[i];
-            ancestor->apomorphies[i] = lft_chars | rt_chars;
-            if ((ancestor->apomorphies[i] & IS_APPLIC) && ( ((ancestor->apomorphies[i] & IS_APPLIC) & lft_chars) && ((ancestor->apomorphies[i] & IS_APPLIC) & rt_chars) )) 
-            {
-                ancestor->apomorphies[i] = (ancestor->apomorphies[i] & IS_APPLIC);
-                *trlength = *trlength + 1;
-                /*if (*trlength > *besttreelen) 
-                {
-                    return;
-                }*/
-            }
-        }
-    }
-}
-
-void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
-{
-    node *p;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        mfl_fitch_postorder(p->outedge, trlength, nchar, besttreelen);
-        p = p->next;
-    }
-    
-    if (!n->apomorphies) {
-        n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-        n->next->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-        n->next->next->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-    }
-    mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength, besttreelen);
-}
-
-void mfl_combine_up(node *n, node *anc, int nchar)
-{
-    int i;
-    charstate lft_chars, rt_chars;
-    
-    for (i = 0; i < nchar; ++i) {
-        
-        if ((n->apomorphies[i] & anc->apomorphies[i]) == anc->apomorphies[i]) 
-        {
-            n->apomorphies[i] = n->apomorphies[i] & anc->apomorphies[i];
-        }
-        else {
-            
-            lft_chars = n->next->outedge->apomorphies[i];
-            rt_chars = n->next->next->outedge->apomorphies[i];
-            
-            if (!lft_chars & rt_chars) 
-            {
-                n->apomorphies[i] = n->apomorphies[i] | anc->apomorphies[i];
-            }
-            else 
-            {
-                n->apomorphies[i] = (n->apomorphies[i] | (anc->apomorphies[i] & (lft_chars & rt_chars))) & IS_APPLIC;
-            }
-
-        }
-
-        
-    }
-}
-
-void mfl_fitch_preorder(node *n, int *trlength, int nchar, int *besttreelen)
-{
-    node *p, *dl, *dr;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    dl = p->outedge;
-    dr = p->next->outedge;
-    if (!dl->tip) {
-        mfl_combine_up(dl, n, nchar);
-    }
-    if (!dr->tip) {
-        mfl_combine_up(dr, n, nchar);
-    }
-    
-    while (p != n) {
-        mfl_fitch_preorder(p->outedge, trlength, nchar, besttreelen);
-        p = p->next;
-    }
-}
-
-int mfl_get_subtreelen(node *n, charstate *tipdata, int ntax, int nchar, int *besttreelen)
-{
-    int treelen = 0;
-    int *treelen_p = &treelen;
-    
-    mfl_subtree_postorder(n, treelen_p, nchar, besttreelen);
-    mfl_fitch_preorder(n, treelen_p, nchar, besttreelen);
-    
-    return *treelen_p;
-}
-
-int mfl_get_trlonepass(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen)
-{
-    int treelen = 0;
-    int *treelen_p = &treelen;
-    
-    mfl_fitch_postorder(testtree->root, treelen_p, nchar, besttreelen);
-    
-    return *treelen_p;
-}
-
-int mfl_get_treelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen)
-{
-    int treelen = 0;
-    int *treelen_p = &treelen;
-    
-    mfl_fitch_postorder(testtree->root, treelen_p, nchar, besttreelen);
-    mfl_fitch_preorder(testtree->root, treelen_p, nchar, besttreelen);
-    
-    return *treelen_p;
-}
 
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
 {
@@ -986,7 +848,7 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
             tipdata[j] = -1;
         }
         else if (txtsrc[i] == '-') {
-            tipdata[j] = 1;
+            tipdata[j] = -1;
         }
         else if (txtsrc[i] == '\n') {
             --j;
@@ -999,6 +861,40 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
     return tipdata;
 }
 
+node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
+{
+    int i;
+    node *p;
+    node *onetwonode = NULL;
+    
+    /*mfl_remove_branch(t->trnodes[0]);
+    mfl_insert_branch(t->trnodes[0], t->trnodes[11], ntax);
+    mfl_remove_branch(t->trnodes[1]);
+    mfl_insert_branch(t->trnodes[1], t->trnodes[0], ntax);*/
+    
+    //Find the (1,2) node
+    for (i = ntax + 1; i < numnodes; ++i) {
+        p = t->trnodes[i];
+        do {
+            if ((p->outedge->tip == 11) || (p->outedge->tip == 12)) {
+                onetwonode = t->trnodes[i];
+                printf("found: %i\n", p->outedge->tip);
+                break;
+            }
+            p = p->next;
+            if (onetwonode) {
+                break;
+            }
+        } while (p != t->trnodes[i]);
+    }
+    
+    if (onetwonode->outedge->tip == 11 || onetwonode->outedge->tip == 12) {
+        printf("Must find 'bottom' node\n");
+    }
+
+    return onetwonode;    
+}
+
 void test_char_optimization(void)
 {
     char trstring[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
@@ -1008,36 +904,129 @@ void test_char_optimization(void)
     printNewick(testtree->root);
     printf("\n");
     
+    int i, j, al=0;
     int ntax = 12;
-    int nchar = 20;
+    int nchar = 21;
     int trl = 0;
     int *trlength = &trl;
     int numnodes = numberOfNodes(ntax);
     charstate *tipdata;
+    node *mvnode;
     
-    char usrTipdata[] = "11111111110000000000\n\
-11111111110000000000\n\
-00111111110000000000\n\
-00001111110000000000\n\
--0000011110000000000\n\
-?0000000110000000000\n\
--0000000000000000011\n\
-?0000000000000001111\n\
-10000000000000111111\n\
-10000000000011111111\n\
-00000000001111111111\n\
-00000000001111111111";
+    char usrTipdata[] = "111111111100000000001\n\
+111111111100000000002\n\
+001111111100000000002\n\
+000011111100000000000\n\
+000000111100000000001\n\
+000000001100000000002\n\
+000000000000000000110\n\
+000000000000000011110\n\
+000000000000001111111\n\
+000000000000111111111\n\
+000000000011111111112\n\
+000000000011111111110";
+    
+    //old c21 pattern: 122012001120
     
     tipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar);
     mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
     
-    trl = mfl_get_treelen(testtree, tipdata, ntax, nchar, trlength);
-    testtree->bipartitions = mfl_tree_biparts(testtree, ntax, numnodes);
-    
+    mvnode = mv_onetwo_to_twelve(testtree, ntax, numnodes);
+    mfl_undo_temproot(ntax, testtree);
+    trl = mfl_all_views(testtree, ntax, nchar, trlength);
+    //mfl_compute_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL, NULL);
+    //mfl_root_tree(testtree, 0, ntax);
+    mfl_temproot(testtree, 5, ntax);
+    printf("The altered tree (if move made):\n");
+    printNewick(testtree->root);
+    printf("\n");
+    //mfl_undo_temproot(ntax, testtree);
+    //testtree->bipartitions = mfl_tree_biparts(testtree, ntax, numnodes);
     printf("tree length: %i\n", trl);
+    //mfl_undo_temproot(ntax, testtree);
+    /*for (i = 0; i < (2 * ntax -1); ++i) {
+        if (i == ntax) {
+            continue;
+        }
+        mfl_temproot(testtree, i, ntax);
+        printf("rooting on node %i\n", i);
+        for (j = 0; j < nchar; ++j) {
+            if (testtree->root->next->outedge->tempapos[j] & testtree->root->next->next->outedge->tempapos[j]) {
+                testtree->root->apomorphies[j] = testtree->root->next->outedge->tempapos[j] & testtree->root->next->next->outedge->tempapos[j];
+            }
+            else {
+                testtree->root->apomorphies[j] = testtree->root->next->outedge->tempapos[j] | testtree->root->next->next->outedge->tempapos[j];
+            }
+
+        }
+        print_nodedata(testtree->root, nchar, ntax);
+        mfl_undo_temproot(ntax, testtree);
+    }*/
     
-    print_nodedata(testtree->root, nchar, ntax);
+    for (i = ntax + 1; i < numnodes; ++i) {
+        node *q = testtree->trnodes[i];
+        printf("node %i\n", i);
+        do {
+            if (q->apomorphies) {
+                printf("%i\n", q->apomorphies[20]);
+            }
+            q = q->next;
+        } while (q != testtree->trnodes[i]);
+    }
     
+    int diff = 0;
+    node *up, *dn;
+    up = mvnode->outedge->next->outedge;
+    dn = mvnode->outedge->next->next->outedge;
+    
+    printf("mvnode index: %i\n", mvnode->index);
+    
+    joinNodes(up, dn);
+    printf("The pruned tree:\n");
+    printNewick(testtree->root);
+    printf("\n");
+    
+    mfl_undo_temproot(ntax, testtree);
+    //mfl_compute_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL, NULL);
+    
+    diff = mfl_get_treelen(testtree, ntax, nchar, NULL);
+    printf("length of three after clipping: %i\n", diff);
+    
+    diff = mfl_locreopt_cost(mvnode, up, dn, nchar);
+    printf("cost of rejoining to original place: %i\n", diff);
+    
+    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[3], testtree->trnodes[3]->outedge, nchar);
+    printf("cost of rejoining to a new place: %i\n", diff);
+    
+    printf("target index: %i\n", testtree->trnodes[3]->outedge->index);
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        node *q = testtree->trnodes[i];
+        printf("node %i\n", i);
+        do {
+            if (q->apomorphies) {
+                printf("%i\n", q->apomorphies[20]);
+            }
+            q = q->next;
+        } while (q != testtree->trnodes[i]);
+    }
+    
+    joinNodes(mvnode->outedge->next, testtree->trnodes[3]->outedge);
+    joinNodes(mvnode->outedge->next->next, testtree->trnodes[3]);
+    //mfl_undo_temproot(ntax, testtree);
+    diff = mfl_all_views(testtree, ntax, nchar, NULL);
+    printf("length of the tree after placement: %i\n", diff);
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        node *q = testtree->trnodes[i];
+        printf("node %i\n", i);
+        do {
+            if (q->apomorphies) {
+                printf("%i\n", q->apomorphies[20]);
+            }
+            q = q->next;
+        } while (q != testtree->trnodes[i]);
+    }
 }
 
 void mini_test_analysis(void)

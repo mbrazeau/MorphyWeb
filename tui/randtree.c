@@ -13,7 +13,7 @@
 
 bool mfl_headtail (void)
 {
-    if (rand()% 2 == 0)
+    if (random() % 2 == 0)
     {
         return false;
     }
@@ -33,7 +33,7 @@ void shuffle(int *taxarray, int ntax)
     
     if (ntax > 1) {
         for (i = 0; i < ntax - 1; i++) {
-            j = i + rand() / (RAND_MAX / (ntax - i) + 1);
+            j = i + random() / (RAND_MAX / (ntax - i) + 1);
             t = taxarray[j];
             taxarray[j] = taxarray[i];
             taxarray[i] = t;
@@ -138,64 +138,6 @@ struct node *mfl_breaktie_intryall(node *bestpos, node *n)
     }
     
     return bestpos;
-}
-
-void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
-{
-    int i;
-    charstate lft_chars, rt_chars;
-    
-    for (i = 0; i < nchar; ++i) {
-        if (leftdesc->apomorphies[i] & rightdesc->apomorphies[i]) 
-        {
-            ancestor->apomorphies[i] = leftdesc->apomorphies[i] & rightdesc->apomorphies[i];
-        }
-        else
-        {
-            lft_chars = leftdesc->apomorphies[i];
-            rt_chars = rightdesc->apomorphies[i];
-            ancestor->apomorphies[i] = lft_chars | rt_chars;
-            if ((ancestor->apomorphies[i] & IS_APPLIC) && 
-                ( ((ancestor->apomorphies[i] & IS_APPLIC) & lft_chars) && 
-                 ((ancestor->apomorphies[i] & IS_APPLIC) & rt_chars) )) {
-                    ancestor->apomorphies[i] = (ancestor->apomorphies[i] & IS_APPLIC);
-                    *trlength = *trlength + 1;
-                }
-        }
-    }
-}
-
-void mfl_subtree_postorder(node *n, int *trlength, int nchar, int *besttreelen)
-{
-    node *p;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        mfl_subtree_postorder(p->outedge, trlength, nchar, besttreelen);
-        p = p->next;
-    }
-    if (!n->apomorphies) {
-        n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-        n->next->apomorphies = n->apomorphies;
-        n->next->next->apomorphies = n->apomorphies;
-    }
-    mfl_subtree_count(n->next->outedge, n->next->next->outedge, n, nchar, trlength);
-}
-
-int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen)
-{
-    int treelen = 0;
-    int *treelen_p = &treelen;
-    
-    mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
-    mfl_subtree_postorder(testtree->root, treelen_p, nchar, treelen_p);
-    mfl_fitch_preorder(testtree->root, treelen_p, nchar, treelen_p);
-    
-    return *treelen_p;
 }
 
 struct node * mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int nchar, 
