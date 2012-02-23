@@ -35,7 +35,9 @@
  * pointer. The outedge pointer joins the node to either a leaf or the nearest 
  * internal node. */
 
-typedef int32_t charstate;
+
+
+typedef uint32_t charstate;
 typedef int64_t taxbipart;
 
 typedef struct node {
@@ -110,6 +112,7 @@ void dump_tree(tree *t, int ntax, int numnodes);
 void print_bipartition(taxbipart bipartition, int ntax);
 void print_hashtab(taxbipart **hashtab, int ntax);
 void print_charstates(node *n, int nchar);
+void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes);
 void init_taxarray(int *taxarray, int ntax);
 void joinNodes(node *n, node *p);
 struct tree *alloctree(int ntax, int numnodes);
@@ -159,7 +162,12 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 void mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar);
-void mfl_compute_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
+void mfl_wipe_states(node *n, int nchar);
+void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
+
+/*in drawtree*/
+void mfl_draw_tree(node *n, int *p_in_node, int *depth);
+void mfl_start_drawtree(tree *t, int ntax);
 
 /*in exhaustive.c*/ 
 void allunrooted(void /*tree *treearray, int ntaxa*/);

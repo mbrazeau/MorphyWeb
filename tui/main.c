@@ -130,6 +130,25 @@ void print_bipartition(taxbipart bipartition, int ntax)
     printf("\n");
 }
 
+void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
+{
+    int i, j;
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        node *q = testtree->trnodes[i];
+        printf("node %i\n", i);
+        do {
+            if (q->apomorphies) {
+                for (j = 0; j < nchar; ++j) {
+                    printf("%u ", q->apomorphies[j]);
+                }
+                printf("\n");
+            }
+            q = q->next;
+        } while (q != testtree->trnodes[i]);
+    }
+}
+
 void print_hashtab(taxbipart **hashtab, int ntax)
 {
     int i;
@@ -514,11 +533,12 @@ void deletering(node *r1)
     if (r1->tipsabove) {
         free(r1->tipsabove);
     }
-    if (r1->apomorphies) {
-        free(r1->apomorphies);
-    }
     if (r1->tempapos) {
         free(r1->tempapos);
+        r1->tempapos;
+    }
+    if (r1->apomorphies) {
+        free(r1->apomorphies);
     }
     
     node *p, *q;
@@ -529,11 +549,11 @@ void deletering(node *r1)
         if (p->tipsabove) {
             free(p->tipsabove);
         }
-        if (p->apomorphies) {
-            free(p->apomorphies);
-        }
         if (p->tempapos) {
             free(p->tempapos);
+        }
+        if (p->apomorphies) {
+            free(p->apomorphies);
         }
         free(p);
         p = q;
@@ -897,7 +917,7 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
 
 void test_char_optimization(void)
 {
-    char trstring[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
+    char trstring[] = "(7,((8,(9,10)),(((((1,2),3),(4,(11,12))),5),6)));";
     tree *testtree = readNWK(trstring, 1);
     
     printf("The test tree:\n");
@@ -912,6 +932,8 @@ void test_char_optimization(void)
     int numnodes = numberOfNodes(ntax);
     charstate *tipdata;
     node *mvnode;
+    
+    //mfl_start_drawtree(testtree, ntax);
     
     char usrTipdata[] = "111111111100000000001\n\
 111111111100000000002\n\
@@ -934,7 +956,6 @@ void test_char_optimization(void)
     mvnode = mv_onetwo_to_twelve(testtree, ntax, numnodes);
     mfl_undo_temproot(ntax, testtree);
     trl = mfl_all_views(testtree, ntax, nchar, trlength);
-    //mfl_compute_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL, NULL);
     //mfl_root_tree(testtree, 0, ntax);
     mfl_temproot(testtree, 5, ntax);
     printf("The altered tree (if move made):\n");
@@ -944,89 +965,58 @@ void test_char_optimization(void)
     //testtree->bipartitions = mfl_tree_biparts(testtree, ntax, numnodes);
     printf("tree length: %i\n", trl);
     //mfl_undo_temproot(ntax, testtree);
-    /*for (i = 0; i < (2 * ntax -1); ++i) {
-        if (i == ntax) {
-            continue;
-        }
-        mfl_temproot(testtree, i, ntax);
-        printf("rooting on node %i\n", i);
-        for (j = 0; j < nchar; ++j) {
-            if (testtree->root->next->outedge->tempapos[j] & testtree->root->next->next->outedge->tempapos[j]) {
-                testtree->root->apomorphies[j] = testtree->root->next->outedge->tempapos[j] & testtree->root->next->next->outedge->tempapos[j];
-            }
-            else {
-                testtree->root->apomorphies[j] = testtree->root->next->outedge->tempapos[j] | testtree->root->next->next->outedge->tempapos[j];
-            }
-
-        }
-        print_nodedata(testtree->root, nchar, ntax);
-        mfl_undo_temproot(ntax, testtree);
-    }*/
     
-    for (i = ntax + 1; i < numnodes; ++i) {
-        node *q = testtree->trnodes[i];
-        printf("node %i\n", i);
-        do {
-            if (q->apomorphies) {
-                printf("%i\n", q->apomorphies[20]);
-            }
-            q = q->next;
-        } while (q != testtree->trnodes[i]);
-    }
+    print_final_allviews(testtree, ntax, nchar, numnodes);
     
+    int pos = 3;
     int diff = 0;
     node *up, *dn;
     up = mvnode->outedge->next->outedge;
     dn = mvnode->outedge->next->next->outedge;
     
     printf("mvnode index: %i\n", mvnode->index);
+    printf("mvnode base:  %i\n", mvnode->outedge->index);
     
     joinNodes(up, dn);
     printf("The pruned tree:\n");
     printNewick(testtree->root);
     printf("\n");
-    
+
     mfl_undo_temproot(ntax, testtree);
-    //mfl_compute_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL, NULL);
+    //mfl_wipe_states(testtree->trnodes[ntax], nchar);
+    mfl_trav_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL, NULL);
     
     diff = mfl_get_treelen(testtree, ntax, nchar, NULL);
     printf("length of three after clipping: %i\n", diff);
     
-    diff = mfl_locreopt_cost(mvnode, up, dn, nchar);
+    diff = mfl_get_subtreelen(mvnode, ntax, nchar, NULL);
+    printf("length of sourcetree: %i\n", diff);
+    
+    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[pos], testtree->trnodes[pos]->outedge, nchar);
     printf("cost of rejoining to original place: %i\n", diff);
     
-    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[3], testtree->trnodes[3]->outedge, nchar);
+    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[9], testtree->trnodes[9]->outedge, nchar);
     printf("cost of rejoining to a new place: %i\n", diff);
     
-    printf("target index: %i\n", testtree->trnodes[3]->outedge->index);
+    printf("target index: %i\n", testtree->trnodes[pos]->outedge->index);
+    printf("target outedge: %i\n", testtree->trnodes[pos]->index);
     
-    for (i = ntax + 1; i < numnodes; ++i) {
-        node *q = testtree->trnodes[i];
-        printf("node %i\n", i);
-        do {
-            if (q->apomorphies) {
-                printf("%i\n", q->apomorphies[20]);
-            }
-            q = q->next;
-        } while (q != testtree->trnodes[i]);
-    }
+    print_final_allviews(testtree, ntax, nchar, numnodes);
     
-    joinNodes(mvnode->outedge->next, testtree->trnodes[3]->outedge);
-    joinNodes(mvnode->outedge->next->next, testtree->trnodes[3]);
+    joinNodes(mvnode->outedge->next, testtree->trnodes[9]->outedge);
+    joinNodes(mvnode->outedge->next->next, testtree->trnodes[9]);
     //mfl_undo_temproot(ntax, testtree);
     diff = mfl_all_views(testtree, ntax, nchar, NULL);
     printf("length of the tree after placement: %i\n", diff);
     
-    for (i = ntax + 1; i < numnodes; ++i) {
-        node *q = testtree->trnodes[i];
-        printf("node %i\n", i);
-        do {
-            if (q->apomorphies) {
-                printf("%i\n", q->apomorphies[20]);
-            }
-            q = q->next;
-        } while (q != testtree->trnodes[i]);
-    }
+    print_final_allviews(testtree, ntax, nchar, numnodes);
+    
+    mfl_temproot(testtree, 6, ntax);
+    printf("The altered tree (if move made):\n");
+    printNewick(testtree->root);
+    printf("\n");
+    
+    //freetree(testtree, ntax);
 }
 
 void mini_test_analysis(void)
@@ -1053,6 +1043,7 @@ void mini_test_analysis(void)
     //char aNewickTree[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
     /* A search with this dataset rigged to favour the topology of aNewickTree */
+
     char usrTipdata[] = "00000000000000000000000---0000000-0000000000000000000-0-0000000000000000000--00000000000000000?\n\
 11-10121001120200001001---0000100-1--10001000001101010320010000010100001000--30300000000000010?\n\
 ??????????????????????30--0010??0-????????1-?-??100?0-??1?--????0?00??10??1112??????100111-0-1?\n\
@@ -1099,36 +1090,7 @@ void mini_test_analysis(void)
 212112101012111122211211311311122111111222111211211111111111111122112021011101111030111111101111100112322031012101112310111100102212113000\
 212112101011111122211211311311122111111222011211211131011111111122112021011101111130111121121111110112322243112111112310111120202202113000\
 ?0100?0?0??0?00??0??00???00?????0??0000?0100??0?11000000????????????????????????????00???000??????????????0??1011?000100000001003?????????";*/
-    
-    /*"00000000000000000000000---0000000-0000000000000000000-0-0000000000000000000--00000000000000000?\
-     11-10121001120200001001---0000100-1--10001000001101010320010000010100001000--30300000000000010?\
-     ??????????????????????30--0010??0-????????1-?-??100?0-??1?--????0?00??10??1112??????100111-0-1?\
-     00??0?????????????????3111100?????????????011100??0???????11?1????????10?????2??????1?1-1??????\
-     000?0???????11??01111030--???1010-???0????1---0-10010-3?00--??010?000??0??111?1-?0?111011????1?\
-     11-101201011212?0001002---0001100-01010011000001101010320010000010101001000--10310000000000000?\
-     00?100(02)???01?1(23)0???10?0---00?00010002?001100000001000-31-010????-?30?000000--01-0???00?0000100?\
-     1011023111112131???1100---000000101--200010000101000103011?01-1-01001101010?-11-10??00?0?00010?\
-     ?????????????????0????3000?10?010-0100?01100-0--100011300?10????0????0010110021-1???1001101000?\
-     10110231101111311001110---0000000-1---000100001010000-3011101-1-01311001010--11-001000000000100\
-     ????????????????0?????3000?1?0??0-010?1?1100100?100?11??0?00????0??0?000111002??????10011010001\
-     ????????????????0001??3101?100????0??????1001100100011??0?010100??????00??1002????1?10??????001\
-     ????????????2????11?????--????????????????1-?-??1?????????--?????0?00?10?????2?????110011????10\
-     11-11?301?1111(23)?0010002---000000110121011100000111001011-010?0001?011000000--?021?0000000001001\
-     11-11?30012120000000001---000000110021011100000101000-11-000000010010001000--101110?00000000000\
-     0011012?1011?12??011002---00001010002?001100000?101010??1??0??001?10?00100??-???1??0???????0000\
-     1001??30??112???001001?---0000000-1--2011100000111000-2?-010000010211001000--0021?0000000000000\
-     ?????????????????11???30--0010010-???????11-?-??10010-3010--0001?0000010?????2??????10011??0-10\
-     0???0?1??1?0?1??00????311111??010-0100?011001100100011??0?01??????0??00011???21-101?1001(01)010001\
-     00000?101110113000011030000100010-0100101100100010001?30001000000000010{01}1110021-101110?101-0001\
-     00100000101011101000110---0-000010011000010000101000103011100?0?00?0?101010--11-0?1?00000000000\
-     00000?1?1??0113?00011031111101010-01?0?0??011100100?0-3000010100?0?0??10?110(01)21-?011111-1010?11\
-     ?00?????1?1?213?01?1????--0011????????????1-?-??10010-??0?--??0??0000??0??????????????????????0\
-     11-11?3???1?2???000000?---000000110111011100000111001011-010000010011000000--00211??00000001000\
-     00?00000?01021100000002---000010111--1001000000110101032001000001000?001000--10010??00?00000000\
-     ??????????????????????30--????????????????1-?????0????????????0????0??????????????????????????0\
-     ?????????????????1?1??3000?0?1????010????1001???100011??0??000??0??0?000??11021-1??1100111-0001\
-     ?????????????????????????????????????????100?????????????0?000??????0?00?????21-???1100111---1?";
-     */    
+       
     /*rigged data*/
     /*"11111111110000000000\
 11111111110000000000\
@@ -1225,7 +1187,7 @@ int main(void)
     //tree *originaltree;
     //tree *copiedtree;
     
-    //mini_test_analysis();
+    mini_test_analysis();
     
     //test_spr();
     
