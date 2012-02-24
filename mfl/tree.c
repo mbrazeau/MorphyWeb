@@ -181,7 +181,7 @@ void mfl_reset_ring(node *n)
     node *p;
     
     n->initialized = 0;
-    //n->apomorphies = 0;
+    n->clip = false;
     n->skip = 0;
     
     if (n->next) {
@@ -189,8 +189,8 @@ void mfl_reset_ring(node *n)
         while (p != n) 
         {
             p->index = n->index;
-            //p->apomorphies = n->apomorphies;
             p->initialized = n->initialized;
+            p->clip = n->clip;
             p->skip = n->skip;
             p = p->next;
         }
@@ -381,6 +381,23 @@ void mfl_devisit_tree(nodearray nds, int numnodes)
             p = nds[i]->next;
             while (p != nds[i]) {
                 p->visited = 0;
+                p = p->next;
+            }
+        }
+    }
+}
+
+void mfl_definish_tree(tree *t, int numnodes)
+{
+    int i;
+    node *p;
+    for (i = 0; i < numnodes; ++i) {
+        t->trnodes[i]->finished = false;
+        
+        if (t->trnodes[i]->next) {
+            p = t->trnodes[i]->next;
+            while (p != t->trnodes[i]) {
+                p->finished = false;
                 p = p->next;
             }
         }

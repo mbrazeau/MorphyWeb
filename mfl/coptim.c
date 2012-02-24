@@ -215,15 +215,8 @@ void mfl_reopt_postorder(node *n, int nchar)
 {
     node *p;
     bool allsame = true;
-    
-    if (!n->apomorphies) {
-        n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-    }
-    if (!n->tempapos) {
-        n->tempapos = (charstate*)malloc(nchar * sizeof(charstate));
-    }
-    
-    if (n->tip || n->clip) {
+        
+    if (n->tip || n->clip || n->finished) {
         return;
     }
     
@@ -244,10 +237,11 @@ void mfl_reopt_postorder(node *n, int nchar)
     if (!allsame) {
         mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
     }
-    else {
-        n->success = true;
+    
+    if (n->outedge) {
+        n->finished = true;
     }
-
+    
 }
 
 void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
@@ -494,7 +488,7 @@ void mfl_wipe_states(node *n, int nchar)
     memset(n->tempapos, 0, nchar * sizeof(charstate));
 }
 
-void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
+void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
 {
     
     /* Supposed to traverse an n-ary tree, rooting the tree at each branch and
@@ -504,7 +498,7 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     node *p;
     
     if (n->start) {
-        mfl_trav_allviews(n->outedge, t, ntax, nchar, treelen, besttreelen);
+        mfl_allviews_traversal(n->outedge, t, ntax, nchar, treelen, besttreelen);
         return;
     }
     
@@ -533,9 +527,15 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     
     p = n->next;
     while (p != n) {
-        mfl_trav_allviews(p->outedge, t, ntax, nchar, treelen, besttreelen);
+        mfl_allviews_traversal(p->outedge, t, ntax, nchar, treelen, besttreelen);
         p = p->next;
     }
+}
+
+void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
+{
+    mfl_definish_tree(t, 2 * ntax - 1);
+    mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
 }
 
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)

@@ -52,6 +52,7 @@ typedef struct node {
     int order;
     int nodelen;
     bool success;
+    bool finished;
     bool start;
     bool skip;
     bool clip;
@@ -212,6 +213,7 @@ void mfl_devisit_tree(nodearray nds, int numnodes);
 void mfl_put_branch_in_ring(node *n, node *rnode);
 void mfl_insert_branch(node *br, node *target, int ntax);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
+void mfl_definish_tree(tree *t, int numnodes);
 void mfl_deinit_tree(tree *t, int numnodes);
 void mfl_temproot(tree *trtoroot, int root, int ntax);
 void mfl_undo_temproot(int ntax, tree *trtounroot);
