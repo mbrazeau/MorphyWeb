@@ -992,10 +992,10 @@ void test_char_optimization(void)
     diff = mfl_get_subtreelen(mvnode, ntax, nchar, NULL);
     printf("length of sourcetree: %i\n", diff);
     
-    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[pos], testtree->trnodes[pos]->outedge, nchar);
+    diff = mfl_subtr_reinsertion(mvnode, testtree->trnodes[pos], testtree->trnodes[pos]->outedge, nchar);
     printf("cost of rejoining to original place: %i\n", diff);
     
-    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[9], testtree->trnodes[9]->outedge, nchar);
+    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[9], testtree->trnodes[9]->outedge, nchar, 10000);
     printf("cost of rejoining to a new place: %i\n", diff);
     
     printf("target index: %i\n", testtree->trnodes[pos]->outedge->index);
@@ -1178,6 +1178,8 @@ int main(void)
     int numnodes;
     //bool isRooted = true;
     
+    pauseit();
+    
     //test_tree_comparison();
     test_char_optimization();
     
@@ -1257,6 +1259,8 @@ int main(void)
     
     freetree(originaltree, numnodes);
     freetree(copiedtree, numnodes);*/
+    
+    pauseit();
     
     return 0;
 }

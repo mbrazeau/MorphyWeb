@@ -51,6 +51,7 @@ typedef struct node {
     int initialized;
     int order;
     int nodelen;
+    bool success;
     bool start;
     bool skip;
     bool clip;
@@ -147,11 +148,11 @@ void test_tree_comparison(void);
 /*in coptim.c*/
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr(node *src, int nchar);
+void mfl_reopt_subtr_root(node *n, int nchar);
 void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
 void mfl_subtree_postorder(node *n, int *trlength, int nchar);
 int mfl_reopt_shortcut(node *src, node *t1, node *t2, int nchar, int *trlength, int templen);
 void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
-int mfl_get_trlonepass(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
 void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen);
@@ -161,7 +162,8 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 
 void mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
-int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar);
+int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
+int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
 void mfl_wipe_states(node *n, int nchar);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 
