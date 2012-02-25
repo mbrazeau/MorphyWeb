@@ -361,20 +361,21 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         }
         up = p->next->outedge;
         dn = p->next->next->outedge;
+        
         subtr = p->next->next;
         
         if (!(up->tip && dn->tip)) {
             up->visited = 1;
-            up->clip = 1;
             dn->visited = 1;
-            //dn->clip = 1;
+            up->clip = true;
+            dn->clip = true;
             joinNodes(up, dn);
             
             // Reoptimize the clipped tree
             mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
             
             // Reoptimize the subtree
-            //mfl_reopt_postorder(, nchar);
+            //mfl_reopt_postorder(subtr->next->outedge, nchar);
             mfl_reopt_subtr_root(subtr->next->outedge, nchar);
             
             // Determine the cost of local reinsertion
@@ -388,52 +389,19 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                                      foundbettertree, success, leftotry, diff);
         
             up->visited = 0;
-            up->clip = 0;
             dn->visited = 0;
-            //dn->clip = 0;
+            up->clip = false;
+            dn->clip = false;
             mfl_devisit_tree(swapingon->trnodes, numnodes);
-            
             if (*success) {
                 return;
             }
             joinNodes(up, p->next);
             joinNodes(dn, p->next->next);
         }
-        
         p = p->next;
     }   
 }
-
-/*void mfl_alloc_apomorphies(tree *t, int ntax, int numnodes, int nchar)
-{
-    int i;
-    node *p;
-    
-    for (i = 0; i < numnodes; ++i) {
-        
-        if (!t->trnodes[i]->apomorphies) {
-            t->trnodes[i]->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-        }
-        
-        if (i >= ntax) {
-            if (!t->trnodes[i]->tempapos) {
-                t->trnodes[i]->tempapos = (charstate*)malloc(nchar * sizeof(charstate));
-            }
-            
-            p = t->trnodes[i]->next;
-            while (p != t->trnodes[i]) {
-                if (!p->apomorphies) {
-                    p->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
-                }
-                if (!p->tempapos) {
-                    p->tempapos = (charstate*)malloc(nchar * sizeof(charstate));
-             
-                }
-                p = p->next;
-            }
-        }
-    }
-}*/
 
 void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **savedtrees, int starttreelen)
@@ -469,7 +437,6 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
         *success_p = false;
         //printf("Swapping on tree: %li\n", j);
         mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
-        //mfl_definish_tree(savedtrees[j], numnodes);
         mfl_all_views(savedtrees[j], ntax, nchar, currentbest_p);
         mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                 ntax, nchar, numnodes, nxtintrbuf, tipdata, 
@@ -512,3 +479,7 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
 }
 
 /* Tree bisection and reconnection (TBR) */
+
+void mfl_bisection_traversal()
+{
+}

@@ -130,25 +130,6 @@ void print_bipartition(taxbipart bipartition, int ntax)
     printf("\n");
 }
 
-void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
-{
-    int i, j;
-    
-    for (i = ntax + 1; i < numnodes; ++i) {
-        node *q = testtree->trnodes[i];
-        printf("node %i\n", i);
-        do {
-            if (q->apomorphies) {
-                for (j = 0; j < nchar; ++j) {
-                    printf("%u ", q->apomorphies[j]);
-                }
-                printf("\n");
-            }
-            q = q->next;
-        } while (q != testtree->trnodes[i]);
-    }
-}
-
 void print_hashtab(taxbipart **hashtab, int ntax)
 {
     int i;
@@ -170,7 +151,7 @@ void print_f_states(node *n, int nchar)
         printf("break\n");
     }
     
-    for (i = nchar-1; i < nchar; ++i) {
+    for (i = 0; i < nchar; ++i) {
         printf("C%i: ", i + 1);
         //printf("as int % i, ", c);
         c = n->apomorphies[i];
@@ -201,6 +182,27 @@ void print_f_states(node *n, int nchar)
     }
     printf("\n");
 }
+
+void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
+{
+    int i, j;
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        //print_f_states(testtree->trnodes[i], nchar);
+        node *q = testtree->trnodes[i];
+        printf("node %i\n", i);
+        do {
+            if (q->apomorphies) {
+                for (j = 0; j < nchar; ++j) {
+                    printf("%u ", q->apomorphies[j]);
+                }
+                printf("\n");
+            }
+            q = q->next;
+        } while (q != testtree->trnodes[i]);
+    }
+}
+
 
 void print_dp_states(node *n, int nchar)
 {
@@ -490,7 +492,7 @@ void newring(node *r1, int ntax)
     r1->skip = r2->skip = r3->skip = false;
     r1->clip = r2->clip = r3->clip = false;
     
-    //r2->apomorphies = r3->apomorphies = r1->apomorphies;
+    r2->apomorphies = r3->apomorphies = r1->apomorphies;
     r2->index = r1->index;
     r3->index = r1->index;
 }
@@ -512,7 +514,7 @@ void newring_to_order(node *r1, int order, int ntax)
         p->tip = r1->tip;
         p->start = r1->start;
         p->index = r1->index;
-        //p->apomorphies = r1->apomorphies;
+        p->apomorphies = r1->apomorphies;
         ++i;
     } while (i < order);
     p->next = r1;
@@ -552,9 +554,9 @@ void deletering(node *r1)
         if (p->tempapos) {
             free(p->tempapos);
         }
-        if (p->apomorphies) {
+        /*if (p->apomorphies) {
             free(p->apomorphies);
-        }
+        }*/
         free(p);
         p = q;
     }
@@ -981,6 +983,8 @@ void test_char_optimization(void)
     printf("The pruned tree:\n");
     printNewick(testtree->root);
     printf("\n");
+    up->clip = true;
+    dn->clip = true;
 
     mfl_undo_temproot(ntax, testtree);
     //mfl_wipe_states(testtree->trnodes[ntax], nchar);

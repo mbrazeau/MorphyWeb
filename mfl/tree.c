@@ -157,6 +157,16 @@ void mfl_reindex_tree(nodearray nds, int ntax, int numnodes)
     }
 }
 
+void mfl_join_apomorphies(node *n)
+{
+    node *p;
+    p = n->next;
+    while (p != n) {
+        p->apomorphies = n->apomorphies;
+        p = p->next;
+    }
+}
+
 void mfl_set_ring_to_n(node *n)
 {
     node *p;

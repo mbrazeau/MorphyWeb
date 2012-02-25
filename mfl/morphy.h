@@ -204,6 +204,7 @@ void mfl_as_noring(node *n);
 void mfl_reindex_tree(nodearray nds, int ntax, int numnodes);
 void mfl_set_ring_to_n(node *n);
 void mfl_reset_ring(node *n);
+void mfl_join_apomorphies(node *n);
 void mfl_collapse(node *n, nodearray nds);
 int mfl_determ_order(node *n);
 void mfl_set_order(node *n);
