@@ -23,7 +23,7 @@
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
 
-#define IS_APPLIC (-1^1)
+#define IS_APPLIC ~1//(-1^1)
 
 #define TREELIMIT 6000 //A temporary tree limit for testing.
 
@@ -46,16 +46,18 @@ typedef struct node {
     int tip;
     int index;
     int visited;
-    int compindex;
     int vweight;
     int initialized;
     int order;
     int nodelen;
+    unsigned long long int stid;
+    unsigned long long int pathid;
     bool success;
     bool finished;
     bool start;
     bool skip;
     bool clip;
+    bool isroot;
     int minsteps;
     int maxsteps;
     int charstates;
@@ -147,6 +149,7 @@ bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
 void test_tree_comparison(void);
 
 /*in coptim.c*/
+charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr(node *src, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);
@@ -166,6 +169,8 @@ void mfl_reopt_preorder(node *n, int nchar);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
 int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
 void mfl_wipe_states(node *n, int nchar);
+void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
+void mfl_tip_reopt(tree *t, int ntax, int nchar);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 
 /*in drawtree*/
@@ -197,6 +202,7 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], node
 /*in tree.c*/
 struct node * mfl_seek_internal(int ntax,int numnodes, node **nds);
 struct node * mfl_seek_ringnode(node *n, int ntax);
+unsigned long long int mfl_subtree_id(bool reset);
 void mfl_set_vweight(node *n);
 void mfl_close_ring(node *n);
 void mfl_as_ring(node *n, int ntax);
@@ -234,8 +240,7 @@ void mfl_bswap(node *p, node *q);
 void mfl_remove_branch(node *n);
 void mfl_insert_branch(node *br, node *target);
 void mfl_nni_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
-                       int nchar, int numnodes, long int *current, 
-                       charstate *tipdata, bool *undertreelimitlong, 
+                       int nchar, int numnodes, long int *current, bool *undertreelimitlong, 
                        int *currentbesttree, bool *foundbettertree);
 void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **savedtrees, int starttreelen);
@@ -243,8 +248,7 @@ void test_nni(int ntax, int numnodes);
 long int mfl_spr_leftotry(int ntax);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **savedtrees, int ntax, 
-                              int nchar, int numnodes, long int *current, 
-                              charstate *tipdata, bool *undertreelimit, 
+                              int nchar, int numnodes, long int *current, bool *undertreelimit, 
                               int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, long int *current, 

@@ -843,46 +843,6 @@ void rand_tree (int ntax, int numnodes)
     free(randtrees);
 }
 
-
-
-charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
-{
-    int i, j;
-    
-    charstate *tipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
-    
-    for (i = 0, j = 0; txtsrc[i]; ++i, ++j) {
-        if ((txtsrc[i] - '0') >= 0 && (txtsrc[i] - '0') <= 9) {
-            tipdata[j] = 1 << (txtsrc[i] - '0' + 1);
-            
-        }
-        else if (txtsrc[i] == '{' || txtsrc[i] == '(') {
-            ++i;
-            tipdata[j] = 0;
-            while (txtsrc[i] != '}' && txtsrc[i] != ')') {
-                if ((txtsrc[i] - '0') >= 0 && (txtsrc[i] - '0') <= 9) {
-                    tipdata[j] = tipdata[j] | (1 << (txtsrc[i] - '0' + 1));
-                    ++i;
-                }
-            }
-        }
-        else if (txtsrc[i] == '?') {
-            tipdata[j] = -1;
-        }
-        else if (txtsrc[i] == '-') {
-            tipdata[j] = -1;
-        }
-        else if (txtsrc[i] == '\n') {
-            --j;
-        }
-        else {
-            --j;
-        }
-    }
-    
-    return tipdata;
-}
-
 node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
 {
     int i;

@@ -90,6 +90,28 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
     return n;
 }
 
+unsigned long long int mfl_subtree_id(bool reset)
+{
+    static unsigned long long subtreeid = 0;
+    if (reset) {
+        subtreeid = 0;
+        return 0;
+    }
+    
+    ++subtreeid;
+    
+    return subtreeid;
+}
+
+
+int mfl_tree_enumerator(void)
+{
+    static long long int treenum = 0;
+    
+    return ++treenum;
+}
+
+
 void mfl_set_vweight(node *n)
 {
     node *p;
@@ -500,14 +522,6 @@ void mfl_undo_temproot(int ntax, tree *trtounroot)
     trtounroot->trnodes[0]->start = true;
 }
 
-
-int mfl_tree_enumerator(void)
-{
-    static long long int treenum = 0;
-    
-    return ++treenum;
-}
-
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
 {
     tree **newtreebuffer;
@@ -551,4 +565,5 @@ void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedt
     newbest->swapped = false;
     treebuffer[0] = newbest;
     *numsavedtrees = 0;
+    mfl_subtree_id(true);
 }
