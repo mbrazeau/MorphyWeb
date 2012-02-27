@@ -256,5 +256,12 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                            int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
 void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **savedtrees, int starttreelen);
-
+void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingon, 
+                        tree **savedtrees, int ntax, int nchar, int numnodes, 
+                        long int *current, 
+                        bool *undertreelimit, int *currentbesttree, 
+                        bool *foundbettertree, bool *success, long int *leftotry, int diff);
+void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
+                             int nchar, int numnodes, long int *current, bool *undertreelimit, 
+                             int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
 /*End function prototypes*/

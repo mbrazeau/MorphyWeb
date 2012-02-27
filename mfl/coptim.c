@@ -291,9 +291,9 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
 
             temp = lft_chars | rt_chars;
 
-            if (!(temp & 1)) {
+            /*if (!(temp & 1)) {
                 temp = temp & IS_APPLIC;
-            }
+            }*/
             
             if (temp != ancestor->tempapos[i]) {
                 ancestor->tempapos[i] = temp;
@@ -450,9 +450,9 @@ void mfl_reopt_preorder(node *n, int nchar)
     /*if (n->finished) {
         n->finished = false;
         return;
-    }
+    }*/
     
-    if (n->success) {
+    /*if (n->success) {
         n->success = false;
         return;
     }*/
@@ -484,6 +484,7 @@ void mfl_reopt_preorder(node *n, int nchar)
 
     //Here's your problem right here:
     /*if (n->clip) {
+        //printf("hit the clipnode\n");
         return;
     }*/
     
