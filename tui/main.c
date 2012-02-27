@@ -1106,7 +1106,7 @@ void mini_test_analysis(void)
     // Different algorithms will be written for doing this (as there are better
     // ways to do it) but we'll use randunrooted for now.
     
-    mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1, savedtrees);
+    mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 0, savedtrees);
     //Get a length for the starting tree.
     mfl_root_tree(savedtrees[0], 1, ntax);
     int *besttreelen_p = &besttreelen;
@@ -1143,6 +1143,8 @@ int main(void)
     //bool isRooted = true;
     
     pauseit();
+    
+    //srandom(1);
     
     //test_tree_comparison();
     test_char_optimization();

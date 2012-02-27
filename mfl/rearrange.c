@@ -273,7 +273,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
-        trlength = *currentbesttree - diff + mfl_subtr_reinsertion(subtr->next->outedge, n, up, nchar);
+        trlength = *currentbesttree - diff + mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
         
         //n->skippath = n->stid;
         //n->outedge->skippath = n->stid;
@@ -340,7 +340,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                            int nchar, int numnodes, long int *current, bool *undertreelimit, 
                            int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry)
 {
-    node *p, *q, *up, *dn, *subtr;
+    node *p, *clipnode, *up, *dn, *subtr;
     int diff = 0;
     int trl = 0, cbest = 0;
     int *trlp = &trl, *cbestp = &cbest;
@@ -357,6 +357,8 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         return;
     }
     
+    clipnode = n->next->next->outedge;
+    
     p = n->next;
     while (p != n) {
         mfl_pruning_traversal(p->outedge, swapingon, savedtrees, ntax,
@@ -371,15 +373,14 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         
         subtr = p->next->next;
         
-        if (!subtr->next->outedge->skip) {
+        /*if (!subtr->next->outedge->skip) {
             
-            subtr->next->outedge->skip = true;
+            subtr->next->outedge->skip = true;*/
             
             if (!(up->tip && dn->tip)) {
                 up->visited = 1;
                 dn->visited = 1;
-                up->clip = true;
-                dn->clip = true;
+                clipnode->clip = true;
                 joinNodes(up, dn);
                 
                 // Reoptimize the clipped tree
@@ -393,6 +394,8 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
                 //printf("cost of reinserting at original place: %i\n", diff);
                 
+                //mfl_tip_reopt(swapingon, ntax, nchar);
+                
                 *leftotry = *leftotry - 1;
                 mfl_regrafting_traversal(swapingon->trnodes[0], subtr, swapingon, 
                                          savedtrees, ntax, nchar, numnodes, current, 
@@ -401,8 +404,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 
                 up->visited = 0;
                 dn->visited = 0;
-                up->clip = false;
-                dn->clip = false;
+                clipnode->clip = false;
                 mfl_devisit_tree(swapingon->trnodes, numnodes);
                 if (*success) {
                     return;
@@ -411,11 +413,12 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 joinNodes(up, p->next);
                 joinNodes(dn, p->next->next);
             }
-        }
+        /*}
         else {
             mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
-        }
+        }*/
         p = p->next;
+        clipnode = n->next;
     }   
 }
 
@@ -474,6 +477,7 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
         }
         
     } while (!quit);
+    
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
     printf("Total search time: %g\n", timeout - timein);
