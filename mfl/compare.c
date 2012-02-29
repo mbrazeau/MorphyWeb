@@ -196,8 +196,14 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     int numfields = mfl_count_fields(ntax);
     taxbipart **temphashtab;
     bool foundtr = false;
+    double timein;
+    double timeout;
+    static double totaltime = 0;
+    static double increm = 0;
     
-    //printf("time in: %i\n", (int)(clock() / CLOCKS_PER_SEC));
+    //printf("time in: %g\n", (double)(clock() / (double)CLOCKS_PER_SEC));
+    
+    timein = (double)(clock() / (double)CLOCKS_PER_SEC);
     
     temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
     
@@ -218,7 +224,17 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
         mfl_free_hashtab(temphashtab, ntax - 1);
     }
     
-    //printf("time out: %i\n", (int)(clock() / CLOCKS_PER_SEC));
+    timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
+    
+    totaltime = totaltime + (timeout - timein);
+    increm = increm + (timeout - timein);
+    
+    if (increm > 0.025) {
+        printf("time in tree comparison: %g\n", totaltime);
+        increm = 0;
+    }
+    
+    //printf("time in comparison: %g\n", totaltime);
     
     return foundtr;
 }
