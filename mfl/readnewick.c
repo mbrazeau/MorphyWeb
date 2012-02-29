@@ -50,6 +50,7 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes,
             if (nwktr[*pos] == ')')
             {
                 nlst->next = n;
+                mfl_set_ring_to_n(n);
                 return n;
             }
             
@@ -83,7 +84,7 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes,
     newtree->root = newtree->trnodes[ntax];
 
     if (!isRooted) {
-        unroot(ntax, newtree);
+        mfl_unroot(ntax, newtree);
     }
     
     /* debugging print */
