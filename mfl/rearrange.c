@@ -106,7 +106,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax,
             mfl_bswap(n->next->outedge, n->outedge->next->outedge);
             mfl_root_tree(swapingon, 1, ntax);
             trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
-            unroot(ntax, swapingon);
+            mfl_unroot(ntax, swapingon);
             if (trlength < *currentbesttree) {
                 *foundbettertree = true;
                 *currentbesttree = trlength;
@@ -130,7 +130,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 mfl_bswap(n->next->next->outedge, n->outedge->next->outedge);
                 mfl_root_tree(swapingon, 1, ntax);
                 trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
-                unroot(ntax, swapingon);
+                mfl_unroot(ntax, swapingon);
                 if (trlength < *currentbesttree) {
                     *foundbettertree = true;
                     *currentbesttree = trlength;
