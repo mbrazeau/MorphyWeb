@@ -662,59 +662,6 @@ struct tree * copytree(tree *origtr, int ntax, int numnodes)
     return treecp;
 }
 
-void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration)
-{
-    /* Re-sets the pointers to the internal nodes in the tree's
-     * node array to point to the 'bottom' (rootward) node in the ring*/
-    
-    node *p;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    if (n->outedge) {
-        nodes[*iteration] = n;
-        n->index = *iteration;
-        mfl_set_ring_to_n(n);
-        *iteration = *iteration + 1;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        mfl_point_bottom(p->outedge, nodes, ntax, iteration);
-        p = p->next;        
-    }
-    
-}
-
-void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
-{    
-    /*Roots the tree between a terminal (leaf) and an internal node*/
- 
-    int counter = ntax + 1;
-    int *count_ptr = &counter;
-    
-    node *nodeptr, *r2, *r3;
-    
-    if (!trtoroot->trnodes[ntax]->next) {
-        newring(trtoroot->trnodes[ntax]->next, ntax);
-    }
-    
-    nodeptr = trtoroot->trnodes[nRoot]->outedge;
-    r2 = trtoroot->trnodes[ntax]->next;
-    r3 = trtoroot->trnodes[ntax]->next->next;
-    
-    joinNodes(r2, trtoroot->trnodes[nRoot]);
-    joinNodes(r3, nodeptr);
-    
-    trtoroot->root = trtoroot->trnodes[ntax];
-    trtoroot->trnodes[ntax]->outedge = NULL;
-        
-    mfl_point_bottom(trtoroot->root, trtoroot->trnodes, ntax, count_ptr);
-    trtoroot->trnodes[0]->start = false;
-}
-
 void collapseBiNode(node *n)
 {
     /*collapses a binary node*/
@@ -739,72 +686,6 @@ void collapseBiNode(node *n)
     
 }
 
-void unroot(int ntax, tree *rootedtree)
-{
-    int lnumnodes = 2*ntax-1;
-    node *proot, *leftdesc, *rightdesc, *subnode, *n, *m, *p, *q, *ftip;
-    
-    proot = rootedtree->root;
-    
-    mfl_set_order(proot);
-    
-    if (proot->order > 2) 
-    {
-        printf("derooting multifurcating node\n");
-        
-        subnode = mfl_seek_internal(ntax, lnumnodes, rootedtree->trnodes);
-        
-        /*grab the second branch in the ring*/
-        
-        p = proot->next->next;
-        
-        /*find the last node in the ring before the bottom node*/
-        
-        q = p;
-        while (q->next != proot) {
-            q = q->next;
-        }
-        
-        q->next = NULL;
-        
-        if (subnode->next)
-        {
-            printf("Doing the trickier one\n");
-            n = subnode->next;
-            m = subnode;
-            while (m->next != subnode) {
-                m = m->next;
-            }
-            m->next = NULL;
-            
-            ftip = proot->next->outedge;
-            joinNodes(ftip, subnode);
-            subnode->next = p;
-            q->next = subnode;
-            proot->next = n;
-            m->next = proot;
-            
-        }
-        else 
-        {
-            ftip = proot->next->outedge;
-            joinNodes(ftip, subnode);
-            proot->next = NULL;
-            subnode->next = p;
-            q->next = subnode;
-        }
-    }
-    else 
-    {
-        leftdesc = proot->next->outedge;
-        rightdesc = proot->next->next->outedge;
-        joinNodes(leftdesc, rightdesc);
-    }
-    
-    rootedtree->root = NULL;
-    rootedtree->trnodes[0]->start = true;
-
-}
 
 void pauseit(void)
 {
@@ -1114,7 +995,7 @@ void mini_test_analysis(void)
     *besttreelen_p = mfl_get_sttreelen(savedtrees[0], morphyTipdata, ntax, nchar, besttreelen_p);
     savedtrees[0]->length = *besttreelen_p;
     
-    unroot(ntax, savedtrees[0]);
+    mfl_unroot(ntax, savedtrees[0]);
     
     // Now start making rearrangements to the starting tree and test them against
     // the random tree. If a shorter tree is found, discard the random tree and

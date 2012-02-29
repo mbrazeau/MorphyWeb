@@ -522,6 +522,120 @@ void mfl_undo_temproot(int ntax, tree *trtounroot)
     trtounroot->trnodes[0]->start = true;
 }
 
+void mfl_point_bottom(node *n, node **nodes)
+{
+    /* Re-sets the pointers to the internal nodes in the tree's
+     * node array to point to the 'bottom' (rootward) node in the ring*/
+    
+    node *p;
+    
+    if (n->tip) {
+        n->bottom = false;
+        return;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        p->bottom = false;
+        mfl_point_bottom(p->outedge, nodes);
+        p = p->next;        
+    }
+    n->bottom = true;
+    nodes[n->index] = n;
+}
+
+void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
+{    
+    /*Roots the tree between a terminal (leaf) and an internal node*/
+    
+    node *nodeptr, *r2, *r3;
+    
+    if (!trtoroot->trnodes[ntax]->next) {
+        newring(trtoroot->trnodes[ntax]->next, ntax);
+    }
+    
+    nodeptr = trtoroot->trnodes[nRoot]->outedge;
+    r2 = trtoroot->trnodes[ntax]->next;
+    r3 = trtoroot->trnodes[ntax]->next->next;
+    
+    joinNodes(r2, trtoroot->trnodes[nRoot]);
+    joinNodes(r3, nodeptr);
+    
+    trtoroot->root = trtoroot->trnodes[ntax];
+    trtoroot->trnodes[ntax]->outedge = NULL;
+    
+    mfl_point_bottom(trtoroot->root, trtoroot->trnodes);
+    trtoroot->trnodes[0]->start = false;
+}
+
+void mfl_unroot(int ntax, tree *rootedtree)
+{
+    int lnumnodes = 2*ntax-1;
+    node *proot, *leftdesc, *rightdesc, *subnode, *n, *m, *p, *q, *ftip;
+    
+    proot = rootedtree->root;
+    
+    mfl_set_order(proot);
+    
+    if (proot->order > 2) 
+    {
+        printf("derooting multifurcating node\n");
+        
+        subnode = mfl_seek_internal(ntax, lnumnodes, rootedtree->trnodes);
+        
+        /*grab the second branch in the ring*/
+        
+        p = proot->next->next;
+        
+        /*find the last node in the ring before the bottom node*/
+        
+        q = p;
+        while (q->next != proot) {
+            q = q->next;
+        }
+        
+        q->next = NULL;
+        
+        if (subnode->next)
+        {
+            printf("Doing the trickier one\n");
+            n = subnode->next;
+            m = subnode;
+            while (m->next != subnode) {
+                m = m->next;
+            }
+            m->next = NULL;
+            
+            ftip = proot->next->outedge;
+            joinNodes(ftip, subnode);
+            subnode->next = p;
+            q->next = subnode;
+            proot->next = n;
+            m->next = proot;
+            
+        }
+        else 
+        {
+            ftip = proot->next->outedge;
+            joinNodes(ftip, subnode);
+            proot->next = NULL;
+            subnode->next = p;
+            q->next = subnode;
+        }
+    }
+    else 
+    {
+        leftdesc = proot->next->outedge;
+        rightdesc = proot->next->next->outedge;
+        joinNodes(leftdesc, rightdesc);
+    }
+    
+    rootedtree->root = NULL;
+    rootedtree->trnodes[0]->start = true;
+    
+}
+
+
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
 {
     tree **newtreebuffer;

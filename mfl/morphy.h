@@ -57,6 +57,7 @@ typedef struct node {
     bool start;
     bool skip;
     bool clip;
+    bool bottom;
     bool isroot;
     int minsteps;
     int maxsteps;
@@ -133,9 +134,6 @@ void newring(node *r1, int ntax);
 void deletering(node *r1);
 void detree(node *n);
 void detree2(nodearray trnptr);
-void mfl_point_bottom(node *n, node **nodes, int ntax, int *iteration);
-void mfl_root_tree(tree *trtoroot, int root, int ntax);
-void unroot(int ntax, tree *rootedtree);
 
 /*in compare.c*/
 int mfl_count_fields(int ntax);
@@ -164,6 +162,7 @@ void mfl_combine_up(node *n, node *anc, int nchar);
 void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 
+int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 void mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
@@ -188,7 +187,6 @@ void allunrooted(void /*tree *treearray, int ntaxa*/);
 void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
 long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
-int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 struct tree *randrooted (int ntax, int numnodes);
 struct tree *randunrooted (int ntax, int numnodes);
 void mfl_addseq_randasis(int ntax, int nchar, int numnodes, 
@@ -228,7 +226,9 @@ int mfl_tree_enumerator(void);
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease);
 void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes);
 void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes);
-
+void mfl_point_bottom(node *n, node **nodes);
+void mfl_root_tree(tree *trtoroot, int root, int ntax);
+void mfl_unroot(int ntax, tree *rootedtree);
 
 /*in readnewick.c*/
 struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *pos, nodearray nds, bool isRooted);
