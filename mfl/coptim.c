@@ -9,11 +9,26 @@
 
 #include "morphy.h"
 
-charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
+charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing)
 {
+    
+    /* One of Morphy's most important and unique features will be distinguishing
+     * between a missing data entry "?" and a character-inapplicability entry "-".
+     * Most existing programs just treat "?" and "-" as identical values (-1).
+     * In Morphy, they can be treated differently, such that ancestral states
+     * are not reconstructed for taxa which cannot logically have them */
+    
     int i, j;
     
     charstate *tipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
+    
+    if (!na_as_missing) {
+        printf("Gap symbol ('-') treated as character inapplicability\n");
+    }
+    else {
+        printf("Gap symbol ('-') treated as missing data\n");
+    }
+
     
     for (i = 0, j = 0; txtsrc[i]; ++i, ++j) {
         if ((txtsrc[i] - '0') >= 0 && (txtsrc[i] - '0') <= 9) {
@@ -31,10 +46,16 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar)
             }
         }
         else if (txtsrc[i] == '?') {
-            tipdata[j] = -1;//IS_APPLIC;
+            tipdata[j] = -1;
         }
         else if (txtsrc[i] == '-') {
-            tipdata[j] = -1;
+            if (na_as_missing) {
+                tipdata[j] = IS_APPLIC;//-1;
+            }
+            else {
+                tipdata[j] = 1;
+            }
+
         }
         else if (txtsrc[i] == '\n') {
             --j;
@@ -120,10 +141,8 @@ void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int ncha
             lft_chars = leftdesc->tempapos[i];
             rt_chars = rightdesc->tempapos[i];
             ancestor->tempapos[i] = lft_chars | rt_chars;
-            
-            //if (( ( (ancestor->tempapos[i] & IS_APPLIC) & lft_chars) && ((ancestor->tempapos[i] & IS_APPLIC) & rt_chars) )) 
-            //{
-            if (!(ancestor->tempapos[i] & 1)) {
+
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
                 if (trlength) {
                     *trlength = *trlength + 1;
@@ -180,8 +199,8 @@ void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, 
             rt_chars = rightdesc->tempapos[i];
             
             ancestor->tempapos[i] = lft_chars | rt_chars;
-            
-            if (!(ancestor->tempapos[i] & 1)) {
+
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
                 *trlength = *trlength + 1;
             }
@@ -291,9 +310,9 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
 
             temp = lft_chars | rt_chars;
 
-            /*if (!(temp & 1)) {
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 temp = temp & IS_APPLIC;
-            }*/
+            }
             
             if (temp != ancestor->tempapos[i]) {
                 ancestor->tempapos[i] = temp;
@@ -438,6 +457,23 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
 }
 
 
+void mfl_set_rootstates(node *n, int nchar)
+{
+    int i;
+    
+    for (i = 0; i < nchar; ++i) {
+        if (n->next->outedge->tempapos[i] & n->next->next->outedge->tempapos[i]) {
+            n->apomorphies[i] = (n->next->outedge->tempapos[i] & n->next->next->outedge->tempapos[i]);
+        }
+        else {
+            n->apomorphies[i] = (n->next->outedge->tempapos[i] | n->next->next->outedge->tempapos[i]);
+            if (n->next->outedge->tempapos[i] & IS_APPLIC && n->next->next->outedge->tempapos[i] & IS_APPLIC) {
+                n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
+            }
+        }
+    }
+}
+
 void mfl_reopt_preorder(node *n, int nchar)
 {
     int i;
@@ -458,17 +494,7 @@ void mfl_reopt_preorder(node *n, int nchar)
     }*/
     
     if (!n->outedge) {
-        for (i = 0; i < nchar; ++i) {
-            if (n->next->outedge->tempapos[i] & n->next->next->outedge->tempapos[i]) {
-                n->apomorphies[i] = (n->next->outedge->tempapos[i] & n->next->next->outedge->tempapos[i]);
-            }
-            else {
-                n->apomorphies[i] = (n->next->outedge->tempapos[i] | n->next->next->outedge->tempapos[i]);
-                if (!(n->apomorphies[i] & 1)) {
-                    n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
-                }
-            }
-        }
+        mfl_set_rootstates(n, nchar);
     }
     
     dl = n->next->outedge;
@@ -503,17 +529,7 @@ void mfl_fitch_preorder(node *n, int nchar)
     }
     
     if (!n->outedge) {
-        for (i = 0; i < nchar; ++i) {
-            if (n->next->outedge->tempapos[i] & n->next->next->outedge->tempapos[i]) {
-                n->apomorphies[i] = (n->next->outedge->tempapos[i] & n->next->next->outedge->tempapos[i]);
-            }
-            else {
-                n->apomorphies[i] = (n->next->outedge->tempapos[i] | n->next->next->outedge->tempapos[i]);
-                if (!(n->apomorphies[i] & 1)) {
-                    n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
-                }
-            }
-        }
+        mfl_set_rootstates(n, nchar);
     }
     
     dl = n->next->outedge;

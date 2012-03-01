@@ -85,6 +85,11 @@ typedef enum
      * MAXIMUM length is 0 */
     MFL_PT_COLLAP_AT,
     
+    /* MFL_PT_GAP (bool, default is false) sets whether gap symbol ('-') will be treated as 
+     * inapplicability or as missing data (i.e. equivalent to '?' score). Default
+     * false for 'gap as missing'. (i.e. default is to treat gaps as
+     * logical inapplicability. */
+    MFL_PT_GAP,
     
 } mfl_param_t;
 

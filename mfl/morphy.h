@@ -49,6 +49,7 @@ typedef struct {
     int addseq_type;
     bool collapse_nolen;
     int collapse_at;
+    bool gap_as_missing;
 } mfl_handle_t;
 
 typedef struct {
@@ -181,7 +182,7 @@ bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
 void test_tree_comparison(void);
 
 /*in coptim.c*/
-charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar);
+charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr(node *src, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);

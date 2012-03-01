@@ -782,10 +782,10 @@ void test_char_optimization(void)
 111111111100000000002\n\
 001111111100000000002\n\
 000011111100000000000\n\
--00000111100000000001\n\
--00000001100000000002\n\
--00000000000000000110\n\
--00000000000000011110\n\
+?00000111100000000001\n\
+?00000001100000000002\n\
+?00000000000000000110\n\
+?00000000000000011110\n\
 100000000000001111111\n\
 100000000000111111111\n\
 000000000011111111112\n\
@@ -793,7 +793,7 @@ void test_char_optimization(void)
     
     //old c21 pattern: 122012001120
     
-    tipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar);
+    tipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, false);
     mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
     
     mvnode = mv_onetwo_to_twelve(testtree, ntax, numnodes);
@@ -976,7 +976,7 @@ void mini_test_analysis(void)
     }
     printf("\n");
     
-    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar);
+    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, true);
     
     //int *currentchar = &j;
     
@@ -1038,7 +1038,7 @@ int main(void)
     //tree *originaltree;
     //tree *copiedtree;
     
-    mini_test_analysis();
+    //mini_test_analysis();
     
     //test_spr();
     
@@ -1109,7 +1109,7 @@ int main(void)
     freetree(originaltree, numnodes);
     freetree(copiedtree, numnodes);*/
     
-    pauseit();
+    //pauseit();
     
     return 0;
 }
