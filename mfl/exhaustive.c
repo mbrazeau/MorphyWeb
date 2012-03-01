@@ -11,7 +11,7 @@
 #include <math.h>
 
 
-extern tree *treeSet;
+extern tree *savedtrees;
 extern int ntax;
 
 long long int factorial(long long int n)

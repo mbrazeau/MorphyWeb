@@ -117,7 +117,6 @@ void mfl_set_addseq_t(mfl_handle_t *mfl_handle, void *param_data)
             //Return an error
             break;
     }
-    
 }
 
 void mfl_set_collapse(mfl_handle_t *mfl_handle, void *param_data)
