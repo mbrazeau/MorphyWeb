@@ -36,6 +36,20 @@
  * internal node. */
 
 
+typedef struct {
+    int n_taxa;
+    int n_chars;
+    int search_type;
+    int n_iterations;
+    int n_treelimit;
+    int bswap_type;
+    bool is_ratchet;
+    char *input_data;
+    int addseq_type;
+    bool collapse_nolen;
+    int collapse_at;
+} mfl_handl;
+
 
 typedef uint32_t charstate;
 typedef int64_t taxbipart;

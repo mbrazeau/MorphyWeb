@@ -46,7 +46,7 @@ typedef enum
      * if the analysis runs out of space (i.e. needs a bigger array to save more
      * trees, then the user would be prompted to increase the tree limit, and 
      * to choose whether they would like that limit to automatically increase */
-    MFL_PT_NUM_TREES,
+    MFL_PT_TREELIMIT,
     
     /* MFL_PT_BRANCH_SWAP_TYPE (int, TBR=0; SPR=1; NNI=2) There are three main 
      * types of branch swapping algorithm use ONLY in a heuristic search: 
@@ -68,7 +68,7 @@ typedef enum
      * library immediately before a search is initiated. The reason why we do it
      * this way is because the way the data gets converted will depend on some 
      * other options set by the user. */
-    MFL_PT_TIP_DATA,
+    MFL_PT_INPUT_DATA,
     
     /* MFL_PT_ADD_SEQUENCE_TYPE (int, simple=0; random=1; asis=2; closest=3). 
      * Selects the manner in which branches are added during the generation of
@@ -206,6 +206,14 @@ int mfl_get_resultant_data(mfl_handle_t* mfl_handle, mfl_resultant_data_t result
  using namespace std;
  * before the string datatype can be used in the code, otherwise you must
  * refer to it as std::string
+ *
+ * MDB: I don't know if it matters at all at this stage, but for an eventual
+ * Mac GUI, these would probably have to have an NSstring return value. In fact,
+ * for any C++ data types we return, we should probably prepare to have an
+ * analogous function that returns the analogous Objective-C type. Then probably
+ * have some conditional compilation setup. It'll save us a few headaches
+ * down the road, I think.
+ *
  */
 string mfl_get_saved_trees_newick(mfl_handle_t* mfl_handle);
 string mfl_get_saved_trees       (mfl_handle_t* mfl_handle);
