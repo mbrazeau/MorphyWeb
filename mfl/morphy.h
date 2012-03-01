@@ -137,6 +137,9 @@ typedef struct chardata {
     void (*optimzation_algo)(node *n, int *trlength);
 } chardata;
 
+typedef struct {
+} search_params;
+
 /*Function prototypes*/
 
 /*in main.c*/

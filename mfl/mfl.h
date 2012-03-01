@@ -7,8 +7,6 @@
  *
  */
 
-#include "morphy.h"
-
 typedef enum
 {
     /* MFL_PT_NUM_TAX (int) Number of taxa in the dataset, and the maximum number of
