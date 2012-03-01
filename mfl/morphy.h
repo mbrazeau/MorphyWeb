@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdint.h>
+#include <time.h>
 
 //#include <gsl/gsl_rng.h>
 
@@ -48,7 +49,23 @@ typedef struct {
     int addseq_type;
     bool collapse_nolen;
     int collapse_at;
-} mfl_handl;
+} mfl_handle_t;
+
+typedef struct {
+    long int n_rearrangements; // Number of tree topologies visited
+    int n_savetrees;    // Number of trees found and/or saved
+    int bestlength;     // Length of the best tree
+    time_t searcht;     // Time in search
+    char **newicktrees; // Array of trees in newick format
+    char **texttrees;   // Array of trees drawn as text
+#ifdef VERSION_1_5
+    double consist_ind; // Consistency index
+    double ret_ind;     // Retention index
+    double resc_ci;     // Rescaled consistency index
+    int num_islands;    // Number of parsimony islands hit
+    int *times_hit      // List of times each island was hit
+#endif    
+} resultant_data;
 
 
 typedef uint32_t charstate;
