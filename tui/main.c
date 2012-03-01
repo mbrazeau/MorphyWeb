@@ -780,16 +780,16 @@ void test_char_optimization(void)
     
     char usrTipdata[] = "111111111100000000001\n\
 111111111100000000002\n\
-001111111100000000002\n\
-000011111100000000000\n\
-?00000111100000000001\n\
-?00000001100000000002\n\
-?00000000000000000110\n\
-?00000000000000011110\n\
-100000000000001111111\n\
-100000000000111111111\n\
-000000000011111111112\n\
-000000000011111111110";
+-01111111100000000002\n\
+-00011111100000000000\n\
+000000111100000000001\n\
+000000001100000000002\n\
+000000000000000000110\n\
+000000000000000011110\n\
+000000000000001111111\n\
+000000000000111111111\n\
+100000000011111111112\n\
+100000000011111111110";
     
     //old c21 pattern: 122012001120
     
@@ -976,7 +976,7 @@ void mini_test_analysis(void)
     }
     printf("\n");
     
-    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, true);
+    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, false);
     
     //int *currentchar = &j;
     
@@ -1038,7 +1038,7 @@ int main(void)
     //tree *originaltree;
     //tree *copiedtree;
     
-    //mini_test_analysis();
+    mini_test_analysis();
     
     //test_spr();
     
