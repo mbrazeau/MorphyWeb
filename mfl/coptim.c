@@ -88,16 +88,12 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     int cost = 0;
     
     for (i = 0; i < nchar; ++i) {
-        if (!((src->tempapos[i] & tgt1->apomorphies[i])) ) {
-            if (!((src->tempapos[i] & tgt2->apomorphies[i]))) {
-                ++cost;
-                if (cost > diff) {
-                    return cost;
-                }
+        if (!(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i]))) {
+            ++cost;
+            if (cost > diff) {
+                return cost;
             }
-            
-        }
-        
+        }        
     }
     return cost;
 }
@@ -108,13 +104,9 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     int cost = 0;
     
     for (i = 0; i < nchar; ++i) {
-        if (!((src->tempapos[i] & tgt1->apomorphies[i])) ) {
-            if (!((src->tempapos[i] & tgt2->apomorphies[i]))) {
-                ++cost;
-            }
-            
-        }
-        
+        if (!(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i]))) {
+            ++cost;
+        }        
     }
     return cost;
 }
@@ -123,6 +115,9 @@ void mfl_reopt_subtr_root(node *n, int nchar)
 {
     if (!n->tip) {
         mfl_subtree_count(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
+        /*n->isroot = true;
+        mfl_reopt_preorder(n, nchar);
+        n->isroot = false;*/
     }
 }
 
@@ -493,7 +488,7 @@ void mfl_reopt_preorder(node *n, int nchar)
         return;
     }*/
     
-    if (!n->outedge) {
+    if (!n->outedge || n->isroot) {
         mfl_set_rootstates(n, nchar);
     }
     

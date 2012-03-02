@@ -394,7 +394,6 @@ void test_char_optimization(void)
     printNewick(testtree->root);
     printf("\n");
     
-    int i, j, al=0;
     int ntax = 12;
     int nchar = 21;
     int trl = 0;
@@ -500,11 +499,8 @@ void mini_test_analysis(void)
      * shortest tree. The analysis should converge towards a tree like the one
      * in the Newick string below. */
     
-    int i, j = 0;
+    int i;
     int ntax = 28, nchar = 95; // These values would be supplied by the datafile
-    int treelimit = 10000; // Will always start its life as a default value and be 
-                         // changed by the user (or automatically, as a 
-                         // condition of user preference)
     int besttreelen = 0;
     int numnodes;
     
