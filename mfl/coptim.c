@@ -476,8 +476,8 @@ void mfl_set_rootstates(node *n, int nchar)
 
 void mfl_reopt_preorder(node *n, int nchar)
 {
-    int i;
-    node *p, *dl, *dr;
+    
+    node *dl, *dr;
     
     if (n->tip) {
         return;
@@ -521,7 +521,6 @@ void mfl_reopt_preorder(node *n, int nchar)
 
 void mfl_fitch_preorder(node *n, int nchar)
 {
-    int i;
     node *p, *dl, *dr;
     
     if (n->tip || n->clip) {
@@ -563,7 +562,6 @@ int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen)
 
 int mfl_get_treelen(tree *t, int ntax, int nchar, int *besttreelen)
 {
-    int i;
     int treelen = 0;
     int *treelen_p = &treelen;
     

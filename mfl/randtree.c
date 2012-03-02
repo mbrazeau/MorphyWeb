@@ -35,7 +35,7 @@ bool mfl_headtail (void)
 /* Taxon shuffle using array shuffle by Ben Pfaff http://benpfaff.org/writings/clc/shuffle.html 
  * ****NOTE******: Will be modified to employ the GSL random number generator*/
 
-void shuffle(int *taxarray, int ntax)
+void mfl_shuffle(int *taxarray, int ntax)
 {
     int i, j, t;
     
@@ -48,29 +48,6 @@ void shuffle(int *taxarray, int ntax)
             taxarray[i] = t;
         }
     }
-}
-
-void shuffle_w_outgroup(int *taxarray, int ntax, int outtaxa[])
-{
-    int i, j, t;
-    
-    
-    if (ntax > 1) {
-        for (i = 0; i < ntax - 1; i++) {
-            j = i + rand() / (RAND_MAX / (ntax - i) + 1);
-            t = taxarray[j];
-            taxarray[j] = taxarray[i];
-            taxarray[i] = t;
-        }
-    }
-}
-
-struct tree *randtrunk(tree *newtrunk, node *startn)
-{
-    /* Generates the 'trunk' of the tree which consists of the network of all
-     * internal nodes in the tree */
-    
-    return (newtrunk);
 }
 
 struct tree *randrooted(int ntax, int numnodes)
@@ -106,7 +83,7 @@ struct tree *randunrooted(int ntax, int numnodes)
     taxarray =(int*) malloc(ntax * sizeof(int));
     mfl_init_taxarray(taxarray, ntax);
     
-    shuffle(taxarray, ntax);
+    mfl_shuffle(taxarray, ntax);
     
     randtree = mfl_alloctree(ntax, numnodes);
     
@@ -204,7 +181,7 @@ void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     
     if (addRandom) {
         printf("Joining taxa by random addition sequence\n");
-        shuffle(taxarray, ntax);
+        mfl_shuffle(taxarray, ntax);
     }
     else {
         printf("Joining taxa according to order in matrix\n");

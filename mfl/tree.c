@@ -306,7 +306,6 @@ void mfl_deletering(node *r1)
     }
     if (r1->tempapos) {
         free(r1->tempapos);
-        r1->tempapos;
     }
     if (r1->apomorphies) {
         free(r1->apomorphies);

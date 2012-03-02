@@ -54,7 +54,7 @@ void mfl_insert_branch(node *br, node *target, int ntax)
 {
     // Inserts a branch with a ring base into another branch
     
-    node *br1, *br2, *tdesc, *p;
+    node *br1, *br2, *tdesc;
     
     tdesc = target->outedge;
     
@@ -214,38 +214,6 @@ long int mfl_spr_leftotry(int ntax)
     return rleft;
 }
 
-void mfl_init_neighbors(node *n)
-{
-    node *p;
-    
-    n->initialized = 1;
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        p->outedge->initialized = 1;
-        p = p->next;
-    }
-}
-
-void mfl_deinit_neighbors(node *n)
-{
-    node *p;
-    
-    n->initialized = 0;
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        p->outedge->initialized = 0;
-        p = p->next;
-    }
-}
-
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, 
                               tree **savedtrees, int ntax, int nchar, int numnodes, 
                               long int *current, 
@@ -269,9 +237,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         return;
     }
     
-    int temp;
     int trlength = 0;
-    node *p, *up;
+    node *up;
     
     n->pathid = subtr->next->outedge->stid;
     n->outedge->pathid = subtr->next->outedge->stid;
