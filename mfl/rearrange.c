@@ -8,7 +8,18 @@
 
 #include "morphy.h"
 #include <time.h>
-double searchtime;
+
+mfl_searchrec * mfl_create_searchrec(void)
+{
+    mfl_searchrec *newsearchrec;
+    
+    return newsearchrec = (mfl_searchrec*)malloc(sizeof(mfl_searchrec));
+}
+
+void mfl_destroy_searchrec(mfl_searchrec *searchrec)
+{
+    free(searchrec);
+}
 
 long long int mfl_rearr_num(bool reset)
 {
@@ -573,7 +584,16 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     bool *success_p = &success;
     
     
-    searchtime = 0;
+    /* A pointer to this whole struct will be used to replace all those 
+     * params in the branch-swapping functions */
+    mfl_searchrec *searchrec = mfl_create_searchrec();
+    searchrec->nextinbuffer = 0;
+    searchrec->undertreelimit = true;
+    searchrec->bestlength = starttreelen;
+    searchrec->foundbettertr = false;
+    searchrec->niter_total = 0;
+    searchrec->niter_ontree = 0;
+    
     double timein = 0;
     double timeout = 0;
     
@@ -636,6 +656,7 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     
     mfl_clear_treebuffer(savedtrees, nxtintrbuf, numnodes);
     free(savedtrees);
+    mfl_destroy_searchrec(searchrec);
 }
 
 /*mfl_heuristic(mfl_handle_t *mfl_handle)

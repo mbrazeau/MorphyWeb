@@ -285,6 +285,8 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes, tree *newtre
 struct tree * readNWK (char *nwktr, bool isRooted);
 
 /*in rearrange.c*/
+mfl_searchrec * mfl_create_searchrec(void);
+void mfl_destroy_searchrec(mfl_searchrec *searchrec);
 long long int mfl_rearr_num(bool reset);
 void mfl_bswap(node *p, node *q);
 void mfl_remove_branch(node *n);

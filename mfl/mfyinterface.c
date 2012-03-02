@@ -19,13 +19,6 @@ void mfl_destroy_handle(mfl_handle_t *mfl_handle)
     free(mfl_handle);
 }
 
-mfl_searchrec * mfl_create_searchrec()
-{
-    mfl_searchrec *newsearchrec;
-    
-    return newsearchrec = (mfl_searchrec*)malloc(sizeof(mfl_searchrec));
-}
-
 void mfl_set_ntax(mfl_handle_t *mfl_handle, void *param_data)
 {
     mfl_handle->n_taxa = (int)(*param_data);
