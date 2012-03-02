@@ -150,7 +150,6 @@ typedef struct {
 /*Function prototypes*/
 
 /*in main.c*/
-
 void call_index(node *n);
 void dump_nodearray(nodearray nds, int ntax, int numnodes);
 void dump_connections(nodearray nds, int ntax, int numnodes);
@@ -190,7 +189,6 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen);
 void mfl_combine_up(node *n, node *anc, int nchar);
 void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
-
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 void mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
