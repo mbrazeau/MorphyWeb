@@ -128,7 +128,7 @@ void newbranch(node *desc, node *ancest, tree *basetree, int taxon, int calln)
 	}
 	newn = basetree->trnodes[ntax + calln + 1];
 	
-	newring(newn);
+	mfl_newring(newn);
 	
 	newn->visited = 1;
 	
@@ -239,7 +239,7 @@ void allunrooted(/*tree *treearray, int ntax*/)
 
 	ring1 = treearray[0].trnodes[ntax + 1];
 	
-	newring(ring1);
+	mfl_newring(ring1);
 	
 	ring1->outedge = treearray[0].trnodes[0];
 	ring1->next->outedge = treearray[0].trnodes[1];
@@ -283,7 +283,7 @@ void allunrooted(/*tree *treearray, int ntax*/)
 			
 			for (j = 0; j < (positions - 1); ++j) {
 				treecopy = &treearray[currtree + j + 1];
-				copytree(origtree, treecopy, cpyptr);
+				mfl_copytree(origtree, treecopy, cpyptr);
 				offspring[j + 1] = treecopy;
 				
 				/*printf("Offspring:");

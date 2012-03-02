@@ -272,164 +272,6 @@ void print_nodedata(node *n, int nchar, int ntax)
     printf("\n");
 }
 
-void close_all_rings(nodearray nds, int ntax, int numnodes)
-{
-    int i;
-  
-    for (i = ntax; i < numnodes; ++i) {
-        mfl_close_ring(nds[i]);
-    }
-}
-
-int numberOfNodes(int ntax)
-{
-    int numnodes;
-    
-    return numnodes = 2 * ntax - 1;
-}
-
-void init_taxarray(int *taxarray, int ntax)
-{
-    int i;
-    
-    for (i = 0; i < ntax; ++i) {
-        taxarray[i] = i + 1;
-    }
-}
-
-void joinNodes(node *n, node *p)
-{
-    if (n->outedge) {
-        n->outedge->outedge = NULL;
-        //printf("terminating existing connection in n\n");
-    }
-    if (p->outedge) {
-        p->outedge->outedge = NULL;
-        //printf("terminating existing connection in p\n");
-    }
-    
-    n->outedge = p;
-    p->outedge = n;
-}
-
-struct node * allocnode(void)
-{
-    node *newNode;
-    newNode = (node *)malloc(sizeof(node));
-    if (newNode == NULL)
-    {
-        printf("Error: failed to allocate new node.\n");
-    }
-    else
-    {
-        memset(newNode, 0, sizeof(node));
-    }
-    return newNode;
-}
-
-struct tree *alloctree(int ntax, int numnodes)
-{
-    int i; //Loop counters
-    tree *newtree;
-    
-    newtree = (tree*)malloc(sizeof(tree));
-    memset(newtree, 0, sizeof(tree));
-    
-    if (newtree == NULL)
-    {
-        printf("Error: failed to allocate new tree.\n");
-        return (struct tree*) 0;
-    }
-    
-    newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
-    
-    for (i = 0; i < numnodes; ++i)
-    {
-        newtree->trnodes[i] = allocnode();
-    }
-    
-    for (i = 0; i < numnodes; ++i)
-    {
-        /* First half of trnodes are initialized to this */
-        if (i < ntax)
-        {
-            newtree->trnodes[i]->tip = i + 1;
-            newtree->trnodes[i]->index = i;
-            newtree->trnodes[i]->next = NULL;
-            newtree->trnodes[i]->vweight = 1;
-        }
-        else /* second half are allocated as a newring */
-        {
-            newtree->trnodes[i]->index = i;
-            newring(newtree->trnodes[i], ntax);
-        }
-        
-        newtree->trnodes[i]->outedge = NULL;
-    }
-    
-    newtree->root = NULL;
-    newtree->hashtabholder = NULL;
-    
-    return (newtree);
-}
-
-/*
- * freetree - deletes an entire tree, by doing the mirror image
- * of alloctree.
- */
-void freetree(tree *newtree, int numnodes)
-{
-    int i;
-    
-    /* free all of the trnodes */
-    for (i = 0; i < numnodes; ++i)
-    {
-        if (newtree->trnodes[i]->next)
-        {
-            mfl_close_ring(newtree->trnodes[i]);
-            deletering(newtree->trnodes[i]);
-        }
-        free(newtree->trnodes[i]);
-    }
-    /* free the trnode list */
-    free(newtree->trnodes);
-    /* free the tree */
-    free(newtree);
-    
-}
-
-struct tree *alloc_noring(int ntax, int numnodes)
-{
-    int i;
-    tree *newtree;
-    
-    newtree = (tree*)malloc(sizeof(tree));
-    memset(newtree, 0, sizeof(tree));
-
-    if (newtree == NULL)
-    {
-        printf("Error: failed to allocate new tree.\n");
-        return (struct tree*) 0;
-    }
-    
-    newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
-    
-    for (i = 0; i < numnodes; ++i)
-    {
-        newtree->trnodes[i] = allocnode();
-        if (i < ntax) 
-        {
-            newtree->trnodes[i]->tip = i + 1;
-            newtree->trnodes[i]->vweight = 1;
-        }
-        newtree->trnodes[i]->index = i;
-    }
-    
-    newtree->root = NULL;
-    newtree->hashtabholder = NULL;
-    return (newtree);
-    
-}
 
 void printNewick(node *n)
 {   
@@ -472,221 +314,6 @@ void printNewick(node *n)
     printf(")");
 }
 
-void newring(node *r1, int ntax)
-{
-    /* Generates a new internal node composed of a ring of node structures
-     * joined in a unidirectional manner by their next pointers. Used by any
-     * function that might dynamically add branches at run-time. */
-    
-    node *r2, *r3;
-    
-    r2 = allocnode();
-    r3 = allocnode();
-    
-    r1->next = r2;
-    r2->next = r3;
-    r3->next = r1;
-    
-    r1->tip = r2->tip = r3->tip = 0;
-    r1->start = r2->start = r3->start = false;
-    r1->skip = r2->skip = r3->skip = false;
-    r1->clip = r2->clip = r3->clip = false;
-    
-    r2->apomorphies = r3->apomorphies = r1->apomorphies;
-    r2->index = r1->index;
-    r3->index = r1->index;
-}
-
-void newring_to_order(node *r1, int order, int ntax)
-{
-    int i = 1;
-    node *p;
-    
-    if (order == 0 || order == 1) {
-        printf("Error in newring_to_order: no order specified or order too small\n");
-        return;
-    }
-    
-    p = r1;
-    do {
-        p->next = allocnode();
-        p = p->next;
-        p->tip = r1->tip;
-        p->start = r1->start;
-        p->index = r1->index;
-        p->apomorphies = r1->apomorphies;
-        ++i;
-    } while (i < order);
-    p->next = r1;
-    r1->order = i;
-    p = r1;
-    do {
-        p->order = r1->order;
-        p = p->next;
-    } while (p != r1);
-    p->order = r1->order;
-}
-
-/*
- * deletering - deletes a node (ring) by doing the mirror image of newring.
- */
-void deletering(node *r1)
-{
-    if (r1->tipsabove) {
-        free(r1->tipsabove);
-    }
-    if (r1->tempapos) {
-        free(r1->tempapos);
-        r1->tempapos;
-    }
-    if (r1->apomorphies) {
-        free(r1->apomorphies);
-    }
-    
-    node *p, *q;
-    
-    p = r1->next;
-    while (p != r1) {
-        q = p->next;
-        if (p->tipsabove) {
-            free(p->tipsabove);
-        }
-        if (p->tempapos) {
-            free(p->tempapos);
-        }
-        /*if (p->apomorphies) {
-            free(p->apomorphies);
-        }*/
-        free(p);
-        p = q;
-    }
-}
-
-void reIndex(node *n, int index_val)
-{
-    node *p;
-    
-    n->index = index_val;
-    
-    if (n->next) {
-        p = n->next;
-        while (p != n) {
-            p->index = n->index;
-            p = p->next;
-        }
-    }
-}
-
-struct tree * copytree(tree *origtr, int ntax, int numnodes)
-{
-    int i, tmpltorder, begin;
-    tree *treecp; // Pointer to the tree copy
-    node *p, *q, *r, *s;
-    //bool isRooted = false;
-    
-    treecp = alloc_noring(ntax, numnodes);
-    
-    if (origtr->root)
-    {
-        mfl_set_order(origtr->trnodes[ntax]);
-        tmpltorder = origtr->trnodes[ntax]->order;
-        newring_to_order(treecp->trnodes[ntax], tmpltorder + 1, ntax);
-        treecp->trnodes[ntax]->order = treecp->trnodes[ntax]->order - 1;
-        treecp->root = treecp->trnodes[ntax];
-        //isRooted = true;
-        begin = ntax;
-    }
-    else 
-    {
-        treecp->trnodes[0]->start = true;
-        begin = ntax + 1;
-        newring(treecp->trnodes[ntax], ntax);
-    }
-    
-    
-    for (i = ntax + 1; i < numnodes; ++i) 
-    {
-        if (origtr->trnodes[i]->next) 
-        {
-            mfl_set_order(origtr->trnodes[i]);
-            tmpltorder = origtr->trnodes[i]->order;
-            newring_to_order(treecp->trnodes[i], tmpltorder, ntax);
-        }
-    }
-    
-    // Add the tips first
-    for (i = begin; i < numnodes; ++i) 
-    {
-        p = origtr->trnodes[i];
-        q = treecp->trnodes[i];
-        q->initialized = p->initialized;
-        q->visited = p->visited;
-        q->skip = p->skip;
-        if (p->next) 
-        {
-            if (p->order != q->order) 
-            {
-                printf("Error: template and copy have non-matching branch orders\n");
-            }
-            do 
-            {
-                if (p->outedge && p->outedge->tip) 
-                {
-                    joinNodes(q, treecp->trnodes[p->outedge->index]);
-                }
-                if (p->outedge && !p->outedge->tip && !q->outedge) 
-                {
-                    r = origtr->trnodes[p->outedge->index];
-                    s = treecp->trnodes[p->outedge->index];
-                    while (r->outedge->index != p->index) 
-                    {
-                        r = r->next;
-                        s = s->next;
-                    }
-                    joinNodes(q, s);
-                }
-                p = p->next;
-                q = q->next;
-                q->initialized = p->initialized;
-                q->skip = p->skip;
-            } while (p != origtr->trnodes[i] && q != treecp->trnodes[i]);
-        }
-    }
-    //dump_tree_connections(origtr, ntax, numnodes);
-    //dump_tree_connections(treecp, ntax, numnodes);
-    if (origtr->hashtabholder) {
-        treecp->bipartitions = origtr->hashtabholder;
-        origtr->hashtabholder = NULL;
-    }
-    //treecp->bipartitions = mfl_tree_biparts(treecp, ntax, numnodes);
-    return treecp;
-}
-
-void collapseBiNode(node *n)
-{
-    /*collapses a binary node*/
-    node *n2, *n3;
-    node *an1, *an2;
-    
-    n2 = n->next;
-    n3 = n2->next;
-    
-    an1 = n->outedge;
-    an2 = an1->next;
-    
-    joinNodes(an1, n2->outedge);
-    
-    an1->next = n3;
-    n3->next = an2;
-    
-    n2->index = an1->index;
-    n2->index = an1->index;
-    
-    n->next = NULL;
-    
-}
-
-
 void pauseit(void)
 {
     int c;
@@ -718,7 +345,7 @@ void rand_tree (int ntax, int numnodes)
     }
     
     for (i = 0; i < MORPHY_NUM_ITERATIONS; ++i) {
-        freetree(randtrees[i], numnodes);
+        mfl_freetree(randtrees[i], numnodes);
     }
     
     free(randtrees);
@@ -772,7 +399,7 @@ void test_char_optimization(void)
     int nchar = 21;
     int trl = 0;
     int *trlength = &trl;
-    int numnodes = numberOfNodes(ntax);
+    int numnodes = mfl_calc_numnodes(ntax);
     charstate *tipdata;
     node *mvnode;
     
@@ -820,7 +447,7 @@ void test_char_optimization(void)
     printf("mvnode index: %i\n", mvnode->index);
     printf("mvnode base:  %i\n", mvnode->outedge->index);
     
-    joinNodes(up, dn);
+    mfl_join_nodes(up, dn);
     printf("The pruned tree:\n");
     printNewick(testtree->root);
     printf("\n");
@@ -848,8 +475,8 @@ void test_char_optimization(void)
     
     print_final_allviews(testtree, ntax, nchar, numnodes);
     
-    joinNodes(mvnode->outedge->next, testtree->trnodes[9]->outedge);
-    joinNodes(mvnode->outedge->next->next, testtree->trnodes[9]);
+    mfl_join_nodes(mvnode->outedge->next, testtree->trnodes[9]->outedge);
+    mfl_join_nodes(mvnode->outedge->next->next, testtree->trnodes[9]);
     //mfl_undo_temproot(ntax, testtree);
     diff = mfl_all_views(testtree, ntax, nchar, NULL);
     printf("length of the tree after placement: %i\n", diff);
@@ -861,7 +488,7 @@ void test_char_optimization(void)
     printNewick(testtree->root);
     printf("\n");
     
-    //freetree(testtree, ntax);
+    //mfl_freetree(testtree, ntax);
 }
 
 void mini_test_analysis(void)
@@ -881,7 +508,7 @@ void mini_test_analysis(void)
     int besttreelen = 0;
     int numnodes;
     
-    numnodes = numberOfNodes(ntax);
+    numnodes = mfl_calc_numnodes(ntax);
     
     /* A completely balanced tree topology. 
      * This is simple enough to create a 'rigged' dataset for.*/
@@ -976,7 +603,7 @@ void mini_test_analysis(void)
     }
     printf("\n");
     
-    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, false);
+    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, true);
     
     //int *currentchar = &j;
     
@@ -1024,15 +651,11 @@ int main(void)
     //bool isRooted = true;
     
     pauseit();
-    
-    srandom(47);
-    random();
-    random();
-    random();
+
     //test_tree_comparison();
     test_char_optimization();
     
-    numnodes = numberOfNodes(ntax);
+    numnodes = mfl_calc_numnodes(ntax);
     
     //tree *anewtree;    
     //tree *originaltree;
@@ -1050,7 +673,7 @@ int main(void)
     //dump_connections(anewtree->trnodes, ntax, numnodes);
     //dump_nodearray(anewtree->trnodes, ntax, numnodes);
     
-    copiedtree = copytree(anewtree, ntax, numnodes);
+    copiedtree = mfl_copytree(anewtree, ntax, numnodes);
     printf("A copied rooted tree: ");
     printNewick(copiedtree->root);
     printf("\n");
@@ -1060,12 +683,12 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    copiedtree = copytree(anewtree, ntax, numnodes);
+    copiedtree = mfl_copytree(anewtree, ntax, numnodes);
     printf("Copy with swapped branch: ");
     printNewick(copiedtree->root);
     printf("\n");
     
-    freetree(copiedtree, numnodes);
+    mfl_freetree(copiedtree, numnodes);
     
     mfl_collapse(anewtree->trnodes[ntax + 2], anewtree->trnodes); // Magic number just for testing
     printf("With collapsed node: ");
@@ -1073,13 +696,13 @@ int main(void)
     printf("\n");    
     //dump_connections(anewtree->trnodes, ntax, numnodes);
     
-    copiedtree = copytree(anewtree, ntax, numnodes);
+    copiedtree = mfl_copytree(anewtree, ntax, numnodes);
     //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
     printf("Copying with collapsed node: ");
     printNewick(copiedtree->root);
     printf("\n");
     
-    freetree(copiedtree, numnodes);
+    mfl_freetree(copiedtree, numnodes);
     
     mfl_arb_resolve(anewtree->trnodes[ntax + 1], anewtree->trnodes, ntax, numnodes); // Magic number just for testing
     //dump_connections(anewtree->trnodes, ntax, numnodes);
@@ -1087,27 +710,27 @@ int main(void)
     printNewick(anewtree->root);
     printf("\n");
     
-    copiedtree = copytree(anewtree, ntax, numnodes);
+    copiedtree = mfl_copytree(anewtree, ntax, numnodes);
     //dump_nodearray(copiedtree->trnodes, ntax, numnodes);
     printf("Copying with resolved node: ");
     printNewick(copiedtree->root);
     printf("\n");
     
-    freetree(anewtree, numnodes);
-    freetree(copiedtree, numnodes);
+    mfl_freetree(anewtree, numnodes);
+    mfl_freetree(copiedtree, numnodes);
     
     originaltree = randunrooted(ntax, numnodes);
     printf("unrooted test: ");
     printNewick(originaltree->trnodes[0]);
     printf("\n");
     
-    copiedtree = copytree(originaltree, ntax, numnodes);
+    copiedtree = mfl_copytree(originaltree, ntax, numnodes);
     printf("Copying of unrooted tree: ");
     printNewick(copiedtree->trnodes[0]);
     printf("\n");
     
-    freetree(originaltree, numnodes);
-    freetree(copiedtree, numnodes);*/
+    mfl_freetree(originaltree, numnodes);
+    mfl_freetree(copiedtree, numnodes);*/
     
     //pauseit();
     

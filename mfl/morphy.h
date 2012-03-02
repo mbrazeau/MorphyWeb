@@ -153,22 +153,8 @@ void print_bipartition(taxbipart bipartition, int ntax);
 void print_hashtab(taxbipart **hashtab, int ntax);
 void print_charstates(node *n, int nchar);
 void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes);
-void init_taxarray(int *taxarray, int ntax);
-void joinNodes(node *n, node *p);
-struct tree *alloctree(int ntax, int numnodes);
-void freetree(tree *newtree, int numnodes);
-struct tree *alloc_noring(int ntax, int numnodes);
-struct node * allocnode(void);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
-void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
-struct tree * copytree(tree *origtree, int ntax, int numnodes); // Calls growcopy to copy a template tree
-struct tree * copytree_II(tree *origtree, int ntax, int numnodes);
-void growcopy(node *templ, node *target, tree *newtree, int *iter); // Called by copytree. Copies tree in preorder
-void newring(node *r1, int ntax);
-void deletering(node *r1);
-void detree(node *n);
-void detree2(nodearray trnptr);
 
 /*in compare.c*/
 int mfl_count_fields(int ntax);
@@ -218,6 +204,7 @@ long long int factorial(long long int n);
 long long int numtrees(int ntaxa);
 
 /*in randtree.c*/
+void mfl_init_taxarray(int *taxarray, int ntax);
 void allunrooted(void /*tree *treearray, int ntaxa*/);
 void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter);
 long long int factorial(long long int n);
@@ -233,6 +220,17 @@ void wipe_Ig(int intaxa[], nodearray ingroup);
 void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[], nodearray ingroup, bool *OGdefined);
 
 /*in tree.c*/
+void mfl_close_all_rings(nodearray nds, int ntax, int numnodes);
+int mfl_calc_numnodes(int ntax);
+void mfl_join_nodes(node *n, node *p);
+struct tree *mfl_alloctree(int ntax, int numnodes);
+void mfl_freetree(tree *newtree, int numnodes);
+struct tree *mfl_alloc_noring(int ntax, int numnodes);
+struct node * mfl_allocnode(void);
+void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
+struct tree * mfl_copytree(tree *origtree, int ntax, int numnodes);
+void mfl_newring(node *r1, int ntax);
+void mfl_deletering(node *r1);
 struct node * mfl_seek_internal(int ntax,int numnodes, node **nds);
 struct node * mfl_seek_ringnode(node *n, int ntax);
 unsigned long long int mfl_subtree_id(bool reset);
@@ -253,6 +251,7 @@ void mfl_devisit_tree(nodearray nds, int numnodes);
 void mfl_put_branch_in_ring(node *n, node *rnode);
 void mfl_insert_branch(node *br, node *target, int ntax);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
+void mfl_collap_binode(node *n);
 void mfl_definish_tree(tree *t, int numnodes);
 void mfl_deinit_tree(tree *t, int numnodes);
 void mfl_temproot(tree *trtoroot, int root, int ntax);
@@ -264,6 +263,7 @@ void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedt
 void mfl_point_bottom(node *n, node **nodes);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void mfl_unroot(int ntax, tree *rootedtree);
+void mfl_collap_binode(node *n);
 
 /*in readnewick.c*/
 struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *pos, nodearray nds, bool isRooted);

@@ -392,13 +392,13 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar)
     
     int i;
     for (i = 0; i < nchar; ++i) {
-        //if (tip->tempapos[i] != 1) {
+        if (tip->tempapos[i] != 1) {
             if (tip->apomorphies[i] != anc->apomorphies[i]) {
                 if (tip->tempapos[i] & anc->apomorphies[i]) {
                     tip->apomorphies[i] = tip->tempapos[i] & anc->apomorphies[i];
                 }
             }
-        //}
+        }
     }
     tip->finished = true;
 }
@@ -602,8 +602,8 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
         //printf("working on node %i\n", n->index);
         t->root = NULL;
         
-        joinNodes(n->outedge, t->trnodes[ntax]->next->next);
-        joinNodes(n, t->trnodes[ntax]->next);
+        mfl_join_nodes(n->outedge, t->trnodes[ntax]->next->next);
+        mfl_join_nodes(n, t->trnodes[ntax]->next);
         
         t->root = t->trnodes[ntax];
         
@@ -611,7 +611,7 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
         
         t->root->visited = 0;
         
-        joinNodes(t->trnodes[ntax]->next->next->outedge, n);
+        mfl_join_nodes(t->trnodes[ntax]->next->next->outedge, n);
         return;
     }
 

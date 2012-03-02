@@ -8,6 +8,124 @@
 
 #include "morphy.h"
 
+void mfl_close_all_rings(nodearray nds, int ntax, int numnodes)
+{
+    int i;
+    
+    for (i = ntax; i < numnodes; ++i) {
+        mfl_close_ring(nds[i]);
+    }
+}
+
+int mfl_calc_numnodes(int ntax)
+{
+    int numnodes;
+    
+    return numnodes = 2 * ntax - 1;
+}
+
+
+void mfl_join_nodes(node *n, node *p)
+{
+    if (n->outedge) {
+        n->outedge->outedge = NULL;
+        //printf("terminating existing connection in n\n");
+    }
+    if (p->outedge) {
+        p->outedge->outedge = NULL;
+        //printf("terminating existing connection in p\n");
+    }
+    
+    n->outedge = p;
+    p->outedge = n;
+}
+
+struct node * mfl_allocnode(void)
+{
+    node *newNode;
+    newNode = (node *)malloc(sizeof(node));
+    if (newNode == NULL)
+    {
+        printf("Error: failed to allocate new node.\n");
+    }
+    else
+    {
+        memset(newNode, 0, sizeof(node));
+    }
+    return newNode;
+}
+
+struct tree * mfl_alloctree(int ntax, int numnodes)
+{
+    int i; //Loop counters
+    tree *newtree;
+    
+    newtree = (tree*)malloc(sizeof(tree));
+    memset(newtree, 0, sizeof(tree));
+    
+    if (newtree == NULL)
+    {
+        printf("Error: failed to allocate new tree.\n");
+        return (struct tree*) 0;
+    }
+    
+    newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
+    
+    for (i = 0; i < numnodes; ++i)
+    {
+        newtree->trnodes[i] = mfl_allocnode();
+    }
+    
+    for (i = 0; i < numnodes; ++i)
+    {
+        /* First half of trnodes are initialized to this */
+        if (i < ntax)
+        {
+            newtree->trnodes[i]->tip = i + 1;
+            newtree->trnodes[i]->index = i;
+            newtree->trnodes[i]->next = NULL;
+            newtree->trnodes[i]->vweight = 1;
+        }
+        else /* second half are allocated as a newring */
+        {
+            newtree->trnodes[i]->index = i;
+            mfl_newring(newtree->trnodes[i], ntax);
+        }
+        
+        newtree->trnodes[i]->outedge = NULL;
+    }
+    
+    newtree->root = NULL;
+    newtree->hashtabholder = NULL;
+    
+    return (newtree);
+}
+
+/*
+ * mfl_freetree - deletes an entire tree, by doing the mirror image
+ * of mfl_alloctree.
+ */
+void mfl_freetree(tree *newtree, int numnodes)
+{
+    int i;
+    
+    /* free all of the trnodes */
+    for (i = 0; i < numnodes; ++i)
+    {
+        if (newtree->trnodes[i]->next)
+        {
+            mfl_close_ring(newtree->trnodes[i]);
+            mfl_deletering(newtree->trnodes[i]);
+        }
+        free(newtree->trnodes[i]);
+    }
+    /* free the trnode list */
+    free(newtree->trnodes);
+    /* free the tree */
+    free(newtree);
+    
+}
+
 struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
 {
     /* Searches for an unused internal node */
@@ -66,7 +184,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
 
 struct node * mfl_seek_ringnode(node *n, int ntax)
 {
-    /*-Used by copytree-*/
+    /*-Used by mfl_copytree-*/
     node *p;
     bool rootnode = false;
     
@@ -88,6 +206,214 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
     
     printf("did not find an available node in ring\n");
     return n;
+}
+
+struct tree *mfl_alloc_noring(int ntax, int numnodes)
+{
+    int i;
+    tree *newtree;
+    
+    newtree = (tree*)malloc(sizeof(tree));
+    memset(newtree, 0, sizeof(tree));
+    
+    if (newtree == NULL)
+    {
+        printf("Error: failed to allocate new tree.\n");
+        return (struct tree*) 0;
+    }
+    
+    newtree->trnodes = (node **)malloc( (numnodes) * sizeof(node*));
+    
+    for (i = 0; i < numnodes; ++i)
+    {
+        newtree->trnodes[i] = mfl_allocnode();
+        if (i < ntax) 
+        {
+            newtree->trnodes[i]->tip = i + 1;
+            newtree->trnodes[i]->vweight = 1;
+        }
+        newtree->trnodes[i]->index = i;
+    }
+    
+    newtree->root = NULL;
+    newtree->hashtabholder = NULL;
+    return (newtree);
+    
+}
+
+void mfl_newring(node *r1, int ntax)
+{
+    /* Generates a new internal node composed of a ring of node structures
+     * joined in a unidirectional manner by their next pointers. Used by any
+     * function that might dynamically add branches at run-time. */
+    
+    node *r2, *r3;
+    
+    r2 = mfl_allocnode();
+    r3 = mfl_allocnode();
+    
+    r1->next = r2;
+    r2->next = r3;
+    r3->next = r1;
+    
+    r1->tip = r2->tip = r3->tip = 0;
+    r1->start = r2->start = r3->start = false;
+    r1->skip = r2->skip = r3->skip = false;
+    r1->clip = r2->clip = r3->clip = false;
+    
+    r2->apomorphies = r3->apomorphies = r1->apomorphies;
+    r2->index = r1->index;
+    r3->index = r1->index;
+}
+
+void mfl_newring_to_order(node *r1, int order, int ntax)
+{
+    int i = 1;
+    node *p;
+    
+    if (order == 0 || order == 1) {
+        printf("Error in mfl_newring_to_order: no order specified or order too small\n");
+        return;
+    }
+    
+    p = r1;
+    do {
+        p->next = mfl_allocnode();
+        p = p->next;
+        p->tip = r1->tip;
+        p->start = r1->start;
+        p->index = r1->index;
+        p->apomorphies = r1->apomorphies;
+        ++i;
+    } while (i < order);
+    p->next = r1;
+    r1->order = i;
+    p = r1;
+    do {
+        p->order = r1->order;
+        p = p->next;
+    } while (p != r1);
+    p->order = r1->order;
+}
+
+/*
+ * mfl_deletering - deletes a node (ring) by doing the mirror image of newring.
+ */
+void mfl_deletering(node *r1)
+{
+    if (r1->tipsabove) {
+        free(r1->tipsabove);
+    }
+    if (r1->tempapos) {
+        free(r1->tempapos);
+        r1->tempapos;
+    }
+    if (r1->apomorphies) {
+        free(r1->apomorphies);
+    }
+    
+    node *p, *q;
+    
+    p = r1->next;
+    while (p != r1) {
+        q = p->next;
+        if (p->tipsabove) {
+            free(p->tipsabove);
+        }
+        if (p->tempapos) {
+            free(p->tempapos);
+        }
+        /*if (p->apomorphies) {
+         free(p->apomorphies);
+         }*/
+        free(p);
+        p = q;
+    }
+}
+
+struct tree * mfl_copytree(tree *origtr, int ntax, int numnodes)
+{
+    int i, tmpltorder, begin;
+    tree *treecp; // Pointer to the tree copy
+    node *p, *q, *r, *s;
+    //bool isRooted = false;
+    
+    treecp = mfl_alloc_noring(ntax, numnodes);
+    
+    if (origtr->root)
+    {
+        mfl_set_order(origtr->trnodes[ntax]);
+        tmpltorder = origtr->trnodes[ntax]->order;
+        mfl_newring_to_order(treecp->trnodes[ntax], tmpltorder + 1, ntax);
+        treecp->trnodes[ntax]->order = treecp->trnodes[ntax]->order - 1;
+        treecp->root = treecp->trnodes[ntax];
+        //isRooted = true;
+        begin = ntax;
+    }
+    else 
+    {
+        treecp->trnodes[0]->start = true;
+        begin = ntax + 1;
+        mfl_newring(treecp->trnodes[ntax], ntax);
+    }
+    
+    
+    for (i = ntax + 1; i < numnodes; ++i) 
+    {
+        if (origtr->trnodes[i]->next) 
+        {
+            mfl_set_order(origtr->trnodes[i]);
+            tmpltorder = origtr->trnodes[i]->order;
+            mfl_newring_to_order(treecp->trnodes[i], tmpltorder, ntax);
+        }
+    }
+    
+    // Add the tips first
+    for (i = begin; i < numnodes; ++i) 
+    {
+        p = origtr->trnodes[i];
+        q = treecp->trnodes[i];
+        q->initialized = p->initialized;
+        q->visited = p->visited;
+        q->skip = p->skip;
+        if (p->next) 
+        {
+            if (p->order != q->order) 
+            {
+                printf("Error: template and copy have non-matching branch orders\n");
+            }
+            do 
+            {
+                if (p->outedge && p->outedge->tip) 
+                {
+                    mfl_join_nodes(q, treecp->trnodes[p->outedge->index]);
+                }
+                if (p->outedge && !p->outedge->tip && !q->outedge) 
+                {
+                    r = origtr->trnodes[p->outedge->index];
+                    s = treecp->trnodes[p->outedge->index];
+                    while (r->outedge->index != p->index) 
+                    {
+                        r = r->next;
+                        s = s->next;
+                    }
+                    mfl_join_nodes(q, s);
+                }
+                p = p->next;
+                q = q->next;
+                q->initialized = p->initialized;
+                q->skip = p->skip;
+            } while (p != origtr->trnodes[i] && q != treecp->trnodes[i]);
+        }
+    }
+    //dump_tree_connections(origtr, ntax, numnodes);
+    //dump_tree_connections(treecp, ntax, numnodes);
+    if (origtr->hashtabholder) {
+        treecp->bipartitions = origtr->hashtabholder;
+        origtr->hashtabholder = NULL;
+    }
+    //treecp->bipartitions = mfl_tree_biparts(treecp, ntax, numnodes);
+    return treecp;
 }
 
 unsigned long long int mfl_subtree_id(bool reset)
@@ -146,17 +472,17 @@ void mfl_as_ring(node *n, int ntax)
     
     if (n->next) {
         mfl_close_ring(n);
-        deletering(n);
+        mfl_deletering(n);
     }
     
-    newring(n, ntax);
+    mfl_newring(n, ntax);
 }
 
 void mfl_as_noring(node *n)
 {
     if (n->next) {
         mfl_close_ring(n);
-        deletering(n);
+        mfl_deletering(n);
     }
 }
 
@@ -311,7 +637,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
         p->next = NULL;
     }
     
-    p->next = allocnode();
+    p->next = mfl_allocnode();
     if (p->next->outedge) {
         p->next->outedge = NULL;
     }
@@ -328,6 +654,30 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     }
     
     mfl_insert_branch(in, n, ntax);
+}
+
+void mfl_collap_binode(node *n)
+{
+    /*collapses a binary node*/
+    node *n2, *n3;
+    node *an1, *an2;
+    
+    n2 = n->next;
+    n3 = n2->next;
+    
+    an1 = n->outedge;
+    an2 = an1->next;
+    
+    mfl_join_nodes(an1, n2->outedge);
+    
+    an1->next = n3;
+    n3->next = an2;
+    
+    n2->index = an1->index;
+    n2->index = an1->index;
+    
+    n->next = NULL;
+    
 }
 
 int mfl_determ_order(node *n)
@@ -499,11 +849,11 @@ void mfl_temproot(tree *trtoroot, int root, int ntax)
     rtbr = lftbr->outedge;
     
     if (!trtoroot->trnodes[ntax]->next) {
-        newring(trtoroot->trnodes[ntax], ntax);
+        mfl_newring(trtoroot->trnodes[ntax], ntax);
     }
     
-    joinNodes(lftbr, trtoroot->trnodes[ntax]->next);
-    joinNodes(rtbr, trtoroot->trnodes[ntax]->next->next);
+    mfl_join_nodes(lftbr, trtoroot->trnodes[ntax]->next);
+    mfl_join_nodes(rtbr, trtoroot->trnodes[ntax]->next->next);
     
     trtoroot->root = trtoroot->trnodes[ntax];
     trtoroot->trnodes[0]->start = false;
@@ -516,7 +866,7 @@ void mfl_undo_temproot(int ntax, tree *trtounroot)
     lftbr = trtounroot->trnodes[ntax]->next->outedge;
     rtbr = trtounroot->trnodes[ntax]->next->next->outedge;
     
-    joinNodes(lftbr, rtbr);
+    mfl_join_nodes(lftbr, rtbr);
     
     trtounroot->root = NULL;
     trtounroot->trnodes[0]->start = true;
@@ -551,15 +901,15 @@ void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
     node *nodeptr, *r2, *r3;
     
     if (!trtoroot->trnodes[ntax]->next) {
-        newring(trtoroot->trnodes[ntax]->next, ntax);
+        mfl_newring(trtoroot->trnodes[ntax]->next, ntax);
     }
     
     nodeptr = trtoroot->trnodes[nRoot]->outedge;
     r2 = trtoroot->trnodes[ntax]->next;
     r3 = trtoroot->trnodes[ntax]->next->next;
     
-    joinNodes(r2, trtoroot->trnodes[nRoot]);
-    joinNodes(r3, nodeptr);
+    mfl_join_nodes(r2, trtoroot->trnodes[nRoot]);
+    mfl_join_nodes(r3, nodeptr);
     
     trtoroot->root = trtoroot->trnodes[ntax];
     trtoroot->trnodes[ntax]->outedge = NULL;
@@ -607,7 +957,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
             m->next = NULL;
             
             ftip = proot->next->outedge;
-            joinNodes(ftip, subnode);
+            mfl_join_nodes(ftip, subnode);
             subnode->next = p;
             q->next = subnode;
             proot->next = n;
@@ -617,7 +967,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
         else 
         {
             ftip = proot->next->outedge;
-            joinNodes(ftip, subnode);
+            mfl_join_nodes(ftip, subnode);
             proot->next = NULL;
             subnode->next = p;
             q->next = subnode;
@@ -627,7 +977,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
     {
         leftdesc = proot->next->outedge;
         rightdesc = proot->next->next->outedge;
-        joinNodes(leftdesc, rightdesc);
+        mfl_join_nodes(leftdesc, rightdesc);
     }
     
     rootedtree->root = NULL;
@@ -655,7 +1005,7 @@ void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnod
     int i;
     for (i = 0; i < *numsavedtrees; ++i) {
         if (treebuffer[i]) {
-            freetree(treebuffer[i], numnodes);
+            mfl_freetree(treebuffer[i], numnodes);
         }
     }
     *numsavedtrees = 0;
@@ -668,7 +1018,7 @@ void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedt
     int i;
     for (i = 0; i < *numsavedtrees; ++i) {
         if (treebuffer[i] && treebuffer[i] != newbest) {
-            freetree(treebuffer[i], numnodes);
+            mfl_freetree(treebuffer[i], numnodes);
         }
         if (treebuffer[i] == newbest) {
             treebuffer[i] = NULL;

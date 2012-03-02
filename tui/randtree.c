@@ -11,6 +11,15 @@
 
 #include "morphy.h"
 
+void mfl_init_taxarray(int *taxarray, int ntax)
+{
+    int i;
+    
+    for (i = 0; i < ntax; ++i) {
+        taxarray[i] = i + 1;
+    }
+}
+
 bool mfl_headtail (void)
 {
     if (random() % 2 == 0)
@@ -95,11 +104,11 @@ struct tree *randunrooted(int ntax, int numnodes)
     tree *randtree;
 
     taxarray =(int*) malloc(ntax * sizeof(int));
-    init_taxarray(taxarray, ntax);
+    mfl_init_taxarray(taxarray, ntax);
     
     shuffle(taxarray, ntax);
     
-    randtree = alloctree(ntax, numnodes);
+    randtree = mfl_alloctree(ntax, numnodes);
     
     randtree->trnodes[0]->start = true;
     randtree->trnodes[0]->outedge = randtree->trnodes[taxarray[0]];
@@ -108,12 +117,12 @@ struct tree *randunrooted(int ntax, int numnodes)
     for (i = 1; i <= (ntax - 3); ++i) {
         p = randtree->trnodes[ntax + i]->next->next;
         q = randtree->trnodes[ntax + i + 1];
-        joinNodes(p, q);
+        mfl_join_nodes(p, q);
     }
     
     // Add all the tips to the appropriate internal nodes
     
-    joinNodes(randtree->trnodes[ntax + 1], randtree->trnodes[taxarray[0] - 1]);
+    mfl_join_nodes(randtree->trnodes[ntax + 1], randtree->trnodes[taxarray[0] - 1]);
     
     for (i = 1; i < ntax - 1; ++i) {
         randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[ntax + i]->next;
@@ -186,11 +195,11 @@ void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     int *taxarray;
     node *p, *bestpos;
     
-    savedtrees[0] = alloc_noring(ntax, numnodes);
+    savedtrees[0] = mfl_alloc_noring(ntax, numnodes);
     
     taxarray = (int*)malloc(ntax * sizeof(int));
     memset(taxarray, 0, ntax * sizeof(int));  // This is to see if I can fix the problem
-    init_taxarray(taxarray, ntax);
+    mfl_init_taxarray(taxarray, ntax);
     
     
     if (addRandom) {
@@ -202,10 +211,10 @@ void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     }
     
     p = savedtrees[0]->trnodes[ntax + 1];
-    newring(p, ntax);
+    mfl_newring(p, ntax);
     i = 0;
     do {
-        joinNodes(savedtrees[0]->trnodes[taxarray[i] - 1], p);
+        mfl_join_nodes(savedtrees[0]->trnodes[taxarray[i] - 1], p);
         p = p->next;
         ++i;
     } while (p != savedtrees[0]->trnodes[ntax + 1]);
@@ -215,8 +224,8 @@ void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     bestpos = savedtrees[0]->trnodes[taxarray[0] - 1];
     
     for (i = 3; i < ntax; ++i) {
-        newring(savedtrees[0]->trnodes[ntax + i - 1], ntax);
-        joinNodes(savedtrees[0]->trnodes[taxarray[i] - 1], savedtrees[0]->trnodes[ntax + i - 1]->next);
+        mfl_newring(savedtrees[0]->trnodes[ntax + i - 1], ntax);
+        mfl_join_nodes(savedtrees[0]->trnodes[taxarray[i] - 1], savedtrees[0]->trnodes[ntax + i - 1]->next);
         mfl_insert_branch(savedtrees[0]->trnodes[taxarray[i] - 1], savedtrees[0]->trnodes[taxarray[0] - 1], ntax);
         *bestlen = mfl_get_sttreelen(savedtrees[0], tipdata, ntax, nchar, bestlen);
         //printf("Preliminary length: %i\n", *bestlen);

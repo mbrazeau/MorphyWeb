@@ -47,7 +47,7 @@ void mfl_remove_branch(node *n)
     q = nb->next->next->outedge;
     nb->next->outedge = NULL;
     nb->next->next->outedge = NULL;
-    joinNodes(p, q);
+    mfl_join_nodes(p, q);
 }
 
 void mfl_insert_branch(node *br, node *target, int ntax)
@@ -72,8 +72,8 @@ void mfl_insert_branch(node *br, node *target, int ntax)
         return;
     }
     
-    joinNodes(br1, target);
-    joinNodes(br2, tdesc);
+    mfl_join_nodes(br1, target);
+    mfl_join_nodes(br2, tdesc);
 }
 
 /* Nearest-neighbor interchange (NNI) */
@@ -118,7 +118,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax,
             }
             if (trlength == *currentbesttree) {
                 *foundbettertree = false;
-                savedtrees[*current] = copytree(swapingon, ntax, numnodes);
+                savedtrees[*current] = mfl_copytree(swapingon, ntax, numnodes);
                 savedtrees[*current]->index = *current;
                 savedtrees[*current]->length = trlength;
                 trlength = 0;
@@ -142,7 +142,7 @@ void mfl_nni_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 }
                 if (trlength == *currentbesttree) {
                     *foundbettertree = false;
-                    savedtrees[*current] = copytree(swapingon, ntax, numnodes);
+                    savedtrees[*current] = mfl_copytree(swapingon, ntax, numnodes);
                     savedtrees[*current]->index = *current;
                     savedtrees[*current]->length = trlength;
                     trlength = 0;
@@ -306,7 +306,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, current)) 
             {
                 //printf("saving an equally parsimonious tree of length: %i; writing to %li\n", trlength, *current);
-                savedtrees[*current] = copytree(swapingon, ntax, numnodes);
+                savedtrees[*current] = mfl_copytree(swapingon, ntax, numnodes);
                 savedtrees[*current]->index = *current;
                 savedtrees[*current]->length = trlength;
                 savedtrees[*current]->swapped = false;
@@ -314,11 +314,11 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             }
             else {
                 //printf("tree is duplicate\n");
-                joinNodes(n, up);
+                mfl_join_nodes(n, up);
             }
             trlength = 0;
         }
-        joinNodes(n, up);
+        mfl_join_nodes(n, up);
     }
     
     if (n->tip) {
@@ -392,7 +392,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 dn->visited = 1;
                 
                 clipnode->clip = true;
-                joinNodes(up, dn);
+                mfl_join_nodes(up, dn);
                 
                 // Reoptimize the clipped tree
                 //printf("reoptimizing cliptree\n");
@@ -421,8 +421,8 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                     return;
                 }
                 subtr->next->outedge->skip = false;
-                joinNodes(up, p->next);
-                joinNodes(dn, p->next->next);
+                mfl_join_nodes(up, p->next);
+                mfl_join_nodes(dn, p->next->next);
             }
         //}
         /*else {
@@ -448,8 +448,8 @@ void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingo
     nnaybor = n->outedge;
     
     // Reroot subtr at current place
-    joinNodes(n, subtr->next->outedge->next);
-    joinNodes(n->outedge, subtr->next->outedge->next->next);
+    mfl_join_nodes(n, subtr->next->outedge->next);
+    mfl_join_nodes(n->outedge, subtr->next->outedge->next->next);
     
     // Reoptimize the subtree
     //mfl_reopt_postorder(subtr->next->outedge, nchar);
@@ -463,7 +463,7 @@ void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingo
                              nchar, numnodes, current, 
                              undertreelimit, currentbesttree, 
                              foundbettertree, success, leftotry, diff);
-    joinNodes(n, nnaybor);
+    mfl_join_nodes(n, nnaybor);
     
     if (n->tip) {
         return;
@@ -527,7 +527,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
             up->visited = 1;
             dn->visited = 1;
             clipnode->clip = true;
-            joinNodes(up, dn);
+            mfl_join_nodes(up, dn);
             
             // Reoptimize the clipped tree
             mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
@@ -560,7 +560,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 
                 lft = subtr->next->outedge->next->outedge;
                 rt = subtr->next->outedge->next->next->outedge;
-                joinNodes(lft, rt);
+                mfl_join_nodes(lft, rt);
                 
                 mfl_reroot_subtree(q->outedge, subtr, up, dn, swapingon, 
                                    savedtrees, ntax, nchar, numnodes, current, 
@@ -568,8 +568,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                                    foundbettertree, success, leftotry, diff);
                 
                 //put old root back in
-                joinNodes(lft, subtr->next->outedge->next);
-                joinNodes(rt, subtr->next->outedge->next->next);
+                mfl_join_nodes(lft, subtr->next->outedge->next);
+                mfl_join_nodes(rt, subtr->next->outedge->next->next);
             }
 
             
@@ -581,8 +581,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 return;
             }
             subtr->next->outedge->skip = false;
-            joinNodes(up, p->next);
-            joinNodes(dn, p->next->next);
+            mfl_join_nodes(up, p->next);
+            mfl_join_nodes(dn, p->next->next);
         }
         p = p->next;
         clipnode = n->next;
@@ -628,7 +628,7 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
         mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                               ntax, nchar, numnodes, nxtintrbuf, 
                               undertreelimit_p, currentbest_p, 
-                              foundbettertree_p, success_p, leftotry_p);
+         foundbettertree_p, success_p, leftotry_p);
         /*mfl_bisection_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                 ntax, nchar, numnodes, nxtintrbuf, 
                                 undertreelimit_p, currentbest_p, 

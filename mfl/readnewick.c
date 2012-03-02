@@ -42,10 +42,10 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes,
         
             tipnum = atoi(tipbuf);
             
-            nlst->next = allocnode();
+            nlst->next = mfl_allocnode();
             nlst = nlst->next;
             
-            joinNodes(nds[tipnum - 1], nlst);
+            mfl_join_nodes(nds[tipnum - 1], nlst);
             
             if (nwktr[*pos] == ')')
             {
@@ -58,10 +58,10 @@ struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes,
         
         if (nwktr[*pos] == '(') 
         {
-            nlst->next = allocnode();
+            nlst->next = mfl_allocnode();
             nlst = nlst->next;
             p = cpyfromNWK(nwktr, nwklen, ntax, numnodes, pos, nds, isRooted);
-            joinNodes(p, nlst);
+            mfl_join_nodes(p, nlst);
         }
         
     } while (nwktr[*pos]);
@@ -162,7 +162,7 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 	
 	numnodes_a = 2 * numtaxa - 1;
 	
-	newtree = alloc_noring(numtaxa, numnodes_a);
+	newtree = mfl_alloc_noring(numtaxa, numnodes_a);
     mfl_deinit_tree(newtree, numnodes_a);
 	
     i = 0;
