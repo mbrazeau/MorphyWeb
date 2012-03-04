@@ -163,7 +163,7 @@ struct node * mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int 
     return bestpos;
 }
 
-void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
+tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
                                  charstate *tipdata, bool addRandom,
                                  tree **savedtrees)
 {
@@ -172,7 +172,7 @@ void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     int *taxarray;
     node *p, *bestpos;
     
-    savedtrees[0] = mfl_alloc_noring(ntax, numnodes);
+    tree *newtree = mfl_alloc_noring(ntax, numnodes);
     
     taxarray = (int*)malloc(ntax * sizeof(int));
     memset(taxarray, 0, ntax * sizeof(int));  // This is to see if I can fix the problem
@@ -187,34 +187,36 @@ void mfl_addseq_randasis(int ntax, int nchar, int numnodes,
         printf("Joining taxa according to order in matrix\n");
     }
     
-    p = savedtrees[0]->trnodes[ntax + 1];
+    p = newtree->trnodes[ntax + 1];
     mfl_newring(p, ntax);
     i = 0;
     do {
-        mfl_join_nodes(savedtrees[0]->trnodes[taxarray[i] - 1], p);
+        mfl_join_nodes(newtree->trnodes[taxarray[i] - 1], p);
         p = p->next;
         ++i;
-    } while (p != savedtrees[0]->trnodes[ntax + 1]);
+    } while (p != newtree->trnodes[ntax + 1]);
 
-    mfl_temproot(savedtrees[0], taxarray[0] - 1, ntax);
-    savedtrees[0]->length = *bestlen;
-    bestpos = savedtrees[0]->trnodes[taxarray[0] - 1];
+    mfl_temproot(newtree, taxarray[0] - 1, ntax);
+    newtree->length = *bestlen;
+    bestpos = newtree->trnodes[taxarray[0] - 1];
     
     for (i = 3; i < ntax; ++i) {
-        mfl_newring(savedtrees[0]->trnodes[ntax + i - 1], ntax);
-        mfl_join_nodes(savedtrees[0]->trnodes[taxarray[i] - 1], savedtrees[0]->trnodes[ntax + i - 1]->next);
-        mfl_insert_branch(savedtrees[0]->trnodes[taxarray[i] - 1], savedtrees[0]->trnodes[taxarray[0] - 1], ntax);
-        *bestlen = mfl_get_sttreelen(savedtrees[0], tipdata, ntax, nchar, bestlen);
+        mfl_newring(newtree->trnodes[ntax + i - 1], ntax);
+        mfl_join_nodes(newtree->trnodes[taxarray[i] - 1], newtree->trnodes[ntax + i - 1]->next);
+        mfl_insert_branch(newtree->trnodes[taxarray[i] - 1], newtree->trnodes[taxarray[0] - 1], ntax);
+        *bestlen = mfl_get_sttreelen(newtree, tipdata, ntax, nchar, bestlen);
         //printf("Preliminary length: %i\n", *bestlen);
-        mfl_remove_branch(savedtrees[0]->trnodes[taxarray[i] - 1]);
-        bestpos = mfl_tryall(savedtrees[0]->root, savedtrees[0]->trnodes[taxarray[i] - 1], bestpos, ntax, nchar, 
-                   numnodes, bestlen, savedtrees[0], savedtrees, tipdata);
+        mfl_remove_branch(newtree->trnodes[taxarray[i] - 1]);
+        bestpos = mfl_tryall(newtree->root, newtree->trnodes[taxarray[i] - 1], bestpos, ntax, nchar, 
+                   numnodes, bestlen, newtree, savedtrees, tipdata);
         //Join the nodes//
-        mfl_insert_branch(savedtrees[0]->trnodes[taxarray[i] - 1], bestpos, ntax);
+        mfl_insert_branch(newtree->trnodes[taxarray[i] - 1], bestpos, ntax);
         *bestlen = 0;
     }
-    mfl_undo_temproot(ntax, savedtrees[0]);
-    savedtrees[0]->bipartitions = mfl_tree_biparts(savedtrees[0], ntax, numnodes);
+    mfl_undo_temproot(ntax, newtree);
+    newtree->bipartitions = mfl_tree_biparts(newtree, ntax, numnodes);
     
     free(taxarray);
+    
+    return newtree;
 }

@@ -602,7 +602,7 @@ void mini_test_analysis(void)
     
     tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
     
-    mfl_spr_search(ntax, nchar, numnodes, usrTipdata, savedtrees, besttreelen);
+    mfl_heuristic_search(ntax, nchar, numnodes, usrTipdata, savedtrees, besttreelen);
     
     //mfl_clear_treebuffer(savedtrees, , numnodes);   
 }

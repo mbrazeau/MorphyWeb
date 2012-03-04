@@ -551,72 +551,86 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
     }   
 }
 
-void mfl_spr_search(int ntax, int nchar, int numnodes, char *txtsrcdata, 
+void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata, 
                     tree **savedtrees, int starttreelen)
 {
-    long int i = 0, j = 0; 
-    int currentbest = starttreelen, *currentbest_p = &currentbest;
-    long int leftotry = 0;
-    long int *leftotry_p = &leftotry;
+    long int i = 0, j = 0;
+    long int nreps = 0;
+    double timein = 0;
+    double timeout = 0;
+    
+    tree *newreptree;
+    
+    int addseq_type = 1;
+    
     bool quit = false;
     
     charstate *tipdata = mfl_convert_tipdata(txtsrcdata, ntax, nchar, true);
     
-    /* The particular addition sequence will have to be selected by the user */
-    mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, 1, savedtrees);
-    
-    /* TESTING ONLY */
-    printf("The starting tree:\n");
-    printNewick(savedtrees[0]->trnodes[0]);
-    printf("\n");
-    printf("The length of the starting tree: %i steps\n\n", *currentbest_p);
-    /* END TESTING ONLY */
-    
-    /* A pointer to this whole struct will be used to replace all those 
-     * params in the branch-swapping functions */
     mfl_searchrec *searchrec = mfl_create_searchrec();
     searchrec->nextinbuffer = 0;
     searchrec->undertreelimit = true;
-    searchrec->bestlength = starttreelen;
+    searchrec->bestlength = 0;
     searchrec->foundbettertr = false;
     searchrec->success = false;
     searchrec->niter_total = 0;
     searchrec->niter_ontree = 0;
-    
-    double timein = 0;
-    double timeout = 0;
-    
-    *leftotry_p = 0; //mfl_spr_leftotry(ntax);
-    
-    mfl_devisit_tree(savedtrees[0]->trnodes, numnodes);
-    
-    searchrec->bestlength = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestlength);
+        
     
     timein = (double)(clock() / (double)CLOCKS_PER_SEC);
-    do {
-        //printf("\nSwapping on tree %i\n", j);
-        searchrec->foundbettertr = false;
-        searchrec->success = false;
-        mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
-        mfl_all_views(savedtrees[j], ntax, nchar, currentbest_p);
-        mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
-                              ntax, nchar, numnodes, searchrec);
-        if (searchrec->foundbettertr) {
-            //*leftotry_p = 0;
-            j = 0;
-        }
-        else {
-            savedtrees[j]->swapped = true;
-            //mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
-            ++j;
+    
+    /* This outer loop makes it possible to do multiple replicates of random
+     * addition sequence. The variable nreps is the number of times an initial
+     * tree is generated using random addition sequence. */
+    
+    /*testing only*/
+    nreps = 1;
+    /* end testing only*/
+    
+    for (i = 0; i < nreps; ++i) {
+        
+        newreptree = mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, addseq_type, savedtrees);
+        
+        if (i == 0) {
+            /* The particular addition sequence will have to be selected by the user */
+            savedtrees[0] = newreptree;
+            searchrec->bestlength = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestlength);
+            
+            /* TESTING ONLY */
+            printf("The starting tree:\n");
+            printNewick(savedtrees[0]->trnodes[0]);
+            printf("\n");
+            printf("The length of the starting tree: %i steps\n\n", searchrec->bestlength);
+            /* END TESTING ONLY */
         }
         
-        if (j >= searchrec->nextinbuffer) {
-            printf("number of rearrangements tried: %li\n", searchrec->niter_total);
-            quit = true;
-        }
+        j = searchrec->nextinbuffer;
         
-    } while (!quit);
+        do {
+            //printf("\nSwapping on tree %i\n", j);
+            searchrec->foundbettertr = false;
+            searchrec->success = false;
+            mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
+            mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestlength);
+            mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
+                                  ntax, nchar, numnodes, searchrec);
+            if (searchrec->foundbettertr) {
+                //*leftotry_p = 0;
+                j = 0;
+            }
+            else {
+                savedtrees[j]->swapped = true;
+                //mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
+                ++j;
+            }
+            
+            if (j >= searchrec->nextinbuffer) {
+                printf("number of rearrangements tried: %li\n", searchrec->niter_total);
+                quit = true;
+            }
+            
+        } while (!quit);
+    }
     
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
@@ -629,10 +643,10 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
     printf("Next in trbuf: %li\n", searchrec->nextinbuffer);
     
     printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
-    for (i = 0; i < searchrec->nextinbuffer; ++i) {
-        printf("TREE str_%li = [&U] ", i+1);
-        mfl_root_tree(savedtrees[i], 0, ntax);
-        printNewick(savedtrees[i]->root);
+    for (j = 0; j < searchrec->nextinbuffer; ++j) {
+        printf("TREE str_%li = [&U] ", j+1);
+        mfl_root_tree(savedtrees[j], 0, ntax);
+        printNewick(savedtrees[j]->root);
         printf(";\n");
     }
     printf("\n");
@@ -644,8 +658,3 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
     
     mfl_destroy_searchrec(searchrec);
 }
-
-/*mfl_heuristic(mfl_handle_t *mfl_handle)
-{
-    // Setup heuristic search and call appropriate branch-swappers
-}*/
