@@ -143,7 +143,8 @@ typedef struct {
     bool undertreelimit;
     int bestlength;
     bool foundbettertr;
-    long long int niter_total;
+    bool success;
+    long int niter_total;
     long int niter_ontree;
 } mfl_searchrec;
 
@@ -299,12 +300,10 @@ void test_nni(int ntax, int numnodes);
 long int mfl_spr_leftotry(int ntax);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **savedtrees, int ntax, 
-                              int nchar, int numnodes, long int *current, bool *undertreelimit, 
-                              int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry, int diff);
+                              int nchar, int numnodes, mfl_searchrec *searchrec, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
-                           int nchar, int numnodes, long int *current, bool *undertreelimit, 
-                           int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
-void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
+                           int nchar, int numnodes, mfl_searchrec *searchrec);
+void mfl_spr_search(int ntax, int nchar, int numnodes, char *txtsrcdata, 
                     tree **savedtrees, int starttreelen);
 void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingon, 
                         tree **savedtrees, int ntax, int nchar, int numnodes, 
@@ -312,6 +311,6 @@ void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingo
                         bool *undertreelimit, int *currentbesttree, 
                         bool *foundbettertree, bool *success, long int *leftotry, int diff);
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
-                             int nchar, int numnodes, long int *current, bool *undertreelimit, 
+                             int nchar, int numnodes, mfl_searchrec *searchrec, long int *current, bool *undertreelimit, 
                              int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
 /*End function prototypes*/

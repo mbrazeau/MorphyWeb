@@ -600,43 +600,9 @@ void mini_test_analysis(void)
     }
     printf("\n");
     
-    charstate *morphyTipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, true);
-    
-    //int *currentchar = &j;
-    
-    /* Initialize the tree array that will store optimal trees */
     tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
-        
-    // Start with a (random, in this case) starting tree. 
-    // Different algorithms will be written for doing this (as there are better
-    // ways to do it) but we'll use randunrooted for now.
     
-    /*mfl_addseq_randasis(ntax, nchar, numnodes, morphyTipdata, 1, savedtrees);
-    //Get a length for the starting tree.
-    mfl_root_tree(savedtrees[0], 1, ntax);
-    int *besttreelen_p = &besttreelen;
-
-    *besttreelen_p = mfl_get_sttreelen(savedtrees[0], morphyTipdata, ntax, nchar, besttreelen_p);
-    savedtrees[0]->length = *besttreelen_p;
-    
-    mfl_unroot(ntax, savedtrees[0]);
-    
-    // Now start making rearrangements to the starting tree and test them against
-    // the random tree. If a shorter tree is found, discard the random tree and
-    // keep only the shortest tree. Reset besttreelen_p to the length of the new
-    // shortest tree. Continue swapping until a maximum number of iterations is
-    // hit, or maxtrees is hit, or there are no more possible re-arrangments.
-
-    printf("The starting tree:\n");
-    printNewick(savedtrees[0]->trnodes[0]);
-    printf("\n");
-    printf("The length of the starting tree: %i steps\n\n", *besttreelen_p);*/
-    
-    // Choice of NNI or SPR heuristic search. Will add TBR.
-    
-    //mfl_nni_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
-    
-    mfl_spr_search(ntax, nchar, numnodes, morphyTipdata, savedtrees, besttreelen);
+    mfl_spr_search(ntax, nchar, numnodes, usrTipdata, savedtrees, besttreelen);
     
     //mfl_clear_treebuffer(savedtrees, , numnodes);   
 }
