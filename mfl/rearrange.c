@@ -572,19 +572,24 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
 void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata, 
                     tree **savedtrees, int starttreelen)
 {
-    long int i = 0, j, remaining;
-    long int trbufpos = 0;
-    long int *nxtintrbuf = &trbufpos; 
+    long int i = 0, j = 0; 
     int currentbest = starttreelen, *currentbest_p = &currentbest;
     long int leftotry = 0;
     long int *leftotry_p = &leftotry;
-    //long int numreps = 10;
     bool undertreelimit = true, *undertreelimit_p = &undertreelimit;
     bool foundbettertree = false, *foundbettertree_p = &foundbettertree;
     bool quit = false;
     bool success = false;
     bool *success_p = &success;
     
+    
+    
+    mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, 1, savedtrees);
+    
+    printf("The starting tree:\n");
+    printNewick(savedtrees[0]->trnodes[0]);
+    printf("\n");
+    printf("The length of the starting tree: %i steps\n\n", *currentbest_p);
     
     /* A pointer to this whole struct will be used to replace all those 
      * params in the branch-swapping functions */
@@ -605,21 +610,19 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     
     *currentbest_p = mfl_all_views(savedtrees[0], ntax, nchar, currentbest_p);
     
-    //printf("Length of starting tree again: %i\n", *currentbest_p);
     timein = (double)(clock() / (double)CLOCKS_PER_SEC);
     do {
         //printf("\nSwapping on tree %i\n", j);
-        remaining = *nxtintrbuf + 1;
         *foundbettertree_p = false;
         *success_p = false;
         mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
         mfl_all_views(savedtrees[j], ntax, nchar, currentbest_p);
         mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
-                              ntax, nchar, numnodes, nxtintrbuf, 
+                              ntax, nchar, numnodes, &searchrec->nextinbuffer, 
                               undertreelimit_p, currentbest_p, 
-         foundbettertree_p, success_p, leftotry_p);
+                              foundbettertree_p, success_p, leftotry_p);
         /*mfl_bisection_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
-                                ntax, nchar, numnodes, nxtintrbuf, 
+                                ntax, nchar, numnodes, searchrec->nextinbuffer, 
                                 undertreelimit_p, currentbest_p, 
                                 foundbettertree_p, success_p, leftotry_p);*/
         if (*foundbettertree_p) {
@@ -632,7 +635,7 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
             ++j;
         }
         
-        if (j >= *nxtintrbuf) {
+        if (j >= searchrec->nextinbuffer) {
             printf("number of rearrangements tried: %li\n", *leftotry_p);
             quit = true;
         }
@@ -641,23 +644,28 @@ void mfl_spr_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
+    /* TESTING ONLY. This is just for checking output as I build up the heuristic
+     * search procedure. Eventually, all this stuff will be written to a string
+     * and handed over to the interface for outputting to screen. */
+    
     printf("Total search time: %g\n", timeout - timein);
     
-    printf("Next in trbuf: %li\n", *nxtintrbuf);
+    printf("Next in trbuf: %li\n", searchrec->nextinbuffer);
     
     printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
-    for (i = 0; i < *nxtintrbuf; ++i) {
-        //printf("Tree %li:\n", i + 1);
+    for (i = 0; i < searchrec->nextinbuffer; ++i) {
         printf("TREE str_%li = [&U] ", i+1);
         mfl_root_tree(savedtrees[i], 0, ntax);
         printNewick(savedtrees[i]->root);
         printf(";\n");
-        //printf("Length: %i\n", savedtrees[i]->length);
     }
     printf("\n");
     
-    mfl_clear_treebuffer(savedtrees, nxtintrbuf, numnodes);
+    mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
     free(savedtrees);
+    
+    /* END OF TESTING-ONLY SECTION */
+    
     mfl_destroy_searchrec(searchrec);
 }
 
