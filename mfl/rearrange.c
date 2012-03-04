@@ -257,7 +257,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
         trlength = *currentbesttree - diff + mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
-        
+        //printf("tree length: %i\n", trlength);
+        //mfl_insert_branch(subtr, up, ntax);
+        //trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
         //n->skippath = n->stid;
         //n->outedge->skippath = n->stid;
         

@@ -84,15 +84,27 @@ void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int ncha
 
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
 {
+    /* Returns cost of inserting subtree src between tgt1 and tgt2 following
+     * the algorithms described by Ronquist (1998, Cladistics) and Goloboff 
+     * (1993, 1996, Cladistics).*/
+    
     int i;
     int cost = 0;
+    charstate tempsrc;
+    charstate temptgt;
     
     for (i = 0; i < nchar; ++i) {
 
-        if ( !(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
-            ++cost;
-            if (cost > diff) {
-                return cost;
+        if (src->tempapos[i] & IS_APPLIC) {
+            tempsrc = src->tempapos[i] & IS_APPLIC;
+            if ( (tgt1->apomorphies[i] & IS_APPLIC) || (tgt2->apomorphies[i] & IS_APPLIC) ) {
+                temptgt = ((tgt1->apomorphies[i] | tgt2->apomorphies[i]) & IS_APPLIC);
+                if ( !(tempsrc & temptgt) ) {
+                    ++cost;
+                    if (cost > diff) {
+                        return cost;
+                    }
+                }
             }
         }
     }
@@ -101,14 +113,28 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
 
 int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
 {
+    /* Returns cost of reinserting the subtree src at the original place from
+     * which it was clipped (tgt1 and tgt2) following. This score is used to
+     * compute the difference in length between the two subtrees so that neither
+     * the total tree length nor the length of the individual subtrees needs to
+     * be calculated (Ronquist 1998). */
+    
     int i;
     int cost = 0;
+    charstate tempsrc;
+    charstate temptgt;
     
     for (i = 0; i < nchar; ++i) {
         
-        if ( !(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
-            ++cost;
-        }       
+        if (src->tempapos[i] & IS_APPLIC) {
+            tempsrc = src->tempapos[i] & IS_APPLIC;
+            if ( (tgt1->apomorphies[i] & IS_APPLIC) || (tgt2->apomorphies[i] & IS_APPLIC) ) {
+                temptgt = ( (tgt1->apomorphies[i] | tgt2->apomorphies[i]) & IS_APPLIC);
+                if ( !(tempsrc & temptgt) ) {
+                    ++cost;
+                }
+            }
+        }
     }
     return cost;
 }
