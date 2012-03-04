@@ -143,6 +143,7 @@ typedef struct {
     bool undertreelimit;
     int bestlength;
     int bestinrep;
+    int trbufstart;
     bool foundbettertr;
     bool success;
     long int niter_total;

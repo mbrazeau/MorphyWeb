@@ -13,7 +13,18 @@ mfl_searchrec * mfl_create_searchrec(void)
 {
     mfl_searchrec *newsearchrec;
     
-    return newsearchrec = (mfl_searchrec*)malloc(sizeof(mfl_searchrec));
+    newsearchrec = (mfl_searchrec*)malloc(sizeof(mfl_searchrec));
+    
+    newsearchrec->nextinbuffer = 0;
+    newsearchrec->undertreelimit = true;
+    newsearchrec->bestinrep = 0;
+    newsearchrec->foundbettertr = false;
+    newsearchrec->trbufstart = 0;
+    newsearchrec->success = false;
+    newsearchrec->niter_total = 0;
+    newsearchrec->niter_ontree = 0;
+    
+    return newsearchrec;
 }
 
 void mfl_destroy_searchrec(mfl_searchrec *searchrec)
@@ -266,7 +277,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             searchrec->success = true;
             swapingon->length = trlength;
             searchrec->bestinrep = trlength;
-            mfl_reinit_tbinrange(savedtrees, swapingon, 0, &searchrec->nextinbuffer, numnodes);
+            mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
             //mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
             trlength = 0;
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
@@ -569,15 +580,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
     charstate *tipdata = mfl_convert_tipdata(txtsrcdata, ntax, nchar, true);
     
     mfl_searchrec *searchrec = mfl_create_searchrec();
-    searchrec->nextinbuffer = 0;
-    searchrec->undertreelimit = true;
-    searchrec->bestinrep = 0;
-    searchrec->foundbettertr = false;
-    searchrec->success = false;
-    searchrec->niter_total = 0;
-    searchrec->niter_ontree = 0;
         
-    
     timein = (double)(clock() / (double)CLOCKS_PER_SEC);
     
     /* This outer loop makes it possible to do multiple replicates of random
@@ -623,6 +626,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
                 newreptree = NULL;
             }
             
+            searchrec->trbufstart = searchrec->nextinbuffer;
             j = searchrec->nextinbuffer;
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
         }
