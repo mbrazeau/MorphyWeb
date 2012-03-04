@@ -266,10 +266,10 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             searchrec->success = true;
             swapingon->length = trlength;
             searchrec->bestinrep = trlength;
-            mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
+            mfl_reinit_tbinrange(savedtrees, swapingon, 0, &searchrec->nextinbuffer, numnodes);
+            //mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
             trlength = 0;
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
-            //*leftotry = mfl_spr_leftotry(ntax);
             swapingon->bipartitions = mfl_tree_biparts(swapingon, ntax, numnodes);
             return;
         }
@@ -608,9 +608,10 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
             /* END TESTING ONLY */
         }
         else {
+            
             searchrec->bestinrep = mfl_all_views(newreptree, ntax, nchar, &searchrec->bestinrep);
 
-            printf("newtrlen: %i\n", newtrlen);
+            printf("newtrlen: %i\n", searchrec->bestinrep);
             
             if (searchrec->bestinrep < searchrec->bestlength) {
                 mfl_reinit_treebuffer(savedtrees, newreptree, &searchrec->nextinbuffer, numnodes);

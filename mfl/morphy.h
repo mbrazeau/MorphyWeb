@@ -273,7 +273,7 @@ void mfl_undo_temproot(int ntax, tree *trtounroot);
 int mfl_tree_enumerator(void);
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease);
 void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes);
-void mfl_reinit_tbinrange(tree **treebuffer, long int start, long int *endofrng, int numnodes);
+void mfl_reinit_tbinrange(tree **treebuffer, tree *newbest, long int start, long int *endofrng, int numnodes);
 void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes);
 void mfl_point_bottom(node *n, node **nodes);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
