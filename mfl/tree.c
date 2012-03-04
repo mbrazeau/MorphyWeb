@@ -1012,6 +1012,8 @@ void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnod
 
 void mfl_reinit_tbinrange(tree **treebuffer, tree *newbest, long int start, long int *endofrng, int numnodes)
 {
+    printf("Clearing tree buffer for replicate\n");
+    printf("Best tree length: %i\n", newbest->length);
     int i;
     for (i = start; i < *endofrng; ++i) {
         if (treebuffer[i] && treebuffer[i] != newbest) {
@@ -1022,11 +1024,7 @@ void mfl_reinit_tbinrange(tree **treebuffer, tree *newbest, long int start, long
         }
     }
     treebuffer[start] = newbest;
-    *endofrng = start;
-    
-    printf("Clearing tree buffer for replicate\n");
-    printf("Best tree length: %i\n", newbest->length);
-    
+    *endofrng = start;    
 }
 
 void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes)
