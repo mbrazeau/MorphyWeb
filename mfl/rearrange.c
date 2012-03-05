@@ -603,7 +603,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
      * tree is generated using random addition sequence. */
     
     /*testing only*/
-    nreps = 100;
+    nreps = 10;
     /* end testing only*/
     
     for (i = 0; i < nreps; ++i) {
