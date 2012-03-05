@@ -214,6 +214,7 @@ tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
         *bestlen = 0;
     }
     mfl_undo_temproot(ntax, newtree);
+    newtree->bipartitions = mfl_tree_biparts(newtree, ntax, numnodes);
     
     free(taxarray);
     

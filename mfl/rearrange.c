@@ -291,7 +291,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                 mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
             }
             else {
-                mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
+                //mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
             }
 
             trlength = 0;
@@ -654,7 +654,6 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
         }
         
         do {
-            //printf("Swapping on tree %li\n", j);
             searchrec->foundbettertr = false;
             searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);

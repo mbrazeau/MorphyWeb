@@ -71,19 +71,18 @@ bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields)
 
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields)
 {
-    /* Performs a binary search for each hashcode of t1 in t2.
+    /* Performs a binary search for each bipartition of t1 in t2.
      *
      **** This should be supplemented by a function that compares number
      **** of bipartitions first and returns false if they are different */
     
     int i;
-    bool eqtrees = false;
+    bool eqtrees = true;
     
     for (i = 0; i < ntax - 3; ++i) {
-        eqtrees = false;
-        if (bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2)) {
-            eqtrees = true;
-            continue;
+        eqtrees = true;
+        if (!(bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2))) {
+            eqtrees = false;
         }
         if (!eqtrees) {
             break;
@@ -159,7 +158,7 @@ void mfl_free_hashtab(taxbipart **hashtab, int numbiparts)
 
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
 {
-    /* Creates a hashtable describing the tree as a series of taxon 
+    /* Creates a bipartition table describing the tree as a series of taxon 
      * bipartitions. These bipartitions are then sorted in ascending order
      * */
     int i;
@@ -201,20 +200,17 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     static double totaltime = 0;
     static double increm = 0;
     
-    //printf("time in: %g\n", (double)(clock() / (double)CLOCKS_PER_SEC));
-    
     timein = (double)(clock() / (double)CLOCKS_PER_SEC);
     
     temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
     
-    for (i = *current; i--; ) {
+    for (i = 0; i < *current; ++i ) {
         if (mfl_compare_trees(temphashtab, savedtrees[i]->bipartitions, ntax, numfields)) {
             if (newtopol != savedtrees[i]) {
                 foundtr = true;
                 break;
             }
         }
-        //mfl_free_hashtab(tph2, ntax - 1);
     }
     
     if (!foundtr) {
