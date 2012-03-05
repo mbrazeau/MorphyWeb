@@ -288,9 +288,12 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             searchrec->bestinrep = trlength;
             if (searchrec->bestinrep < searchrec->bestlength) {
                 searchrec->bestlength = searchrec->bestinrep;
+                mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
             }
-            mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
-            //mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
+            else {
+                mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
+            }
+
             trlength = 0;
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
             swapingon->bipartitions = mfl_tree_biparts(swapingon, ntax, numnodes);
@@ -640,6 +643,10 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
                 savedtrees[searchrec->nextinbuffer]->length = newtrlen;
                 newreptree = NULL;
             }
+            else {
+                printf("Parsimony island already found\n");
+            }
+
             
             searchrec->trbufstart = searchrec->nextinbuffer;
             j = searchrec->nextinbuffer;
