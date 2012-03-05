@@ -375,9 +375,9 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         
         subtr = p->next->next;
         
-        //if (!subtr->next->outedge->skip) {
+        if (!subtr->next->outedge->skip) {
             
-            //subtr->next->outedge->skip = true;
+            subtr->next->outedge->skip = true;
             
             if (!(up->tip && dn->tip)) {
                 up->visited = 1;
@@ -414,10 +414,10 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 mfl_join_nodes(up, p->next);
                 mfl_join_nodes(dn, p->next->next);
             }
-        //}
-        /*else {
+        }
+        else {
             mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
-        }*/
+        }
         p = p->next;
         clipnode = n->next->outedge;
     }   
@@ -637,16 +637,17 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
                 mfl_destroy_searchrec(searchrec);
                 searchrec = mfl_create_searchrec();
             }
-            else if (!mfl_compare_alltrees(newreptree, savedtrees, ntax, numnodes, &searchrec->nextinbuffer)) {
-                mfl_reset_searchrec(searchrec);
-                savedtrees[searchrec->nextinbuffer] = newreptree;
-                savedtrees[searchrec->nextinbuffer]->length = newtrlen;
-                newreptree = NULL;
+            else if (searchrec->bestinrep == searchrec->bestlength) {
+                if (!mfl_compare_alltrees(newreptree, savedtrees, ntax, numnodes, &searchrec->nextinbuffer)) {
+                    mfl_reset_searchrec(searchrec);
+                    savedtrees[searchrec->nextinbuffer] = newreptree;
+                    savedtrees[searchrec->nextinbuffer]->length = newtrlen;
+                    newreptree = NULL;
+                }
+                else {
+                    printf("Parsimony island already found\n");
+                }
             }
-            else {
-                printf("Parsimony island already found\n");
-            }
-
             
             searchrec->trbufstart = searchrec->nextinbuffer;
             j = searchrec->nextinbuffer;
