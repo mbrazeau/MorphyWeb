@@ -442,8 +442,8 @@ void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingo
     mfl_join_nodes(n->outedge, subtr->next->outedge->next->next);
     
     // Reoptimize the subtree
-    mfl_reopt_postorder(subtr->next->outedge, nchar);
-    //mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+    //mfl_reopt_postorder(subtr->next->outedge, nchar);
+    mfl_reopt_subtr_root(subtr->next->outedge, nchar);
     
     // Determine the cost of local reinsertion
     diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
@@ -675,11 +675,12 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
                 quit = true;
             }
             
+            //printf("saved trees: %li\n", searchrec->nextinbuffer);
+            
         } while (!quit);
         
         //printf("best in rep: %i\n", searchrec->bestinrep);
         //printf("best overall: %i\n", searchrec->bestlength);
-        
         
         if (i != 0) {
             if (searchrec->bestinrep >= searchrec->bestlength) {
