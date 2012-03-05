@@ -90,21 +90,12 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     
     int i;
     int cost = 0;
-    charstate tempsrc;
-    charstate temptgt;
     
     for (i = 0; i < nchar; ++i) {
-
-        if (src->tempapos[i] & IS_APPLIC) {
-            tempsrc = src->tempapos[i] & IS_APPLIC;
-            if ( (tgt1->apomorphies[i] & IS_APPLIC) || (tgt2->apomorphies[i] & IS_APPLIC) ) {
-                temptgt = ((tgt1->apomorphies[i] | tgt2->apomorphies[i]) & IS_APPLIC);
-                if ( !(tempsrc & temptgt) ) {
-                    ++cost;
-                    if (cost > diff) {
-                        return cost;
-                    }
-                }
+        if ( !(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
+            ++cost;
+            if (cost > diff) {
+                return cost;
             }
         }
     }
@@ -121,19 +112,11 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     
     int i;
     int cost = 0;
-    charstate tempsrc;
-    charstate temptgt;
     
     for (i = 0; i < nchar; ++i) {
         
-        if (src->tempapos[i] & IS_APPLIC) {
-            tempsrc = src->tempapos[i] & IS_APPLIC;
-            if ( (tgt1->apomorphies[i] & IS_APPLIC) || (tgt2->apomorphies[i] & IS_APPLIC) ) {
-                temptgt = ( (tgt1->apomorphies[i] | tgt2->apomorphies[i]) & IS_APPLIC);
-                if ( !(tempsrc & temptgt) ) {
-                    ++cost;
-                }
-            }
+        if ( !(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
+            ++cost;
         }
     }
     return cost;
