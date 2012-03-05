@@ -74,7 +74,7 @@ void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int ncha
     
     for (i = 0; i < ntax; ++i) {
         //currenttree->trnodes[i]->apomorphies = &tipdata[i * nchar];
-        currenttree->trnodes[i]->tempapos = &tipdata[i * nchar];
+        currenttree->trnodes[i]->tempapos = (charstate*)&tipdata[i * nchar];
         currenttree->trnodes[i]->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
         for (j = 0; j < nchar; ++j) {
             currenttree->trnodes[i]->apomorphies[j] = currenttree->trnodes[i]->tempapos[j];
@@ -114,7 +114,6 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     int cost = 0;
     
     for (i = 0; i < nchar; ++i) {
-        
         if ( !(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
             ++cost;
         }
@@ -404,8 +403,17 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar)
 {
     /* Reconstructs the tip set if it is polymorphic */
     
+    /*if (tip->index == 0) {
+        if (tip->apomorphies[0] > 5) {
+            printf("broken\n");
+        }
+    }*/
+    
     int i;
     for (i = 0; i < nchar; ++i) {
+        if (tip->apomorphies[i] != tip->tempapos[i]) {
+            tip->apomorphies[i] = tip->tempapos[i];
+        }
         if (tip->tempapos[i] != 1) {
             if (tip->apomorphies[i] != anc->apomorphies[i]) {
                 if (tip->tempapos[i] & anc->apomorphies[i]) {
@@ -418,6 +426,12 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar)
         }
 
     }
+    
+    /*if (tip->index == 0) {
+        if (tip->apomorphies[0] > 5) {
+            printf("broke here\n");
+        }
+    }*/
     tip->finished = true;
 }
 
@@ -651,6 +665,8 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     mfl_temproot(t, 0, ntax);
     //mfl_reopt_postorder(t->root, nchar);
     mfl_reopt_preorder(t->root, nchar);
+    
+    
     mfl_undo_temproot(ntax, t);
     
     mfl_tip_reopt(t, ntax, nchar);

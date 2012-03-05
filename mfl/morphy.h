@@ -26,7 +26,7 @@
 
 #define IS_APPLIC ~1//(-1^1)
 
-#define TREELIMIT 6000 //A temporary tree limit for testing.
+#define TREELIMIT 50000 //A temporary tree limit for testing.
 
 
 /* For node and tree structures, this program follows the format recommended by

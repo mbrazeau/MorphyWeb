@@ -411,6 +411,8 @@ struct tree * mfl_copytree(tree *origtr, int ntax, int numnodes)
         treecp->bipartitions = origtr->hashtabholder;
         origtr->hashtabholder = NULL;
     }
+    
+        
     //treecp->bipartitions = mfl_tree_biparts(treecp, ntax, numnodes);
     return treecp;
 }
