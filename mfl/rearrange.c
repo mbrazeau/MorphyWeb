@@ -272,11 +272,12 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
         trlength = searchrec->bestinrep - diff + mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
+        /*if (trlength == 317) {
+            printf("break\n");
+        }*/
         //printf("tree length: %i\n", trlength);
         //mfl_insert_branch(subtr, up, ntax);
         //trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
-        //n->skippath = n->stid;
-        //n->outedge->skippath = n->stid;
         
         searchrec->niter_total = searchrec->niter_total + 1;
         //printf("Left to try: %li\n", *leftotry);
