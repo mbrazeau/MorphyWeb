@@ -346,27 +346,27 @@ void mfl_reopt_postorder(node *n, int nchar)
     if (n->tip) {
         return;
     }
-    /*if (n->clip || n->finished) {
+    if (n->finished) {
         return;
-    }*/
+    }
     
     p = n->next;
     while (p != n) {
         mfl_reopt_postorder(p->outedge, nchar);
-        /*if (!p->outedge->success) {
+        if (!p->outedge->success) {
             allsame = false;
-        }*/
-        //p->outedge->success = false;
+        }
+        p->outedge->success = false;
         p = p->next;
     }
     
-    //if (!allsame) {
+    if (!allsame) {
         mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
-    /*}
+    }
     
     if (n->outedge) {
         n->finished = true;
-    }*/
+    }
     
 }
 

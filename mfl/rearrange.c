@@ -627,31 +627,11 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
         }
         else {
             
-            searchrec->bestinrep = mfl_all_views(newreptree, ntax, nchar, &searchrec->bestinrep);
-
-            printf("newtrlen: %i\n", searchrec->bestinrep);
-            
-            if (searchrec->bestinrep < searchrec->bestlength) {
-                mfl_reinit_treebuffer(savedtrees, newreptree, &searchrec->nextinbuffer, numnodes);
-                newtrlen = 0;
-                mfl_destroy_searchrec(searchrec);
-                searchrec = mfl_create_searchrec();
-            }
-            else if (searchrec->bestinrep == searchrec->bestlength) {
-                if (!mfl_compare_alltrees(newreptree, savedtrees, ntax, numnodes, &searchrec->nextinbuffer)) {
-                    mfl_reset_searchrec(searchrec);
-                    savedtrees[searchrec->nextinbuffer] = newreptree;
-                    savedtrees[searchrec->nextinbuffer]->length = newtrlen;
-                    newreptree = NULL;
-                }
-                else {
-                    printf("Parsimony island already found\n");
-                }
-            }
-            
-            searchrec->trbufstart = searchrec->nextinbuffer;
+            savedtrees[searchrec->nextinbuffer] = newreptree;
+            searchrec->bestinrep = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestinrep);
             j = searchrec->nextinbuffer;
-            searchrec->nextinbuffer = searchrec->nextinbuffer;
+            quit = false;
+            //break;
         }
         
         do {
