@@ -273,21 +273,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
-        
-        if (diff == 9 && searchrec->bestlength == 318 && subtr->next->outedge->tip == 2) {
-            ++counter;
-            if (counter >= 92) {
-                //printf("break\n");
-                //counter = 0;
-            }
-        }
-        
         al = mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
-        
         trlength = searchrec->bestinrep - diff + al;
-        /*if (trlength == 317) {
-            printf("break\n");
-        }*/
         //printf("tree length: %i\n", trlength);
         //mfl_insert_branch(subtr, up, ntax);
         //trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
@@ -399,19 +386,12 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 
                 clipnode->clip = true;
                 mfl_join_nodes(up, dn);
-				
-                if (/*diff == 9 &&*/ searchrec->bestlength == 318 && subtr->next->outedge->tip==2) {
-                    //printf("break\n");
-                }
-                
+
                 // Reoptimize the clipped tree
-                //printf("reoptimizing cliptree\n");
                 mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
                 
                 // Reoptimize the subtree
-                //mfl_reopt_postorder(subtr->next->outedge, nchar);
                 mfl_reopt_subtr_root(subtr->next->outedge, nchar);
-                //mfl_tip_reopt(swapingon, ntax, nchar);
                 
                 diff = 0;
                 
