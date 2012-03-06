@@ -69,7 +69,7 @@ typedef struct {
 } resultant_data;
 
 
-typedef uint32_t charstate;
+typedef int32_t charstate;
 typedef int64_t taxbipart;
 
 typedef struct node {

@@ -274,13 +274,13 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
         
-        /*if (diff == 9 && searchrec->bestlength == 318 && subtr->next->outedge->tip == 2) {
+        if (diff == 9 && searchrec->bestlength == 318 && subtr->next->outedge->tip == 2) {
             ++counter;
             if (counter >= 92) {
-                printf("break\n");
+                //printf("break\n");
                 //counter = 0;
             }
-        }*/
+        }
         
         al = mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
         
@@ -399,6 +399,10 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 
                 clipnode->clip = true;
                 mfl_join_nodes(up, dn);
+				
+                if (/*diff == 9 &&*/ searchrec->bestlength == 318 && subtr->next->outedge->tip==2) {
+                    //printf("break\n");
+                }
                 
                 // Reoptimize the clipped tree
                 //printf("reoptimizing cliptree\n");
@@ -414,9 +418,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 // Determine the cost of local reinsertion
                 diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
                 
-                if (diff == 9 && searchrec->bestlength == 318 && subtr->next->outedge->tip) {
-                    //printf("break\n");
-                }
                 
                 //*leftotry = *leftotry - 1;
                 mfl_regrafting_traversal(swapingon->trnodes[0], subtr, swapingon, 
@@ -674,6 +675,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
         }
         
         do {
+            //printf("swapping on tree: %li\n", j);
             searchrec->foundbettertr = false;
             searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
