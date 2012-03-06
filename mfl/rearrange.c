@@ -287,12 +287,13 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             searchrec->success = true;
             swapingon->length = trlength;
             searchrec->bestinrep = trlength;
+            
             if (searchrec->bestinrep < searchrec->bestlength) {
                 searchrec->bestlength = searchrec->bestinrep;
                 mfl_reinit_treebuffer(savedtrees, swapingon, &searchrec->nextinbuffer, numnodes);
             }
             else {
-                //mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
+                mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
             }
 
             trlength = 0;
@@ -603,7 +604,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
      * tree is generated using random addition sequence. */
     
     /*testing only*/
-    nreps = 1;
+    nreps = 3;
     /* end testing only*/
     
     for (i = 0; i < nreps; ++i) {
@@ -628,14 +629,20 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
         else {
             
             savedtrees[searchrec->nextinbuffer] = newreptree;
-            searchrec->bestinrep = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestinrep);
+            searchrec->bestinrep = mfl_all_views(savedtrees[searchrec->nextinbuffer], ntax, nchar, &searchrec->bestinrep);
+            printf("Best length in replicate: %i\n", searchrec->bestinrep);
             j = searchrec->nextinbuffer;
+            searchrec->trbufstart = searchrec->nextinbuffer;
+            searchrec->foundbettertr = false;
+            printf("j = %i\n", searchrec->nextinbuffer);
             quit = false;
             //break;
         }
         
         do {
-            //printf("swapping on tree: %li\n", j);
+            if (i > 0) {
+                printf("swapping on tree: %li\n", j);
+            }
             searchrec->foundbettertr = false;
             searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
@@ -643,7 +650,10 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
             mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                   ntax, nchar, numnodes, searchrec);
             if (searchrec->foundbettertr) {
-                j = 0;
+                if (i > 0) {
+                    printf("trbuf start %i\n", searchrec->trbufstart);
+                }
+                j = searchrec->trbufstart;
             }
             else {
                 savedtrees[j]->swapped = true;
@@ -660,14 +670,16 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
             
         } while (!quit);
         
+        printf("Next in buffer at end of rep: %i\n", searchrec->nextinbuffer);
+        
         //printf("best in rep: %i\n", searchrec->bestinrep);
         //printf("best overall: %i\n", searchrec->bestlength);
         
-        if (i != 0) {
+        /*if (i != 0) {
             if (searchrec->bestinrep >= searchrec->bestlength) {
                 mfl_reinit_tbinrange(savedtrees, savedtrees[0], searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
             }
-        }
+        }*/
     }
     
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
@@ -678,7 +690,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
     
     printf("Total search time: %g\n", timeout - timein);
     
-    printf("Next in trbuf: %li\n", searchrec->nextinbuffer);
+    printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
     printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
