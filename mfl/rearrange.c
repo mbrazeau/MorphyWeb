@@ -264,6 +264,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     }
     
     int trlength = 0;
+    int al = 0;
+    static int counter;
     node *up;
     
     n->pathid = subtr->next->outedge->stid;
@@ -271,7 +273,18 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
-        trlength = searchrec->bestinrep - diff + mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
+        
+        /*if (diff == 9 && searchrec->bestlength == 318 && subtr->next->outedge->tip == 2) {
+            ++counter;
+            if (counter >= 92) {
+                printf("break\n");
+                //counter = 0;
+            }
+        }*/
+        
+        al = mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
+        
+        trlength = searchrec->bestinrep - diff + al;
         /*if (trlength == 317) {
             printf("break\n");
         }*/
@@ -394,11 +407,16 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 // Reoptimize the subtree
                 //mfl_reopt_postorder(subtr->next->outedge, nchar);
                 mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+                //mfl_tip_reopt(swapingon, ntax, nchar);
+                
+                diff = 0;
                 
                 // Determine the cost of local reinsertion
                 diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
                 
-                //mfl_tip_reopt(swapingon, ntax, nchar);
+                if (diff == 9 && searchrec->bestlength == 318 && subtr->next->outedge->tip) {
+                    //printf("break\n");
+                }
                 
                 //*leftotry = *leftotry - 1;
                 mfl_regrafting_traversal(swapingon->trnodes[0], subtr, swapingon, 

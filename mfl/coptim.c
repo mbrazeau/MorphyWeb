@@ -475,7 +475,7 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
     }
     if (allsame) {
         //n->success = true;
-        n->finished = true;
+        //n->finished = true;
     }
 }
 
@@ -490,9 +490,9 @@ void mfl_set_rootstates(node *n, int nchar)
         }
         else {
             n->apomorphies[i] = (n->next->outedge->tempapos[i] | n->next->next->outedge->tempapos[i]);
-            if (n->next->outedge->tempapos[i] & IS_APPLIC && n->next->next->outedge->tempapos[i] & IS_APPLIC) {
+            //if (n->next->outedge->tempapos[i] & IS_APPLIC && n->next->next->outedge->tempapos[i] & IS_APPLIC) {
                 n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
-            }
+            //}
         }
     }
 }
@@ -524,11 +524,17 @@ void mfl_reopt_preorder(node *n, int nchar)
     dr = n->next->next->outedge;
     
     if (!dl->tip) {
-        mfl_reopt_comb(dl, n, nchar);
+        mfl_combine_up(dl, n, nchar);
+    }
+    else {
+        mfl_tip_apomorphies(dl, n, nchar);
     }
     
     if (!dr->tip) {
-        mfl_reopt_comb(dr, n, nchar);
+        mfl_combine_up(dr, n, nchar);
+    }
+    else {
+        mfl_tip_apomorphies(dr, n, nchar);
     }
 
     //Here's your problem right here:
@@ -546,11 +552,11 @@ void mfl_fitch_preorder(node *n, int nchar)
 {
     node *p, *dl, *dr;
     
-    if (n->tip || n->clip) {
+    if (n->tip) {// || n->clip) {
         return;
     }
     
-    if (!n->outedge) {
+    if (!n->outedge || n->isroot) {
         mfl_set_rootstates(n, nchar);
     }
     
@@ -560,9 +566,16 @@ void mfl_fitch_preorder(node *n, int nchar)
     if (!dl->tip) {
         mfl_combine_up(dl, n, nchar);
     }
+    else {
+        mfl_tip_apomorphies(dl, n, nchar);
+    }
+
     
     if (!dr->tip) {
         mfl_combine_up(dr, n, nchar);
+    }
+    else {
+        mfl_tip_apomorphies(dr, n, nchar);
     }
 
     p = n->next;
@@ -649,10 +662,12 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
     mfl_temproot(t, 0, ntax);
     //mfl_reopt_postorder(t->root, nchar);
+    //mfl_fitch_preorder(t->root, nchar);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
-    
-    mfl_tip_reopt(t, ntax, nchar);
+
+    mfl_reopt_preorder(t->trnodes[0]->outedge, nchar);
+    //mfl_tip_reopt(t, ntax, nchar);
     
 }
 
@@ -681,6 +696,5 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     t->root->visited = 0;
     mfl_fitch_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
-    
     return fptreelen;
 }
