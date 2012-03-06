@@ -268,8 +268,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     static int counter;
     node *up;
     
-    n->pathid = subtr->next->outedge->stid;
-    n->outedge->pathid = subtr->next->outedge->stid;
+    //n->pathid = subtr->next->outedge->stid;
+    //n->outedge->pathid = subtr->next->outedge->stid;
     
     if ((!n->visited || !n->outedge->visited) /*&& n->skippath != n->stid*/) {
         up = n->outedge;
@@ -278,6 +278,12 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         //printf("tree length: %i\n", trlength);
         //mfl_insert_branch(subtr, up, ntax);
         //trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
+        
+        if (trlength == 318) {
+            searchrec->undertreelimit = false;
+            searchrec->success = true;
+            return;
+        }
         
         searchrec->niter_total = searchrec->niter_total + 1;
         //printf("Left to try: %li\n", *leftotry);
@@ -604,7 +610,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
      * tree is generated using random addition sequence. */
     
     /*testing only*/
-    nreps = 3;
+    nreps = 1;
     /* end testing only*/
     
     for (i = 0; i < nreps; ++i) {
@@ -661,7 +667,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
                 ++j;
             }
             
-            if (j >= searchrec->nextinbuffer) {
+            if (j >= searchrec->nextinbuffer || !searchrec->undertreelimit) {
                 printf("number of rearrangements tried: %li\n", searchrec->niter_total);
                 quit = true;
             }
