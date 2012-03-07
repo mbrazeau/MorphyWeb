@@ -6,7 +6,8 @@
  *  Copyright 2012. All rights reserved.
  *
  */
-
+#include <string>
+using namespace std;
 typedef enum
 {
     /* MFL_PT_NUM_TAX (int) Number of taxa in the dataset, and the maximum number of
@@ -23,7 +24,7 @@ typedef enum
      * Nexus file and then check for errors */
     MFL_PT_NUM_CHAR,
     
-    /* MFL_PT_SEARCH_TYPE (int, 0=exhaustive, 1=branch-and-bound, 2=heuristic) 
+    /* MFL_PT_SEARCH_TYPE (see mfl_search_t enum for parameter) 
      * the type of search procedure used, whether it is exhaustive, 
      * branch-and-bound, or heuristic. The type of search would be a command by
      * itself OR would be a command option when either a bootstrap (BTS) or 
@@ -48,7 +49,7 @@ typedef enum
      * to choose whether they would like that limit to automatically increase */
     MFL_PT_TREELIMIT,
     
-    /* MFL_PT_BRANCH_SWAP_TYPE (int, TBR=0; SPR=1; NNI=2) There are three main 
+    /* MFL_PT_BRANCH_SWAP_TYPE (see mfl_branch_swap_t enum for parameter) There are three main 
      * types of branch swapping algorithm use ONLY in a heuristic search: 
      * nearest-neighbor interchange (NNI), subtree pruning and regrafting (SPR), 
      * and tree bisection and reconnection (TBR). One of these options would be 
@@ -70,16 +71,17 @@ typedef enum
      * other options set by the user. */
     MFL_PT_INPUT_DATA,
     
-    /* MFL_PT_ADD_SEQUENCE_TYPE (int, simple=0; random=1; asis=2; closest=3). 
+    /* MFL_PT_ADD_SEQUENCE_TYPE (see mfl_add_sequence_t enum for parameter). 
      * Selects the manner in which branches are added during the generation of
      * starting trees. */
     MFL_PT_ADD_SEQUENCE_TYPE,
     
-    /* MFL_PT_COLLAPSE (bool) collapse zero-length branches option is in effect
-     * during search. */
+    /* MFL_PT_COLLAPSE (bool)  
+     * collapse zero-length branches option is in effect during search. */
     MFL_PT_COLLAPSE,
     
-    /* MFL_PT_COLLAP_AT (int, ) sets whether to collapse branches with minimum 
+    /* MFL_PT_COLLAP_AT (see mfl_set_collapse_at_t enum for parameter)
+     * sets whether to collapse branches with minimum 
      * length 0, with maximum length 0, or have two incident nodes with equal 
      * apomorphies reconstruction sets. Default is to collapse nodes if their 
      * MAXIMUM length is 0 */
@@ -100,6 +102,51 @@ typedef enum
     MFL_RT_SHORTEST_TREE_LEN, // (int) number of steps of shortest tree found in search
     MFL_RT_SEARCH_TIME,       // (time_t) amount of time taken for the search
 } mfl_resultant_data_t;
+
+/* 
+ * mfl_search_t - used as a parameter when the MFL_PT_SEARCH_TYPE is being set
+ */
+typedef enum
+{
+    MFL_ST_EXHAUSTIVE,
+    MFL_ST_BRANCH_BOUND,
+    MFL_ST_HEURISTIC,
+} mfl_search_t;
+
+/*
+ * mfl_branch_swap_t - used as a parameter when the MFL_PT_BRANCH_SWAP_TYPE is being set
+ * CJD: you might want to make these more english like, or at least add comments to what each
+ * one is...
+ */
+typedef enum
+{
+    MFL_BST_TBR,
+    MFL_BST_SPR,
+    MFL_BST_NNI
+} mfl_branch_swap_t;
+
+/*
+ * mfl_add_sequence_t - used as a parameter when the MFL_PT_ADD_SEQUENCE_TYPE is being set
+ */
+typedef enum
+{
+    MFL_AST_SIMPLE,
+    MFL_AST_RANDOM,
+    MFL_AST_ASIS,
+    MFL_AST_CLOSEST,
+} mfl_add_sequence_t;
+
+/*
+ * mfl_set_collapse_at_t - use as a parameter when the MFL_PT_COLLAP_AT is being set
+ */
+typedef enum
+{
+    MFL_SC_MAX_LEN,
+    MFL_SC_MIN_LEN,
+    MFL_SC_EQUAL_RECONSTRUCTION_SETS,
+} mfl_set_collapse_at_t;
+
+typedef void* mfl_handle_t;
 
 mfl_handle_t* mfl_create_handle();
 void mfl_destroy_handle(mfl_handle_t* mfl_handle);
@@ -122,7 +169,10 @@ mfl_define_outgroup_taxa(list_of_taxon_names OR int tip_numbers); // Partition t
 mfl_constrain_outgroup_topology(); // user constrains the search to always include a particular subtree topology
 #endif
 
-
+/*
+** CJD: Here is an example call:
+** bool ret = mfl_set_parameter(mfl_handle, MFL_PT_BRANCH_SWAP_TYPE, (void*)MFL_BST_TBR);
+*/
 bool mfl_set_parameter(mfl_handle_t* mfl_handle, mfl_param_t param_type, void *param_data);
 
 /* 
@@ -219,15 +269,22 @@ int mfl_get_resultant_data(mfl_handle_t* mfl_handle, mfl_resultant_data_t result
  * have some conditional compilation setup. It'll save us a few headaches
  * down the road, I think.
  *
+ * CJD: Actually you can use the STL strings in Objective-C and then "it should just work"
+ * on all platforms. p.s. there is a long history with the phrase "it should just work"
+ * in the world of computer science: CS nerds love to say it, and managers hate to hear
+ * it... because when does it ever just work?
+ *
+ * Also making the search functions return bool, tho that might not be what you want?
+ * I am not sure, but something needs to go there to get this file to compile.
  */
 string mfl_get_saved_trees_newick(mfl_handle_t* mfl_handle);
 string mfl_get_saved_trees       (mfl_handle_t* mfl_handle);
 
-mfl_heuristic           (mfl_handle_t* mfl_handle);
-mfl_exhaustive          (mfl_handle_t* mfl_handle);
-mfl_branchandbound      (mfl_handle_t* mfl_handle);
-mfl_consensus           (mfl_handle_t* mfl_handle);
-mfl_collapse_zerolength (mfl_handle_t* mfl_handle);
+bool mfl_heuristic           (mfl_handle_t* mfl_handle);
+bool mfl_exhaustive          (mfl_handle_t* mfl_handle);
+bool mfl_branchandbound      (mfl_handle_t* mfl_handle);
+bool mfl_consensus           (mfl_handle_t* mfl_handle);
+bool mfl_collapse_zerolength (mfl_handle_t* mfl_handle);
 
 #ifdef VERSION_1_5
 mfl_bootstrap       (mfl_handle_t* mfl_handle);
@@ -252,5 +309,7 @@ mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast 
  * mfl_handle (or even in the results struct I suggested).
  */
 /*-Already written-*/
+#ifdef BEHIND_THE_SCENES
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease); // Called if the user gives a command to store more than the current/default number of trees
 void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes); // Called when the user gives a command to clear all trees in memory
+#endif

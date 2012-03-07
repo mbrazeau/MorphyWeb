@@ -62,7 +62,6 @@ NEW_COMMAND_DEFINE(STR            )
 NEW_COMMAND_DEFINE(Consens        )
 NEW_COMMAND_DEFINE(Collapse       )
 NEW_COMMAND_DEFINE(Report         )
-
 /*
  * The UI constructor puts the menu together, it stores each
  * menu option in a stl vector.

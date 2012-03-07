@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <time.h>
 
+#include "mfl.h"
 //#include <gsl/gsl_rng.h>
 
 #define MORPHY_MAX_STATES 31
@@ -40,17 +41,17 @@
 typedef struct {
     int n_taxa;
     int n_chars;
-    int search_type;
+    mfl_search_t search_type;
     int n_iterations;
     int n_treelimit;
-    int bswap_type;
+    mfl_branch_swap_t bswap_type;
     bool is_ratchet;
     char *input_data;
-    int addseq_type;
+    mfl_add_sequence_t addseq_type;
     bool collapse_nolen;
-    int collapse_at;
+    mfl_set_collapse_at_t collapse_at;
     bool gap_as_missing;
-} mfl_handle_t;
+} mfl_handle_s;
 
 typedef struct {
     long int n_rearrangements; // Number of tree topologies visited
@@ -316,4 +317,8 @@ void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingo
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                              int nchar, int numnodes, mfl_searchrec *searchrec, long int *current, bool *undertreelimit, 
                              int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
+
+mfl_handle_t *mfl_s2t(mfl_handle_s *mfl_handle);
+mfl_handle_s *mfl_t2s(mfl_handle_t *mfl_handle);
+
 /*End function prototypes*/
