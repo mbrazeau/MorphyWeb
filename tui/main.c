@@ -667,7 +667,7 @@ int main(void)
     
     pauseit();
     
-    srandom(7465557);
+    //srandom(38214003);
     
     //test_tree_comparison();
     //test_char_optimization();

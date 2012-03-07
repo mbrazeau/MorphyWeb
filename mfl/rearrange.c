@@ -371,50 +371,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
     if (n->start) {
         mfl_pruning_traversal(n->outedge, swapingon, savedtrees, ntax,
                               nchar, numnodes, searchrec);
-        if (searchrec->success) {
-            return;
-        }
-        n->start = false;
-        swapingon->trnodes[1]->start = true;
-        
-        up = n->outedge->next->outedge;
-        dn = n->outedge->next->next->outedge;
-        
-        subtr = n->outedge->next->next;
-        
-        if (!subtr->next->outedge->skip) {
-            
-            subtr->next->outedge->skip = true;
-            
-            up->visited = 1;
-            dn->visited = 1;
-            
-            mfl_join_nodes(up, dn);
-            
-            // Reoptimize the clipped tree
-            mfl_trav_allviews_ii(swapingon->trnodes[1], swapingon, ntax, nchar, trlp, cbestp);
-            
-            diff = 0;
-            
-            // Determine the cost of local reinsertion
-            diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
-            
-            mfl_regrafting_traversal(swapingon->trnodes[1]->outedge, subtr, swapingon, 
-                                     savedtrees, ntax, nchar, numnodes, searchrec, diff);
-            
-            up->visited = 0;
-            dn->visited = 0;
-            //mfl_devisit_tree(swapingon->trnodes, numnodes);
-            if (searchrec->success) {
-                return;
-            }
-            subtr->next->outedge->skip = false;
-            mfl_join_nodes(up, n->outedge->next);
-            mfl_join_nodes(dn, n->outedge->next->next);
-            
-            n->start = true;
-            swapingon->trnodes[1]->start = false;
-        }
         return;
     }
     
