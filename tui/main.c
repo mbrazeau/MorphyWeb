@@ -667,10 +667,10 @@ int main(void)
     
     pauseit();
     
-    /*random();*/
+    srandom(7465557);
     
     //test_tree_comparison();
-    test_char_optimization();
+    //test_char_optimization();
     
     numnodes = mfl_calc_numnodes(ntax);
     
