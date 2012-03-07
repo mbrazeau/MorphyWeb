@@ -508,8 +508,9 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
             if (i > 0) {
                 printf("swapping on tree: %li\n", j);
             }
-            searchrec->foundbettertr = false;
-            searchrec->success = false;
+            mfl_reset_searchrec(searchrec);
+            //searchrec->foundbettertr = false;
+            //searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
             mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 

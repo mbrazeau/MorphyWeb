@@ -79,27 +79,15 @@ bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields)
     int i, j;
     bool eqtrees = false;
     
-    /*for (i = 0; i < ntax - 1; ++i) {
+    for (i = 0; i < ntax - 1; ++i) {
         eqtrees = false;
         //if (!(bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2))) {
           //  eqtrees = false;
-        /}
-        for (j = 0; j < ntax - 1; ++j) {
-            if (t1[i] == t2[j]) {
-                eqtrees = true;
-                continue;
-            }
-        }
-        if (!eqtrees) {
-            break;
-        }
-    }*/
-    for (i = 0; i < ntax - 1; ++i) {
-        eqtrees = false;
+        //}
         for (j = 0; j < ntax - 1; ++j) {
             if (*t1[i] == *t2[j]) {
                 eqtrees = true;
-                break;
+                continue;
             }
         }
         if (!eqtrees) {
