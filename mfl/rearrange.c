@@ -279,12 +279,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         //mfl_insert_branch(subtr, up, ntax);
         //trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
         
-        if (trlength == 318) {
-            searchrec->undertreelimit = false;
-            searchrec->success = true;
-            return;
-        }
-        
         searchrec->niter_total = searchrec->niter_total + 1;
         //printf("Left to try: %li\n", *leftotry);
         if (trlength < searchrec->bestinrep) {
