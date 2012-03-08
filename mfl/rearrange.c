@@ -340,20 +340,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     }
 }
 
-void mfl_trav_allviews_ii(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
-{
-    
-    /* For subtree reoptimization only. */
-    
-    mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
-    mfl_temproot(t, 1, ntax);
-    mfl_reopt_preorder(t->root, nchar);
-    mfl_undo_temproot(ntax, t);
-    //mfl_tip_reopt(t, ntax, nchar);
-    
-}
-
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, mfl_searchrec *searchrec)
 {
@@ -363,8 +349,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
     
     node *p, *clipnode, *up, *dn, *subtr;
     int diff = 0;
-    int trl = 0, cbest = 0;
-    int *trlp = &trl, *cbestp = &cbest;
     
     //mfl_devisit_tree(swapingon->trnodes, numnodes);
     
@@ -405,7 +389,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 mfl_join_nodes(up, dn);
 
                 // Reoptimize the clipped tree
-                mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
+                mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
                 
                 // Reoptimize the subtree
                 mfl_reopt_subtr_root(subtr->next->outedge, nchar);
@@ -433,7 +417,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
             }
         }
         else {
-            mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, trlp, cbestp);
+            mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
         }
         p = p->next;
         clipnode = n->next->outedge;
