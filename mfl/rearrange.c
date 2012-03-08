@@ -245,6 +245,36 @@ long int mfl_spr_leftotry(int ntax)
     return rleft;
 }
 
+void print_visited(nodearray nds, int numnodes)
+{
+	int i;
+	node *p;
+	for (i = 0; i < numnodes; ++i) {
+		if (nds[i]->visited) {
+			printf("*");
+		}
+		else {
+			printf(".");
+		}
+		if (nds[i]->next) {
+			printf("/");
+			p = nds[i]->next;
+			while (p != nds[i]) {
+				if (p->visited) {
+					printf("*");
+				}
+				else {
+					printf(".");
+				}
+				p = p->next;
+			}
+			printf("/");
+		}
+		
+	}
+	printf("\n\n");
+}
+
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, 
                               tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff)
 {
