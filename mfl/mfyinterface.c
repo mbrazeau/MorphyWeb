@@ -22,39 +22,39 @@ void mfl_destroy_handle(mfl_handle_t *mfl_handle)
 
 bool mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->n_taxa = (int)(param_data);
+    mfl_struct->n_taxa = (long int)(param_data);
     return true;
 }
 
 bool mfl_set_nchar(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->n_chars = (int)(param_data);
+    mfl_struct->n_chars = (long int)(param_data);
     return true;
 }
 
 bool mfl_set_searchtype(mfl_handle_s *mfl_struct, void *param_data)
 {
     /* might want to put range checks in here... with error return... */
-    mfl_struct->search_type = (mfl_search_t)(int)(param_data);
+    mfl_struct->search_type = (mfl_search_t)(long int)(param_data);
     return true;
 }
 
 bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->n_iterations = (int)(param_data);
+    mfl_struct->n_iterations = (long int)(param_data);
     return true;
 }
 
 bool mfl_set_treelimit(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->n_treelimit = (int)(param_data);
+    mfl_struct->n_treelimit = (long int)(param_data);
     return true;
 }
 
 bool mfl_set_branchswap_t(mfl_handle_s *mfl_struct, void *param_data)
 {
     /* might want to put range checks in here... with error return... */
-    mfl_struct->bswap_type = (mfl_branch_swap_t)(int)(param_data);
+    mfl_struct->bswap_type = (mfl_branch_swap_t)(long int)(param_data);
     return true;
 }
 
@@ -73,7 +73,7 @@ bool mfl_attach_inputdata(mfl_handle_s *mfl_struct, void *param_data)
 bool mfl_set_addseq_t(mfl_handle_s *mfl_struct, void *param_data)
 {
     /* might want to put range checks in here... with error return... */
-    mfl_struct->addseq_type = (mfl_add_sequence_t)(int)param_data;
+    mfl_struct->addseq_type = (mfl_add_sequence_t)(long int)param_data;
     return true;
 }
 
@@ -86,7 +86,7 @@ bool mfl_set_collapse(mfl_handle_s *mfl_struct, void *param_data)
 bool mfl_set_collapse_value(mfl_handle_s *mfl_struct, void *param_data)
 {
     /* might want to put range checks in here... with error return... */
-    mfl_struct->collapse_at = (mfl_set_collapse_at_t)(int)param_data;
+    mfl_struct->collapse_at = (mfl_set_collapse_at_t)(long int)param_data;
     return true;
 }
 
