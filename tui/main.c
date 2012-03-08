@@ -652,9 +652,18 @@ void mini_test_analysis(void)
     }
     printf("\n");
     
-    tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
+    //tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
     
-    mfl_heuristic_search(ntax, nchar, numnodes, usrTipdata, savedtrees, besttreelen);
+    mfl_handle_s *mfl_handle = mfl_t2s(mfl_create_handle());
+    
+    mfl_handle->n_taxa = ntax;
+    mfl_handle->n_chars = nchar;
+    mfl_handle->input_data = usrTipdata;
+    mfl_handle->gap_as_missing = true;
+    mfl_handle->addseq_type = MFL_AST_RANDOM;
+    mfl_handle->bswap_type = MFL_BST_SPR;
+    
+    mfl_heuristic_search(mfl_handle);
     
     //mfl_clear_treebuffer(savedtrees, , numnodes);   
 }

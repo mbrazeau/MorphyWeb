@@ -457,14 +457,19 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
 /* Tree bisection and reconnection (TBR) */
 /**/
 
-void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata, 
-                    tree **savedtrees, int starttreelen)
+
+void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *txtsrcdata, tree **savedtrees, int starttreelen*/)
 {
-    int newtrlen;
+    int ntax = mfl_handle->n_taxa, nchar = mfl_handle->n_chars;
+    int numnodes = mfl_calc_numnodes(ntax);
     long int i = 0, j = 0;
     long int nreps = 0;
     double timein = 0;
     double timeout = 0;
+    
+    void (*branch_swapper)(node*, tree*, tree**, int, int, int, mfl_searchrec*) = NULL;
+    
+    tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
     
     tree *newreptree;
     
@@ -472,7 +477,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
     
     bool quit = false;
     
-    charstate *tipdata = mfl_convert_tipdata(txtsrcdata, ntax, nchar, true);
+    charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
     
     mfl_searchrec *searchrec = mfl_create_searchrec();
         
@@ -486,9 +491,27 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
     nreps = 1;
     /* end testing only*/
     
+    switch (mfl_handle->bswap_type) {
+        case 0:
+            printf("Not implemented\n");
+            return; // Temporary as would fail if tried
+            break;
+        case 1:
+            branch_swapper = &mfl_pruning_traversal;
+            break;
+        case 2:
+            //branch_swapper = &mfl_nni_traversal; // Needs partial re-write to fit this calling function
+            printf("Not implemented\n");
+            return; // Temporary as would fail if tried
+            break;
+
+        default:
+            break;
+    }
+    
     for (i = 0; i < nreps; ++i) {
         
-        newreptree = mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, addseq_type, savedtrees);
+        newreptree = mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, mfl_handle->addseq_type, savedtrees);
         
         if (i == 0) {
             /* The particular addition sequence will have to be selected by the user */
@@ -527,7 +550,7 @@ void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata,
             //searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
-            mfl_pruning_traversal(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
+            branch_swapper(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                   ntax, nchar, numnodes, searchrec);
             if (searchrec->foundbettertr) {
                 if (i > 0) {

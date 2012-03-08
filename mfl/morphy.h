@@ -67,7 +67,7 @@ typedef struct {
     int num_islands;    // Number of parsimony islands hit
     int *times_hit      // List of times each island was hit
 #endif    
-} resultant_data;
+} resultant_data_t;
 
 
 typedef int32_t charstate;
@@ -308,8 +308,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **save
                               int nchar, int numnodes, mfl_searchrec *searchrec, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, mfl_searchrec *searchrec);
-void mfl_heuristic_search(int ntax, int nchar, int numnodes, char *txtsrcdata, 
-                    tree **savedtrees, int starttreelen);
+void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int numnodes, char *txtsrcdata, tree **savedtrees, int starttreelen*/);
 void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingon, 
                         tree **savedtrees, int ntax, int nchar, int numnodes, 
                         long int *current, 
