@@ -986,6 +986,84 @@ void mfl_unroot(int ntax, tree *rootedtree)
     
 }
 
+/*void mfl_save_newick(node *n, char *nwkstr)
+{*/   
+    /* Stores a treen in a string in Newick format. In an unrooted tree, 
+     * function will be called on a terminal node that has its start variable 
+     * set to 1. */
+    
+    /*node *p;
+    
+    if (n->start) {
+        printf("(%i,", n->tip);
+        mfl_save_newick(n->outedge, nwkstr);
+        printf(")");
+        return;
+    }   
+    
+    if (n->tip && n->outedge->next->outedge) {
+        if (n->outedge->next->outedge->tip && 
+            !n->outedge->next->outedge->start) {
+            printf("%i", n->tip);
+            return;
+        }
+    }
+    
+    if (n->tip && !n->start) {
+        printf("%i", n->tip);
+        return;
+    }
+    
+    printf("(");
+    
+    p = n->next;
+    while (p != n) {
+        mfl_save_newick(p->outedge, nwkstr);
+        p = p->next;
+        if (p != n) {
+            printf(",");
+        }
+    }   
+    printf(")");
+}
+
+int mfl_calc_nwk_size(int ntax)
+{
+    int i = 1, j;
+    int count = 0;
+    int maxintchars;
+    
+    i = ntax;
+    count = 0;
+    
+    while (i != 0) {
+        --i;
+        j = i;
+        while (j <= ntax) {
+            j = j * 10;
+            ++count;
+        }
+    }
+    
+    maxintchars = maxintchars + count;
+    
+    //Something
+    
+    maxintchars = maxintchars + (ntax); // The number of internal nodes + 1 for the terminal semicolon
+    
+    return maxintchars;
+    
+}
+
+char *mfl_trstring(tree *t, int ntax)
+{
+    int strsize;
+    char *trstring;
+    
+    
+    
+    return trstring;
+}*/
 
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
 {

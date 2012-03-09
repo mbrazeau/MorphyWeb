@@ -593,6 +593,11 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     mfl_resultant_data_s *hsearch_results = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
     
+    hsearch_results->bestlength = searchrec->bestlength;
+    hsearch_results->n_rearrangements = searchrec->niter_total;
+    hsearch_results->n_savetrees = searchrec->nextinbuffer;
+    hsearch_results->searcht = (timeout - timein);
+    
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a string
      * and handed over to the interface for outputting to screen. */
