@@ -169,3 +169,25 @@ mfl_handle_s *mfl_t2s(mfl_handle_t *mfl_handle)
 {
     return (mfl_handle_s*)mfl_handle;
 }
+
+mfl_resultant_data_s *mfl_morphy_controller(mfl_handle_s *mfl_handle)
+{
+    
+    mfl_resultant_data_s *mfl_results;
+    
+    switch (mfl_handle->search_type) {
+        case MFL_ST_EXHAUSTIVE:
+            printf("Not implemented\n");
+            //mfl_results = mfl_exhaustive(mfl_handle);
+            break;
+        case MFL_ST_BRANCH_BOUND:
+            printf("Not implemented\n");
+            //mfl_results = mfl_branch_bound(mfl_handle);
+            break;
+        case MFL_ST_HEURISTIC:
+            return mfl_results = mfl_heuristic_search(mfl_handle);
+            break;
+        default:
+            break;
+    }
+}

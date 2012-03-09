@@ -458,7 +458,26 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
 /**/
 
 
-void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *txtsrcdata, tree **savedtrees, int starttreelen*/)
+void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int, int , int, mfl_searchrec*)
+{
+    switch (mfl_handle->bswap_type) {
+        case MFL_BST_TBR:
+            printf("Not implemented\n");
+            //return; // Temporary as would fail if tried
+            break;
+        case MFL_BST_SPR:
+            return &mfl_pruning_traversal;
+        case MFL_BST_NNI:
+            printf("Not implemented\n");
+            //return; // Temporary as would fail if tried
+            break;
+        default:
+            break;
+    }
+    
+}
+
+mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
 {
     int ntax = mfl_handle->n_taxa, nchar = mfl_handle->n_chars;
     int numnodes = mfl_calc_numnodes(ntax);
@@ -466,6 +485,7 @@ void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *t
     long int nreps = 0;
     double timein = 0;
     double timeout = 0;
+    bool quit = false;
     
     void (*branch_swapper)(node*, tree*, tree**, int, int, int, mfl_searchrec*) = NULL;
     
@@ -475,7 +495,7 @@ void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *t
     
     int addseq_type = 1;
     
-    bool quit = false;
+    
     
     charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
     
@@ -491,23 +511,7 @@ void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *t
     nreps = 1;
     /* end testing only*/
     
-    switch (mfl_handle->bswap_type) {
-        case 0:
-            printf("Not implemented\n");
-            return; // Temporary as would fail if tried
-            break;
-        case 1:
-            branch_swapper = &mfl_pruning_traversal;
-            break;
-        case 2:
-            //branch_swapper = &mfl_nni_traversal; // Needs partial re-write to fit this calling function
-            printf("Not implemented\n");
-            return; // Temporary as would fail if tried
-            break;
-
-        default:
-            break;
-    }
+    branch_swapper = mfl_swap_controller(mfl_handle);
     
     for (i = 0; i < nreps; ++i) {
         
@@ -587,6 +591,8 @@ void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *t
     
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
+    mfl_resultant_data_s *hsearch_results = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
+    
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a string
      * and handed over to the interface for outputting to screen. */
@@ -610,4 +616,6 @@ void mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, char *t
     /* END OF TESTING-ONLY SECTION */
     
     mfl_destroy_searchrec(searchrec);
+    
+    return hsearch_results;
 }
