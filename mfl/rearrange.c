@@ -287,11 +287,11 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         return;
     }
     
-    /*if (n->start) {
+    if (n->start) {
         mfl_regrafting_traversal(n->outedge, subtr, swapingon, savedtrees, ntax,
                                  nchar, numnodes, searchrec, diff);
         return;
-    }*/
+    }
     
     int trlength = 0;
     int al = 0;
