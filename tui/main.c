@@ -390,6 +390,7 @@ void test_char_optimization(void)
     char trstring[] = "(7,((8,(9,10)),(((((1,2),3),(4,(11,12))),5),6)));";
     tree *testtree = readNWK(trstring, 1);
     
+    
     printf("The test tree:\n");
     printNewick(testtree->root);
     printf("\n");
@@ -401,6 +402,8 @@ void test_char_optimization(void)
     int numnodes = mfl_calc_numnodes(ntax);
     charstate *tipdata;
     node *mvnode;
+    
+    mfl_trstring(testtree, ntax);
     
     //mfl_start_drawtree(testtree, ntax);
     
@@ -679,7 +682,7 @@ int main(void)
     //srandom(1);
     
     //test_tree_comparison();
-    //test_char_optimization();
+    test_char_optimization();
     
     numnodes = mfl_calc_numnodes(ntax);
     

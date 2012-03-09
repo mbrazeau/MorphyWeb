@@ -21,6 +21,10 @@
 #include "mfl.h"
 //#include <gsl/gsl_rng.h>
 
+
+#include <iostream>
+using namespace std;
+
 #define MORPHY_MAX_STATES 31
 #define MAX_OG_SIZE 20
 #define MAX_IG_SIZE 500
@@ -282,6 +286,7 @@ void mfl_point_bottom(node *n, node **nodes);
 void mfl_root_tree(tree *trtoroot, int root, int ntax);
 void mfl_unroot(int ntax, tree *rootedtree);
 void mfl_collap_binode(node *n);
+string *mfl_trstring(tree *t, int ntax);
 
 /*in readnewick.c*/
 struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *pos, nodearray nds, bool isRooted);
