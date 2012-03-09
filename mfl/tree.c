@@ -1047,9 +1047,6 @@ string *mfl_trstring(tree *t, int ntax)
 
     *trstring += string(";");
     
-    printf("The testing tree:\n");
-    cout << *trstring << endl;
-    
     return trstring;
 }
 
