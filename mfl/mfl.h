@@ -293,23 +293,3 @@ mfl_jackknife       (mfl_handle_t* mfl_handle);
 mfl_safe_taxonomic_reduction(list_of_ordered_characters);
 mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast heuristic search, but is subordinate to mfl_heuristic
 #endif
-
-/* 
- * CJD: I think the resize treebuffer is not an external function, if the user changes the number of trees to store, 
- * then the mfl_set_param will be called with MFL_PT_NUM_TREES, and that will invoke the resize_treebuffer automagically.
- * 
- * The clear_treebuffer, I can see as being an external function, however I am not sure if that is the interface to it.
- * I am not sure why the params numsavedtrees, and numnodes are needed, could that data be stored in the tree datastruct?
- * Or in mfl_handle? in which case the mfl_clear_treebuffer function just takes mfl_handle_t* mfl_handle as a parameter.
- * Additionally if we are going to make tree a part of the API, then it should really be called mfl_tree... but I am not 100%
- * sure that we need to export the tree datastruct...
- *
- * MDB: Right. These are probably both 'behind the scenes'. Not sure how
- * numsavedtrees could be stored usefully in the tree struct. More likely in 
- * mfl_handle (or even in the results struct I suggested).
- */
-/*-Already written-*/
-#ifdef BEHIND_THE_SCENES
-void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease); // Called if the user gives a command to store more than the current/default number of trees
-void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnodes); // Called when the user gives a command to clear all trees in memory
-#endif
