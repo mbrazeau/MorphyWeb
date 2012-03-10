@@ -464,11 +464,29 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
     }   
 }
 
-void mfl_regrafting_traversal_ii(node *n, tree *swapingon, int ntax, int nchar, mfl_searchrec* searchrec, int diff)
+void mfl_regrafting_traversal_ii(node *n, node *subtr, tree *swapingon, int ntax, int nchar, mfl_searchrec* searchrec, int diff)
 {
     if (n->tip) {
         return;
     }
+    
+    // Check that the edge between n and it's neighbor is not the original site
+    
+        // Check the cost of an insertion of subtr between n and its neighbor, n->outedge
+    
+        // If the insertion cost + bestoverall length - diff is less than bestoverall length
+            // Insert the branch, wipe the whole tree buffer and save only the new tree
+            // return and begin swapping anew on the tree from the start
+    
+        // If the value is == best overall length
+            // Check that the tree is not duplicate
+                // Add the tree to the tree buffer if it is new
+    
+    
+    mfl_regrafting_traversal_ii(n->next->outedge, subtr, swapingon, ntax, nchar, searchrec, diff);
+    mfl_regrafting_traversal_ii(n->next->next->outedge, subtr, swapingon, ntax, nchar, searchrec, diff);
+    
+    
 }
 
 void mfl_pruning_traversal_ii(node *n, tree *swapingon, int ntax, int nchar, mfl_searchrec* searchrec)
@@ -515,7 +533,7 @@ void mfl_pruning_traversal_ii(node *n, tree *swapingon, int ntax, int nchar, mfl
         diff = mfl_subtr_reinsertion(subtr, n1, n2, nchar);
         
         // Proceed with regrafting traversal
-        mfl_regrafting_traversal_ii(swapingon->trnodes[0], swapingon, ntax, nchar, searchrec, diff);
+        mfl_regrafting_traversal_ii(swapingon->trnodes[0]->outedge, subtr, swapingon, ntax, nchar, searchrec, diff);
         
         // Put subtree back in place
         mfl_join_nodes(tgtroot->next, n1);
