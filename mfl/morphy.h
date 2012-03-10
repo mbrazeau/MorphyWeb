@@ -87,8 +87,7 @@ typedef struct node {
     int initialized;
     int order;
     int nodelen;
-    unsigned long long int stid;
-    unsigned long long int pathid;
+    int cpindex;
     bool success;
     bool finished;
     bool start;
@@ -149,6 +148,7 @@ typedef struct {
     int bestlength;
     int bestinrep;
     int trbufstart;
+    int tipscoll;
     bool foundbettertr;
     bool success;
     long int niter_total;
@@ -174,12 +174,12 @@ int mfl_compare_ints(const void * a, const void * b);
 int mfl_compare_ints2(const void * a, const void * b);
 int mfl_count_fields(int ntax);
 bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields);
-bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *current);
 void mfl_set_bipartition(node *n, node *d);
 void mfl_set_tipsabove(node *n, int numfields, taxbipart **hashtab, int *bpcounter);
 void mfl_free_hashtab(taxbipart **hashtab, int numbiparts);
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes);
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
+bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *current);
 void test_tree_comparison(void);
 
 /*in coptim.c*/
@@ -309,7 +309,7 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
                     tree **savedtrees, int starttreelen);
 void test_nni(int ntax, int numnodes);
 long int mfl_spr_leftotry(int ntax);
-void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon);
+void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int, int , int, mfl_searchrec*);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **savedtrees, int ntax, 
                               int nchar, int numnodes, mfl_searchrec *searchrec, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 

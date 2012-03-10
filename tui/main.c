@@ -663,7 +663,7 @@ void mini_test_analysis(void)
     mfl_handle->n_chars = nchar;
     mfl_handle->input_data = usrTipdata;
     mfl_handle->gap_as_missing = true;
-    mfl_handle->addseq_type = MFL_AST_RANDOM;
+    mfl_handle->addseq_type = MFL_AST_ASIS;
     mfl_handle->bswap_type = MFL_BST_SPR;
     
     mfl_heuristic_search(mfl_handle);
@@ -679,7 +679,7 @@ int main(void)
     
     pauseit();
     
-    //srandom(1);
+    //srandom(8);
     
     //test_tree_comparison();
     test_char_optimization();

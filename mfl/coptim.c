@@ -346,9 +346,9 @@ void mfl_reopt_postorder(node *n, int nchar)
     if (n->tip) {
         return;
     }
-    if (n->finished) {
+    /*if (n->finished) {
         return;
-    }
+    }*/
     
     p = n->next;
     while (p != n) {
@@ -360,13 +360,13 @@ void mfl_reopt_postorder(node *n, int nchar)
         p = p->next;
     }
     
-    if (!allsame) {
+    //if (!allsame) {
         mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
-    }
+    //}
     
-    if (n->outedge) {
+    /*if (n->outedge) {
         n->finished = true;
-    }
+    }*/
     
 }
 
@@ -381,7 +381,7 @@ void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
         }
     }
     
-    if (n->tip || n->visited) {
+    if (n->tip) {// || n->visited) {
         return;
     }
     

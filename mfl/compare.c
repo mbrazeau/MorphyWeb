@@ -195,7 +195,7 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
     return hashtab;
 }
 
-bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *current)
+bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *current)
 {
     int i = 0;
     int numfields = mfl_count_fields(ntax);
@@ -210,7 +210,7 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     
     temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
     
-    for (i = 0; i < *current; ++i ) {
+    for (i = *start; i < *current; ++i ) {
         if (mfl_compare_trees(temphashtab, savedtrees[i]->bipartitions, ntax, numfields)) {
             if (newtopol != savedtrees[i]) {
                 foundtr = true;
@@ -239,6 +239,52 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     //printf("time in comparison: %g\n", totaltime);
     
     return foundtr;
+}
+
+void mfl_clear_cpindex(tree *t, int numnodes)
+{
+    int i;
+    node *p;
+    for (i = 0; i < numnodes; ++i) {
+        t->trnodes[i]->cpindex = 0;
+        if (t->trnodes[i]->next) {
+            p = t->trnodes[i]->next;
+            while (p != t->trnodes[i]) {
+                p->cpindex = 0;
+                p = p->next;
+            }
+        }
+    }
+}
+
+int *mfl_compress_tree(tree *t, int ntax, int numnodes)
+{
+    int i, j;
+    node *p;
+    
+    int *storedtr = (int*)malloc(numnodes * sizeof(int));
+    
+    if (!t->root) {
+        mfl_root_tree(t, 0, ntax);
+    }
+    
+    mfl_clear_cpindex(t, numnodes);
+    
+    t->root->cpindex = ntax + 1;
+    
+    j = ntax + 1;
+    for (i = 0; i < numnodes; ++i) {
+        
+        while (!p->cpindex) {
+            p = p->next;
+            if (p->bottom) {
+                p = p->outedge;
+                ++j;
+            }
+        }
+    }
+    
+    mfl_unroot(ntax, t);
 }
 
 void test_tree_comparison(void)
