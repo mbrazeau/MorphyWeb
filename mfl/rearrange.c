@@ -641,7 +641,7 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
             //searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
-            //mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
+            mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
             branch_swapper(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                   ntax, nchar, numnodes, searchrec);
             if (searchrec->foundbettertr) {
