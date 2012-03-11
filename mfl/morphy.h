@@ -324,6 +324,9 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                              int nchar, int numnodes, mfl_searchrec *searchrec, long int *current, bool *undertreelimit, 
                              int *currentbesttree, bool *foundbettertree, bool *success, long int *leftotry);
 
+
+void mfl_pruning_traversal_ii(node *n, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec* searchrec);
+
 /* in mfyinterface.c*/
 mfl_handle_t* mfl_create_handle(void);
 void mfl_destroy_handle(mfl_handle_t *mfl_handle);

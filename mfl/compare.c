@@ -211,7 +211,7 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
     
     for (i = *start; i < *current; ++i ) {
-        if (mfl_compare_trees(temphashtab, savedtrees[i]->bipartitions, ntax, numfields)) {
+        if (!mfl_compare_trees(temphashtab, savedtrees[i]->bipartitions, ntax, numfields)) {
             if (newtopol != savedtrees[i]) {
                 foundtr = true;
                 break;
@@ -260,7 +260,7 @@ void mfl_clear_cpindex(tree *t, int numnodes)
 int *mfl_compress_tree(tree *t, int ntax, int numnodes)
 {
     int i, j;
-    node *p;
+    node *p, *n;
     
     int *storedtr = (int*)malloc(numnodes * sizeof(int));
     
@@ -268,16 +268,29 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
         mfl_root_tree(t, 0, ntax);
     }
     
-    mfl_clear_cpindex(t, numnodes);
+    mfl_clear_cpindex(t, numnodes); // Optimization: The stuff in this function could be done simultaneously in the rooting function
     
-    t->root->cpindex = ntax + 1;
+    t->root->cpindex = ntax;
+    p = t->root->next;
+    while (p != t->root) {
+        p->cpindex = t->root->cpindex;
+        p = p->next;
+    }
     
     j = ntax + 1;
+    
     for (i = 0; i < numnodes; ++i) {
         
+        p = t->trnodes[i]->outedge;
+        storedtr[i] = j;
+        
         while (!p->cpindex) {
+            
+            p->cpindex = j;
             p = p->next;
+            
             if (p->bottom) {
+                n = p;
                 p = p->outedge;
                 ++j;
             }
@@ -285,6 +298,25 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
     }
     
     mfl_unroot(ntax, t);
+}
+
+void test_tree_compress(void)
+{
+    
+    char testtr[] = "((2,3),(1,(4,5)));";
+    int ntax = 5;
+    int numnodes = 2 * ntax - 1;
+    
+    tree *t = readNWK(testtr, true);
+    mfl_unroot(5, t);
+    
+    int *compressed = mfl_compress_tree(t, ntax, numnodes);
+    
+    int i;
+    for (i = 0; i < numnodes; ++i) {
+        printf("%i ", compressed);
+    }
+    
 }
 
 void test_tree_comparison(void)
