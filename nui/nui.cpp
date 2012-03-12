@@ -68,6 +68,7 @@ NEW_COMMAND_DEFINE(Report         )
  */
 CNexusUserInterface::CNexusUserInterface()
 {
+    m_mflHandle = NULL;
     m_pNexusParse = NULL;
     m_strCwd = "./";
 
@@ -127,6 +128,12 @@ CNexusUserInterface::~CNexusUserInterface()
     {
         m_fCommandLog.close();
     }
+
+    if (m_mflHandle)
+    {
+        mfl_destroy_handle(m_mflHandle);
+        m_mflHandle = NULL;
+    }    
 }
 
 /*
@@ -198,6 +205,11 @@ bool CNexusUserInterface::OpenNexusFile()
         m_pNexusParse = new CNexusParse();
         if (m_pNexusParse)
         {
+            if (m_mflHandle)
+            {
+                mfl_destroy_handle(m_mflHandle);
+            }
+            m_mflHandle = mfl_create_handle();
             if (m_pNexusParse->ReadNexusFile(&strFilename, NULL))
             {
                 cout<<" "<<strFilename<<" open successfully"<<endl;
@@ -245,6 +257,13 @@ bool CNexusUserInterface::CloseNexusFile(bool bVerbose)
     {
         cout<<" Error: No file is currently open"<<endl;
     }
+
+    if (m_mflHandle)
+    {
+        mfl_destroy_handle(m_mflHandle);
+        m_mflHandle = NULL;
+    }
+
     return true;
 }
 

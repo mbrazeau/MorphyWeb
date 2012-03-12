@@ -304,7 +304,7 @@ void mfl_clear_cpindex(tree *t, int numnodes)
 int *mfl_compress_tree(tree *t, int ntax, int numnodes)
 {
     int i, j;
-    node *p, *n;
+    node *p;
     bool wasrooted = true;
     
     int *storedtr = (int*)malloc(numnodes * sizeof(int));
@@ -392,10 +392,10 @@ void test_tree_comparison(void)
     int numfields = mfl_count_fields(ntax);
     
     tree *t1 = readNWK(tree1, 0);
-    printNewick(t1->trnodes[0]);
+    /*printNewick(t1->trnodes[0]);*/
     printf("\n");
     tree *t2 = readNWK(tree2, 0);
-    printNewick(t2->trnodes[0]);
+    /*printNewick(t2->trnodes[0]);*/
     printf("\n");
     /*tree *t3 = readNWK(tree3, 0);
     printNewick(t3->trnodes[0]);
@@ -409,11 +409,11 @@ void test_tree_comparison(void)
     
     // Get bipartitions for t1
     t1->bipartitions = mfl_tree_biparts(t1, ntax, numnodes);
-    print_hashtab(t1->bipartitions, ntax);
+    /*print_hashtab(t1->bipartitions, ntax);*/
     
     // Get bipartitions for t2
     t2->bipartitions = mfl_tree_biparts(t2, ntax, numnodes);
-    print_hashtab(t2->bipartitions, ntax);
+    /*print_hashtab(t2->bipartitions, ntax);*/
     
     // Get bipartitions for t3
     /*t3->bipartitions = mfl_tree_biparts(t3, ntax, numnodes);

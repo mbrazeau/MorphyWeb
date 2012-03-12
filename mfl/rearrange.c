@@ -228,7 +228,7 @@ void mfl_nni_search(int ntax, int nchar, int numnodes, charstate *tipdata,
     for (i = 0; i < *nxtintrbuf; ++i) {
         printf("Tree %li:\n", i + 1);
         mfl_root_tree(savedtrees[i], 0, ntax);
-        printNewick(savedtrees[i]->root);
+        /*printNewick(savedtrees[i]->root);*/
         printf(";\n");
         printf("Length: %i\n", savedtrees[i]->length);
     }
@@ -491,7 +491,7 @@ void mfl_regrafting_traversal_ii(node *n, node *subtr, tree *swapingon, int ntax
 
 void mfl_pruning_traversal_ii(node *n, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec* searchrec)
 {
-    int diff;
+    /*int diff;*/
     node *p, *subtr, *n1, *n2, *tgtroot;
     
     if (n->start) {
@@ -537,8 +537,7 @@ void mfl_pruning_traversal_ii(node *n, tree *swapingon, tree **savedtrees, int n
             mfl_join_nodes(subtr, tgtroot);
             
             // Calculate the cost of a local reinsertion
-            diff = 0;
-            diff = mfl_subtr_reinsertion(subtr, n1, n2, nchar);
+            /*diff = */mfl_subtr_reinsertion(subtr, n1, n2, nchar);
             
             // Proceed with regrafting traversal
             //mfl_regrafting_traversal_ii(swapingon->trnodes[0]->outedge, subtr, swapingon, ntax, nchar, searchrec, diff);
@@ -574,7 +573,7 @@ void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int
         default:
             break;
     }
-    
+    return NULL;
 }
 
 mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
@@ -586,16 +585,12 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
     double timein = 0;
     double timeout = 0;
     bool quit = false;
-    bool pass2 = true;
     
     void (*branch_swapper)(node*, tree*, tree**, int, int, int, mfl_searchrec*) = NULL;
     
     tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
     
     tree *newreptree;
-    
-    int addseq_type = 1;
-    
     
     
     charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
@@ -628,7 +623,7 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
             
             /* TESTING ONLY */
             printf("The starting tree:\n");
-            printNewick(savedtrees[0]->trnodes[0]);
+            /*printNewick(savedtrees[0]->trnodes[0]);*/
             printf("\n");
             printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
             /* END TESTING ONLY */
@@ -641,7 +636,7 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
             j = searchrec->nextinbuffer;
             searchrec->trbufstart = searchrec->nextinbuffer;
             searchrec->foundbettertr = false;
-            printf("j = %i\n", searchrec->nextinbuffer);
+            printf("j = %li\n", searchrec->nextinbuffer);
             quit = false;
             //break;
         }
@@ -679,7 +674,7 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
             
         } while (!quit);
         
-        printf("Next in buffer at end of rep: %i\n", searchrec->nextinbuffer);
+        printf("Next in buffer at end of rep: %li\n", searchrec->nextinbuffer);
         
         //printf("best in rep: %i\n", searchrec->bestinrep);
         //printf("best overall: %i\n", searchrec->bestlength);
@@ -712,7 +707,7 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
-        printNewick(savedtrees[j]->root);
+        /*printNewick(savedtrees[j]->root);*/
         printf(";\n");
     }
     printf("\n");

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "NexusParse.h"
+#include "mfl.h"
 
 #define NUI_MAJOR_VERSION   0
 #define NUI_MINOR_VERSION   1
@@ -95,6 +96,7 @@ private:
     string m_strCwd;
 
     myofstream m_fCommandLog;
+    mfl_handle_t m_mflHandle;
 };
 
 

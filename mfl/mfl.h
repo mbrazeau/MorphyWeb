@@ -148,8 +148,8 @@ typedef enum
 
 typedef void* mfl_handle_t;
 
-mfl_handle_t* mfl_create_handle();
-void mfl_destroy_handle(mfl_handle_t* mfl_handle);
+mfl_handle_t mfl_create_handle();
+void mfl_destroy_handle(mfl_handle_t mfl_handle);
 
 /* MDB: Now that I see some of this new code, I think I now get what the 
  * problem with these functions is. Indeed, the lists of included and excluded 
@@ -159,8 +159,8 @@ void mfl_destroy_handle(mfl_handle_t* mfl_handle);
  */
 
 #ifdef MFL_EXCLUDES
-mfl_set_excludes(mfl_handle_t*, taxa_to_exclude, chars_to_exclude); // Optionally remove some taxa or characters from the analysis.
-mfl_set_includes(mfl_handle_t*, taxa_to_include, chars_to_include); // Optionally reinstate removed taxa or characters to the analysis
+mfl_set_excludes(mfl_handle_t, taxa_to_exclude, chars_to_exclude); // Optionally remove some taxa or characters from the analysis.
+mfl_set_includes(mfl_handle_t, taxa_to_include, chars_to_include); // Optionally reinstate removed taxa or characters to the analysis
 #endif
 
 
@@ -173,7 +173,7 @@ mfl_constrain_outgroup_topology(); // user constrains the search to always inclu
 ** CJD: Here is an example call:
 ** bool ret = mfl_set_parameter(mfl_handle, MFL_PT_BRANCH_SWAP_TYPE, (void*)MFL_BST_TBR);
 */
-bool mfl_set_parameter(mfl_handle_t* mfl_handle, mfl_param_t param_type, void *param_data);
+bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *param_data);
 
 /* 
  * CJD: Need to come up with return codes for these, I assume it is a list of trees... 
@@ -182,7 +182,7 @@ bool mfl_set_parameter(mfl_handle_t* mfl_handle, mfl_param_t param_type, void *p
  * just return a string with the data formatted ready for output? OR maybe they just return a count
  * of the number of trees found? and we then have another function like:
  *
-string mfl_get_trees(mfl_handle_t* mfl_handle);
+string mfl_get_trees(mfl_handle_t mfl_handle);
  * 
  * Which pulls all of the trees out of the mfl_handle and formats them into a string ready for output
  * to the user, then the interface can just directly write the string to the screen, or to a file, etc...
@@ -200,7 +200,7 @@ string mfl_get_trees(mfl_handle_t* mfl_handle);
  * The issue is: what does the end user actually need to see with his two eyes?
  * What needs to be saved to a file? What format? All of the details of datastructures
  * should be hidden from the end user, if the user wants to compute consensus trees
- * then they will be able to do a mfl_compute_consensus(mfl_handle_t*) and that should
+ * then they will be able to do a mfl_compute_consensus(mfl_handle_t) and that should
  * return some data that is ready for direct I/O. OR there should be extra functions
  * that pulls the results out of the handle and formats them in such a way that it can
  * be cleanly presented to the end user, or stored to disk... Maybe there are different
@@ -251,7 +251,7 @@ string mfl_get_trees(mfl_handle_t* mfl_handle);
  * and the APIs just return ready to use information. So I see things like the 
  * following, assuming all of data is of type int, which might not be the case:
  */
-int mfl_get_resultant_data(mfl_handle_t* mfl_handle, mfl_resultant_data_t resultant_data);
+int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resultant_data);
 /* 
  * note: the string datatype is a real C++ datatype, like char* 
  * but much easier to use, no malloc/free necessary, and it is 
@@ -277,19 +277,19 @@ int mfl_get_resultant_data(mfl_handle_t* mfl_handle, mfl_resultant_data_t result
  * Also making the search functions return bool, tho that might not be what you want?
  * I am not sure, but something needs to go there to get this file to compile.
  */
-string mfl_get_saved_trees_newick(mfl_handle_t* mfl_handle);
-string mfl_get_saved_trees       (mfl_handle_t* mfl_handle);
+string mfl_get_saved_trees_newick(mfl_handle_t mfl_handle);
+string mfl_get_saved_trees       (mfl_handle_t mfl_handle);
 
-bool mfl_heuristic           (mfl_handle_t* mfl_handle);
-bool mfl_exhaustive          (mfl_handle_t* mfl_handle);
-bool mfl_branchandbound      (mfl_handle_t* mfl_handle);
-bool mfl_consensus           (mfl_handle_t* mfl_handle);
-bool mfl_collapse_zerolength (mfl_handle_t* mfl_handle);
+bool mfl_heuristic           (mfl_handle_t mfl_handle);
+bool mfl_exhaustive          (mfl_handle_t mfl_handle);
+bool mfl_branchandbound      (mfl_handle_t mfl_handle);
+bool mfl_consensus           (mfl_handle_t mfl_handle);
+bool mfl_collapse_zerolength (mfl_handle_t mfl_handle);
 
 #ifdef VERSION_1_5
-mfl_bootstrap       (mfl_handle_t* mfl_handle);
-mfl_decay           (mfl_handle_t* mfl_handle);
-mfl_jackknife       (mfl_handle_t* mfl_handle);
+mfl_bootstrap       (mfl_handle_t mfl_handle);
+mfl_decay           (mfl_handle_t mfl_handle);
+mfl_jackknife       (mfl_handle_t mfl_handle);
 mfl_safe_taxonomic_reduction(list_of_ordered_characters);
 mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast heuristic search, but is subordinate to mfl_heuristic
 #endif

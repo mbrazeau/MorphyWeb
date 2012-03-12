@@ -111,7 +111,7 @@ struct tree *randunrooted(int ntax, int numnodes)
     
     free(taxarray);
     
-    printNewick(randtree->trnodes[0]);
+    /*printNewick(randtree->trnodes[0]);*/
     printf(";\n");
     
     return (randtree);

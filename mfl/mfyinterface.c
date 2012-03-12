@@ -8,14 +8,14 @@
  */
 #include "morphy.h"
 
-mfl_handle_t* mfl_create_handle()
+mfl_handle_t mfl_create_handle()
 {
     mfl_handle_s *mfl_struct;
     mfl_struct = (mfl_handle_s*)malloc(sizeof(mfl_handle_s));
     return mfl_s2t(mfl_struct);
 }
 
-void mfl_destroy_handle(mfl_handle_t *mfl_handle)
+void mfl_destroy_handle(mfl_handle_t mfl_handle)
 {
     free(mfl_handle);
 }
@@ -96,7 +96,7 @@ bool mfl_set_gapormissing(mfl_handle_s *mfl_struct, void *param_data)
     return true;
 }
 
-bool mfl_set_parameter(mfl_handle_t *mfl_handle, mfl_param_t param_type, void *param_data)
+bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *param_data)
 {
     bool ret = false;
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
@@ -160,34 +160,13 @@ bool mfl_set_parameter(mfl_handle_t *mfl_handle, mfl_param_t param_type, void *p
 /*
 ** These may seem dumb now, but may be useful one day
 */
-mfl_handle_t *mfl_s2t(mfl_handle_s *mfl_handle)
+mfl_handle_t mfl_s2t(mfl_handle_s *mfl_handle)
 {
-    return (mfl_handle_t*)mfl_handle;
+    return (mfl_handle_t)mfl_handle;
 }
 
-mfl_handle_s *mfl_t2s(mfl_handle_t *mfl_handle)
+mfl_handle_s *mfl_t2s(mfl_handle_t mfl_handle)
 {
     return (mfl_handle_s*)mfl_handle;
 }
 
-mfl_resultant_data_s *mfl_morphy_controller(mfl_handle_s *mfl_handle)
-{
-    
-    mfl_resultant_data_s *mfl_results;
-    
-    switch (mfl_handle->search_type) {
-        case MFL_ST_EXHAUSTIVE:
-            printf("Not implemented\n");
-            //mfl_results = mfl_exhaustive(mfl_handle);
-            break;
-        case MFL_ST_BRANCH_BOUND:
-            printf("Not implemented\n");
-            //mfl_results = mfl_branch_bound(mfl_handle);
-            break;
-        case MFL_ST_HEURISTIC:
-            return mfl_results = mfl_heuristic_search(mfl_handle);
-            break;
-        default:
-            break;
-    }
-}
