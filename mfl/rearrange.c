@@ -285,15 +285,15 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     
     //printf("visiting site\n");
     
-    /*if (searchrec->success) {
+    if (searchrec->success) {
         return;
-    }*/
+    }
     
-    /*if (n->start) {
+    if (n->start) {
         mfl_regrafting_traversal(n->outedge, subtr, swapingon, savedtrees, ntax,
                                  nchar, numnodes, searchrec, diff);
         return;
-    }*/
+    }
     
     static long int counter = 0;
     int trlength = 0;

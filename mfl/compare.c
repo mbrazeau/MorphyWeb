@@ -71,24 +71,19 @@ bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields)
 
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields)
 {
-    /* Performs a binary search for each bipartition of t1 in t2.
+    /* Performs a binary search for each hashcode of t1 in t2.
      *
      **** This should be supplemented by a function that compares number
      **** of bipartitions first and returns false if they are different */
     
-    int i, j;
+    int i;
     bool eqtrees = false;
     
-    for (i = 0; i < ntax - 1; ++i) {
+    for (i = 0; i < ntax - 3; ++i) {
         eqtrees = false;
-        //if (!(bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2))) {
-          //  eqtrees = false;
-        //}
-        for (j = 0; j < ntax - 1; ++j) {
-            if (*t1[i] == *t2[j]) {
-                eqtrees = true;
-                continue;
-            }
+        if (bsearch(&(*t1[i]), t2, ntax - 1, sizeof(taxbipart*), mfl_compare_ints2)) {
+            eqtrees = true;
+            continue;
         }
         if (!eqtrees) {
             break;
@@ -111,10 +106,10 @@ void mfl_set_bipartition(node *n, node *d)
     else {
         n->tipsabove[0] = n->tipsabove[0] | d->tipsabove[0];
     }
-
+    
     /*while () {
-        //something
-    }*/
+     //something
+     }*/
     
     return;
 }
@@ -134,7 +129,7 @@ void mfl_set_tipsabove(node *n, int numfields, taxbipart **hashtab, int *bpcount
         n->tipsabove = (taxbipart*)malloc(numfields * sizeof(taxbipart));
     }
     memset(n->tipsabove, 0, numfields * sizeof(taxbipart));
-
+    
     p = n->next;
     while (p != n) {
         mfl_set_tipsabove(p->outedge, numfields, hashtab, bpcounter);
@@ -164,7 +159,7 @@ void mfl_free_hashtab(taxbipart **hashtab, int numbiparts)
 
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
 {
-    /* Creates a bipartition table describing the tree as a series of taxon 
+    /* Creates a hashtable describing the tree as a series of taxon 
      * bipartitions. These bipartitions are then sorted in ascending order
      * */
     int i;
@@ -189,11 +184,60 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
     else {
         mfl_set_tipsabove(t->root, numfields, hashtab, bpcounter);
     }
-
-    //qsort(hashtab, ntax - 1, sizeof(taxbipart*), mfl_compare_ints);
+    
+    qsort(hashtab, ntax - 1, sizeof(taxbipart*), mfl_compare_ints);
     
     return hashtab;
 }
+
+/*bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *current)
+{
+    int i = 0;
+    int numfields = mfl_count_fields(ntax);
+    taxbipart **temphashtab;
+    bool foundtr = false;
+    double timein;
+    double timeout;
+    static double totaltime = 0;
+    static double increm = 0;
+    
+    //printf("time in: %g\n", (double)(clock() / (double)CLOCKS_PER_SEC));
+    
+    timein = (double)(clock() / (double)CLOCKS_PER_SEC);
+    
+    temphashtab = mfl_tree_biparts(newtopol, ntax, numnodes);
+    
+    for (i = *current; i--; ) {
+        if (mfl_compare_trees(temphashtab, savedtrees[i]->bipartitions, ntax, numfields)) {
+            if (newtopol != savedtrees[i]) {
+                foundtr = true;
+                break;
+            }
+        }
+        //mfl_free_hashtab(tph2, ntax - 1);
+    }
+    
+    if (!foundtr) {
+        newtopol->hashtabholder = temphashtab;
+    }
+    else {
+        mfl_free_hashtab(temphashtab, ntax - 1);
+    }
+    
+    timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
+    
+    totaltime = totaltime + (timeout - timein);
+    increm = increm + (timeout - timein);
+    
+    if (increm > 0.025) {
+        printf("time in tree comparison: %g\n", totaltime);
+        increm = 0;
+    }
+    
+    //printf("time in comparison: %g\n", totaltime);
+    
+    return foundtr;
+}*/
 
 bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *current)
 {
@@ -261,43 +305,48 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
 {
     int i, j;
     node *p, *n;
+    bool wasrooted = true;
     
     int *storedtr = (int*)malloc(numnodes * sizeof(int));
     
     if (!t->root) {
         mfl_root_tree(t, 0, ntax);
+        wasrooted = false;
     }
     
     mfl_clear_cpindex(t, numnodes); // Optimization: The stuff in this function could be done simultaneously in the rooting function
     
     t->root->cpindex = ntax;
-    p = t->root->next;
+    t->root->bottom = true;
+    /*p = t->root->next;
     while (p != t->root) {
         p->cpindex = t->root->cpindex;
         p = p->next;
-    }
+    }*/
     
-    j = ntax + 1;
+    j = ntax;
     
-    for (i = 0; i < numnodes; ++i) {
-        
+    for (i = 0; i < ntax; ++i) {        
         p = t->trnodes[i]->outedge;
-        storedtr[i] = j;
-        
         while (!p->cpindex) {
-            
-            p->cpindex = j;
             p = p->next;
-            
-            if (p->bottom) {
-                n = p;
-                p = p->outedge;
+            //printf("cpindex: %i;", p->cpindex);
+            if (p->bottom && p->outedge) {
                 ++j;
+                p->cpindex = j;
+                p = p->outedge;
             }
         }
+        
     }
     
-    mfl_unroot(ntax, t);
+    printf("\n");
+    
+    if (!wasrooted) {
+        mfl_unroot(ntax, t);
+    }
+    
+    return storedtr;
 }
 
 void test_tree_compress(void)
@@ -313,9 +362,16 @@ void test_tree_compress(void)
     int *compressed = mfl_compress_tree(t, ntax, numnodes);
     
     int i;
+    
     for (i = 0; i < numnodes; ++i) {
-        printf("%i ", compressed);
+        printf("%i ", i);
     }
+    printf("\n");
+    
+    for (i = 0; i < numnodes; ++i) {
+        printf("%i ", compressed[i]);
+    }
+    printf("\n");
     
 }
 

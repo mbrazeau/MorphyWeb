@@ -671,6 +671,8 @@ void mini_test_analysis(void)
     //mfl_clear_treebuffer(savedtrees, , numnodes);   
 }
 
+void test_tree_compress(void);
+
 int main(void)
 {
     int ntax = 9;
@@ -680,6 +682,8 @@ int main(void)
     pauseit();
     
     //srandom(8);
+    
+    test_tree_compress();
     
     //test_tree_comparison();
     test_char_optimization();
