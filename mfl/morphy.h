@@ -43,21 +43,6 @@ using namespace std;
 
 
 typedef struct {
-    int n_taxa;
-    int n_chars;
-    mfl_search_t search_type;
-    int n_iterations;
-    int n_treelimit;
-    mfl_branch_swap_t bswap_type;
-    bool is_ratchet;
-    char *input_data;
-    mfl_add_sequence_t addseq_type;
-    bool collapse_nolen;
-    mfl_set_collapse_at_t collapse_at;
-    bool gap_as_missing;
-} mfl_handle_s;
-
-typedef struct {
     long int n_rearrangements; // Number of tree topologies visited
     int n_savetrees;    // Number of trees found and/or saved
     int bestlength;     // Length of the best tree
@@ -73,6 +58,22 @@ typedef struct {
 #endif    
 } mfl_resultant_data_s;
 
+
+typedef struct {
+    int n_taxa;
+    int n_chars;
+    mfl_search_t search_type;
+    int n_iterations;
+    int n_treelimit;
+    mfl_branch_swap_t bswap_type;
+    bool is_ratchet;
+    char *input_data;
+    mfl_add_sequence_t addseq_type;
+    bool collapse_nolen;
+    mfl_set_collapse_at_t collapse_at;
+    bool gap_as_missing;
+    mfl_resultant_data_s *resultant_data;
+} mfl_handle_s;
 
 typedef int32_t charstate;
 typedef int64_t taxbipart;
@@ -314,7 +315,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **save
                               int nchar, int numnodes, mfl_searchrec *searchrec, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, mfl_searchrec *searchrec);
-mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int numnodes, char *txtsrcdata, tree **savedtrees, int starttreelen*/);
+bool mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int numnodes, char *txtsrcdata, tree **savedtrees, int starttreelen*/);
 void mfl_reroot_subtree(node *n, node *subtr, node *up, node *dn, tree *swapingon, 
                         tree **savedtrees, int ntax, int nchar, int numnodes, 
                         long int *current, 

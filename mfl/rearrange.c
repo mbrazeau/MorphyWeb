@@ -576,7 +576,7 @@ void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int
     return NULL;
 }
 
-mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
+bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
 {
     int ntax = mfl_handle->n_taxa, nchar = mfl_handle->n_chars;
     int numnodes = mfl_calc_numnodes(ntax);
@@ -688,12 +688,12 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
-    mfl_resultant_data_s *hsearch_results = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
+    mfl_handle->resultant_data = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
     
-    hsearch_results->bestlength = searchrec->bestlength;
-    hsearch_results->n_rearrangements = searchrec->niter_total;
-    hsearch_results->n_savetrees = searchrec->nextinbuffer;
-    hsearch_results->searcht = (timeout - timein);
+    mfl_handle->resultant_data->bestlength = searchrec->bestlength;
+    mfl_handle->resultant_data->n_rearrangements = searchrec->niter_total;
+    mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
+    mfl_handle->resultant_data->searcht = (timeout - timein);
     
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a string
@@ -719,5 +719,5 @@ mfl_resultant_data_s *mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     mfl_destroy_searchrec(searchrec);
     
-    return hsearch_results;
+    return true;
 }
