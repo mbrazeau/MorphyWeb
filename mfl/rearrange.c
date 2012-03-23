@@ -464,8 +464,8 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
 
 void mfl_regrafting_traversal_ii(node *n, node *subtr, tree *swapingon, int ntax, int nchar, mfl_searchrec* searchrec, int diff)
 {
-    int al; // The length added to the tree by the proposed reinsertion
-    int treelen; // The length of proposed rearrangement
+    int al = 0; // The length added to the tree by the proposed reinsertion
+    int treelen = 0; // The length of proposed rearrangement
     
     // Check that the edge between n and it's neighbor is not the original site
     if (!n->clip && !n->outedge->clip) {
@@ -477,8 +477,10 @@ void mfl_regrafting_traversal_ii(node *n, node *subtr, tree *swapingon, int ntax
         // If the insertion cost + bestoverall length - diff is less than bestoverall length
         if (treelen < searchrec->bestinrep) {
             
+            searchrec->bestinrep = treelen;
+            
             // *****
-            // Insert the branch, wipe the whole tree buffer and save only the new tree
+            // Insert the branch, wipe the tree buffer and save only the new tree
             // *****
             
             // return and begin swapping anew on the tree from the start
@@ -488,8 +490,13 @@ void mfl_regrafting_traversal_ii(node *n, node *subtr, tree *swapingon, int ntax
         }
         
         // If the value is == best overall length
+        if (treelen == searchrec->bestinrep) {
             // Check that the tree is not duplicate
                 // Add the tree to the tree buffer if it is new
+        }
+        
+        
+            
     }
     
     if (n->tip) {
