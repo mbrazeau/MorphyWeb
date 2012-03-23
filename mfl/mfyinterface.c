@@ -47,7 +47,13 @@ bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_treelimit(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->n_treelimit = (long int)(param_data);
+    if ((long int)(param_data)) {
+        mfl_struct->n_treelimit = (long int)(param_data);
+    }
+    else {
+        mfl_struct->n_treelimit = MORPHY_DEFAULT_TREE_LIMIT;
+    }
+
     return true;
 }
 

@@ -17,7 +17,6 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <time.h>
-
 #include "mfl.h"
 //#include <gsl/gsl_rng.h>
 
@@ -25,11 +24,10 @@
 #include <iostream>
 using namespace std;
 
-#define MORPHY_MAX_STATES 31
-#define MAX_OG_SIZE 20
-#define MAX_IG_SIZE 500
-
+#define MORPHY_DEFAULT_TREE_LIMIT 200
 #define IS_APPLIC ~1//(-1^1)
+#define MORPHY_MAX_STATES 32
+
 
 #define TREELIMIT 50000 //A temporary tree limit for testing.
 
