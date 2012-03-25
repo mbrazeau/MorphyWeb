@@ -304,7 +304,7 @@ void mfl_clear_cpindex(tree *t, int numnodes)
 int *mfl_compress_tree(tree *t, int ntax, int numnodes)
 {
     int i, j;
-    node *p, *n;
+    node *p;
     bool wasrooted = true;
     
     int *storedtr = (int*)malloc(numnodes * sizeof(int));
@@ -329,7 +329,6 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
     for (i = 0; i < ntax; ++i) {        
         
         p = t->trnodes[i]->outedge;
-        n = t->trnodes[i];
         
         while (!p->cpindex) {
             
