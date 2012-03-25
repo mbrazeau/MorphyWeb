@@ -8,16 +8,20 @@
  */
 #include "morphy.h"
 
-mfl_handle_t mfl_create_handle()
+bool mfl_heuristic           (mfl_handle_t mfl_handle)
 {
-    mfl_handle_s *mfl_struct;
-    mfl_struct = (mfl_handle_s*)malloc(sizeof(mfl_handle_s));
-    return mfl_s2t(mfl_struct);
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+
+    return mfl_heuristic_search(mfl_struct);
 }
 
-void mfl_destroy_handle(mfl_handle_t mfl_handle)
+void mfl_free_input_data(mfl_handle_s *mfl_struct)
 {
-    free(mfl_handle);
+    if (mfl_struct->input_data)
+    {
+        free(mfl_struct->input_data);
+        mfl_struct->input_data = NULL;
+    }
 }
 
 bool mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data)
@@ -47,10 +51,12 @@ bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_treelimit(mfl_handle_s *mfl_struct, void *param_data)
 {
-    if ((long int)(param_data)) {
+    if ((long int)(param_data)) 
+    {
         mfl_struct->n_treelimit = (long int)(param_data);
     }
-    else {
+    else 
+    {
         mfl_struct->n_treelimit = MORPHY_DEFAULT_TREE_LIMIT;
     }
 
@@ -72,7 +78,8 @@ bool mfl_set_ratchet_status(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_attach_inputdata(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->input_data = (char *)param_data;
+    mfl_free_input_data(mfl_struct);
+    mfl_struct->input_data = strdup((char*)param_data);
     return true;
 }
 
@@ -100,6 +107,26 @@ bool mfl_set_gapormissing(mfl_handle_s *mfl_struct, void *param_data)
 {
     mfl_struct->gap_as_missing = (bool)(param_data);
     return true;
+}
+
+mfl_handle_t mfl_create_handle()
+{
+    mfl_handle_s *mfl_struct;
+    mfl_struct = (mfl_handle_s*)malloc(sizeof(mfl_handle_s));
+    
+    memset(mfl_struct, 0, sizeof(mfl_handle_s));
+
+    /* setup reasonable defaults */
+    mfl_set_branchswap_t(mfl_struct, (void*)MFL_BST_SPR);
+
+    return mfl_s2t(mfl_struct);
+}
+
+void mfl_destroy_handle(mfl_handle_t mfl_handle)
+{
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    mfl_free_input_data(mfl_struct);
+    free(mfl_struct);
 }
 
 bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *param_data)

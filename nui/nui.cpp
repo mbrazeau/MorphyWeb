@@ -128,12 +128,7 @@ CNexusUserInterface::~CNexusUserInterface()
     {
         m_fCommandLog.close();
     }
-
-    if (m_mflHandle)
-    {
-        mfl_destroy_handle(m_mflHandle);
-        m_mflHandle = NULL;
-    }    
+    DestroyHandle();
 }
 
 /*
@@ -205,14 +200,21 @@ bool CNexusUserInterface::OpenNexusFile()
         m_pNexusParse = new CNexusParse();
         if (m_pNexusParse)
         {
-            if (m_mflHandle)
-            {
-                mfl_destroy_handle(m_mflHandle);
-            }
-            m_mflHandle = mfl_create_handle();
+            CreateHandle();
             if (m_pNexusParse->ReadNexusFile(&strFilename, NULL))
             {
+                stringstream ss;
+                int nTax = m_pNexusParse->m_cTaxa->GetNTax();
+                int nChar = m_pNexusParse->m_cChars->GetNCharTotal();
+                int i;
                 cout<<" "<<strFilename<<" open successfully"<<endl;
+                mfl_set_parameter(m_mflHandle, MFL_PT_NUM_TAX, (void*)nTax);
+                mfl_set_parameter(m_mflHandle, MFL_PT_NUM_CHAR, (void*)nChar);
+                for (i = 0; i < nTax; i++)
+                {
+                    m_pNexusParse->m_cChars->WriteStatesForTaxonAsNexus(ss, i, 0, nChar);
+                }
+                mfl_set_parameter(m_mflHandle, MFL_PT_INPUT_DATA, (void*)ss.str().c_str());
             }
             else
             {
@@ -230,6 +232,21 @@ bool CNexusUserInterface::OpenNexusFile()
         cout<<" Error: Nexus file "<<m_pNexusParse->m_cNexusReader->GetInFileName()<<" is already open"<<endl;
     }
     return true;
+}
+
+void CNexusUserInterface::DestroyHandle()
+{
+    if (m_mflHandle)
+    {
+        mfl_destroy_handle(m_mflHandle);
+        m_mflHandle = NULL;
+    }
+}
+
+void CNexusUserInterface::CreateHandle()
+{
+    DestroyHandle();
+    m_mflHandle = mfl_create_handle();
 }
 
 bool CNexusUserInterface::SaveFile       ()
@@ -257,12 +274,7 @@ bool CNexusUserInterface::CloseNexusFile(bool bVerbose)
     {
         cout<<" Error: No file is currently open"<<endl;
     }
-
-    if (m_mflHandle)
-    {
-        mfl_destroy_handle(m_mflHandle);
-        m_mflHandle = NULL;
-    }
+    DestroyHandle();
 
     return true;
 }
@@ -397,8 +409,7 @@ bool CNexusUserInterface::Char           ()
 
 bool CNexusUserInterface::HeuristicSearch()
 {
-    cout<<"Not implemented"<<endl;
-    return true;
+    return mfl_heuristic(m_mflHandle);
 }
 
 bool CNexusUserInterface::Exhaust        ()

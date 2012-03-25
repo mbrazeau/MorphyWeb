@@ -88,6 +88,9 @@ public:
     bool Collapse       ();
     bool Report         ();
 
+protected:
+    void DestroyHandle();
+    void CreateHandle();
 
 private:
     void GetUserInput(string strPrompt, string *strInput);

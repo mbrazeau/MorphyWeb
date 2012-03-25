@@ -591,6 +591,7 @@ void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int
             //return; // Temporary as would fail if tried
             break;
         default:
+            printf("Not implemented\n");
             break;
     }
     return NULL;
