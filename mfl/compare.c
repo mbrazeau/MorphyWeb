@@ -340,7 +340,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
                 if (!p->cpindex) {
                     ++j;
                     p->cpindex = j;
-                    storedtr[p->cpindex]
+                    //storedtr[p->cpindex]
                     p = p->outedge;
                 }
             }
