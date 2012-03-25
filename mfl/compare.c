@@ -330,6 +330,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
         
         p = t->trnodes[i]->outedge;
         n = t->trnodes[i];
+        n->cpindex = i;
         
         while (!p->cpindex) {
             
