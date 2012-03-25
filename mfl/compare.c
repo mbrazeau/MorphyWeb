@@ -336,19 +336,17 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
             
             p = p->next;
             
-            if (p->bottom && !p->cpindex) {
-                if (p->outedge) {
+            if (p->bottom) {
+                if (!p->cpindex) {
                     ++j;
                     p->cpindex = j;
-                    
+                    storedtr[p->cpindex]
                     p = p->outedge;
                 }
             }
         }
         
     }
-    
-    printf("\n");
     
     if (!wasrooted) {
         mfl_unroot(ntax, t);
@@ -371,6 +369,8 @@ void test_tree_compress(void)
     
     int i;
     
+    printf("\n");
+
     for (i = 0; i < numnodes; ++i) {
         printf("%i ", i);
     }
