@@ -192,6 +192,8 @@ bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *pa
 
 /*
 ** These may seem dumb now, but may be useful one day
+** See... I just added an exception throw to t2s... how useful :D
+** I only had to do that once thanks to these little guys...
 */
 mfl_handle_t mfl_s2t(mfl_handle_s *mfl_handle)
 {
