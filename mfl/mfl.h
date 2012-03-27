@@ -6,8 +6,14 @@
  *  Copyright 2012. All rights reserved.
  *
  */
+
+#pragma once
+
 #include <string>
+#include <stdexcept>
+
 using namespace std;
+
 typedef enum
 {
     /* MFL_PT_NUM_TAX (int) Number of taxa in the dataset, and the maximum number of
@@ -293,3 +299,12 @@ mfl_jackknife       (mfl_handle_t mfl_handle);
 mfl_safe_taxonomic_reduction(list_of_ordered_characters);
 mfl_ratchet(n_chars_to_perturb, reweightorjackknife);   // A type of super-fast heuristic search, but is subordinate to mfl_heuristic
 #endif
+
+class mfl_exception : public runtime_error
+{
+    public:
+        mfl_exception(mfl_handle_t mfl_handle, string const& msg);
+        virtual const char * what() const throw();
+    protected:
+        mfl_handle_t m_mfl_handle;
+};

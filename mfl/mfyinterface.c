@@ -200,6 +200,38 @@ mfl_handle_t mfl_s2t(mfl_handle_s *mfl_handle)
 
 mfl_handle_s *mfl_t2s(mfl_handle_t mfl_handle)
 {
-    return (mfl_handle_s*)mfl_handle;
+    if (mfl_handle)
+    {
+        return (mfl_handle_s*)mfl_handle;
+    }
+    else
+    {
+        throw mfl_exception(mfl_handle, "Nexus file not open");
+        return NULL;
+    }
 }
+
+mfl_exception::mfl_exception(mfl_handle_t mfl_handle, string const& msg) :
+    runtime_error(msg)
+{
+    m_mfl_handle = mfl_handle;
+}
+
+const char * mfl_exception::what() const throw()
+{
+    string ret = runtime_error::what();
+    if (m_mfl_handle)
+    {
+        /* 
+        ** As needs arise, we might tack on extra debug info here possibly from
+        ** the mfl_handle, or from other interesting data sources.
+        */
+    }
+    else
+    {
+        ret.append(" - Morphy handle is NULL");
+    }
+    return ret.c_str();
+}
+
 

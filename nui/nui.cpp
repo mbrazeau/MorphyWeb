@@ -195,7 +195,11 @@ bool CNexusUserInterface::RunSelection(string strInput)
             }
             catch (const char *e)
             {
-                cout<<"Error: "<<e<<endl;
+                cout<<"NUI Error: "<<e<<endl;
+            }
+            catch (mfl_exception e)
+            {
+                cout<<endl<<"MFL Error: "<<e.what()<<endl;
             }
             cout<<endl;
             return bRet;

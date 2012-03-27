@@ -3,6 +3,6 @@ INCLUDEDIRS =. ../mfl
 LIBDIRS=/usr/local/lib/ncl
 LIBS=ncl
 OBJS = nui.o NexusParse.o NexusReader.o
-LIBRARIES += ../mfl/$(MFLLIB)
+ARCHIVES = ../mfl/$(MFLLIB)
 include ../Makefile.inc
 -include $(DEPS)
