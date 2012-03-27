@@ -138,6 +138,11 @@ void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
 {
     cout<<strPrompt;
     cin>>*strInput;
+    if (cin.fail())
+    {
+        *strInput = "q";
+        throw "Stardard input failure";
+    }
     if (m_fCommandLog)
     {
         m_fCommandLog<<*strInput<<endl;
@@ -150,12 +155,20 @@ void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
 void CNexusUserInterface::DoMenu()
 {
     string strInput;
-    About();
+    About(false);
     Help();
-    do
+    try
     {
-        GetUserInput("Enter selection# " ,&strInput);
-    } while (RunSelection(strInput));
+        do
+        {
+            strInput.clear();
+            GetUserInput("Enter selection# " ,&strInput);
+        } while (RunSelection(strInput));
+    }
+    catch (const char *e)
+    {
+        cout<<endl<<"Error: "<<e<<endl;
+    }
 }
 
 /*
@@ -174,9 +187,16 @@ bool CNexusUserInterface::RunSelection(string strInput)
         pMenu = *it;
         if ((pMenu) && (pMenu->IsSelection(strInput)))
         {
-            bool bRet;
+            bool bRet = true;
             cout<<endl;
-            bRet = pMenu->MenuFunction(this);
+            try
+            {
+                bRet = pMenu->MenuFunction(this);
+            }
+            catch (const char *e)
+            {
+                cout<<"Error: "<<e<<endl;
+            }
             cout<<endl;
             return bRet;
         }
@@ -301,15 +321,19 @@ bool CNexusUserInterface::Help           ()
 
 bool CNexusUserInterface::Quit           ()
 {
+    cout<<"Goodbye!"<<endl;
     return false;
 }
 
-bool CNexusUserInterface::About          ()
+bool CNexusUserInterface::About          (bool bShowBuildTime)
 {
     cout<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
     cout<<"Copyright 2012 (C) Martin Brazeau and Chris Desjardins. All rights reserved."<<endl;
     cout<<"This program uses the NCL by Paul O. Lewis."<<endl;
-    cout<<"Build time: "<<__DATE__<<" "<<__TIME__<<endl;
+    if (bShowBuildTime)
+    {
+        cout<<"Build time: "<<__DATE__<<" "<<__TIME__<<endl;
+    }
     return true;
 }
 

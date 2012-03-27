@@ -36,8 +36,12 @@ public:
 
     bool IsSelection(string strInput)
     {
-        transform(strInput.begin(), strInput.end(), strInput.begin(), ::toupper);        
-        return strInput == m_strCommand;
+        if (strInput.length() > 0)
+        {
+            transform(strInput.begin(), strInput.end(), strInput.begin(), ::toupper);        
+            return strInput == m_strCommand;
+        }
+        return false;
     }
 
     virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface) = 0;
@@ -58,7 +62,8 @@ public:
 
     bool Spacer() 
     {
-        return false;
+        throw "Cannot invoke the spacer";
+        return true;
     }
     bool OpenNexusFile  ();
     bool SaveFile       ();
@@ -66,7 +71,7 @@ public:
                
     bool Help           ();
     bool Quit           ();
-    bool About          ();
+    bool About          (bool bShowBuildTime = true);
     bool CommandLog     ();
     bool Status         ();
     bool Chdir          ();

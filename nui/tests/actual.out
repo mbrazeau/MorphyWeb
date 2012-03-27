@@ -1,0 +1,43 @@
+Morphy NUI Version: 0.1
+Copyright 2012 (C) Martin Brazeau and Chris Desjardins. All rights reserved.
+This program uses the NCL by Paul O. Lewis.
+
+=== File
+ O) Open a nexus file
+ C) Close a nexus file
+ S) Save according to the options
+
+=== Program
+ LOG) Toggles record of commands, variable states, etc
+ STAT) Prints status of all current settings, eg. logmode on/off
+ CD) change working directory
+ H) Help
+ A) About
+ Q) Quit
+
+=== Data
+ EXC) Exclude taxa or characters
+ INC) Include excluded taxa or characters
+ OUTG) Assign taxa to outgroup
+ ING) Return taxa from outgroup to ingrou
+ CHAR) Modify a character's type
+
+=== Analysis
+ HS) Begin a heuristic search
+ EXS) Begin an exhaustive search
+ BNB) Begin a branch-and-bound search
+ BTS) Begin a bootstrap analysis
+ JK) Begin a jackknife analysis
+ STR) Perform a safe taxonomic reduction
+
+=== Results
+ CONSENS) Compute consensus tree for trees in memory
+ COLLAPSE) Collapse zero-length branches, condense the tree set
+ REPORT) Print a report about the current open nexus file
+
+Enter selection# 
+No file is currently open
+
+Enter selection# 
+Goodbye!
+

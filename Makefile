@@ -8,7 +8,7 @@ endif
 
 all: $(SUBDIRS)
 
-.PHONY: $(SUBDIRS) clean cscope
+.PHONY: $(SUBDIRS) clean cscope test
 
 MFLAGS += --no-print-directory
 
@@ -26,4 +26,10 @@ clean:
 	$(SILENT)rm -f $(CSCOPEFILE)
 	@for i in $(SUBDIRS); do \
 	echo "Cleaning $$i..."; \
-	(cd $$i; $(MAKE) $(MFLAGS) $(MYMAKEFLAGS) clean); done
+	(cd $$i; $(MAKE) $(MFLAGS) clean); done
+
+test:
+	@for i in $(SUBDIRS); do \
+	echo "Testing $$i..."; \
+	(cd $$i/tests; $(MAKE) $(MFLAGS) test); done
+
