@@ -201,7 +201,7 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
     static double totaltime = 0;
     static double increm = 0;
     
-    //printf("time in: %g\n", (double)(clock() / (double)CLOCKS_PER_SEC));
+    //dbg_printf("time in: %g\n", (double)(clock() / (double)CLOCKS_PER_SEC));
     
     timein = (double)(clock() / (double)CLOCKS_PER_SEC);
     
@@ -230,11 +230,11 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
     increm = increm + (timeout - timein);
     
     if (increm > 0.025) {
-        printf("time in tree comparison: %g\n", totaltime);
+        dbg_printf("time in tree comparison: %g\n", totaltime);
         increm = 0;
     }
     
-    //printf("time in comparison: %g\n", totaltime);
+    //dbg_printf("time in comparison: %g\n", totaltime);
     
     return foundtr;
 }*/
@@ -276,11 +276,11 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     increm = increm + (timeout - timein);
     
     if (increm > 0.025) {
-        printf("time in tree comparison: %g\n", totaltime);
+        dbg_printf("time in tree comparison: %g\n", totaltime);
         increm = 0;
     }
     
-    //printf("time in comparison: %g\n", totaltime);
+    //dbg_printf("time in comparison: %g\n", totaltime);
     
     return foundtr;
 }
@@ -379,27 +379,27 @@ void test_tree_compress(void)
     
     int i;
     
-    printf("\n");
+    dbg_printf("\n");
 
     for (i = 0; i < numnodes; ++i) {
-        printf("%i ", i);
+        dbg_printf("%i ", i);
     }
-    printf("\n");
+    dbg_printf("\n");
     
     for (i = 0; i < numnodes; ++i) {
-        printf("%i ", compressed[i]);
+        dbg_printf("%i ", compressed[i]);
     }
-    printf("\n");
+    dbg_printf("\n");
     
     tree *t2 = readNWK(testtr2, true);
     mfl_unroot(ntax, t2);
     int *compressed2 = mfl_compress_tree(t2, ntax, numnodes);
     
     if (mfl_compare_trees_ii(compressed, compressed2, numnodes)) {
-        printf("\nthey're the same\n");
+        dbg_printf("\nthey're the same\n");
     }
     else {
-        printf("\nthey're diff'rnt\n");
+        dbg_printf("\nthey're diff'rnt\n");
     }
 
     
@@ -423,19 +423,19 @@ void test_tree_comparison(void)
     
     tree *t1 = readNWK(tree1, 0);
     /*printNewick(t1->trnodes[0]);*/
-    printf("\n");
+    dbg_printf("\n");
     tree *t2 = readNWK(tree2, 0);
     /*printNewick(t2->trnodes[0]);*/
-    printf("\n");
+    dbg_printf("\n");
     /*tree *t3 = readNWK(tree3, 0);
     printNewick(t3->trnodes[0]);
-    printf("\n");
+    dbg_printf("\n");
     tree *t4 = readNWK(tree4, 0);
     printNewick(t4->trnodes[0]);
-    printf("\n");
+    dbg_printf("\n");
     tree *t5 = readNWK(tree5, 0);
     printNewick(t5->trnodes[0]);
-    printf("\n");*/
+    dbg_printf("\n");*/
     
     // Get bipartitions for t1
     t1->bipartitions = mfl_tree_biparts(t1, ntax, numnodes);
@@ -457,41 +457,41 @@ void test_tree_comparison(void)
     // Compare all trees
     if (mfl_compare_trees(t1->bipartitions, t2->bipartitions, ntax, numfields))
     {
-        printf("trees 1 and 2 are equal\n");
+        dbg_printf("trees 1 and 2 are equal\n");
     }
     else {
-        printf("trees 1 and 2 are different\n");
+        dbg_printf("trees 1 and 2 are different\n");
     }
 
     /*if (mfl_compare_trees(t1->bipartitions, t3->bipartitions, ntax, numfields))
     {
-        printf("trees 1 and 3 are equal\n");
+        dbg_printf("trees 1 and 3 are equal\n");
     }
     else {
-        printf("trees 1 and 3 are different\n");
+        dbg_printf("trees 1 and 3 are different\n");
     }
     
     if (mfl_compare_trees(t2->bipartitions, t3->bipartitions, ntax, numfields))
     {
-        printf("trees 3 and 2 are equal\n");
+        dbg_printf("trees 3 and 2 are equal\n");
     }
     else {
-        printf("trees 3 and 2 are different\n");
+        dbg_printf("trees 3 and 2 are different\n");
     }
     if (mfl_compare_trees(t4->bipartitions, t5->bipartitions, ntax, numfields))
     {
-        printf("trees 4 and 5 are equal\n");
+        dbg_printf("trees 4 and 5 are equal\n");
     }
     else {
-        printf("trees 4 and 5 are different\n");
+        dbg_printf("trees 4 and 5 are different\n");
     }
     
     if (mfl_compare_trees(t1->bipartitions, t5->bipartitions, ntax, numfields))
     {
-        printf("trees 1 and 5 are equal\n");
+        dbg_printf("trees 1 and 5 are equal\n");
     }
     else {
-        printf("trees 1 and 5 are different\n");
+        dbg_printf("trees 1 and 5 are different\n");
     }*/
     
     /*mfl_free_hashtab(t1->bipartitions, ntax - 1);

@@ -30,7 +30,7 @@ long long int numrooted(void)
 	long long int numerator, denominator, treecombs;
 	
 	if (ntax < 3) {
-		printf("Error in ntax: too few taxa\b");		// Should have output to stderr, too
+		dbg_printf("Error in ntax: too few taxa\b");		// Should have output to stderr, too
 		return 0;
 		
 	} else {	
@@ -49,7 +49,7 @@ long long int nunrooted(void  )
 	long long int numerator, denominator, treecombs;
 	
 	if (ntax < 3) {
-		printf("Error in ntax: too few taxa\b");		// Should have output to stderr, too
+		dbg_printf("Error in ntax: too few taxa\b");		// Should have output to stderr, too
 		return 0;
 		
 	} else {	
@@ -118,12 +118,12 @@ void newbranch(node *desc, node *ancest, tree *basetree, int taxon, int calln)
 	newtip = basetree->trnodes[taxon - 1];
 	newtip->apomorphies = malloc(3 * sizeof(char));
 	if (newtip->apomorphies == NULL) {
-		printf("In newbranch(): failed to allocate memory for apomorphies in newtip\n");
+		dbg_printf("In newbranch(): failed to allocate memory for apomorphies in newtip\n");
 		return;
 	}
 	basetree->trnodes[ntax + calln + 1] = (node *) malloc(sizeof(node));
 	if (basetree->trnodes[ntax + calln + 1] == NULL) {
-		printf("In newbranch(): failed to allocate memory for new branch node in basetree\n");
+		dbg_printf("In newbranch(): failed to allocate memory for new branch node in basetree\n");
 		return;
 	}
 	newn = basetree->trnodes[ntax + calln + 1];
@@ -196,33 +196,33 @@ void allunrooted(/*tree *treearray, int ntax*/)
 	tree *origtree, *treecopy;
 	node *ring1;
 	
-	printf("Compute all unrooted trees\n");	
+	dbg_printf("Compute all unrooted trees\n");	
 	
 	ntrees = nunrooted(ntax);
-	printf("Number of rooted trees for %i taxa: %g\n", ntax, (double)ntrees);
+	dbg_printf("Number of rooted trees for %i taxa: %g\n", ntax, (double)ntrees);
 	
 
 	treearray = (tree*) malloc((ntrees + 1) * sizeof(tree));
 	if (treearray == NULL) {
-		printf("tree malloc unssuccessful.\n");
+		dbg_printf("tree malloc unssuccessful.\n");
 	}
 
 	
 	for (i = 0; i < ntrees; ++i) {
 		treearray[i].trnodes = (nodearray) malloc((2 * ntax - 1) * sizeof(node));
 		if (treearray[i].trnodes == NULL) {
-			printf("In allunrooted(): failed to allocate memory for trnodes of treearray.\n");
+			dbg_printf("In allunrooted(): failed to allocate memory for trnodes of treearray.\n");
 		}
 	}
 	
-	printf("node arrays malloc'd: %li\n", (long)i);
+	dbg_printf("node arrays malloc'd: %li\n", (long)i);
 	
 	// Create the first unrooted tertiary tree of first three taxa.
 	
 	for (i = 0; i < ntax; ++i) {
 		treearray[0].trnodes[i] = (node *) malloc(sizeof(node));
 		if (treearray[0].trnodes[i] == NULL) {
-			printf("In allunrooted(): failed to allocate memory for %li node of base tree.\n", (long)(i + 1));
+			dbg_printf("In allunrooted(): failed to allocate memory for %li node of base tree.\n", (long)(i + 1));
 		}
 		treearray[0].trnodes[i]->tip = (i + 1);
 		treearray[0].trnodes[i]->visited = 0;
@@ -230,11 +230,11 @@ void allunrooted(/*tree *treearray, int ntax*/)
 	
 	treearray[0].trnodes[ntax] = (node *) malloc(sizeof(node)); // Reserved for the eventual root
 	if (treearray[0].trnodes[ntax] == NULL) {
-		printf("In allunrooted(): unable to allocate memory for root node.\n");
+		dbg_printf("In allunrooted(): unable to allocate memory for root node.\n");
 	}
 	treearray[0].trnodes[ntax + 1] = (node *) malloc(sizeof(node)); // The node that will join the three taxa
 	if (treearray[0].trnodes[ntax + 1] == NULL) {
-		printf("In allunrooted(): unable to allocate memory for initial node.\n");
+		dbg_printf("In allunrooted(): unable to allocate memory for initial node.\n");
 	}
 
 	ring1 = treearray[0].trnodes[ntax + 1];
@@ -253,10 +253,10 @@ void allunrooted(/*tree *treearray, int ntax*/)
 	
 	copies = 1;
 	
-	printf("The base star tree:\n");
+	dbg_printf("The base star tree:\n");
 	printNewick(treearray[0].trnodes[0]);
-	printf(";");
-	printf("\n");
+	dbg_printf(";");
+	dbg_printf("\n");
 	
 	origtree = &treearray[0];
 	prevpos = 1;
@@ -276,7 +276,7 @@ void allunrooted(/*tree *treearray, int ntax*/)
 			origtree = &treearray[i];
 			offspring = (tree **) malloc((positions + 1) * sizeof(tree));
 			if (offspring == NULL) {
-				printf("In allunrooted(): unable to allocate memory for tree copies.\n");
+				dbg_printf("In allunrooted(): unable to allocate memory for tree copies.\n");
 			}
 			offspring[0] = origtree;
 			*counter = 1;
@@ -286,13 +286,13 @@ void allunrooted(/*tree *treearray, int ntax*/)
 				mfl_copytree(origtree, treecopy, cpyptr);
 				offspring[j + 1] = treecopy;
 				
-				/*printf("Offspring:");
+				/*dbg_printf("Offspring:");
 				printNewick(offspring[j + 1]->trnodes[0]);
-				printf("\n");*/
+				dbg_printf("\n");*/
 			}
 			
 			currtree = currtree + j;
-			//printf("curr tree: %i\n", currtree);
+			//dbg_printf("curr tree: %i\n", currtree);
 			call_number = 0;
 			
 			for (j = 0; j < positions; ++j) {
@@ -300,10 +300,10 @@ void allunrooted(/*tree *treearray, int ntax*/)
 				insert_allp(offspring[j]->trnodes[0], origtree, taxon, call_number, counter);
 				*counter = 1;
 				/**begin debugging code*/
-				printf("Debug tree: ");
+				dbg_printf("Debug tree: ");
 				printNewick(offspring[j]->trnodes[0]);
-				printf(";");
-				printf("\n");
+				dbg_printf(";");
+				dbg_printf("\n");
 				/**end debugging code*/
 			}
 			
@@ -315,17 +315,17 @@ void allunrooted(/*tree *treearray, int ntax*/)
 		positions = posits_unr(taxon);		
 		
 		if (taxon == ntax) {
-			printf("Adding final taxon\n");
+			dbg_printf("Adding final taxon\n");
 		}
 		
 	} while (taxon <= ntax);
 	
-	printf("%i trees printed\n", currtree + 1);
+	dbg_printf("%i trees printed\n", currtree + 1);
 	
 	int c;
 	
 	do {
-		printf("Enter c to continue: \n");
+		dbg_printf("Enter c to continue: \n");
 		c = getchar();
 	} while (c != 'c');
 	
@@ -336,18 +336,18 @@ void allunrooted(/*tree *treearray, int ntax*/)
 	
 	//long long int destree = 0;
 	
-	printf("Destroying trees.\n");
+	dbg_printf("Destroying trees.\n");
 	for (i = 0; i < ntrees; ++i) {
-		//printf(">>\n");
+		//dbg_printf(">>\n");
 		trn_ptr = treearray[i].trnodes;
 		start = treearray[i].trnodes[0];
-		//printf("Tree to be destroyed: %i\n", (i + 1));
+		//dbg_printf("Tree to be destroyed: %i\n", (i + 1));
 		//printNewick(start);
-		//printf("\n");
+		//dbg_printf("\n");
 		//detree(start);
 		//denode(trn_ptr);
 		//++destree;
-		//printf("Destroying tree %lli\n", destree);
+		//dbg_printf("Destroying tree %lli\n", destree);
 	}
 	
 	free(treearray);
@@ -355,7 +355,7 @@ void allunrooted(/*tree *treearray, int ntax*/)
 	//int c;
 	
 	do {
-		printf("Enter q to quit: \n");
+		dbg_printf("Enter q to quit: \n");
 		c = getchar();
 	} while (c != 'q');
 }

@@ -45,7 +45,7 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[],
 	char buffer[5];
 	bool in_og = false;
 
-	printf("Specify outgroup taxa:");
+	dbg_printf("Specify outgroup taxa:");
 	
 	/*takes input from the user and stores it as a string called input*/
 	do {
@@ -67,8 +67,8 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[],
 		if (input[i] == ' ' || input[i] == ';') {
 			taxnum = atoi(buffer);
 			if (taxnum > ntax) {
-				printf("Error: taxon %i not in dataset.\n", taxnum);
-				printf("No taxon %i added to outgroup.\n", taxnum);
+				dbg_printf("Error: taxon %i not in dataset.\n", taxnum);
+				dbg_printf("No taxon %i added to outgroup.\n", taxnum);
 			} else if (taxnum <= ntax) {
 				outtaxa[k] = taxnum;
 				++k;
@@ -85,11 +85,11 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[],
 	IGsize = ntax - OGsize;
 	
 	if (IGsize < 3) {
-		printf("Error: resulting ingroup is trivial\n");
+		dbg_printf("Error: resulting ingroup is trivial\n");
 		for (i = 0; outtaxa[i]; ++i) {
 			outtaxa[i] = '\0';
 		}
-		printf("Taxa not transferred to outgroup\n");
+		dbg_printf("Taxa not transferred to outgroup\n");
 		return;
 	}
 	
@@ -116,15 +116,15 @@ void defOutgroup(int ntax, int outtaxa[], nodearray outgroup, int intaxa[],
 	
 	/*feedback to the user that verifies the contents of outtaxa and intaxa*/
 	
-	printf("Taxa transferred to outgroup: ");
+	dbg_printf("Taxa transferred to outgroup: ");
 	for (i = 0; outtaxa[i]; ++i)
-		printf("%i ", outtaxa[i]);
-	printf("\n");
+		dbg_printf("%i ", outtaxa[i]);
+	dbg_printf("\n");
 	
-	printf("Taxa belonging to ingroup: ");
+	dbg_printf("Taxa belonging to ingroup: ");
 	for (i = 0; intaxa[i]; ++i)
-		printf("%i ", intaxa[i]);
-	printf("\n");
+		dbg_printf("%i ", intaxa[i]);
+	dbg_printf("\n");
 	
 }
 

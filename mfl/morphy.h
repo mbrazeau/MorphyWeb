@@ -24,6 +24,12 @@
 #include <iostream>
 using namespace std;
 
+#ifdef MFY_DEBUG
+#define dbg_printf(...) printf(__VA_ARGS__)
+#else
+#define dbg_printf(...)
+#endif
+
 #define MORPHY_DEFAULT_TREE_LIMIT 200
 #define IS_APPLIC ~1//(-1^1)
 #define MORPHY_MAX_STATES 32

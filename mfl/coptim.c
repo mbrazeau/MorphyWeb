@@ -23,10 +23,10 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_mi
     charstate *tipdata = (charstate*) malloc(ntax * nchar * sizeof(charstate));
     
     if (!na_as_missing) {
-        printf("Gap symbol ('-') treated as character inapplicability\n");
+        dbg_printf("Gap symbol ('-') treated as character inapplicability\n");
     }
     else {
-        printf("Gap symbol ('-') treated as missing data\n");
+        dbg_printf("Gap symbol ('-') treated as missing data\n");
     }
 
     
@@ -542,7 +542,7 @@ void mfl_reopt_preorder(node *n, int nchar)
 
     //Here's your problem right here:
     /*if (n->clip) {
-        //printf("hit the clipnode\n");
+        //dbg_printf("hit the clipnode\n");
         return;
     }*/
     
@@ -636,7 +636,7 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
     
     if (n->tip || n->outedge->tip) {
     
-        //printf("working on node %i\n", n->index);
+        //dbg_printf("working on node %i\n", n->index);
         t->root = NULL;
         
         mfl_join_nodes(n->outedge, t->trnodes[ntax]->next->next);

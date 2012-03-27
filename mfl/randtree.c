@@ -112,7 +112,7 @@ struct tree *randunrooted(int ntax, int numnodes)
     free(taxarray);
     
     /*printNewick(randtree->trnodes[0]);*/
-    printf(";\n");
+    dbg_printf(";\n");
     
     return (randtree);
 }
@@ -136,9 +136,9 @@ struct node * mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int 
         mfl_insert_branch(newbranch, n, ntax);
         trlen = mfl_get_sttreelen(starttree, tipdata, ntax, nchar, bestlen);
         starttree->length = trlen;
-        //printf("tested length: %i\n", *bestlen);
+        //dbg_printf("tested length: %i\n", *bestlen);
         if (trlen < *bestlen) {
-            //printf("Setting bestpos to current node\n");
+            //dbg_printf("Setting bestpos to current node\n");
             bestpos = n;
             *bestlen = trlen;
         } 
@@ -180,11 +180,11 @@ tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
     
     
     if (addRandom) {
-        printf("Joining taxa by random addition sequence\n");
+        dbg_printf("Joining taxa by random addition sequence\n");
         mfl_shuffle(taxarray, ntax);
     }
     else {
-        printf("Joining taxa according to order in matrix\n");
+        dbg_printf("Joining taxa according to order in matrix\n");
     }
     
     p = newtree->trnodes[ntax + 1];
@@ -205,7 +205,7 @@ tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
         mfl_join_nodes(newtree->trnodes[taxarray[i] - 1], newtree->trnodes[ntax + i - 1]->next);
         mfl_insert_branch(newtree->trnodes[taxarray[i] - 1], newtree->trnodes[taxarray[0] - 1], ntax);
         *bestlen = mfl_get_sttreelen(newtree, tipdata, ntax, nchar, bestlen);
-        //printf("Preliminary length: %i\n", *bestlen);
+        //dbg_printf("Preliminary length: %i\n", *bestlen);
         mfl_remove_branch(newtree->trnodes[taxarray[i] - 1]);
         bestpos = mfl_tryall(newtree->root, newtree->trnodes[taxarray[i] - 1], bestpos, ntax, nchar, 
                    numnodes, bestlen, newtree, savedtrees, tipdata);

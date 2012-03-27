@@ -8,10 +8,15 @@ MFLLIB      = $(ODIR)/libmfl.a
 DEPS        = $(patsubst %,$(ODIR)/%,$(OBJS:.o=.d))
 MAKEDEPEND  = $(SILENT)$(CC) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.d=.o)" "$<" $(CFLAGS) 
 MKODIR      = -@mkdir -p $(ODIR)
+
 ifndef VERBOSE
 SILENT=@
 NICEDEPOUTPUT=@echo "  Dependency $(notdir $(CURDIR))/$@"
 NICEBLDOUTPUT=@echo "  Building $(notdir $(CURDIR))/$@"
+endif
+
+ifdef DEBUG
+CFLAGS += -DMFY_DEBUG
 endif
 
 all: $(OUTEXE) $(OUTLIB)
@@ -49,6 +54,6 @@ $(OUTEXE): $(OBJECTS)
 .PHONY: clean
 
 clean:
-	$(SILENT)rm -f $(ODIR)/*.o $(ODIR)/*.d *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB)
+	$(SILENT)rm -f $(ODIR)/*.o $(ODIR)/*.d *~ core $(INCDIR)/*~ $(OUTEXE) $(OUTLIB) 
 
 

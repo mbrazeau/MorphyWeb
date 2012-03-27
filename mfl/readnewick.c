@@ -88,18 +88,18 @@ void NWK_roothandl(char *nwktr, int nwklen, int ntax, int numnodes,
     }
     
     /* debugging print */
-    /*printf("[&");
+    /*dbg_printf("[&");
     if (newtree->root) 
     {
-        printf("R] = ");
+        dbg_printf("R] = ");
         printNewick(newtree->root);
     }
     else 
     {
-        printf("U] = ");
+        dbg_printf("U] = ");
         printNewick(newtree->trnodes[0]);
     }
-    printf("\n");*/
+    dbg_printf("\n");*/
     /* end debugging print */    
 
 }
@@ -149,13 +149,13 @@ struct tree * readNWK (char *nwktr, bool isRooted)
 
 	if (opencount > closecount) 
     {
-		printf("Error in Newick format tree: '(' outnumber ')'.\n");
+		dbg_printf("Error in Newick format tree: '(' outnumber ')'.\n");
         newtree = NULL;
 		return newtree;
 	}
 	if (opencount < closecount) 
     {
-		printf("Error in Newick format tree: ')' outnumber '('.\n");
+		dbg_printf("Error in Newick format tree: ')' outnumber '('.\n");
 		newtree = NULL;
 		return newtree;
 	}

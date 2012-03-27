@@ -29,11 +29,11 @@ void mfl_join_nodes(node *n, node *p)
 {
     if (n->outedge) {
         n->outedge->outedge = NULL;
-        //printf("terminating existing connection in n\n");
+        //dbg_printf("terminating existing connection in n\n");
     }
     if (p->outedge) {
         p->outedge->outedge = NULL;
-        //printf("terminating existing connection in p\n");
+        //dbg_printf("terminating existing connection in p\n");
     }
     
     n->outedge = p;
@@ -46,7 +46,7 @@ struct node * mfl_allocnode(void)
     newNode = (node *)malloc(sizeof(node));
     if (newNode == NULL)
     {
-        printf("Error: failed to allocate new node.\n");
+        dbg_printf("Error: failed to allocate new node.\n");
     }
     else
     {
@@ -65,7 +65,7 @@ struct tree * mfl_alloctree(int ntax, int numnodes)
     
     if (newtree == NULL)
     {
-        printf("Error: failed to allocate new tree.\n");
+        dbg_printf("Error: failed to allocate new tree.\n");
         return (struct tree*) 0;
     }
     
@@ -173,7 +173,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
     }
     
     if (!unused) {
-        printf("Error in tree memory allocation\n");
+        dbg_printf("Error in tree memory allocation\n");
         return unused;
     }
     else {
@@ -204,7 +204,7 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
         }
     }
     
-    printf("did not find an available node in ring\n");
+    dbg_printf("did not find an available node in ring\n");
     return n;
 }
 
@@ -218,7 +218,7 @@ struct tree *mfl_alloc_noring(int ntax, int numnodes)
     
     if (newtree == NULL)
     {
-        printf("Error: failed to allocate new tree.\n");
+        dbg_printf("Error: failed to allocate new tree.\n");
         return (struct tree*) 0;
     }
     
@@ -272,7 +272,7 @@ void mfl_newring_to_order(node *r1, int order, int ntax)
     node *p;
     
     if (order == 0 || order == 1) {
-        printf("Error in mfl_newring_to_order: no order specified or order too small\n");
+        dbg_printf("Error in mfl_newring_to_order: no order specified or order too small\n");
         return;
     }
     
@@ -379,7 +379,7 @@ struct tree * mfl_copytree(tree *origtr, int ntax, int numnodes)
         {
             if (p->order != q->order) 
             {
-                printf("Error: template and copy have non-matching branch orders\n");
+                dbg_printf("Error: template and copy have non-matching branch orders\n");
             }
             do 
             {
@@ -460,7 +460,7 @@ void mfl_close_ring(node *n)
             p = p->next;
         }
         if (!p->next) {
-            printf("Report error: dangling next pointer at %p\n", p);
+            dbg_printf("Report error: dangling next pointer at %p\n", p);
             p->next = n;
             p = p->next; 
         }
@@ -595,7 +595,7 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     mfl_set_order(n);
     ord = n->order;
     if (ord <= 3 && n->index != ntax) {
-        printf("mfl_arb_resolve() called in error on node %i\n", n->index);
+        dbg_printf("mfl_arb_resolve() called in error on node %i\n", n->index);
         return;
     }
     
@@ -741,7 +741,7 @@ void mfl_set_index(node *n)
 {
     node *p;
     
-    //printf("setting to index %i\n", n->index);
+    //dbg_printf("setting to index %i\n", n->index);
     
     if (n->next) {
         p = n->next;
@@ -930,7 +930,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
     
     if (proot->order > 2) 
     {
-        printf("derooting multifurcating node\n");
+        dbg_printf("derooting multifurcating node\n");
         
         subnode = mfl_seek_internal(ntax, lnumnodes, rootedtree->trnodes);
         
@@ -949,7 +949,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
         
         if (subnode->next)
         {
-            printf("Doing the trickier one\n");
+            dbg_printf("Doing the trickier one\n");
             n = subnode->next;
             m = subnode;
             while (m->next != subnode) {
@@ -1042,7 +1042,7 @@ string mfl_trstring(tree *t, int ntax)
         mfl_save_newick(t->trnodes[0], trstring);
     }
     else {
-        printf("Error: tree has no starting node\n");
+        dbg_printf("Error: tree has no starting node\n");
     }
 
     *trstring += string(";");
@@ -1055,12 +1055,12 @@ void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
     tree **newtreebuffer;
     newtreebuffer = (tree **)realloc(treebuffer, (*treelimit + sizeincrease) * sizeof(tree*));
     if (!newtreebuffer) {
-        printf("Insufficient memory for new treelimit\n");
+        dbg_printf("Insufficient memory for new treelimit\n");
         newtreebuffer = treebuffer;
     }
     else {
         *treelimit = *treelimit + sizeincrease;
-        printf("Treelimit changed to %i\n", *treelimit);
+        dbg_printf("Treelimit changed to %i\n", *treelimit);
     }
 }
 
@@ -1077,8 +1077,8 @@ void mfl_clear_treebuffer(tree **treebuffer, long int *numsavedtrees, int numnod
 
 void mfl_reinit_tbinrange(tree **treebuffer, tree *newbest, long int start, long int *endofrng, int numnodes)
 {
-    printf("Clearing tree buffer for replicate\n");
-    printf("Best tree length: %i\n", newbest->length);
+    dbg_printf("Clearing tree buffer for replicate\n");
+    dbg_printf("Best tree length: %i\n", newbest->length);
     int i;
     for (i = start; i < *endofrng; ++i) {
         if (treebuffer[i] && treebuffer[i] != newbest) {
@@ -1094,8 +1094,8 @@ void mfl_reinit_tbinrange(tree **treebuffer, tree *newbest, long int start, long
 
 void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes)
 {    
-    printf("Found shorter tree. Reinitializing the treebuffer\n");
-    printf("Best tree length: %i\n", newbest->length);
+    dbg_printf("Found shorter tree. Reinitializing the treebuffer\n");
+    dbg_printf("Best tree length: %i\n", newbest->length);
     int i;
     for (i = 0; i < *numsavedtrees; ++i) {
         if (treebuffer[i] && treebuffer[i] != newbest) {
