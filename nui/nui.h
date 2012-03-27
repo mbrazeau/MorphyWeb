@@ -96,6 +96,7 @@ public:
 protected:
     void DestroyHandle();
     void CreateHandle();
+    bool SetMorphyOpenParams();
 
 private:
     void GetUserInput(string strPrompt, string *strInput);

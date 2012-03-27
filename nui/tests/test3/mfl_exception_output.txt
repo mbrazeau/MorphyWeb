@@ -36,7 +36,6 @@ This program uses the NCL by Paul O. Lewis.
  REPORT) Print a report about the current open nexus file
 
 Enter selection# 
-
 MFL Error: Nexus file not open - Morphy handle is NULL
 
 Enter selection# 

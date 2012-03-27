@@ -199,13 +199,30 @@ bool CNexusUserInterface::RunSelection(string strInput)
             }
             catch (mfl_exception e)
             {
-                cout<<endl<<"MFL Error: "<<e.what()<<endl;
+                cout<<"MFL Error: "<<e.what()<<endl;
             }
             cout<<endl;
             return bRet;
         }
     }
     cout<<" Unknown command: "<<strInput<<endl;
+    return true;
+}
+
+bool CNexusUserInterface::SetMorphyOpenParams()
+{
+    stringstream ss;
+    int nTax = m_pNexusParse->m_cTaxa->GetNTax();
+    int nChar = m_pNexusParse->m_cChars->GetNCharTotal();
+    int i;
+
+    mfl_set_parameter(m_mflHandle, MFL_PT_NUM_TAX, (void*)nTax);
+    mfl_set_parameter(m_mflHandle, MFL_PT_NUM_CHAR, (void*)nChar);
+    for (i = 0; i < nTax; i++)
+    {
+        m_pNexusParse->m_cChars->WriteStatesForTaxonAsNexus(ss, i, 0, nChar);
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_INPUT_DATA, (void*)ss.str().c_str());
     return true;
 }
 
@@ -227,18 +244,8 @@ bool CNexusUserInterface::OpenNexusFile()
             CreateHandle();
             if (m_pNexusParse->ReadNexusFile(&strFilename, NULL))
             {
-                stringstream ss;
-                int nTax = m_pNexusParse->m_cTaxa->GetNTax();
-                int nChar = m_pNexusParse->m_cChars->GetNCharTotal();
-                int i;
+                SetMorphyOpenParams();
                 cout<<" "<<strFilename<<" open successfully"<<endl;
-                mfl_set_parameter(m_mflHandle, MFL_PT_NUM_TAX, (void*)nTax);
-                mfl_set_parameter(m_mflHandle, MFL_PT_NUM_CHAR, (void*)nChar);
-                for (i = 0; i < nTax; i++)
-                {
-                    m_pNexusParse->m_cChars->WriteStatesForTaxonAsNexus(ss, i, 0, nChar);
-                }
-                mfl_set_parameter(m_mflHandle, MFL_PT_INPUT_DATA, (void*)ss.str().c_str());
             }
             else
             {
