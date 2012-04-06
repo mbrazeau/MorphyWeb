@@ -285,6 +285,17 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     return foundtr;
 }
 
+bool mfl_compare_trees_ii(int *t1, int *t2, int numnodes)
+{
+    if (memcmp(t1, t2, numnodes * sizeof(int))) {
+        return false;
+    }
+    else {
+        return true;
+    }
+
+}
+
 void mfl_clear_cpindex(tree *t, int numnodes)
 {
     int i;
@@ -314,17 +325,12 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
         wasrooted = false;
     }
     
-    mfl_clear_cpindex(t, numnodes); // Optimization: The stuff in this function could be done simultaneously in the rooting function
+    mfl_clear_cpindex(t, numnodes);
     
     t->root->cpindex = ntax;
     t->root->bottom = true;
-    /*p = t->root->next;
-    while (p != t->root) {
-        p->cpindex = t->root->cpindex;
-        p = p->next;
-    }*/
     
-    j = ntax;
+    j = ntax+1;
     
     for (i = 0; i < ntax; ++i) {        
         
@@ -333,19 +339,22 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
         n->cpindex = i;
         
         while (!p->cpindex) {
-            
             p = p->next;
-            
             if (p->bottom) {
                 if (!p->cpindex) {
-                    ++j;
                     p->cpindex = j;
-                    //storedtr[p->cpindex]
+                    ++j;
+                    storedtr[n->cpindex] = p->cpindex;                    
+                    n = p;
                     p = p->outedge;
+
+                }
+                else if (p->cpindex) {
+                    storedtr[n->cpindex] = p->cpindex;
+                    n = p;
                 }
             }
         }
-        
     }
     
     if (!wasrooted) {
@@ -358,12 +367,13 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
 void test_tree_compress(void)
 {
     
-    char testtr[] = "((2,3),(1,(4,5)));";
+    char testtr1[] = "(((2,3),1),(4,5));";
+    char testtr2[] = "(((3,2),1),(5,4));";
     int ntax = 5;
     int numnodes = 2 * ntax - 1;
     
-    tree *t = readNWK(testtr, true);
-    mfl_unroot(5, t);
+    tree *t = readNWK(testtr1, true);
+    mfl_unroot(ntax, t);
     
     int *compressed = mfl_compress_tree(t, ntax, numnodes);
     
@@ -380,6 +390,18 @@ void test_tree_compress(void)
         printf("%i ", compressed[i]);
     }
     printf("\n");
+    
+    tree *t2 = readNWK(testtr2, true);
+    mfl_unroot(ntax, t2);
+    int *compressed2 = mfl_compress_tree(t2, ntax, numnodes);
+    
+    if (mfl_compare_trees_ii(compressed, compressed2, numnodes)) {
+        printf("\nthey're the same\n");
+    }
+    else {
+        printf("\nthey're diff'rnt\n");
+    }
+
     
 }
 
