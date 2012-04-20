@@ -364,6 +364,54 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
     return storedtr;
 }
 
+tree *mfl_decompress_tree(int *savedtr, int ntax, int numnodes)
+{
+    int i;
+    tree *t;
+    
+    t = mfl_alloc_noring(ntax, numnodes);
+    
+    for (i = 0; i < numnodes; ++i) {
+        if (i < ntax) {
+            t->trnodes[i]->outedge = mfl_allocnode();
+            t->trnodes[i]->outedge->outedge = t->trnodes[i];
+        }
+    }
+    
+    /* Stuff will go here that reconstructs the tree from the integer array representation */
+    
+    return t;
+}
+
+bool mfl_compare_alltrees_ii(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last)
+{
+    int i = 0;
+    int *newtr;
+    bool foundtr = false;
+    
+    newtr = mfl_compress_tree(newtopol, ntax, numnodes);
+    
+    /* This search should be replaced by a binary search or some kind of hash 
+     * function in order to speed it up. Otherwise it will be a major time hog 
+     * if/when somebody loads a noisy dataset. */
+    
+    for (i = *start; i < *last; ++i) {
+        if (mfl_compare_trees_ii(newtr, savedtrees[i]->compressedtr, numnodes)) {
+            foundtr = true;
+            break;
+        }
+    }
+    
+    if (foundtr) {
+        free(newtr);
+    }
+    else {
+        newtopol->cmptrholder = newtr;
+    }
+    
+    return foundtr;
+}
+
 void test_tree_compress(void)
 {
     

@@ -119,6 +119,8 @@ typedef struct tree {
     int length;
     int templen;
     bool swapped;
+    int *compressedtr;
+    int *cmptrholder;
     taxbipart **bipartitions;
     taxbipart **hashtabholder;
     int index;
