@@ -55,15 +55,7 @@ bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_treelimit(mfl_handle_s *mfl_struct, void *param_data)
 {
-    if ((long int)(param_data)) 
-    {
-        mfl_struct->n_treelimit = (long int)(param_data);
-    }
-    else 
-    {
-        mfl_struct->n_treelimit = MORPHY_DEFAULT_TREE_LIMIT;
-    }
-
+    mfl_struct->n_treelimit = (long int)(param_data);
     return true;
 }
 
@@ -131,6 +123,9 @@ mfl_handle_t mfl_create_handle()
 
     /* setup reasonable defaults */
     mfl_set_branchswap_t(mfl_struct, (void*)MFL_BST_SPR);
+    mfl_set_collapse_value(mfl_struct, (void*)MFL_SC_MAX_LEN);
+    mfl_set_treelimit(mfl_struct, (void*)MORPHY_DEFAULT_TREE_LIMIT);
+    mfl_set_gapormissing(mfl_struct, (void*)false);
 
     return mfl_s2t(mfl_struct);
 }
