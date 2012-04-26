@@ -1,4 +1,4 @@
-TESTDIRS = $(wildcard test*)
+TESTDIRS = $(call my-sort,-V,$(wildcard test*))
 DATETIME = $(shell date)
 
 include ../../Makefile.inc

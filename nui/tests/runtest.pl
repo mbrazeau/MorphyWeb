@@ -28,10 +28,16 @@ sub read_expected_results(@)
 
 sub get_tests_to_update(@)
 {
+    my ($test_dir) = @_;
     my $tests_to_update;
     my @tests = split(/,/, $g_update_dirs);
     foreach my $test (@tests)
     {
+        if (lc($test) eq "all")
+        {
+            $tests_to_update->{$test_dir} = 1;
+            last
+        }
         $tests_to_update->{$test} = 1;
     }
     return $tests_to_update;
@@ -57,7 +63,7 @@ sub process_results(@)
     }
     else
     {
-        my $tests_to_update = get_tests_to_update();
+        my $tests_to_update = get_tests_to_update($test_dir);
         print("\n\n\n************* $test_dir FAILURE - $diffresults\n");
         if ($tests_to_update->{$test_dir})
         {

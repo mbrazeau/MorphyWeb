@@ -1,0 +1,13 @@
+o
+Ptomacanth_Edit.txt
+set
+ratchet
+0
+ratchet
+1
+ratchet
+2
+ratchet
+3
+q
+q

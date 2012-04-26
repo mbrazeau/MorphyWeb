@@ -73,6 +73,7 @@ NEW_COMMAND_DEFINE(CNexusMenuAddSeqType     )
 NEW_COMMAND_DEFINE(CNexusMenuCollapseBranches)
 NEW_COMMAND_DEFINE(CNexusMenuNumIterations  )
 NEW_COMMAND_DEFINE(CNexusMenuTreeLimit      )
+NEW_COMMAND_DEFINE(CNexusMenuRatchetSearch  )
 
 NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
 
@@ -135,6 +136,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_pSetMenu->AddMenuItem(new CNexusMenuCollapseBranches ("COLLAPSE"  , "Configure when to collapse nodes"));
     m_pSetMenu->AddMenuItem(new CNexusMenuNumIterations    ("NUMITE"    , "Set the number of iterations for a heuristic search"));
     m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("TREELIMIT" , "Set the maximum number of trees allowed to be stored in memory"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuRatchetSearch    ("RATCHET"   , "Set the ratchet search parameter"));
 
     m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"         , "Help"));
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
@@ -600,6 +602,19 @@ bool CNexusUserInterface::fCNexusMenuTreeLimit        ()
     ss<<strInput.c_str();
     ss>>tree_limit;
     mfl_set_parameter(m_mflHandle, MFL_PT_TREELIMIT, (void*)tree_limit);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuRatchetSearch        ()
+{
+    string strInput;
+    bool ratchet = false;
+    GetUserInput(" Select how the ratchet search parameter should be set\n  1) Enabled\n  2) Disabled\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        ratchet = true;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_RATCHET_SEARCH, (void*)ratchet);
     return true;
 }
 

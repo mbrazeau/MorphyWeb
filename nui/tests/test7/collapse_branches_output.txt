@@ -52,6 +52,7 @@ Enter selection#
  COLLAPSE) Configure when to collapse nodes
  NUMITE) Set the number of iterations for a heuristic search
  TREELIMIT) Set the maximum number of trees allowed to be stored in memory
+ RATCHET) Set the ratchet search parameter
  H) Help
  Q) Return to main menu
 

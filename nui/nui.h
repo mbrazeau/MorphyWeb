@@ -59,6 +59,7 @@ public:
     bool fCNexusMenuCollapseBranches();
     bool fCNexusMenuNumIterations  ();
     bool fCNexusMenuTreeLimit      ();
+    bool fCNexusMenuRatchetSearch  ();
 
     bool fCNexusMenuMainMenu       ();
 

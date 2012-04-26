@@ -38,11 +38,8 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection# 
- Enter filename: ./Reading "CHARACTERS" block...
-Skipping unknown block (ASSUMPTIONS)...
-Reading "TREES" block...
-Skipping unknown block (MACCLADE)...
- ./Gnathostomes_Nov2010f2.nex open successfully
+ Enter filename: ./Reading "DATA" block...
+ ./Ptomacanth_Edit.txt open successfully
 
 Main Menu
 Enter selection# 
@@ -59,41 +56,28 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # MFL Error: Invalid branch swap type
-
-Set parameters
-Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
+ Select how the ratchet search parameter should be set
+  1) Enabled
+  2) Disabled
  # 
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
+ Select how the ratchet search parameter should be set
+  1) Enabled
+  2) Disabled
  # 
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
+ Select how the ratchet search parameter should be set
+  1) Enabled
+  2) Disabled
  # 
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # MFL Error: Invalid branch swap type
-
+ Select how the ratchet search parameter should be set
+  1) Enabled
+  2) Disabled
+ # 
 Set parameters
 Enter selection# 
 
