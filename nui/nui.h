@@ -61,6 +61,7 @@ public:
     bool fCNexusMenuNumIterations  ();
     bool fCNexusMenuTreeLimit      ();
     bool fCNexusMenuRatchetSearch  ();
+    bool fCNexusMenuGap            ();
 
     bool fCNexusMenuMainMenu       ();
 

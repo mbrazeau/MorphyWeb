@@ -75,7 +75,7 @@ typedef struct {
     mfl_add_sequence_t      addseq_type;
     bool                    collapse_nolen;
     mfl_set_collapse_at_t   collapse_at;
-    bool                    gap_as_missing;
+    mfl_gap_t               gap_as_missing;
     mfl_resultant_data_s    *resultant_data;
 } mfl_handle_s;
 

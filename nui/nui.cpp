@@ -75,6 +75,7 @@ NEW_COMMAND_DEFINE(CNexusMenuCollapseZero   )
 NEW_COMMAND_DEFINE(CNexusMenuNumIterations  )
 NEW_COMMAND_DEFINE(CNexusMenuTreeLimit      )
 NEW_COMMAND_DEFINE(CNexusMenuRatchetSearch  )
+NEW_COMMAND_DEFINE(CNexusMenuGap            )
 
 NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
 
@@ -139,6 +140,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_pSetMenu->AddMenuItem(new CNexusMenuNumIterations    ("NUMITE"    , "Set the number of iterations for a heuristic search"));
     m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("TREELIMIT" , "Set the maximum number of trees allowed to be stored in memory"));
     m_pSetMenu->AddMenuItem(new CNexusMenuRatchetSearch    ("RATCHET"   , "Set the ratchet search parameter"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuGap              ("GAP"       , "Set whether gap symbol ('-') will be treated as inapplicability or as missing data"));
 
     m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"         , "Help"));
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
@@ -625,6 +627,19 @@ bool CNexusUserInterface::fCNexusMenuRatchetSearch        ()
     string strInput;
     bool ratchet = false;
     GetUserInput(" Select how the ratchet search parameter should be set\n  1) Enabled\n  2) Disabled\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        ratchet = true;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_RATCHET_SEARCH, (void*)ratchet);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuGap                  ()
+{
+    string strInput;
+    bool ratchet = false;
+    GetUserInput(" Select if the gap symbol ('-') will be treated as inapplicability or as missing data\n  1) Inapplicable\n  2) Missing data\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         ratchet = true;

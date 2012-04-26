@@ -665,7 +665,7 @@ void mini_test_analysis(void)
     mfl_handle->n_taxa = ntax;
     mfl_handle->n_chars = nchar;
     mfl_handle->input_data = usrTipdata;
-    mfl_handle->gap_as_missing = true;
+    mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
     mfl_handle->n_treelimit = 50000;
     mfl_handle->addseq_type = MFL_AST_ASIS;
     mfl_handle->bswap_type = MFL_BST_SPR;

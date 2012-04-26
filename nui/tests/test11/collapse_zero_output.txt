@@ -51,6 +51,7 @@ Enter selection#
  NUMITE) Set the number of iterations for a heuristic search
  TREELIMIT) Set the maximum number of trees allowed to be stored in memory
  RATCHET) Set the ratchet search parameter
+ GAP) Set whether gap symbol ('-') will be treated as inapplicability or as missing data
  H) Help
  Q) Return to main menu
 

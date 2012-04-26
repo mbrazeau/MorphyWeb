@@ -112,7 +112,7 @@ bool mfl_set_collapse_value(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_gapormissing(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->gap_as_missing = (bool)(param_data);
+    mfl_struct->gap_as_missing = (mfl_gap_t)(long int)(param_data);
     return true;
 }
 
@@ -127,7 +127,7 @@ mfl_handle_t mfl_create_handle()
     mfl_set_branchswap_t(mfl_struct, (void*)MFL_BST_SPR);
     mfl_set_collapse_value(mfl_struct, (void*)MFL_SC_MAX_LEN);
     mfl_set_treelimit(mfl_struct, (void*)MORPHY_DEFAULT_TREE_LIMIT);
-    mfl_set_gapormissing(mfl_struct, (void*)false);
+    mfl_set_gapormissing(mfl_struct, (void*)MFL_GAP_INAPPLICABLE);
 
     return mfl_s2t(mfl_struct);
 }

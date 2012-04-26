@@ -38,8 +38,10 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection# 
- Enter filename: ./Reading "DATA" block...
- ./Ptomacanth_Edit.txt open successfully
+ Enter filename: ./Reading "CHARACTERS" block...
+Skipping unknown block (ASSUMPTIONS)...
+Skipping unknown block (NOTES)...
+ ./Opistho.nex open successfully
 
 Main Menu
 Enter selection# 
@@ -58,27 +60,27 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Select how the ratchet search parameter should be set
-  1) Enabled
-  2) Disabled
+ Select if the gap symbol ('-') will be treated as inapplicability or as missing data
+  1) Inapplicable
+  2) Missing data
  # 
 Set parameters
 Enter selection# 
- Select how the ratchet search parameter should be set
-  1) Enabled
-  2) Disabled
+ Select if the gap symbol ('-') will be treated as inapplicability or as missing data
+  1) Inapplicable
+  2) Missing data
  # 
 Set parameters
 Enter selection# 
- Select how the ratchet search parameter should be set
-  1) Enabled
-  2) Disabled
+ Select if the gap symbol ('-') will be treated as inapplicability or as missing data
+  1) Inapplicable
+  2) Missing data
  # 
 Set parameters
 Enter selection# 
- Select how the ratchet search parameter should be set
-  1) Enabled
-  2) Disabled
+ Select if the gap symbol ('-') will be treated as inapplicability or as missing data
+  1) Inapplicable
+  2) Missing data
  # 
 Set parameters
 Enter selection# 
