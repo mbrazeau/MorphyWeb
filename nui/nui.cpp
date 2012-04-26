@@ -69,6 +69,7 @@ NEW_COMMAND_DEFINE(CNexusMenuReport         )
  */
 NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
 NEW_COMMAND_DEFINE(CNexusMenuBranchSwapType )
+NEW_COMMAND_DEFINE(CNexusMenuAddSeqType     )
 NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
 
 /*
@@ -126,8 +127,9 @@ CNexusUserInterface::CNexusUserInterface()
     }
     m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("SEARCHTYPE", "Set the search type for JK and BTS searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("BRANCHSWAP", "Set branch swap type for heuristic searches"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"   , "Help"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"   , "Return to main menu"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("ADDSEQ"    , "Selects the manner in which branches are added during the generation of starting trees"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"         , "Help"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
 }
 
 void CNexusUserInterface::ChangeMenu(CNexusMenuData *pMenu)
@@ -504,21 +506,46 @@ bool CNexusUserInterface::fCNexusMenuSearchType     ()
 bool CNexusUserInterface::fCNexusMenuBranchSwapType ()
 {
     string strInput;
-    mfl_branch_swap_t search_type = MFL_BST_MAX;
+    mfl_branch_swap_t swap_type = MFL_BST_MAX;
     GetUserInput(" Enter branch swap type\n  1) Tree bisection\n  2) Subtree pruning\n  3) Nearist neighbor\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
-        search_type = MFL_BST_TBR;
+        swap_type = MFL_BST_TBR;
     }
     else if (strInput.compare("2") == 0)
     {
-        search_type = MFL_BST_SPR;
+        swap_type = MFL_BST_SPR;
     }
     else if (strInput.compare("3") == 0)
     {
-        search_type = MFL_BST_NNI;
+        swap_type = MFL_BST_NNI;
     }
-    mfl_set_parameter(m_mflHandle, MFL_PT_BRANCH_SWAP_TYPE, (void*)search_type);
+    mfl_set_parameter(m_mflHandle, MFL_PT_BRANCH_SWAP_TYPE, (void*)swap_type);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuAddSeqType     ()
+{
+    string strInput;
+    mfl_add_sequence_t add_seq_type = MFL_AST_MAX;
+    GetUserInput(" Enter add seq type\n  1) Simple\n  2) Random\n  3) As is\n  4) Closest\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        add_seq_type = MFL_AST_SIMPLE;
+    }
+    else if (strInput.compare("2") == 0)
+    {
+        add_seq_type = MFL_AST_RANDOM;
+    }
+    else if (strInput.compare("3") == 0)
+    {
+        add_seq_type = MFL_AST_ASIS;
+    }
+    else if (strInput.compare("4") == 0)
+    {
+        add_seq_type = MFL_AST_CLOSEST;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_ADD_SEQUENCE_TYPE, (void*)add_seq_type);
     return true;
 }
 

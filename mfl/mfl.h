@@ -144,6 +144,8 @@ typedef enum
     MFL_AST_RANDOM,
     MFL_AST_ASIS,
     MFL_AST_CLOSEST,
+
+    MFL_AST_MAX
 } mfl_add_sequence_t;
 
 /*

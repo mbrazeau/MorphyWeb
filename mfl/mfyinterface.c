@@ -92,8 +92,11 @@ bool mfl_attach_inputdata(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_addseq_t(mfl_handle_s *mfl_struct, void *param_data)
 {
-    /* might want to put range checks in here... with error return... */
     mfl_struct->addseq_type = (mfl_add_sequence_t)(long int)param_data;
+    if (!((mfl_struct->addseq_type >= 0) && (mfl_struct->addseq_type < MFL_AST_MAX)))
+    {
+        throw mfl_exception(mfl_s2t(mfl_struct), "Invalid add seq type");
+    }
     return true;
 }
 

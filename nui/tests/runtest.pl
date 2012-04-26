@@ -7,7 +7,7 @@ my $g_expected_output_file;
 my $g_test_dir;
 my $g_update_dirs;
 GetOptions( "input=s" => \$g_input_file,
-            "expected=s" => \$g_expected_output_file,
+            "expected:s" => \$g_expected_output_file,
             "test=s" => \$g_test_dir,
             "update:s" => \$g_update_dirs);
 
@@ -37,23 +37,27 @@ sub get_tests_to_update(@)
     return $tests_to_update;
 }
 
-sub runtest(@)
+sub update_expected_output(@)
 {
-    my ($input_file, $expected_output_file, $test_dir) = @_;
-    my $actual_results = execute_nui($input_file);
-    my $tests_to_update = get_tests_to_update();
-    my $actual_output_file = "$test_dir/actual.out";
+    my ($input_file, $expected_output_file) = @_;
+    if (length($expected_output_file) == 0)
+    {
+        $expected_output_file = $input_file;
+        $expected_output_file =~ s/input\.txt/output\.txt/g;
+    }
+    return $expected_output_file;
+}
 
-    open(OUTPUTF, ">$actual_output_file");
-    print OUTPUTF "$actual_results";
-    close(OUTPUTF);
-    my $diffresults = `diff $actual_output_file $expected_output_file`;
+sub process_results(@)
+{
+    my ($diffresults, $input_file, $expected_output_file, $actual_output_file, $test_dir) = @_;
     if (length($diffresults) == 0)
     {
         print ("  $test_dir - pass\n");
     }
     else
     {
+        my $tests_to_update = get_tests_to_update();
         print("\n\n\n************* $test_dir FAILURE - $diffresults\n");
         if ($tests_to_update->{$test_dir})
         {
@@ -62,6 +66,23 @@ sub runtest(@)
             `cp $actual_output_file $expected_output_file`;
         }
     }
+}
+
+sub runtest(@)
+{
+    my ($input_file, $expected_output_file, $test_dir) = @_;
+    my $actual_results = execute_nui($input_file);
+    my $actual_output_file = "$test_dir/actual.out";
+
+    $expected_output_file = update_expected_output($input_file, $expected_output_file);
+
+    open(OUTPUTF, ">$actual_output_file");
+    print OUTPUTF "$actual_results";
+    close(OUTPUTF);
+    my $diffresults = `diff $actual_output_file $expected_output_file 2>&1`;
+
+    process_results($diffresults, $input_file, $expected_output_file, $actual_output_file, $test_dir);
+
     return 0;
 }
 

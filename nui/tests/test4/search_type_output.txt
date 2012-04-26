@@ -48,6 +48,7 @@ Main Menu
 Enter selection# 
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
+ ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
  H) Help
  Q) Return to main menu
 

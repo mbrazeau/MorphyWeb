@@ -1,0 +1,17 @@
+o
+nui/tests/Gnathostomes_Nov2010f2.nex
+set
+addseq
+0
+addseq
+1
+addseq
+2
+addseq
+3
+addseq
+4
+addseq
+5
+q
+q

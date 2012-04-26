@@ -55,6 +55,7 @@ public:
 
     bool fCNexusMenuSearchType     ();
     bool fCNexusMenuBranchSwapType ();
+    bool fCNexusMenuAddSeqType     ();
     bool fCNexusMenuMainMenu       ();
 
 protected:
