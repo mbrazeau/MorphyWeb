@@ -60,38 +60,39 @@ public:
     void DoMenu();
     bool RunSelection(string strInput);
 
-    bool Spacer() 
+    bool fCNexusMenuSpacer() 
     {
         throw "Cannot invoke the spacer";
         return true;
     }
-    bool OpenNexusFile  ();
-    bool SaveFile       ();
-    bool CloseNexusFile (bool bVerbose = true);
+    bool fCNexusMenuOpenNexusFile  ();
+    bool fCNexusMenuSaveFile       ();
+    bool fCNexusMenuCloseNexusFile (bool bVerbose = true);
                
-    bool Help           ();
-    bool Quit           ();
-    bool About          (bool bShowBuildTime = true);
-    bool CommandLog     ();
-    bool Status         ();
-    bool Chdir          ();
+    bool fCNexusMenuHelp           ();
+    bool fCNexusMenuQuit           ();
+    bool fCNexusMenuAbout          (bool bShowBuildTime = true);
+    bool fCNexusMenuCommandLog     ();
+    bool fCNexusMenuStatus         ();
+    bool fCNexusMenuChdir          ();
                
-    bool Exclude        ();
-    bool Include        ();
-    bool Outgroup       ();
-    bool Ingroup        ();
-    bool Char           ();
+    bool fCNexusMenuExclude        ();
+    bool fCNexusMenuInclude        ();
+    bool fCNexusMenuOutgroup       ();
+    bool fCNexusMenuIngroup        ();
+    bool fCNexusMenuChar           ();
+    bool fCNexusMenuSearchType     ();
                
-    bool HeuristicSearch();
-    bool Exhaust        ();
-    bool BNB            ();
-    bool Bootstrap      ();
-    bool Jackknife      ();
-    bool STR            ();
+    bool fCNexusMenuHeuristicSearch();
+    bool fCNexusMenuExhaust        ();
+    bool fCNexusMenuBNB            ();
+    bool fCNexusMenuBootstrap      ();
+    bool fCNexusMenuJackknife      ();
+    bool fCNexusMenuSTR            ();
                
-    bool Consens        ();
-    bool Collapse       ();
-    bool Report         ();
+    bool fCNexusMenuConsens        ();
+    bool fCNexusMenuCollapse       ();
+    bool fCNexusMenuReport         ();
 
 protected:
     void DestroyHandle();

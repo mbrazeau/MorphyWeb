@@ -117,6 +117,8 @@ typedef enum
     MFL_ST_EXHAUSTIVE,
     MFL_ST_BRANCH_BOUND,
     MFL_ST_HEURISTIC,
+
+    MFL_ST_MAX
 } mfl_search_t;
 
 /*

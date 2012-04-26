@@ -7,6 +7,7 @@
  *
  */
 #include "morphy.h"
+#include <sstream>
 
 bool mfl_heuristic           (mfl_handle_t mfl_handle)
 {
@@ -38,8 +39,11 @@ bool mfl_set_nchar(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_searchtype(mfl_handle_s *mfl_struct, void *param_data)
 {
-    /* might want to put range checks in here... with error return... */
     mfl_struct->search_type = (mfl_search_t)(long int)(param_data);
+    if (!((mfl_struct->search_type >= 0) && (mfl_struct->search_type < MFL_ST_MAX)))
+    {
+        throw mfl_exception(mfl_s2t(mfl_struct), "Invalid search type");
+    }
     return true;
 }
 
@@ -224,10 +228,21 @@ const char * mfl_exception::what() const throw()
     string ret = runtime_error::what();
     if (m_mfl_handle)
     {
-        /* 
-        ** As needs arise, we might tack on extra debug info here possibly from
-        ** the mfl_handle, or from other interesting data sources.
-        */
+        mfl_handle_s *mfl_struct = mfl_t2s(m_mfl_handle);
+        stringstream ss;
+        ss<<endl<<"n_taxa:          "<<mfl_struct->n_taxa;
+        ss<<endl<<"n_chars:         "<<mfl_struct->n_chars;
+        ss<<endl<<"search_type:     "<<mfl_struct->search_type;
+        ss<<endl<<"n_iterations:    "<<mfl_struct->n_iterations;
+        ss<<endl<<"n_treelimit:     "<<mfl_struct->n_treelimit;
+        ss<<endl<<"bswap_type:      "<<mfl_struct->bswap_type;
+        ss<<endl<<"is_ratchet:      "<<mfl_struct->is_ratchet;
+        ss<<endl<<"addseq_type:     "<<mfl_struct->addseq_type;
+        ss<<endl<<"collapse_nolen:  "<<mfl_struct->collapse_nolen;
+        ss<<endl<<"collapse_at:     "<<mfl_struct->collapse_at;
+        ss<<endl<<"gap_as_missing:  "<<mfl_struct->gap_as_missing;
+        ss<<endl;
+        ret.append(ss.str());
     }
     else
     {

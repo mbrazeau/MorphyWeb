@@ -21,47 +21,48 @@
  * the class name based on the value of the "type" macro parameter
  */
 #define NEW_COMMAND_DEFINE(type) \
-    class CNexusMenu##type : public CNexusMenuBase \
+    class type : public CNexusMenuBase \
     { \
     public:\
-        CNexusMenu##type(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){}\
+        type(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){}\
         bool MenuFunction(CNexusUserInterface *pNexusUserInterface)\
         {\
-            return pNexusUserInterface->type();\
+            return pNexusUserInterface->f##type();\
         }\
     };
 
 /*
  * The followind actually defines the derived class for each command
  */
-NEW_COMMAND_DEFINE(Spacer         )
-NEW_COMMAND_DEFINE(OpenNexusFile  )
-NEW_COMMAND_DEFINE(SaveFile       )
-NEW_COMMAND_DEFINE(CloseNexusFile )
+NEW_COMMAND_DEFINE(CNexusMenuSpacer         )
+NEW_COMMAND_DEFINE(CNexusMenuOpenNexusFile  )
+NEW_COMMAND_DEFINE(CNexusMenuSaveFile       )
+NEW_COMMAND_DEFINE(CNexusMenuCloseNexusFile )
 
-NEW_COMMAND_DEFINE(Help           )
-NEW_COMMAND_DEFINE(Quit           )
-NEW_COMMAND_DEFINE(About          )
-NEW_COMMAND_DEFINE(CommandLog     )
-NEW_COMMAND_DEFINE(Status         )
-NEW_COMMAND_DEFINE(Chdir          )
+NEW_COMMAND_DEFINE(CNexusMenuHelp           )
+NEW_COMMAND_DEFINE(CNexusMenuQuit           )
+NEW_COMMAND_DEFINE(CNexusMenuAbout          )
+NEW_COMMAND_DEFINE(CNexusMenuCommandLog     )
+NEW_COMMAND_DEFINE(CNexusMenuStatus         )
+NEW_COMMAND_DEFINE(CNexusMenuChdir          )
 
-NEW_COMMAND_DEFINE(Exclude        )
-NEW_COMMAND_DEFINE(Include        )
-NEW_COMMAND_DEFINE(Outgroup       )
-NEW_COMMAND_DEFINE(Ingroup        )
-NEW_COMMAND_DEFINE(Char           )
+NEW_COMMAND_DEFINE(CNexusMenuExclude        )
+NEW_COMMAND_DEFINE(CNexusMenuInclude        )
+NEW_COMMAND_DEFINE(CNexusMenuOutgroup       )
+NEW_COMMAND_DEFINE(CNexusMenuIngroup        )
+NEW_COMMAND_DEFINE(CNexusMenuChar           )
+NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
 
-NEW_COMMAND_DEFINE(HeuristicSearch)
-NEW_COMMAND_DEFINE(Exhaust        )
-NEW_COMMAND_DEFINE(BNB            )
-NEW_COMMAND_DEFINE(Bootstrap      )
-NEW_COMMAND_DEFINE(Jackknife      )
-NEW_COMMAND_DEFINE(STR            )
+NEW_COMMAND_DEFINE(CNexusMenuHeuristicSearch)
+NEW_COMMAND_DEFINE(CNexusMenuExhaust        )
+NEW_COMMAND_DEFINE(CNexusMenuBNB            )
+NEW_COMMAND_DEFINE(CNexusMenuBootstrap      )
+NEW_COMMAND_DEFINE(CNexusMenuJackknife      )
+NEW_COMMAND_DEFINE(CNexusMenuSTR            )
 
-NEW_COMMAND_DEFINE(Consens        )
-NEW_COMMAND_DEFINE(Collapse       )
-NEW_COMMAND_DEFINE(Report         )
+NEW_COMMAND_DEFINE(CNexusMenuConsens        )
+NEW_COMMAND_DEFINE(CNexusMenuCollapse       )
+NEW_COMMAND_DEFINE(CNexusMenuReport         )
 /*
  * The UI constructor puts the menu together, it stores each
  * menu option in a stl vector.
@@ -91,6 +92,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_vMenu.push_back(new CNexusMenuOutgroup        ("OUTG", "Assign taxa to outgroup"));
     m_vMenu.push_back(new CNexusMenuIngroup         ("ING" , "Return taxa from outgroup to ingrou"));
     m_vMenu.push_back(new CNexusMenuChar            ("CHAR", "Modify a character's type"));
+    m_vMenu.push_back(new CNexusMenuSearchType      ("ST"  , "Set the JK and BTS search type"));
 
     m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Analysis"));
     m_vMenu.push_back(new CNexusMenuHeuristicSearch ("HS" , "Begin a heuristic search"));
@@ -123,7 +125,7 @@ CNexusUserInterface::~CNexusUserInterface()
         }
     }
     m_vMenu.clear();
-    CloseNexusFile(false);
+    fCNexusMenuCloseNexusFile(false);
     if (m_fCommandLog)
     {
         m_fCommandLog.close();
@@ -155,8 +157,8 @@ void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
 void CNexusUserInterface::DoMenu()
 {
     string strInput;
-    About(false);
-    Help();
+    fCNexusMenuAbout(false);
+    fCNexusMenuHelp();
     try
     {
         do
@@ -230,7 +232,7 @@ bool CNexusUserInterface::SetMorphyOpenParams()
  * Run the open file command, just prompt the user for input
  * and attempt to read the nexus file
  */
-bool CNexusUserInterface::OpenNexusFile()
+bool CNexusUserInterface::fCNexusMenuOpenNexusFile()
 {
     string strFilename;
 
@@ -249,7 +251,7 @@ bool CNexusUserInterface::OpenNexusFile()
             }
             else
             {
-                CloseNexusFile(false);
+                fCNexusMenuCloseNexusFile(false);
                 cout<<" Error: Unable to read "<<strFilename<<endl;
             }
         }
@@ -280,7 +282,7 @@ void CNexusUserInterface::CreateHandle()
     m_mflHandle = mfl_create_handle();
 }
 
-bool CNexusUserInterface::SaveFile       ()
+bool CNexusUserInterface::fCNexusMenuSaveFile       ()
 {
     cout<<"Not implemented"<<endl;
     return true;
@@ -290,7 +292,7 @@ bool CNexusUserInterface::SaveFile       ()
  * Close a file opened with the OpenNexusFile command
  * bVerbose is defaulted to = true
  */
-bool CNexusUserInterface::CloseNexusFile(bool bVerbose)
+bool CNexusUserInterface::fCNexusMenuCloseNexusFile(bool bVerbose)
 {
     if (m_pNexusParse)
     {
@@ -313,7 +315,7 @@ bool CNexusUserInterface::CloseNexusFile(bool bVerbose)
 /*
  * Print the menu
  */
-bool CNexusUserInterface::Help           ()
+bool CNexusUserInterface::fCNexusMenuHelp           ()
 {
     vector<CNexusMenuBase*>::iterator it;
     CNexusMenuBase* pMenu;
@@ -330,13 +332,13 @@ bool CNexusUserInterface::Help           ()
     return true;
 }
 
-bool CNexusUserInterface::Quit           ()
+bool CNexusUserInterface::fCNexusMenuQuit           ()
 {
     cout<<"Goodbye!"<<endl;
     return false;
 }
 
-bool CNexusUserInterface::About          (bool bShowBuildTime)
+bool CNexusUserInterface::fCNexusMenuAbout          (bool bShowBuildTime)
 {
     cout<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
     cout<<"Copyright 2012 (C) Martin Brazeau and Chris Desjardins. All rights reserved."<<endl;
@@ -348,7 +350,7 @@ bool CNexusUserInterface::About          (bool bShowBuildTime)
     return true;
 }
 
-bool CNexusUserInterface::CommandLog     ()
+bool CNexusUserInterface::fCNexusMenuCommandLog     ()
 {
     string strFilename;
     
@@ -374,7 +376,7 @@ bool CNexusUserInterface::CommandLog     ()
     return true;
 }
 
-bool CNexusUserInterface::Status         ()
+bool CNexusUserInterface::fCNexusMenuStatus         ()
 {
     string strNexusFile = "File not open";
 
@@ -390,7 +392,7 @@ bool CNexusUserInterface::Status         ()
     return true;
 }
 
-bool CNexusUserInterface::Chdir          ()
+bool CNexusUserInterface::fCNexusMenuChdir          ()
 {
     string strCwd;
     struct stat st;
@@ -412,84 +414,105 @@ bool CNexusUserInterface::Chdir          ()
     return true;
 }
 
-bool CNexusUserInterface::Exclude        ()
+bool CNexusUserInterface::fCNexusMenuExclude        ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Include        ()
+bool CNexusUserInterface::fCNexusMenuInclude        ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Outgroup       ()
+bool CNexusUserInterface::fCNexusMenuOutgroup       ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Ingroup        ()
+bool CNexusUserInterface::fCNexusMenuIngroup        ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Char           ()
+bool CNexusUserInterface::fCNexusMenuChar           ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::HeuristicSearch()
+bool CNexusUserInterface::fCNexusMenuSearchType     ()
+{
+    string strInput;
+    mfl_search_t search_type = MFL_ST_MAX;
+    GetUserInput(" Enter search type\n  1) Exhaustive\n  2) Branch Bound\n  3) Heuristic\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        search_type = MFL_ST_EXHAUSTIVE;
+    }
+    else if (strInput.compare("2") == 0)
+    {
+        search_type = MFL_ST_BRANCH_BOUND;
+    }
+    else if (strInput.compare("3") == 0)
+    {
+        search_type = MFL_ST_HEURISTIC;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_SEARCH_TYPE, (void*)search_type);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuHeuristicSearch()
 {
     return mfl_heuristic(m_mflHandle);
 }
 
-bool CNexusUserInterface::Exhaust        ()
+bool CNexusUserInterface::fCNexusMenuExhaust        ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::BNB            ()
+bool CNexusUserInterface::fCNexusMenuBNB            ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Bootstrap      ()
+bool CNexusUserInterface::fCNexusMenuBootstrap      ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Jackknife      ()
+bool CNexusUserInterface::fCNexusMenuJackknife      ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::STR            ()
+bool CNexusUserInterface::fCNexusMenuSTR            ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Consens        ()
+bool CNexusUserInterface::fCNexusMenuConsens        ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Collapse       ()
+bool CNexusUserInterface::fCNexusMenuCollapse       ()
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::Report()
+bool CNexusUserInterface::fCNexusMenuReport()
 {
     if (m_pNexusParse)
     {

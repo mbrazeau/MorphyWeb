@@ -64,19 +64,19 @@ typedef struct {
 
 
 typedef struct {
-    int n_taxa;
-    int n_chars;
-    mfl_search_t search_type;
-    int n_iterations;
-    int n_treelimit;
-    mfl_branch_swap_t bswap_type;
-    bool is_ratchet;
-    char *input_data;
-    mfl_add_sequence_t addseq_type;
-    bool collapse_nolen;
-    mfl_set_collapse_at_t collapse_at;
-    bool gap_as_missing;
-    mfl_resultant_data_s *resultant_data;
+    int                     n_taxa;
+    int                     n_chars;
+    mfl_search_t            search_type;
+    int                     n_iterations;
+    int                     n_treelimit;
+    mfl_branch_swap_t       bswap_type;
+    bool                    is_ratchet;
+    char                    *input_data;
+    mfl_add_sequence_t      addseq_type;
+    bool                    collapse_nolen;
+    mfl_set_collapse_at_t   collapse_at;
+    bool                    gap_as_missing;
+    mfl_resultant_data_s    *resultant_data;
 } mfl_handle_s;
 
 typedef int32_t charstate;

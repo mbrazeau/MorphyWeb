@@ -6,3 +6,4 @@ OBJS = nui.o NexusParse.o NexusReader.o
 ARCHIVES = ../mfl/$(MFLLIB)
 include ../Makefile.inc
 -include $(DEPS)
+CFLAGS += -save-temps

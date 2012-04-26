@@ -21,6 +21,7 @@ This program uses the NCL by Paul O. Lewis.
  OUTG) Assign taxa to outgroup
  ING) Return taxa from outgroup to ingrou
  CHAR) Modify a character's type
+ ST) Set the JK and BTS search type
 
 === Analysis
  HS) Begin a heuristic search
