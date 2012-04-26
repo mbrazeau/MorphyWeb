@@ -21,7 +21,7 @@ This program uses the NCL by Paul O. Lewis.
  OUTG) Assign taxa to outgroup
  ING) Return taxa from outgroup to ingrou
  CHAR) Modify a character's type
- ST) Set the JK and BTS search type
+ SET) Set morphy configuration parameters
 
 === Analysis
  HS) Begin a heuristic search
@@ -36,6 +36,7 @@ This program uses the NCL by Paul O. Lewis.
  COLLAPSE) Collapse zero-length branches, condense the tree set
  REPORT) Print a report about the current open nexus file
 
+Main Menu
 Enter selection# 
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
@@ -43,24 +44,35 @@ Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
+Main Menu
+Enter selection# 
+ SEARCHTYPE) Set the search type for JK and BTS searches
+ H) Help
+ Q) Return to main menu
+
+
+Set parameters
 Enter selection# 
  Enter search type
   1) Exhaustive
   2) Branch Bound
   3) Heuristic
  # 
+Set parameters
 Enter selection# 
  Enter search type
   1) Exhaustive
   2) Branch Bound
   3) Heuristic
  # 
+Set parameters
 Enter selection# 
  Enter search type
   1) Exhaustive
   2) Branch Bound
   3) Heuristic
  # 
+Set parameters
 Enter selection# 
  Enter search type
   1) Exhaustive
@@ -68,6 +80,7 @@ Enter selection#
   3) Heuristic
  # MFL Error: Invalid search type
 
+Set parameters
 Enter selection# 
  Enter search type
   1) Exhaustive
@@ -75,6 +88,10 @@ Enter selection#
   3) Heuristic
  # MFL Error: Invalid search type
 
+Set parameters
+Enter selection# 
+
+Main Menu
 Enter selection# 
 Goodbye!
 

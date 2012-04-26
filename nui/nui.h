@@ -3,53 +3,12 @@
 #include <vector>
 #include "NexusParse.h"
 #include "mfl.h"
+#include "menu.h"
 
 #define NUI_MAJOR_VERSION   0
 #define NUI_MINOR_VERSION   1
 
-class CNexusUserInterface;
-
-class CNexusMenuBase
-{
-public:
-    CNexusMenuBase(const char * strCommand, const char * strHelpText)
-    {
-        if (strCommand)
-        {
-            m_strCommand = strCommand;
-        }
-        m_strHelpText = strHelpText;
-        transform(m_strCommand.begin(), m_strCommand.end(), m_strCommand.begin(), ::toupper);
-    }
-
-    string GetMenuOutput()
-    {
-        if (m_strCommand.length() > 0)
-        {
-            return " " + m_strCommand + ") " + m_strHelpText;
-        }
-        else
-        {
-            return "\n=== " + m_strHelpText;
-        }
-    }
-
-    bool IsSelection(string strInput)
-    {
-        if (strInput.length() > 0)
-        {
-            transform(strInput.begin(), strInput.end(), strInput.begin(), ::toupper);        
-            return strInput == m_strCommand;
-        }
-        return false;
-    }
-
-    virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface) = 0;
-private:
-    string m_strCommand;
-    string m_strHelpText;
-};
-
+    
 class CNexusUserInterface
 {
 public:
@@ -69,7 +28,7 @@ public:
     bool fCNexusMenuSaveFile       ();
     bool fCNexusMenuCloseNexusFile (bool bVerbose = true);
                
-    bool fCNexusMenuHelp           ();
+    bool fCNexusMenuHelp           (bool bForceShowMenu = true);
     bool fCNexusMenuQuit           ();
     bool fCNexusMenuAbout          (bool bShowBuildTime = true);
     bool fCNexusMenuCommandLog     ();
@@ -81,7 +40,7 @@ public:
     bool fCNexusMenuOutgroup       ();
     bool fCNexusMenuIngroup        ();
     bool fCNexusMenuChar           ();
-    bool fCNexusMenuSearchType     ();
+    bool fCNexusMenuSet            ();
                
     bool fCNexusMenuHeuristicSearch();
     bool fCNexusMenuExhaust        ();
@@ -94,14 +53,21 @@ public:
     bool fCNexusMenuCollapse       ();
     bool fCNexusMenuReport         ();
 
+    bool fCNexusMenuSearchType     ();
+    bool fCNexusMenuMainMenu       ();
+
 protected:
     void DestroyHandle();
     void CreateHandle();
     bool SetMorphyOpenParams();
+    void ChangeMenu(CNexusMenuData *pMenu);
 
 private:
     void GetUserInput(string strPrompt, string *strInput);
-    vector <CNexusMenuBase*> m_vMenu;
+    CNexusMenuData *m_pMainMenu;
+    CNexusMenuData *m_pSetMenu;
+    CNexusMenuData *m_pMenu;
+
     CNexusParse *m_pNexusParse;
     string m_strCwd;
 

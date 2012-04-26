@@ -32,7 +32,7 @@
     };
 
 /*
- * The followind actually defines the derived class for each command
+ * The followind actually defines the derived class for each command on the main menu
  */
 NEW_COMMAND_DEFINE(CNexusMenuSpacer         )
 NEW_COMMAND_DEFINE(CNexusMenuOpenNexusFile  )
@@ -51,7 +51,7 @@ NEW_COMMAND_DEFINE(CNexusMenuInclude        )
 NEW_COMMAND_DEFINE(CNexusMenuOutgroup       )
 NEW_COMMAND_DEFINE(CNexusMenuIngroup        )
 NEW_COMMAND_DEFINE(CNexusMenuChar           )
-NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
+NEW_COMMAND_DEFINE(CNexusMenuSet            )
 
 NEW_COMMAND_DEFINE(CNexusMenuHeuristicSearch)
 NEW_COMMAND_DEFINE(CNexusMenuExhaust        )
@@ -63,6 +63,13 @@ NEW_COMMAND_DEFINE(CNexusMenuSTR            )
 NEW_COMMAND_DEFINE(CNexusMenuConsens        )
 NEW_COMMAND_DEFINE(CNexusMenuCollapse       )
 NEW_COMMAND_DEFINE(CNexusMenuReport         )
+
+/*
+ * The followind actually defines the derived class for each command on the set menu
+ */
+NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
+NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
+
 /*
  * The UI constructor puts the menu together, it stores each
  * menu option in a stl vector.
@@ -72,59 +79,69 @@ CNexusUserInterface::CNexusUserInterface()
     m_mflHandle = NULL;
     m_pNexusParse = NULL;
     m_strCwd = "./";
+    m_pMainMenu = new CNexusMenuData("Main Menu");
+    if (!m_pMainMenu)
+    {
+        throw "Unable to allocate memory for main menu";
+    }
+    m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "File"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuOpenNexusFile   ("O", "Open a nexus file"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuCloseNexusFile  ("C", "Close a nexus file"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSaveFile        ("S", "Save according to the options"));
 
-    m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "File"));
-    m_vMenu.push_back(new CNexusMenuOpenNexusFile   ("O", "Open a nexus file"));
-    m_vMenu.push_back(new CNexusMenuCloseNexusFile  ("C", "Close a nexus file"));
-    m_vMenu.push_back(new CNexusMenuSaveFile        ("S", "Save according to the options"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Program"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuCommandLog      ("LOG" ,"Toggles record of commands, variable states, etc"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuStatus          ("STAT","Prints status of all current settings, eg. logmode on/off"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuChdir           ("CD"  ,"change working directory"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuHelp            ("H"   , "Help"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuAbout           ("A"   , "About"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuQuit            ("Q"   , "Quit"));
 
-    m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Program"));
-    m_vMenu.push_back(new CNexusMenuCommandLog      ("LOG" ,"Toggles record of commands, variable states, etc"));
-    m_vMenu.push_back(new CNexusMenuStatus          ("STAT","Prints status of all current settings, eg. logmode on/off"));
-    m_vMenu.push_back(new CNexusMenuChdir           ("CD"  ,"change working directory"));
-    m_vMenu.push_back(new CNexusMenuHelp            ("H"   , "Help"));
-    m_vMenu.push_back(new CNexusMenuAbout           ("A"   , "About"));
-    m_vMenu.push_back(new CNexusMenuQuit            ("Q"   , "Quit"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Data"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuExclude         ("EXC" , "Exclude taxa or characters"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuInclude         ("INC" , "Include excluded taxa or characters"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuOutgroup        ("OUTG", "Assign taxa to outgroup"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuIngroup         ("ING" , "Return taxa from outgroup to ingrou"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuChar            ("CHAR", "Modify a character's type"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSet             ("SET" , "Set morphy configuration parameters"));
 
-    m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Data"));
-    m_vMenu.push_back(new CNexusMenuExclude         ("EXC" , "Exclude taxa or characters"));
-    m_vMenu.push_back(new CNexusMenuInclude         ("INC" , "Include excluded taxa or characters"));
-    m_vMenu.push_back(new CNexusMenuOutgroup        ("OUTG", "Assign taxa to outgroup"));
-    m_vMenu.push_back(new CNexusMenuIngroup         ("ING" , "Return taxa from outgroup to ingrou"));
-    m_vMenu.push_back(new CNexusMenuChar            ("CHAR", "Modify a character's type"));
-    m_vMenu.push_back(new CNexusMenuSearchType      ("ST"  , "Set the JK and BTS search type"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Analysis"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuHeuristicSearch ("HS" , "Begin a heuristic search"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuExhaust         ("EXS", "Begin an exhaustive search"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuBNB             ("BNB", "Begin a branch-and-bound search"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuBootstrap       ("BTS", "Begin a bootstrap analysis"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuJackknife       ("JK" , "Begin a jackknife analysis"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSTR             ("STR", "Perform a safe taxonomic reduction"));
 
-    m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Analysis"));
-    m_vMenu.push_back(new CNexusMenuHeuristicSearch ("HS" , "Begin a heuristic search"));
-    m_vMenu.push_back(new CNexusMenuExhaust         ("EXS", "Begin an exhaustive search"));
-    m_vMenu.push_back(new CNexusMenuBNB             ("BNB", "Begin a branch-and-bound search"));
-    m_vMenu.push_back(new CNexusMenuBootstrap       ("BTS", "Begin a bootstrap analysis"));
-    m_vMenu.push_back(new CNexusMenuJackknife       ("JK" , "Begin a jackknife analysis"));
-    m_vMenu.push_back(new CNexusMenuSTR             ("STR", "Perform a safe taxonomic reduction"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Results"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuConsens         ("CONSENS" , "Compute consensus tree for trees in memory"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuCollapse        ("COLLAPSE", "Collapse zero-length branches, condense the tree set"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuReport          ("REPORT"  , "Print a report about the current open nexus file"));
 
-    m_vMenu.push_back(new CNexusMenuSpacer      (NULL, "Results"));
-    m_vMenu.push_back(new CNexusMenuConsens         ("CONSENS" , "Compute consensus tree for trees in memory"));
-    m_vMenu.push_back(new CNexusMenuCollapse        ("COLLAPSE", "Collapse zero-length branches, condense the tree set"));
-    m_vMenu.push_back(new CNexusMenuReport          ("REPORT"  , "Print a report about the current open nexus file"));
+    m_pSetMenu = new CNexusMenuData("Set parameters");
+    if (!m_pSetMenu)
+    {
+        throw "Unable to allocate memory for set menu";
+    }
+    m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("SEARCHTYPE", "Set the search type for JK and BTS searches"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"   , "Help"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"   , "Return to main menu"));
 }
+
+void CNexusUserInterface::ChangeMenu(CNexusMenuData *pMenu)
+{
+    m_pMenu = pMenu;
+    fCNexusMenuHelp(false);
+}
+
 
 /*
  * The UI destructor deletes all memory.
  */
 CNexusUserInterface::~CNexusUserInterface()
 {
-    vector<CNexusMenuBase*>::iterator it;
-    CNexusMenuBase* pMenu;
-
-    for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
-    {
-        pMenu = *it;
-        if (pMenu)
-        {
-            delete(pMenu);
-        }
-    }
-    m_vMenu.clear();
+    delete m_pMainMenu;
+    delete m_pSetMenu;
     fCNexusMenuCloseNexusFile(false);
     if (m_fCommandLog)
     {
@@ -158,57 +175,19 @@ void CNexusUserInterface::DoMenu()
 {
     string strInput;
     fCNexusMenuAbout(false);
-    fCNexusMenuHelp();
+    ChangeMenu(m_pMainMenu);
     try
     {
         do
         {
             strInput.clear();
-            GetUserInput("Enter selection# " ,&strInput);
-        } while (RunSelection(strInput));
+            GetUserInput(m_pMenu->GetPrompt() ,&strInput);
+        } while (m_pMenu->RunSelection(strInput, this));
     }
     catch (const char *e)
     {
         cout<<endl<<"Error: "<<e<<endl;
     }
-}
-
-/*
- * Loop through the menu vector and look for the command entered by the user.
- * If the command is found then run the command by calling the overloaded 
- * functionoid MenuFunction() with the current CNexusUserInterface instance
- * as the parameter.
- */
-bool CNexusUserInterface::RunSelection(string strInput)
-{
-    vector<CNexusMenuBase*>::iterator it;
-    CNexusMenuBase* pMenu;
-
-    for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
-    {
-        pMenu = *it;
-        if ((pMenu) && (pMenu->IsSelection(strInput)))
-        {
-            bool bRet = true;
-            cout<<endl;
-            try
-            {
-                bRet = pMenu->MenuFunction(this);
-            }
-            catch (const char *e)
-            {
-                cout<<"NUI Error: "<<e<<endl;
-            }
-            catch (mfl_exception e)
-            {
-                cout<<"MFL Error: "<<e.what()<<endl;
-            }
-            cout<<endl;
-            return bRet;
-        }
-    }
-    cout<<" Unknown command: "<<strInput<<endl;
-    return true;
 }
 
 bool CNexusUserInterface::SetMorphyOpenParams()
@@ -315,20 +294,9 @@ bool CNexusUserInterface::fCNexusMenuCloseNexusFile(bool bVerbose)
 /*
  * Print the menu
  */
-bool CNexusUserInterface::fCNexusMenuHelp           ()
+bool CNexusUserInterface::fCNexusMenuHelp           (bool bForceShowMenu)
 {
-    vector<CNexusMenuBase*>::iterator it;
-    CNexusMenuBase* pMenu;
-
-    for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
-    {
-        pMenu = *it;
-        if (pMenu)
-        {
-            cout<<pMenu->GetMenuOutput()<<endl;
-        }
-    }
-    cout<<endl;
+    m_pMenu->Help(bForceShowMenu);
     return true;
 }
 
@@ -444,24 +412,9 @@ bool CNexusUserInterface::fCNexusMenuChar           ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuSearchType     ()
+bool CNexusUserInterface::fCNexusMenuSet            ()
 {
-    string strInput;
-    mfl_search_t search_type = MFL_ST_MAX;
-    GetUserInput(" Enter search type\n  1) Exhaustive\n  2) Branch Bound\n  3) Heuristic\n # ", &strInput);
-    if (strInput.compare("1") == 0)
-    {
-        search_type = MFL_ST_EXHAUSTIVE;
-    }
-    else if (strInput.compare("2") == 0)
-    {
-        search_type = MFL_ST_BRANCH_BOUND;
-    }
-    else if (strInput.compare("3") == 0)
-    {
-        search_type = MFL_ST_HEURISTIC;
-    }
-    mfl_set_parameter(m_mflHandle, MFL_PT_SEARCH_TYPE, (void*)search_type);
+    ChangeMenu(m_pSetMenu);
     return true;
 }
 
@@ -522,6 +475,33 @@ bool CNexusUserInterface::fCNexusMenuReport()
     {
         cout<<"No file is currently open"<<endl;
     }
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuSearchType     ()
+{
+    string strInput;
+    mfl_search_t search_type = MFL_ST_MAX;
+    GetUserInput(" Enter search type\n  1) Exhaustive\n  2) Branch Bound\n  3) Heuristic\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        search_type = MFL_ST_EXHAUSTIVE;
+    }
+    else if (strInput.compare("2") == 0)
+    {
+        search_type = MFL_ST_BRANCH_BOUND;
+    }
+    else if (strInput.compare("3") == 0)
+    {
+        search_type = MFL_ST_HEURISTIC;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_SEARCH_TYPE, (void*)search_type);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuMainMenu       ()
+{
+    ChangeMenu(m_pMainMenu);
     return true;
 }
 
