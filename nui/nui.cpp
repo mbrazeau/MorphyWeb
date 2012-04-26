@@ -68,6 +68,7 @@ NEW_COMMAND_DEFINE(CNexusMenuReport         )
  * The followind actually defines the derived class for each command on the set menu
  */
 NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
+NEW_COMMAND_DEFINE(CNexusMenuBranchSwapType )
 NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
 
 /*
@@ -124,6 +125,7 @@ CNexusUserInterface::CNexusUserInterface()
         throw "Unable to allocate memory for set menu";
     }
     m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("SEARCHTYPE", "Set the search type for JK and BTS searches"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("BRANCHSWAP", "Set branch swap type for heuristic searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"   , "Help"));
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"   , "Return to main menu"));
 }
@@ -496,6 +498,27 @@ bool CNexusUserInterface::fCNexusMenuSearchType     ()
         search_type = MFL_ST_HEURISTIC;
     }
     mfl_set_parameter(m_mflHandle, MFL_PT_SEARCH_TYPE, (void*)search_type);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuBranchSwapType ()
+{
+    string strInput;
+    mfl_branch_swap_t search_type = MFL_BST_MAX;
+    GetUserInput(" Enter branch swap type\n  1) Tree bisection\n  2) Subtree pruning\n  3) Nearist neighbor\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        search_type = MFL_BST_TBR;
+    }
+    else if (strInput.compare("2") == 0)
+    {
+        search_type = MFL_BST_SPR;
+    }
+    else if (strInput.compare("3") == 0)
+    {
+        search_type = MFL_BST_NNI;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_BRANCH_SWAP_TYPE, (void*)search_type);
     return true;
 }
 

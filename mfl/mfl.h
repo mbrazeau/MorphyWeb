@@ -131,6 +131,8 @@ typedef enum
     MFL_BST_TBR, // Tree bisection and reconnection: prunes a subtree, and performs all re-rooting + re-insertion operations
     MFL_BST_SPR, // Subtree pruning and regrafting: prunes a subtree and reinserts it at all locations in the target tree
     MFL_BST_NNI, // Nearest-neighbor interchanges: swaps two sub-trees separated by an internal node
+
+    MFL_BST_MAX
 } mfl_branch_swap_t;
 
 /*

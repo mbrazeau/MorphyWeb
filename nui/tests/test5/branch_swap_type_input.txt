@@ -1,0 +1,15 @@
+o
+Gnathostomes_Nov2010f2.nex
+set
+branchswap
+0
+branchswap
+1
+branchswap
+2
+branchswap
+3
+branchswap
+4
+q
+q

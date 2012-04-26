@@ -54,40 +54,40 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Enter search type
-  1) Exhaustive
-  2) Branch Bound
-  3) Heuristic
- # 
-Set parameters
-Enter selection# 
- Enter search type
-  1) Exhaustive
-  2) Branch Bound
-  3) Heuristic
- # 
-Set parameters
-Enter selection# 
- Enter search type
-  1) Exhaustive
-  2) Branch Bound
-  3) Heuristic
- # 
-Set parameters
-Enter selection# 
- Enter search type
-  1) Exhaustive
-  2) Branch Bound
-  3) Heuristic
- # MFL Error: Invalid search type
+ Enter branch swap type
+  1) Tree bisection
+  2) Subtree pruning
+  3) Nearist neighbor
+ # MFL Error: Invalid branch swap type
 
 Set parameters
 Enter selection# 
- Enter search type
-  1) Exhaustive
-  2) Branch Bound
-  3) Heuristic
- # MFL Error: Invalid search type
+ Enter branch swap type
+  1) Tree bisection
+  2) Subtree pruning
+  3) Nearist neighbor
+ # 
+Set parameters
+Enter selection# 
+ Enter branch swap type
+  1) Tree bisection
+  2) Subtree pruning
+  3) Nearist neighbor
+ # 
+Set parameters
+Enter selection# 
+ Enter branch swap type
+  1) Tree bisection
+  2) Subtree pruning
+  3) Nearist neighbor
+ # 
+Set parameters
+Enter selection# 
+ Enter branch swap type
+  1) Tree bisection
+  2) Subtree pruning
+  3) Nearist neighbor
+ # MFL Error: Invalid branch swap type
 
 Set parameters
 Enter selection# 
