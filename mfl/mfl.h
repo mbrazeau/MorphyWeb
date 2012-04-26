@@ -43,7 +43,7 @@ typedef enum
      * search that uses a random addition sequence. */
     MFL_PT_NUM_ITERATIONS,
     
-    /* MFL_PT_NUM_TREES (int) maximum number of trees allowed to be stored in
+    /* MFL_PT_TREELIMIT (int) maximum number of trees allowed to be stored in
      * memory. This should start as some default value (100 to 500 is certainly
      * safe). The user may choose a different value prior to the search and 
      * and also choose to allow the program to automatically increase the limit

@@ -71,6 +71,9 @@ NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
 NEW_COMMAND_DEFINE(CNexusMenuBranchSwapType )
 NEW_COMMAND_DEFINE(CNexusMenuAddSeqType     )
 NEW_COMMAND_DEFINE(CNexusMenuCollapseBranches)
+NEW_COMMAND_DEFINE(CNexusMenuNumIterations  )
+NEW_COMMAND_DEFINE(CNexusMenuTreeLimit      )
+
 NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
 
 /*
@@ -130,6 +133,9 @@ CNexusUserInterface::CNexusUserInterface()
     m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("BRANCHSWAP", "Set branch swap type for heuristic searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("ADDSEQ"    , "Selects the manner in which branches are added during the generation of starting trees"));
     m_pSetMenu->AddMenuItem(new CNexusMenuCollapseBranches ("COLLAPSE"  , "Configure when to collapse nodes"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuNumIterations    ("NUMITE"    , "Set the number of iterations for a heuristic search"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("TREELIMIT" , "Set the maximum number of trees allowed to be stored in memory"));
+
     m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"         , "Help"));
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
 }
@@ -570,6 +576,30 @@ bool CNexusUserInterface::fCNexusMenuCollapseBranches     ()
     }
 
     mfl_set_parameter(m_mflHandle, MFL_PT_COLLAP_AT, (void*)collapse_at);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuNumIterations        ()
+{
+    string strInput;
+    int num_iterations;
+    stringstream ss;
+    GetUserInput(" Enter number of iterations# ", &strInput);
+    ss<<strInput.c_str();
+    ss>>num_iterations;
+    mfl_set_parameter(m_mflHandle, MFL_PT_NUM_ITERATIONS, (void*)num_iterations);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuTreeLimit        ()
+{
+    string strInput;
+    int tree_limit;
+    stringstream ss;
+    GetUserInput(" Enter number of trees to store# ", &strInput);
+    ss<<strInput.c_str();
+    ss>>tree_limit;
+    mfl_set_parameter(m_mflHandle, MFL_PT_TREELIMIT, (void*)tree_limit);
     return true;
 }
 

@@ -58,43 +58,20 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # MFL Error: Invalid collapse at parameter
+ Enter number of iterations# 
+Set parameters
+Enter selection# 
+ Enter number of iterations# 
+Set parameters
+Enter selection# 
 
-Set parameters
+Main Menu
 Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
-Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
-Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
-Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # MFL Error: Invalid collapse at parameter
 
-Set parameters
-Enter selection# 
+Nexus file: ./Gnathostomes_Nov2010f2.nex
+Command log file: File not open
+Working directory: ./
+
 
 Main Menu
 Enter selection# 

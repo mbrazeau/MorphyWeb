@@ -1,5 +1,5 @@
 o
-nui/tests/Gnathostomes_Nov2010f2.nex
+Gnathostomes_Nov2010f2.nex
 set
 addseq
 0

@@ -1,0 +1,8 @@
+o
+Ohmdenia_Matrix.nex
+set
+treelimit
+500
+q
+stat
+q

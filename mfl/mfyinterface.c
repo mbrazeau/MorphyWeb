@@ -49,6 +49,7 @@ bool mfl_set_searchtype(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data)
 {
+    /* what is the valid range for this param? */
     mfl_struct->n_iterations = (long int)(param_data);
     return true;
 }

@@ -1,0 +1,10 @@
+o
+Gnathostomes_Nov2010f2.nex
+set
+numite
+0
+numite
+10000
+q
+stat
+q

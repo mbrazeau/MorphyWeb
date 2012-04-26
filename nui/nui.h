@@ -57,6 +57,9 @@ public:
     bool fCNexusMenuBranchSwapType ();
     bool fCNexusMenuAddSeqType     ();
     bool fCNexusMenuCollapseBranches();
+    bool fCNexusMenuNumIterations  ();
+    bool fCNexusMenuTreeLimit      ();
+
     bool fCNexusMenuMainMenu       ();
 
 protected:

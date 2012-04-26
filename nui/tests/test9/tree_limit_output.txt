@@ -41,8 +41,8 @@ Enter selection#
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
-Skipping unknown block (MACCLADE)...
- ./Gnathostomes_Nov2010f2.nex open successfully
+Skipping unknown block (NOTES)...
+ ./Ohmdenia_Matrix.nex open successfully
 
 Main Menu
 Enter selection# 
@@ -58,43 +58,17 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # MFL Error: Invalid collapse at parameter
+ Enter number of trees to store# 
+Set parameters
+Enter selection# 
 
-Set parameters
+Main Menu
 Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
-Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
-Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
-Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # MFL Error: Invalid collapse at parameter
 
-Set parameters
-Enter selection# 
+Nexus file: ./Ohmdenia_Matrix.nex
+Command log file: File not open
+Working directory: ./
+
 
 Main Menu
 Enter selection# 

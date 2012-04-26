@@ -38,7 +38,11 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection# 
- Enter filename: ./ Error: Unable to read ./nui/tests/Gnathostomes_Nov2010f2.nex
+ Enter filename: ./Reading "CHARACTERS" block...
+Skipping unknown block (ASSUMPTIONS)...
+Reading "TREES" block...
+Skipping unknown block (MACCLADE)...
+ ./Gnathostomes_Nov2010f2.nex open successfully
 
 Main Menu
 Enter selection# 
@@ -46,6 +50,8 @@ Enter selection#
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
  COLLAPSE) Configure when to collapse nodes
+ NUMITE) Set the number of iterations for a heuristic search
+ TREELIMIT) Set the maximum number of trees allowed to be stored in memory
  H) Help
  Q) Return to main menu
 
@@ -57,7 +63,7 @@ Enter selection#
   2) Random
   3) As is
   4) Closest
- # MFL Error: Nexus file not open - Morphy handle is NULL
+ # MFL Error: Invalid add seq type
 
 Set parameters
 Enter selection# 
@@ -66,8 +72,7 @@ Enter selection#
   2) Random
   3) As is
   4) Closest
- # MFL Error: Nexus file not open - Morphy handle is NULL
-
+ # 
 Set parameters
 Enter selection# 
  Enter add seq type
@@ -75,8 +80,7 @@ Enter selection#
   2) Random
   3) As is
   4) Closest
- # MFL Error: Nexus file not open - Morphy handle is NULL
-
+ # 
 Set parameters
 Enter selection# 
  Enter add seq type
@@ -84,8 +88,7 @@ Enter selection#
   2) Random
   3) As is
   4) Closest
- # MFL Error: Nexus file not open - Morphy handle is NULL
-
+ # 
 Set parameters
 Enter selection# 
  Enter add seq type
@@ -93,8 +96,7 @@ Enter selection#
   2) Random
   3) As is
   4) Closest
- # MFL Error: Nexus file not open - Morphy handle is NULL
-
+ # 
 Set parameters
 Enter selection# 
  Enter add seq type
@@ -102,7 +104,7 @@ Enter selection#
   2) Random
   3) As is
   4) Closest
- # MFL Error: Nexus file not open - Morphy handle is NULL
+ # MFL Error: Invalid add seq type
 
 Set parameters
 Enter selection# 
