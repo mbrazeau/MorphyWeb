@@ -67,18 +67,6 @@ Enter selection#
   2) Branch Bound
   3) Heuristic
  # MFL Error: Invalid search type
-n_taxa:          60
-n_chars:         174
-search_type:     3
-n_iterations:    0
-n_treelimit:     0
-bswap_type:      1
-is_ratchet:      0
-addseq_type:     0
-collapse_nolen:  0
-collapse_at:     0
-gap_as_missing:  0
-
 
 Enter selection# 
  Enter search type
@@ -86,18 +74,6 @@ Enter selection#
   2) Branch Bound
   3) Heuristic
  # MFL Error: Invalid search type
-n_taxa:          60
-n_chars:         174
-search_type:     3
-n_iterations:    0
-n_treelimit:     0
-bswap_type:      1
-is_ratchet:      0
-addseq_type:     0
-collapse_nolen:  0
-collapse_at:     0
-gap_as_missing:  0
-
 
 Enter selection# 
 Goodbye!

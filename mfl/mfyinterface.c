@@ -228,6 +228,7 @@ const char * mfl_exception::what() const throw()
     string ret = runtime_error::what();
     if (m_mfl_handle)
     {
+#ifdef MFY_DEBUG
         mfl_handle_s *mfl_struct = mfl_t2s(m_mfl_handle);
         stringstream ss;
         ss<<endl<<"n_taxa:          "<<mfl_struct->n_taxa;
@@ -243,6 +244,7 @@ const char * mfl_exception::what() const throw()
         ss<<endl<<"gap_as_missing:  "<<mfl_struct->gap_as_missing;
         ss<<endl;
         ret.append(ss.str());
+#endif
     }
     else
     {
