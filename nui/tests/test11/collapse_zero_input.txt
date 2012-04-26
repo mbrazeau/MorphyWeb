@@ -1,0 +1,13 @@
+o
+Ptomacanth_Edit.txt
+set
+collapsezero
+0
+collapsezero
+1
+collapsezero
+2
+collapsezero
+3
+q
+q

@@ -38,11 +38,8 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection# 
- Enter filename: ./Reading "CHARACTERS" block...
-Skipping unknown block (ASSUMPTIONS)...
-Reading "TREES" block...
-Skipping unknown block (MACCLADE)...
- ./Gnathostomes_Nov2010f2.nex open successfully
+ Enter filename: ./Reading "DATA" block...
+ ./Ptomacanth_Edit.txt open successfully
 
 Main Menu
 Enter selection# 
@@ -60,54 +57,28 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Enter add seq type
-  1) Simple
-  2) Random
-  3) As is
-  4) Closest
- # MFL Error: Invalid add seq type
-
-Set parameters
-Enter selection# 
- Enter add seq type
-  1) Simple
-  2) Random
-  3) As is
-  4) Closest
+ Select if zero length branches should be collapsed during search
+  1) Collapse
+  2) Do not collapse
  # 
 Set parameters
 Enter selection# 
- Enter add seq type
-  1) Simple
-  2) Random
-  3) As is
-  4) Closest
+ Select if zero length branches should be collapsed during search
+  1) Collapse
+  2) Do not collapse
  # 
 Set parameters
 Enter selection# 
- Enter add seq type
-  1) Simple
-  2) Random
-  3) As is
-  4) Closest
+ Select if zero length branches should be collapsed during search
+  1) Collapse
+  2) Do not collapse
  # 
 Set parameters
 Enter selection# 
- Enter add seq type
-  1) Simple
-  2) Random
-  3) As is
-  4) Closest
+ Select if zero length branches should be collapsed during search
+  1) Collapse
+  2) Do not collapse
  # 
-Set parameters
-Enter selection# 
- Enter add seq type
-  1) Simple
-  2) Random
-  3) As is
-  4) Closest
- # MFL Error: Invalid add seq type
-
 Set parameters
 Enter selection# 
 

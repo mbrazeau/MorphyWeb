@@ -70,7 +70,8 @@ NEW_COMMAND_DEFINE(CNexusMenuReport         )
 NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
 NEW_COMMAND_DEFINE(CNexusMenuBranchSwapType )
 NEW_COMMAND_DEFINE(CNexusMenuAddSeqType     )
-NEW_COMMAND_DEFINE(CNexusMenuCollapseBranches)
+NEW_COMMAND_DEFINE(CNexusMenuCollapseAt     )
+NEW_COMMAND_DEFINE(CNexusMenuCollapseZero   )
 NEW_COMMAND_DEFINE(CNexusMenuNumIterations  )
 NEW_COMMAND_DEFINE(CNexusMenuTreeLimit      )
 NEW_COMMAND_DEFINE(CNexusMenuRatchetSearch  )
@@ -133,7 +134,8 @@ CNexusUserInterface::CNexusUserInterface()
     m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("SEARCHTYPE", "Set the search type for JK and BTS searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("BRANCHSWAP", "Set branch swap type for heuristic searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("ADDSEQ"    , "Selects the manner in which branches are added during the generation of starting trees"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseBranches ("COLLAPSE"  , "Configure when to collapse nodes"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseAt       ("COLLAPSEAT", "Configure when to collapse nodes"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseZero     ("COLLAPSEZERO", "Enable collapsing of zero length branches during search"));
     m_pSetMenu->AddMenuItem(new CNexusMenuNumIterations    ("NUMITE"    , "Set the number of iterations for a heuristic search"));
     m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("TREELIMIT" , "Set the maximum number of trees allowed to be stored in memory"));
     m_pSetMenu->AddMenuItem(new CNexusMenuRatchetSearch    ("RATCHET"   , "Set the ratchet search parameter"));
@@ -559,7 +561,7 @@ bool CNexusUserInterface::fCNexusMenuAddSeqType     ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuCollapseBranches     ()
+bool CNexusUserInterface::fCNexusMenuCollapseAt           ()
 {
     string strInput;
     mfl_set_collapse_at_t collapse_at = MFL_SC_MAX;
@@ -578,6 +580,19 @@ bool CNexusUserInterface::fCNexusMenuCollapseBranches     ()
     }
 
     mfl_set_parameter(m_mflHandle, MFL_PT_COLLAP_AT, (void*)collapse_at);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuCollapseZero         ()
+{
+    string strInput;
+    bool collapse_zero = false;
+    GetUserInput(" Select if zero length branches should be collapsed during search\n  1) Collapse\n  2) Do not collapse\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        collapse_zero = true;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_COLLAPSE, (void*)collapse_zero);
     return true;
 }
 

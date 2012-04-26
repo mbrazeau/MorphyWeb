@@ -46,7 +46,8 @@ Enter selection#
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
- COLLAPSE) Configure when to collapse nodes
+ COLLAPSEAT) Configure when to collapse nodes
+ COLLAPSEZERO) Enable collapsing of zero length branches during search
  NUMITE) Set the number of iterations for a heuristic search
  TREELIMIT) Set the maximum number of trees allowed to be stored in memory
  RATCHET) Set the ratchet search parameter

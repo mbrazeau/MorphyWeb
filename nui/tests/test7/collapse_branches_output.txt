@@ -49,7 +49,8 @@ Enter selection#
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
- COLLAPSE) Configure when to collapse nodes
+ COLLAPSEAT) Configure when to collapse nodes
+ COLLAPSEZERO) Enable collapsing of zero length branches during search
  NUMITE) Set the number of iterations for a heuristic search
  TREELIMIT) Set the maximum number of trees allowed to be stored in memory
  RATCHET) Set the ratchet search parameter
@@ -58,42 +59,25 @@ Enter selection#
 
 
 Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # MFL Error: Invalid collapse at parameter
-
+Enter selection#  Unknown command: collapse
 Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
+Enter selection#  Unknown command: 0
 Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
+Enter selection#  Unknown command: collapse
 Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # 
+Enter selection#  Unknown command: 1
 Set parameters
-Enter selection# 
- Enter when to collapse branches
-  1) When max length is 0
-  2) When min length is 0
-  3) When two incident nodes with equal apomorphies reconstruction sets
- # MFL Error: Invalid collapse at parameter
-
+Enter selection#  Unknown command: collapse
+Set parameters
+Enter selection#  Unknown command: 2
+Set parameters
+Enter selection#  Unknown command: collapse
+Set parameters
+Enter selection#  Unknown command: 3
+Set parameters
+Enter selection#  Unknown command: collapse
+Set parameters
+Enter selection#  Unknown command: 4
 Set parameters
 Enter selection# 
 
