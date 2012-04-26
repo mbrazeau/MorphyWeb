@@ -44,13 +44,13 @@ sub runtest(@)
     my $tests_to_update = get_tests_to_update();
     my $actual_output_file = "$test_dir/actual.out";
 
-    open(OUTPUTF, ">$test_dir/actual.out");
+    open(OUTPUTF, ">$actual_output_file");
     print OUTPUTF "$actual_results";
     close(OUTPUTF);
     my $diffresults = `diff $actual_output_file $expected_output_file`;
     if (length($diffresults) == 0)
     {
-        print ("$test_dir - pass\n");
+        print ("  $test_dir - pass\n");
     }
     else
     {
