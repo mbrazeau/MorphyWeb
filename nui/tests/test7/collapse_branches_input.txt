@@ -1,0 +1,15 @@
+o
+nui/tests/Gnathostomes_Nov2010f2.nex
+set
+collapse
+0
+collapse
+1
+collapse
+2
+collapse
+3
+collapse
+4
+q
+q

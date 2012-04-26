@@ -38,11 +38,7 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection# 
- Enter filename: ./Reading "CHARACTERS" block...
-Skipping unknown block (ASSUMPTIONS)...
-Reading "TREES" block...
-Skipping unknown block (MACCLADE)...
- ./Gnathostomes_Nov2010f2.nex open successfully
+ Enter filename: ./ Error: Unable to read ./nui/tests/Gnathostomes_Nov2010f2.nex
 
 Main Menu
 Enter selection# 
@@ -56,40 +52,43 @@ Enter selection#
 
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # MFL Error: Invalid branch swap type
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Nexus file not open - Morphy handle is NULL
 
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # 
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Nexus file not open - Morphy handle is NULL
+
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # 
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Nexus file not open - Morphy handle is NULL
+
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # 
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Nexus file not open - Morphy handle is NULL
+
 Set parameters
 Enter selection# 
- Enter branch swap type
-  1) Tree bisection
-  2) Subtree pruning
-  3) Nearist neighbor
- # MFL Error: Invalid branch swap type
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Nexus file not open - Morphy handle is NULL
 
 Set parameters
 Enter selection# 

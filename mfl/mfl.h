@@ -156,6 +156,8 @@ typedef enum
     MFL_SC_MAX_LEN,
     MFL_SC_MIN_LEN,
     MFL_SC_EQUAL_RECONSTRUCTION_SETS,
+
+    MFL_SC_MAX
 } mfl_set_collapse_at_t;
 
 typedef void* mfl_handle_t;

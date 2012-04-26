@@ -70,6 +70,7 @@ NEW_COMMAND_DEFINE(CNexusMenuReport         )
 NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
 NEW_COMMAND_DEFINE(CNexusMenuBranchSwapType )
 NEW_COMMAND_DEFINE(CNexusMenuAddSeqType     )
+NEW_COMMAND_DEFINE(CNexusMenuCollapseBranches)
 NEW_COMMAND_DEFINE(CNexusMenuMainMenu       )
 
 /*
@@ -128,6 +129,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("SEARCHTYPE", "Set the search type for JK and BTS searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("BRANCHSWAP", "Set branch swap type for heuristic searches"));
     m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("ADDSEQ"    , "Selects the manner in which branches are added during the generation of starting trees"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseBranches ("COLLAPSE"  , "Configure when to collapse nodes"));
     m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"         , "Help"));
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
 }
@@ -546,6 +548,28 @@ bool CNexusUserInterface::fCNexusMenuAddSeqType     ()
         add_seq_type = MFL_AST_CLOSEST;
     }
     mfl_set_parameter(m_mflHandle, MFL_PT_ADD_SEQUENCE_TYPE, (void*)add_seq_type);
+    return true;
+}
+
+bool CNexusUserInterface::fCNexusMenuCollapseBranches     ()
+{
+    string strInput;
+    mfl_set_collapse_at_t collapse_at = MFL_SC_MAX;
+    GetUserInput(" Enter when to collapse branches\n  1) When max length is 0\n  2) When min length is 0\n  3) When two incident nodes with equal apomorphies reconstruction sets\n # ", &strInput);
+    if (strInput.compare("1") == 0)
+    {
+        collapse_at = MFL_SC_MAX_LEN;
+    }
+    else if (strInput.compare("2") == 0)
+    {
+        collapse_at = MFL_SC_MIN_LEN;
+    }
+    else if (strInput.compare("3") == 0)
+    {
+        collapse_at = MFL_SC_EQUAL_RECONSTRUCTION_SETS;
+    }
+
+    mfl_set_parameter(m_mflHandle, MFL_PT_COLLAP_AT, (void*)collapse_at);
     return true;
 }
 

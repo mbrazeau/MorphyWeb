@@ -108,8 +108,11 @@ bool mfl_set_collapse(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_collapse_value(mfl_handle_s *mfl_struct, void *param_data)
 {
-    /* might want to put range checks in here... with error return... */
     mfl_struct->collapse_at = (mfl_set_collapse_at_t)(long int)param_data;
+    if (!((mfl_struct->collapse_at >= 0) && (mfl_struct->collapse_at < MFL_SC_MAX)))
+    {
+        throw mfl_exception(mfl_s2t(mfl_struct), "Invalid collapse at parameter");
+    }
     return true;
 }
 
