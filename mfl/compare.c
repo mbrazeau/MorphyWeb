@@ -21,6 +21,17 @@
 
 bool mfl_compare_trees(int *t1, int *t2, int numnodes)
 {
+    /* could probably change these errors/exits to some kind of exception thing. I'm just not sure how */
+    if (t1 == NULL) {
+        dbg_printf("error in mfl_compare_trees: tree 1 is invalid\n");
+        exit(1);
+    }
+    
+    if (t2 == NULL) {
+        dbg_printf("error in mfl_compare_trees: tree 2 is invalid\n");
+        exit(2);
+    }
+    
     if (memcmp(t1, t2, numnodes * sizeof(int))) {
         return false;
     }
@@ -130,9 +141,11 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * if/when somebody loads a noisy dataset. */
     
     for (i = *start; i < *last; ++i) {
-        if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
-            foundtr = true;
-            break;
+        if (savedtrees[i]->compressedtr) {
+            if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
+                foundtr = true;
+                break;
+            }
         }
     }
     
