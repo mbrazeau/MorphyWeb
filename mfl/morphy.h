@@ -186,7 +186,7 @@ void mfl_set_tipsabove(node *n, int numfields, taxbipart **hashtab, int *bpcount
 void mfl_free_hashtab(taxbipart **hashtab, int numbiparts);
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes);
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
-bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *current);
+bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last);
 void test_tree_comparison(void);
 
 /*in coptim.c*/
@@ -339,7 +339,5 @@ bool mfl_set_parameter(mfl_handle_t *mfl_handle, mfl_param_t param_type, void *p
 mfl_resultant_data_s *mfl_morphy_controller(mfl_handle_s *mfl_handle);
 mfl_handle_t mfl_s2t(mfl_handle_s *mfl_handle);
 mfl_handle_s *mfl_t2s(mfl_handle_t mfl_handle);
-
-
 
 /*End function prototypes*/

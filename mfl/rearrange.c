@@ -343,7 +343,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             ++counter;
             //dbg_printf("counter %i\n", counter);
             mfl_insert_branch(subtr, up, ntax);
-            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer)) 
+            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer))//(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer)) 
             {
                 //++counter;
                 //dbg_printf("counter %i\n", counter);

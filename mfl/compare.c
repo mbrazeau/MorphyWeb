@@ -239,7 +239,7 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes)
     return foundtr;
 }*/
 
-bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *current)
+/*bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *current)
 {
     int i = 0;
     int numfields = mfl_count_fields(ntax);
@@ -283,9 +283,9 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
     //dbg_printf("time in comparison: %g\n", totaltime);
     
     return foundtr;
-}
+}*/
 
-bool mfl_compare_trees_ii(int *t1, int *t2, int numnodes)
+bool mfl_compare_trees(int *t1, int *t2, int numnodes)
 {
     if (memcmp(t1, t2, numnodes * sizeof(int))) {
         return false;
@@ -383,7 +383,7 @@ tree *mfl_decompress_tree(int *savedtr, int ntax, int numnodes)
     return t;
 }
 
-bool mfl_compare_alltrees_ii(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last)
+bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last)
 {
     int i = 0;
     int *newtr;
@@ -396,7 +396,7 @@ bool mfl_compare_alltrees_ii(tree *newtopol, tree **savedtrees, int ntax, int nu
      * if/when somebody loads a noisy dataset. */
     
     for (i = *start; i < *last; ++i) {
-        if (mfl_compare_trees_ii(newtr, savedtrees[i]->compressedtr, numnodes)) {
+        if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
             foundtr = true;
             break;
         }
@@ -443,7 +443,7 @@ void test_tree_compress(void)
     mfl_unroot(ntax, t2);
     int *compressed2 = mfl_compress_tree(t2, ntax, numnodes);
     
-    if (mfl_compare_trees_ii(compressed, compressed2, numnodes)) {
+    if (mfl_compare_trees(compressed, compressed2, numnodes)) {
         dbg_printf("\nthey're the same\n");
     }
     else {
