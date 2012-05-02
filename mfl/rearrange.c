@@ -332,7 +332,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             //trlength = 0;
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
             free(swapingon->bipartitions);
-            swapingon->bipartitions = mfl_tree_biparts(swapingon, ntax, numnodes);
+            //swapingon->bipartitions = mfl_tree_biparts(swapingon, ntax, numnodes);
             return;
         }
         
