@@ -167,7 +167,7 @@ tree *mfl_addseq_randasis(int ntax, int nchar, int numnodes,
                                  charstate *tipdata, bool addRandom,
                                  tree **savedtrees)
 {
-    int i, nbeslen = INT32_MAX;
+    int i, nbeslen = 0;
     int *bestlen = &nbeslen;
     int *taxarray;
     node *p, *bestpos;
