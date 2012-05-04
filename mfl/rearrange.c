@@ -728,7 +728,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
-        printNewick(savedtrees[j]->root);
+        //printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }
     dbg_printf("\n");
