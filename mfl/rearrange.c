@@ -300,20 +300,13 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     int al = 0;
     node *up;
     
-    //n->pathid = subtr->next->outedge->stid;
-    //n->outedge->pathid = subtr->next->outedge->stid;
     
-    if (!(n->visited) && !(n->outedge->visited) /*&& n->skippath != n->stid*/) {
+    if (!(n->visited) && !(n->outedge->visited)) {
         up = n->outedge;
-        //dbg_printf("trying swap\n");
         al = mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
-        //dbg_printf("tree length: %i\n", trlength);
-        //mfl_insert_branch(subtr, up, ntax);
-        //trlength = mfl_get_treelen(swapingon, ntax, nchar, currentbesttree);
         
         searchrec->niter_total = searchrec->niter_total + 1;
-        //dbg_printf("Left to try: %li\n", *leftotry);
         if (trlength < searchrec->bestinrep) {
             counter = 0;
             mfl_insert_branch(subtr, up, ntax);
@@ -329,10 +322,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             else {
                 mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
             }
-            //trlength = 0;
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
-            free(swapingon->bipartitions);
-            //swapingon->bipartitions = mfl_tree_biparts(swapingon, ntax, numnodes);
             return;
         }
         
@@ -341,23 +331,14 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         if (trlength == searchrec->bestinrep) 
         {
             ++counter;
-            //dbg_printf("counter %i\n", counter);
             mfl_insert_branch(subtr, up, ntax);
-            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer))//(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer)) 
+            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer)) 
             {
-                //++counter;
-                //dbg_printf("counter %i\n", counter);
-                //dbg_printf("saving an equally parsimonious tree of length: %i; writing to %li\n", trlength, searchrec->nextinbuffer);
-                //dbg_printf("site is between nodes: %i and %i\n", n->index, n->outedge->index);
                 savedtrees[searchrec->nextinbuffer] = mfl_copytree(swapingon, ntax, numnodes);
                 savedtrees[searchrec->nextinbuffer]->index = searchrec->nextinbuffer;
                 savedtrees[searchrec->nextinbuffer]->length = trlength;
                 savedtrees[searchrec->nextinbuffer]->swapped = false;
                 searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
-            }
-            else {
-                //dbg_printf("tree is duplicate\n");
-                mfl_join_nodes(n, up);
             }
             trlength = 0;
         }
@@ -728,7 +709,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
-        //printNewick(savedtrees[j]->root);
+        printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }
     dbg_printf("\n");
