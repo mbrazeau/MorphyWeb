@@ -371,8 +371,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
     node *p, *clipnode, *up, *dn, *subtr;
     int diff = 0;
     
-    //mfl_devisit_tree(swapingon->trnodes, numnodes);
-    
     if (n->start) {
         mfl_pruning_traversal(n->outedge, swapingon, savedtrees, ntax,
                               nchar, numnodes, searchrec);
@@ -419,14 +417,12 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 
                 // Determine the cost of local reinsertion
                 diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
-                //dbg_printf("diff: %i\n", diff);
                 mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                          savedtrees, ntax, nchar, numnodes, searchrec, diff);
                 
                 up->visited = 0;
                 dn->visited = 0;
                 clipnode->clip = false;
-                mfl_devisit_tree(swapingon->trnodes, numnodes);
                 if (searchrec->success) {
                     return;
                 }
@@ -652,7 +648,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             //searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
-            //mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
+            mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
             branch_swapper(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                   ntax, nchar, numnodes, searchrec);
             if (searchrec->foundbettertr) {
