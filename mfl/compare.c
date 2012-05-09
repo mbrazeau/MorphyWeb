@@ -5,12 +5,7 @@
  *  Created by Martin Brazeau and Chris Desjardins on 2/8/12.
  *  Copyright 2012. All rights reserved.
  *
- *  Tree comparison functions. These break down the tree into bipartition hash
- *  tables and search for tree equality by comparing the hash tables. This is
- *  used to check whether a new tree is already found in memory. 
- *
- *  The routine is both slow and crude, and probably has polynomial time 
- *  complexity. For now, it suffices for testing purposes.
+ *  
  *
  */
 
