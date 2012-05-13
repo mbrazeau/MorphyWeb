@@ -135,13 +135,13 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * function in order to speed it up. Otherwise it will be a major time hog 
      * if/when somebody loads a noisy dataset. */
     
-    for (i = *start; i < *last; ++i) {
-        if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
+    for (i = 1; i < *last; ++i) {
+        //if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
             if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
                 foundtr = true;
                 break;
             }
-        }
+        //}
     }
     
     if (foundtr) {
