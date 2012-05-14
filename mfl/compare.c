@@ -59,6 +59,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
     bool wasrooted = true;
     
     int *storedtr = (int*)malloc(numnodes * sizeof(int));
+    memset(storedtr, 0, numnodes * sizeof(int));
     
     if (!t->root) {
         mfl_root_tree(t, 0, ntax);
@@ -136,12 +137,12 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * if/when somebody loads a noisy dataset. */
     
     for (i = 1; i < *last; ++i) {
-        //if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
+        if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
             if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
                 foundtr = true;
                 break;
             }
-        //}
+        }
     }
     
     if (foundtr) {
