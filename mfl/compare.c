@@ -126,7 +126,7 @@ tree *mfl_decompress_tree(int *savedtr, int ntax, int numnodes)
 
 bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last)
 {
-    int i = 0;
+    long int i = 0;
     int *newtr;
     bool foundtr = false;
     
@@ -136,7 +136,7 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * function in order to speed it up. Otherwise it will be a major time hog 
      * if/when somebody loads a noisy dataset. */
     
-    for (i = 1; i < *last; ++i) {
+    for (i = *start; i < *last; ++i) {
         if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
             if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
                 foundtr = true;

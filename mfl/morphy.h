@@ -188,6 +188,7 @@ taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes);
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
 bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last);
 void test_tree_comparison(void);
+int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 
 /*in coptim.c*/
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
