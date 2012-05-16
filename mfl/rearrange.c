@@ -442,8 +442,13 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
 }
 
 
-void mfl_reroot_subtree()
+void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
 {
+    
+    if (n->tip) {
+        return;
+    }
+    
     /*
     // Reoptimize the clipped tree
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
@@ -519,6 +524,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
             }
         }
         else {
+            /* Optimization: this is certainly a bit excessive and can be improved
+             * by finding some way to call this less often--or not at all!*/
             mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
         }
         p = p->next;
