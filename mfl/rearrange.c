@@ -441,19 +441,18 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
     }   
 }
 
-node *mfl_findatip(node *n)
+node *mfl_find_atip(node *n)
 {
-    /* Not sure this will work. Need to think about this. */
-    node *tip;
+    node *tip = NULL;
     
     if (n->tip) {
         tip = n;
-        return n;
+        return tip;
     }
  
-    tip = mfl_findatip(n->next->outedge);
+    tip = mfl_find_atip(n->next->outedge);
     
-    return n;
+    return tip;
 }
 
 void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
