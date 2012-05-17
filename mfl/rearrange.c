@@ -458,11 +458,15 @@ node *mfl_find_atip(node *n)
 void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
 {
     
-    /* Traverses the subtree and re-roots it at each branch */
+    /* Traverses the subtree and re-roots it at each branch in postorder and then
+     * calls regrafting traversal (same as used in SPR) */
     
     if (n->tip) {
         return;
     }
+    
+    mfl_reroot_subtree(n->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    mfl_reroot_subtree(n->next->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     
     // Insert the base at n->outedge
     
@@ -479,9 +483,6 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *
      diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
      mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
      savedtrees, ntax, nchar, numnodes, searchrec, diff);*/
-    
-    mfl_reroot_subtree(n->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-    mfl_reroot_subtree(n->next->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     
     
 }
