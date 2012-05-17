@@ -458,23 +458,32 @@ node *mfl_find_atip(node *n)
 void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
 {
     
+    /* Traverses the subtree and re-roots it at each branch */
+    
     if (n->tip) {
         return;
     }
     
+    // Insert the base at n->outedge
+    
     /*
-    // Reoptimize the clipped tree
-    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+     // Reoptimize the clipped tree
+     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+     
+     // Reoptimize the subtree
+     mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+     
+     diff = 0;
+     
+     // Determine the cost of local reinsertion
+     diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
+     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
+     savedtrees, ntax, nchar, numnodes, searchrec, diff);*/
     
-    // Reoptimize the subtree
-    mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+    mfl_reroot_subtree(n->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    mfl_reroot_subtree(n->next->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     
-    diff = 0;
     
-    // Determine the cost of local reinsertion
-    diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
-    mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
-                             savedtrees, ntax, nchar, numnodes, searchrec, diff);*/
 }
 
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
@@ -482,7 +491,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
 {
     
     /* Traverses a binary tree clipping out a subtree in postorder and passing 
-     * a pointer to the subtree to mfl_regrafting_traversal. */
+     * a pointer to the subtree to mfl_reroot_subtree. */
     
     node *p, *clipnode, *up, *dn, *subtr;
     int diff = 0;
@@ -523,6 +532,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 clipnode->clip = true;
                 mfl_join_nodes(up, dn);
                 
+                // Find a tip in the subtree to act as a starting point.
                 // Call rerooting and reoptimization functions here.
                 
                 up->visited = 0;
