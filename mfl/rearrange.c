@@ -455,25 +455,17 @@ node *mfl_find_atip(node *n)
     return tip;
 }
 
-void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
+void mfl_reroot_subtree(node *n, node *subtr, node *base/*, tree swapingon, tree *savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec*/)
 {
     
-    /* Traverses the subtree and re-roots it at each branch in postorder and then
+    /* Traverses the subtree and re-roots it at each branch in preorder and then
      * calls regrafting traversal (same as used in SPR) */
-    
-    if (n->tip) {
-        return;
-    }
-    
-    mfl_reroot_subtree(n->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-    mfl_reroot_subtree(n->next->next->outedge, subtr, base, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-    
-    // Insert the base at n->outedge
     
     mfl_join_nodes(base->next->next, n->outedge);
     mfl_join_nodes(base->next, n);
     
     printNewick(base);
+    dbg_printf("rerooting\n");
     
     /*
      // Reoptimize the clipped tree
@@ -490,7 +482,17 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *
      savedtrees, ntax, nchar, numnodes, searchrec, diff);*/
     
     // Remove the base
-    mfl_join_nodes(n, n->outedge);
+    mfl_join_nodes(base->next->outedge, base->next->next->outedge);
+    
+    if (n->tip) {
+        return;
+    }
+    
+    mfl_reroot_subtree(n->next->outedge, subtr, base/*, swapingon, savedtrees, ntax, nchar, numnodes, searchrec*/);
+    mfl_reroot_subtree(n->next->next->outedge, subtr, base/*, swapingon, savedtrees, ntax, nchar, numnodes, searchrec*/);
+    
+    // Insert the base at n->outedge
+    
 }
 
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 

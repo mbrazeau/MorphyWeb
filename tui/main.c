@@ -671,11 +671,17 @@ void mini_test_analysis(void)
 void test_subtree_rerooting(void)
 {
     tree *t;
+    node *n;
     char *tstr = "(1,((2,3),(4,5)));";
     
     t = readNWK(tstr, false);
     
+    n = mfl_allocnode();
+    mfl_newring(n, 5);
+    
     printNewick(t->trnodes[0]);
+    t->trnodes[0]->start = false;
+    mfl_reroot_subtree(t->trnodes[0]->outedge, n, n);
     
 }
 
