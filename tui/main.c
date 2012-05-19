@@ -668,6 +668,17 @@ void mini_test_analysis(void)
     //mfl_clear_treebuffer(savedtrees, , numnodes);   
 }
 
+void test_subtree_rerooting(void)
+{
+    tree *t;
+    char *tstr = "(1,((2,3),(4,5)));";
+    
+    t = readNWK(tstr, false);
+    
+    printNewick(t->trnodes[0]);
+    
+}
+
 void test_tree_compress(void);
 
 int main(void)
@@ -675,8 +686,10 @@ int main(void)
     int ntax = 9;
     /*int numnodes;*/
     //bool isRooted = true;
-    
+
     pauseit();
+    
+    test_subtree_rerooting();
     
     //srandom(8);
     
@@ -687,11 +700,21 @@ int main(void)
     
     /*numnodes = */mfl_calc_numnodes(ntax);
     
+    mini_test_analysis();
+   
+    
+    
+    
+    /**** OLDER STUFF ******/
+    
+    
+    
+    
     //tree *anewtree;    
     //tree *originaltree;
     //tree *copiedtree;
     
-    mini_test_analysis();
+    
     
     //test_spr();
     

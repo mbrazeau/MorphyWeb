@@ -470,6 +470,11 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *
     
     // Insert the base at n->outedge
     
+    mfl_join_nodes(base->next->next, n->outedge);
+    mfl_join_nodes(base->next, n);
+    
+    printNewick(base);
+    
     /*
      // Reoptimize the clipped tree
      mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
@@ -484,7 +489,8 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, tree swapingon, tree *
      mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
      savedtrees, ntax, nchar, numnodes, searchrec, diff);*/
     
-    
+    // Remove the base
+    mfl_join_nodes(n, n->outedge);
 }
 
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
@@ -534,7 +540,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 mfl_join_nodes(up, dn);
                 
                 // Find a tip in the subtree to act as a starting point.
-                // Call rerooting and reoptimization functions here.
+                // Call rerooting and reoptimization function on tip->outedge
                 
                 up->visited = 0;
                 dn->visited = 0;
