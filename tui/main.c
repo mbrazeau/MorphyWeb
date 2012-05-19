@@ -691,8 +691,6 @@ int main(void)
     
     test_subtree_rerooting();
     
-    //srandom(8);
-    
     test_tree_compress();
     
     //test_tree_comparison();
