@@ -672,17 +672,19 @@ void test_subtree_rerooting(void)
 {
     tree *t;
     node *n;
-    char *tstr = "(1,((2,3),(4,5)));";
+    char *tstr = "(1,(2,3));";
     
     t = readNWK(tstr, false);
     
     n = mfl_allocnode();
-    mfl_newring(n, 5);
+    mfl_newring(n, 3);
     
+    dbg_printf("\n");
     printNewick(t->trnodes[0]);
+    dbg_printf("\n");
     t->trnodes[0]->start = false;
     mfl_reroot_subtree(t->trnodes[0]->outedge, n, n);
-    
+    dbg_printf("\n");
 }
 
 void test_tree_compress(void);
