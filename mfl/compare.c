@@ -17,15 +17,9 @@
 bool mfl_compare_trees(int *t1, int *t2, int numnodes)
 {
     /* could probably change these errors/exits to some kind of exception thing. I'm just not sure how */
-    if (t1 == NULL) {
-        dbg_printf("error in mfl_compare_trees: tree 1 is invalid\n");
-        exit(1);
-    }
+    assert(t1 != NULL);
     
-    if (t2 == NULL) {
-        dbg_printf("error in mfl_compare_trees: tree 2 is invalid\n");
-        exit(2);
-    }
+    assert(t2 != NULL);
     
     if (memcmp(t1, t2, numnodes * sizeof(int))) {
         return false;

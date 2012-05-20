@@ -464,7 +464,8 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base/*, node *up, node *dn, 
     mfl_join_nodes(base->next->next, n->outedge);
     mfl_join_nodes(base->next, n);
     
-    printNewick(base);
+    
+    //printNewick(base);
     dbg_printf(";\n");
     
     /*
