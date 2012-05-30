@@ -400,7 +400,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
             
             subtr->next->outedge->skip = true;
             
-            if (!(up->tip && dn->tip)) {
+            if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
                 up->visited = 1;
                 dn->visited = 1;
                 
@@ -542,8 +542,11 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 clipnode->clip = true;
                 mfl_join_nodes(up, dn);
                 
-                // Find a tip in the subtree to act as a starting point.
-                // Call rerooting and reoptimization function on tip->outedge
+                // If the subtree is a single terminal or a pair of terminals
+                
+                // Else:
+                    // Find a tip in the subtree to act as a starting point.
+                    // Call rerooting and reoptimization function on tip->outedge
                 
                 up->visited = 0;
                 dn->visited = 0;
