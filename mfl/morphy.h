@@ -216,6 +216,7 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
 void mfl_tip_reopt(tree *t, int ntax, int nchar);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
+void mfl_set_rootstates(node *n, int nchar);
 
 /*in drawtree*/
 void mfl_draw_tree(node *n, int *p_in_node, int *depth);

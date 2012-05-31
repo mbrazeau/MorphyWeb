@@ -487,10 +487,8 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
      
     // Reoptimize the subtree
-    mfl_reopt_postorder(base, nchar);
     //mfl_reopt_subtr_root(base, nchar);
-    //mfl_reopt_preorder(base, nchar);
-    //mfl_tip_reopt(swapingon, ntax, nchar);
+    mfl_set_rootstates(base, nchar);
     
     // Determine the cost of local reinsertion
     diff = mfl_subtr_reinsertion(base, up, dn, nchar);
