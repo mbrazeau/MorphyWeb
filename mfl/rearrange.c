@@ -473,7 +473,26 @@ node *mfl_find_atip(node *n)
     return tip;
 }
 
-void mfl_reroot_subtree(node *n, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
+int mfl_subtr_reinsertion_II(node *src, node *tgt1, node *tgt2, int nchar)
+{
+    /* Returns cost of reinserting the subtree src at the original place from
+     * which it was clipped (tgt1 and tgt2). This score is used to compute the 
+     * difference in length between the two subtrees so that neither the total 
+     * tree length nor the length of the individual subtrees needs to be 
+     * calculated (Ronquist 1998). */
+    
+    int i;
+    int cost = 0;
+    
+    for (i = 0; i < nchar; ++i) {
+        if ( !(src->tempapos[i] & (tgt1->tempapos[i] | tgt2->tempapos[i])) ) {
+            ++cost;
+        }
+    }
+    return cost;
+}
+
+void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
 {
     /* Traverses the subtree and re-roots it at each branch in preorder and then
      * calls regrafting traversal (same as used in SPR) */
@@ -491,7 +510,7 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, node *up, node *dn, tr
     mfl_subtree_postorder(base, NULL, nchar);
     
     // Determine the cost of local reinsertion
-    diff = mfl_subtr_reinsertion(base, up, dn, nchar);
+    diff = mfl_subtr_reinsertion_II(base, up, dn, nchar);
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                              savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
@@ -502,8 +521,8 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, node *up, node *dn, tr
         return;
     }
     
-    mfl_reroot_subtree(n->next->outedge, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-    mfl_reroot_subtree(n->next->next->outedge, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    mfl_reroot_subtree(n->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    mfl_reroot_subtree(n->next->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     
     // Insert the base at n->outedge
     
@@ -583,7 +602,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     bc1 = base->next->outedge;
                     bc2 = base->next->next->outedge;
                     mfl_join_nodes(bc1, bc2);
-                    mfl_reroot_subtree(atip->outedge, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+                    mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
                     
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);

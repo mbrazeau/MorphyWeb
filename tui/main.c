@@ -695,6 +695,8 @@ int main(void)
     /*int numnodes;*/
     //bool isRooted = true;
 
+    srandom(8);
+    
     pauseit();
     
     //test_subtree_rerooting();
