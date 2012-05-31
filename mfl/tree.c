@@ -24,7 +24,6 @@ int mfl_calc_numnodes(int ntax)
     return numnodes = 2 * ntax - 1;
 }
 
-
 void mfl_join_nodes(node *n, node *p)
 {
     if (n->outedge) {

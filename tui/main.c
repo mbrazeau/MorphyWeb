@@ -661,14 +661,14 @@ void mini_test_analysis(void)
     mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
     mfl_handle->n_treelimit = 50000;
     mfl_handle->addseq_type = MFL_AST_ASIS;
-    mfl_handle->bswap_type = MFL_BST_SPR;
+    mfl_handle->bswap_type = MFL_BST_TBR;
     
     mfl_heuristic_search(mfl_handle);
     
     //mfl_clear_treebuffer(savedtrees, , numnodes);   
 }
 
-void test_subtree_rerooting(void)
+/*void test_subtree_rerooting(void)
 {
     tree *t;
     node *n;
@@ -685,7 +685,7 @@ void test_subtree_rerooting(void)
     t->trnodes[0]->start = false;
     mfl_reroot_subtree(t->trnodes[0]->outedge, n, n);
     dbg_printf("\n");
-}
+}*/
 
 void test_tree_compress(void);
 
@@ -697,7 +697,7 @@ int main(void)
 
     pauseit();
     
-    test_subtree_rerooting();
+    //test_subtree_rerooting();
     
     test_tree_compress();
     
