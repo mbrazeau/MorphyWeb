@@ -694,8 +694,6 @@ int main(void)
     int ntax = 9;
     /*int numnodes;*/
     //bool isRooted = true;
-
-    srandom(8);
     
     pauseit();
     
