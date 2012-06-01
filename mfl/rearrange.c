@@ -473,7 +473,8 @@ node *mfl_find_atip(node *n)
     return tip;
 }
 
-void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
+void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, 
+                        int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
 {
     /* Traverses the subtree and re-roots it at each branch in preorder and then
      * calls regrafting traversal (same as used in SPR) */
@@ -482,13 +483,14 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     mfl_join_nodes(base->next->next, n->outedge);
     mfl_join_nodes(base->next, n);
-    
+     
     // Reoptimize the clipped tree
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
-     
+    
     // Reoptimize the subtree
-    //mfl_reopt_subtr_root(base, nchar);
-    mfl_set_rootstates(base, nchar);
+    mfl_reopt_subtr_root(base, nchar);
+    //mfl_set_rootstates(base, nchar);
+    //mfl_reopt_postorder(base, nchar);
     
     // Determine the cost of local reinsertion
     diff = mfl_subtr_reinsertion(base, up, dn, nchar);
@@ -506,11 +508,11 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
         return;
     }
     
-    mfl_reroot_subtree(n->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    //mfl_reroot_subtree(n->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     if (searchrec->success) {
         return;
     }
-    mfl_reroot_subtree(n->next->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    //mfl_reroot_subtree(n->next->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     
     // Insert the base at n->outedge
     
@@ -584,11 +586,12 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     //clipnode->clip = true;
                     mfl_join_nodes(up, dn);
                     
-                    atip = mfl_find_atip(subtr->next->outedge);
-                    
                     base = subtr->next->outedge;
                     bc1 = base->next->outedge;
                     bc2 = base->next->next->outedge;
+                    
+                    atip = mfl_find_atip(base);
+                    
                     mfl_join_nodes(bc1, bc2);
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
                     
