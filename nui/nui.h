@@ -4,6 +4,7 @@
 #include "NexusParse.h"
 #include "mfl.h"
 #include "menu.h"
+#include "EditLineHist.h"
 
 #define NUI_MAJOR_VERSION   0
 #define NUI_MINOR_VERSION   1
@@ -70,9 +71,9 @@ protected:
     void CreateHandle();
     bool SetMorphyOpenParams();
     void ChangeMenu(CNexusMenuData *pMenu);
+    void Delete(CEditLineHist *pMem);
 
 private:
-    void GetUserInput(string strPrompt, string *strInput);
     CNexusMenuData *m_pMainMenu;
     CNexusMenuData *m_pSetMenu;
     CNexusMenuData *m_pMenu;
@@ -82,6 +83,12 @@ private:
 
     myofstream m_fCommandLog;
     mfl_handle_t m_mflHandle;
+
+    CEditLineHist *m_ioWorkingDir;
+    CEditLineHist *m_ioLogs;
+    CEditLineHist *m_ioFiles;
+    CEditLineHist *m_ioCommands;
+    CEditLineHist *m_ioNumericSubCommands;
 };
 
 

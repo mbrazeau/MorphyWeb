@@ -6,6 +6,7 @@ my $g_input_file;
 my $g_expected_output_file;
 my $g_test_dir;
 my $g_update_dirs;
+
 GetOptions( "input=s" => \$g_input_file,
             "expected:s" => \$g_expected_output_file,
             "test=s" => \$g_test_dir,

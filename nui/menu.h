@@ -127,7 +127,7 @@ public:
 
     string GetPrompt()
     {
-        return m_strMenuTitle + "\nEnter selection# ";
+        return m_strMenuTitle;
     }
 
 protected:

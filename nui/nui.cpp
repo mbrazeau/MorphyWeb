@@ -88,7 +88,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_mflHandle = NULL;
     m_pNexusParse = NULL;
     m_strCwd = "./";
-    m_pMainMenu = new CNexusMenuData("Main Menu");
+    m_pMainMenu = new CNexusMenuData("Main Menu\nEnter selection#");
     if (!m_pMainMenu)
     {
         throw "Unable to allocate memory for main menu";
@@ -127,7 +127,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_pMainMenu->AddMenuItem(new CNexusMenuCollapse        ("COLLAPSE", "Collapse zero-length branches, condense the tree set"));
     m_pMainMenu->AddMenuItem(new CNexusMenuReport          ("REPORT"  , "Print a report about the current open nexus file"));
 
-    m_pSetMenu = new CNexusMenuData("Set parameters");
+    m_pSetMenu = new CNexusMenuData("Set parameters\nEnter selection#");
     if (!m_pSetMenu)
     {
         throw "Unable to allocate memory for set menu";
@@ -144,6 +144,12 @@ CNexusUserInterface::CNexusUserInterface()
 
     m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("H"         , "Help"));
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
+
+    m_ioCommands = new CEditLineHist("nui1234567890", &m_fCommandLog);
+    m_ioFiles = new CEditLineHist("nui12345678901234567890", &m_fCommandLog);
+    m_ioLogs = new CEditLineHist("nui1234567890", &m_fCommandLog);
+    m_ioWorkingDir = new CEditLineHist("nui1234567890", &m_fCommandLog);
+    m_ioNumericSubCommands = new CEditLineHist("nui1234567890", &m_fCommandLog);
 }
 
 void CNexusUserInterface::ChangeMenu(CNexusMenuData *pMenu)
@@ -152,6 +158,13 @@ void CNexusUserInterface::ChangeMenu(CNexusMenuData *pMenu)
     fCNexusMenuHelp(false);
 }
 
+void CNexusUserInterface::Delete(CEditLineHist *pMem)
+{
+    if (pMem)
+    {
+        delete (pMem);
+    }
+}
 
 /*
  * The UI destructor deletes all memory.
@@ -166,11 +179,17 @@ CNexusUserInterface::~CNexusUserInterface()
         m_fCommandLog.close();
     }
     DestroyHandle();
+    Delete(m_ioCommands);
+    Delete(m_ioFiles);
+    Delete(m_ioLogs);
+    Delete(m_ioWorkingDir);
+    Delete(m_ioNumericSubCommands);
 }
 
 /*
  * Anytime the user is to give input, the input must come through this function.
  */
+/*
 void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
 {
     cout<<strPrompt;
@@ -185,7 +204,7 @@ void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
         m_fCommandLog<<*strInput<<endl;
     }
 }
-
+*/
 /*
  * Actually read input from the user, and issue the selected commands
  */
@@ -199,7 +218,7 @@ void CNexusUserInterface::DoMenu()
         do
         {
             strInput.clear();
-            GetUserInput(m_pMenu->GetPrompt() ,&strInput);
+            m_ioCommands->GetUserInput(m_pMenu->GetPrompt(), &strInput);
         } while (m_pMenu->RunSelection(strInput, this));
     }
     catch (const char *e)
@@ -235,7 +254,7 @@ bool CNexusUserInterface::fCNexusMenuOpenNexusFile()
 
     if (!m_pNexusParse)
     {
-        GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
+        m_ioFiles->GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
         strFilename = m_strCwd + strFilename;
         m_pNexusParse = new CNexusParse();
         if (m_pNexusParse)
@@ -342,7 +361,7 @@ bool CNexusUserInterface::fCNexusMenuCommandLog     ()
     
     if (!m_fCommandLog)
     {
-        GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+        m_ioLogs->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
         strFilename = m_strCwd + strFilename;
        
         m_fCommandLog.open(strFilename.c_str());
@@ -383,7 +402,7 @@ bool CNexusUserInterface::fCNexusMenuChdir          ()
     string strCwd;
     struct stat st;
 
-    GetUserInput(" Enter new working directory: ", &strCwd);
+    m_ioWorkingDir->GetUserInput(" Enter new working directory: ", &strCwd);
     if (strCwd[strCwd.length() - 1] != '/')
     {
         strCwd += "/";
@@ -500,7 +519,7 @@ bool CNexusUserInterface::fCNexusMenuSearchType     ()
 {
     string strInput;
     mfl_search_t search_type = MFL_ST_MAX;
-    GetUserInput(" Enter search type\n  1) Exhaustive\n  2) Branch Bound\n  3) Heuristic\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Enter search type\n  1) Exhaustive\n  2) Branch Bound\n  3) Heuristic\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         search_type = MFL_ST_EXHAUSTIVE;
@@ -521,7 +540,7 @@ bool CNexusUserInterface::fCNexusMenuBranchSwapType ()
 {
     string strInput;
     mfl_branch_swap_t swap_type = MFL_BST_MAX;
-    GetUserInput(" Enter branch swap type\n  1) Tree bisection\n  2) Subtree pruning\n  3) Nearist neighbor\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Enter branch swap type\n  1) Tree bisection\n  2) Subtree pruning\n  3) Nearist neighbor\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         swap_type = MFL_BST_TBR;
@@ -542,7 +561,7 @@ bool CNexusUserInterface::fCNexusMenuAddSeqType     ()
 {
     string strInput;
     mfl_add_sequence_t add_seq_type = MFL_AST_MAX;
-    GetUserInput(" Enter add seq type\n  1) Simple\n  2) Random\n  3) As is\n  4) Closest\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Enter add seq type\n  1) Simple\n  2) Random\n  3) As is\n  4) Closest\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         add_seq_type = MFL_AST_SIMPLE;
@@ -567,7 +586,7 @@ bool CNexusUserInterface::fCNexusMenuCollapseAt           ()
 {
     string strInput;
     mfl_set_collapse_at_t collapse_at = MFL_SC_MAX;
-    GetUserInput(" Enter when to collapse branches\n  1) When max length is 0\n  2) When min length is 0\n  3) When two incident nodes with equal apomorphies reconstruction sets\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Enter when to collapse branches\n  1) When max length is 0\n  2) When min length is 0\n  3) When two incident nodes with equal apomorphies reconstruction sets\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         collapse_at = MFL_SC_MAX_LEN;
@@ -589,7 +608,7 @@ bool CNexusUserInterface::fCNexusMenuCollapseZero         ()
 {
     string strInput;
     bool collapse_zero = false;
-    GetUserInput(" Select if zero length branches should be collapsed during search\n  1) Collapse\n  2) Do not collapse\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Select if zero length branches should be collapsed during search\n  1) Collapse\n  2) Do not collapse\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         collapse_zero = true;
@@ -603,7 +622,7 @@ bool CNexusUserInterface::fCNexusMenuNumIterations        ()
     string strInput;
     int num_iterations;
     stringstream ss;
-    GetUserInput(" Enter number of iterations# ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Enter number of iterations# ", &strInput);
     ss<<strInput.c_str();
     ss>>num_iterations;
     mfl_set_parameter(m_mflHandle, MFL_PT_NUM_ITERATIONS, (void*)num_iterations);
@@ -615,7 +634,7 @@ bool CNexusUserInterface::fCNexusMenuTreeLimit        ()
     string strInput;
     int tree_limit;
     stringstream ss;
-    GetUserInput(" Enter number of trees to store# ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Enter number of trees to store# ", &strInput);
     ss<<strInput.c_str();
     ss>>tree_limit;
     mfl_set_parameter(m_mflHandle, MFL_PT_TREELIMIT, (void*)tree_limit);
@@ -626,7 +645,7 @@ bool CNexusUserInterface::fCNexusMenuRatchetSearch        ()
 {
     string strInput;
     bool ratchet = false;
-    GetUserInput(" Select how the ratchet search parameter should be set\n  1) Enabled\n  2) Disabled\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Select how the ratchet search parameter should be set\n  1) Enabled\n  2) Disabled\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         ratchet = true;
@@ -639,7 +658,7 @@ bool CNexusUserInterface::fCNexusMenuGap                  ()
 {
     string strInput;
     bool ratchet = false;
-    GetUserInput(" Select if the gap symbol ('-') will be treated as inapplicability or as missing data\n  1) Inapplicable\n  2) Missing data\n # ", &strInput);
+    m_ioNumericSubCommands->GetUserInput(" Select if the gap symbol ('-') will be treated as inapplicability or as missing data\n  1) Inapplicable\n  2) Missing data\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
         ratchet = true;

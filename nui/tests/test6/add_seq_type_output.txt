@@ -37,7 +37,7 @@ This program uses the NCL by Paul O. Lewis.
  REPORT) Print a report about the current open nexus file
 
 Main Menu
-Enter selection# 
+Enter selection#
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
@@ -45,7 +45,7 @@ Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
 Main Menu
-Enter selection# 
+Enter selection#
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
@@ -60,7 +60,7 @@ Enter selection#
 
 
 Set parameters
-Enter selection# 
+Enter selection#
  Enter add seq type
   1) Simple
   2) Random
@@ -69,7 +69,7 @@ Enter selection#
  # MFL Error: Invalid add seq type
 
 Set parameters
-Enter selection# 
+Enter selection#
  Enter add seq type
   1) Simple
   2) Random
@@ -77,7 +77,7 @@ Enter selection#
   4) Closest
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Enter add seq type
   1) Simple
   2) Random
@@ -85,7 +85,7 @@ Enter selection#
   4) Closest
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Enter add seq type
   1) Simple
   2) Random
@@ -93,7 +93,7 @@ Enter selection#
   4) Closest
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Enter add seq type
   1) Simple
   2) Random
@@ -101,7 +101,7 @@ Enter selection#
   4) Closest
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Enter add seq type
   1) Simple
   2) Random
@@ -110,9 +110,9 @@ Enter selection#
  # MFL Error: Invalid add seq type
 
 Set parameters
-Enter selection# 
+Enter selection#
 
 Main Menu
-Enter selection# 
+Enter selection#
 Goodbye!
 

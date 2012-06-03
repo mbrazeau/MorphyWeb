@@ -37,10 +37,10 @@ This program uses the NCL by Paul O. Lewis.
  REPORT) Print a report about the current open nexus file
 
 Main Menu
-Enter selection# 
+Enter selection#
 No file is currently open
 
 Main Menu
-Enter selection# 
+Enter selection#
 Goodbye!
 

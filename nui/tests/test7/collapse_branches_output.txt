@@ -37,7 +37,7 @@ This program uses the NCL by Paul O. Lewis.
  REPORT) Print a report about the current open nexus file
 
 Main Menu
-Enter selection# 
+Enter selection#
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
@@ -45,7 +45,7 @@ Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
 Main Menu
-Enter selection# 
+Enter selection#
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
@@ -60,29 +60,29 @@ Enter selection#
 
 
 Set parameters
-Enter selection#  Unknown command: collapse
+Enter selection# Unknown command: collapse
 Set parameters
-Enter selection#  Unknown command: 0
+Enter selection# Unknown command: 0
 Set parameters
-Enter selection#  Unknown command: collapse
+Enter selection# Unknown command: collapse
 Set parameters
-Enter selection#  Unknown command: 1
+Enter selection# Unknown command: 1
 Set parameters
-Enter selection#  Unknown command: collapse
+Enter selection# Unknown command: collapse
 Set parameters
-Enter selection#  Unknown command: 2
+Enter selection# Unknown command: 2
 Set parameters
-Enter selection#  Unknown command: collapse
+Enter selection# Unknown command: collapse
 Set parameters
-Enter selection#  Unknown command: 3
+Enter selection# Unknown command: 3
 Set parameters
-Enter selection#  Unknown command: collapse
+Enter selection# Unknown command: collapse
 Set parameters
-Enter selection#  Unknown command: 4
+Enter selection# Unknown command: 4
 Set parameters
-Enter selection# 
+Enter selection#
 
 Main Menu
-Enter selection# 
+Enter selection#
 Goodbye!
 

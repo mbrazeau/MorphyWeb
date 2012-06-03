@@ -37,14 +37,14 @@ This program uses the NCL by Paul O. Lewis.
  REPORT) Print a report about the current open nexus file
 
 Main Menu
-Enter selection# 
+Enter selection#
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Skipping unknown block (NOTES)...
  ./Opistho.nex open successfully
 
 Main Menu
-Enter selection# 
+Enter selection#
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
@@ -59,33 +59,33 @@ Enter selection#
 
 
 Set parameters
-Enter selection# 
+Enter selection#
  Select if the gap symbol ('-') will be treated as inapplicability or as missing data
   1) Inapplicable
   2) Missing data
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Select if the gap symbol ('-') will be treated as inapplicability or as missing data
   1) Inapplicable
   2) Missing data
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Select if the gap symbol ('-') will be treated as inapplicability or as missing data
   1) Inapplicable
   2) Missing data
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Select if the gap symbol ('-') will be treated as inapplicability or as missing data
   1) Inapplicable
   2) Missing data
  # 
 Set parameters
-Enter selection# 
+Enter selection#
 
 Main Menu
-Enter selection# 
+Enter selection#
 Goodbye!
 

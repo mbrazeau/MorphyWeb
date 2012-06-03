@@ -37,12 +37,12 @@ This program uses the NCL by Paul O. Lewis.
  REPORT) Print a report about the current open nexus file
 
 Main Menu
-Enter selection# 
+Enter selection#
  Enter filename: ./Reading "DATA" block...
  ./Ptomacanth_Edit.txt open successfully
 
 Main Menu
-Enter selection# 
+Enter selection#
  SEARCHTYPE) Set the search type for JK and BTS searches
  BRANCHSWAP) Set branch swap type for heuristic searches
  ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
@@ -57,33 +57,33 @@ Enter selection#
 
 
 Set parameters
-Enter selection# 
+Enter selection#
  Select how the ratchet search parameter should be set
   1) Enabled
   2) Disabled
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Select how the ratchet search parameter should be set
   1) Enabled
   2) Disabled
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Select how the ratchet search parameter should be set
   1) Enabled
   2) Disabled
  # 
 Set parameters
-Enter selection# 
+Enter selection#
  Select how the ratchet search parameter should be set
   1) Enabled
   2) Disabled
  # 
 Set parameters
-Enter selection# 
+Enter selection#
 
 Main Menu
-Enter selection# 
+Enter selection#
 Goodbye!
 
