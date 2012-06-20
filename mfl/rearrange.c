@@ -493,6 +493,7 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                              savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
+    
     // Remove the base
     mfl_join_nodes(base->next->outedge, base->next->next->outedge);
     
@@ -504,11 +505,11 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
         return;
     }
     
-    /*mfl_reroot_subtree(n->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+    mfl_reroot_subtree(n->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     if (searchrec->success) {
         return;
     }
-    mfl_reroot_subtree(n->next->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);*/
+    mfl_reroot_subtree(n->next->next->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     
 }
 
@@ -612,10 +613,11 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);                    
                     
-                    
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);
+                    
+                    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
                     
                     up->visited = 0;
                     dn->visited = 0;
