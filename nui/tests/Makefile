@@ -1,4 +1,4 @@
-TESTDIRS = $(wildcard test*)
+TESTDIRS = $(shell ../../getDirs.pl --directory=.)
 DATETIME = $(shell date)
 
 include ../../Makefile.inc

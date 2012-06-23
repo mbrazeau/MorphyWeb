@@ -8,9 +8,6 @@ MFLLIB      = $(ODIR)/libmfl.a
 DEPS        = $(patsubst %,$(ODIR)/%,$(OBJS:.o=.d))
 MAKEDEPEND  = $(SILENT)$(CC) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.d=.o)" "$<" $(CFLAGS) 
 MKODIR      = -@mkdir -p $(ODIR)
-sp := 
-sp += # add space
-my-sort = $(shell echo $(subst $(sp),'\n',$2) | sort $1 --key=1,1 -)
 
 ifndef VERBOSE
 SILENT=@
