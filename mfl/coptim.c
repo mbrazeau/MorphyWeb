@@ -356,7 +356,7 @@ void mfl_reopt_postorder(node *n, int nchar)
         if (!p->outedge->success) {
             /*allsame = false;*/
         }
-        p->outedge->success = false;
+        //p->outedge->success = false;
         p = p->next;
     }
     

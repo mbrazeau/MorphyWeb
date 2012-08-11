@@ -483,32 +483,15 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
         return;
     }
     
-    int subtrlen = 0;
-    int diff2 = 0;
-    int origtreelen = 0;
-    
     // Insert the subtree base
     mfl_join_nodes(base->next->next, n->outedge);
     mfl_join_nodes(base->next, n);
     
     // Reoptimize the subtree base
-    mfl_reopt_subtr_root(base, nchar);
+    mfl_reopt_postorder(base, nchar);
     
-    // Determine the cost of local reinsertion at original position
-    // ***********
-    diff2 = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
-    subtrlen = mfl_get_subtreelen(base, ntax, nchar, 0);
-    
-    origtreelen = diff2 + diff + subtrlen;
-    //dbg_printf("origtreelen %i\n", origtreelen);
-    
-    
-    if (origtreelen <= searchrec->bestinrep) {
-        
-        // Regraft the rerooted subtree to all positions in the target tree
-        mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
-                                 savedtrees, ntax, nchar, numnodes, searchrec, diff2);
-    }
+    mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
+                                 savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
     // Remove the base
     mfl_join_nodes(base->next->outedge, base->next->next->outedge);
@@ -557,7 +540,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
     /* Traverses a binary tree clipping out a subtree in postorder and passing 
      * a pointer to the subtree to mfl_reroot_subtree. */
     
-    int diff = 0, subtrlen = 0, tgtlen = 0;
+    int diff = 0;
     node *p, *clipnode, *up, *dn, *subtr, *atip, *base, *bc1, *bc2;
     charstate *holder;
         
@@ -612,22 +595,20 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Determine the cost of local reinsertion
                     mfl_reopt_subtr_root(base, nchar);
                     diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
-                    subtrlen = mfl_get_subtreelen(base, ntax, nchar, 0);
-                    //dbg_printf("subtrlen: %i\n", subtrlen);
-                    
-                    tgtlen = searchrec->bestinrep - diff - subtrlen;
                     
                     // Unroot the source tree
                     mfl_join_nodes(bc1, bc2);
                     
                     // Call rerooting function
-                    mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, tgtlen);                    
+                    mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
                     
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);
                     
-                    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+                    // This reoptimizes the clippled tree because the re-rooting procedure changes some optimizations
+                    //mfl_reopt_postorder(base, nchar);
+                    mfl_reopt_subtr_root(base, nchar);
                     
                     up->visited = 0;
                     dn->visited = 0;
