@@ -695,7 +695,7 @@ int main(void)
     /*int numnodes;*/
     //bool isRooted = true;
     
-    srandom(683995);
+    srandom(481981);
     
     pauseit();
     

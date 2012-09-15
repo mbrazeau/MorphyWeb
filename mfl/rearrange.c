@@ -493,6 +493,10 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                  savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
+    if (searchrec->success) {
+        return;
+    }
+    
     // Remove the base
     mfl_join_nodes(base->next->outedge, base->next->next->outedge);
     
@@ -602,6 +606,10 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
+                    
+                    if (searchrec->success) {
+                        return;
+                    }
                     
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
@@ -793,7 +801,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
-        printNewick(savedtrees[j]->root);
+        //printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }
     dbg_printf("\n");
