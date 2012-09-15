@@ -146,11 +146,14 @@ typedef struct tree {
 } chardata;*/
 
 typedef struct {
-    long int nextinbuffer;
+    
+    /* Keeps a record of the state of tree rearrangment.*/
+    
+    long int nextinbuffer;  // Next free position in the array of stored trees
     bool undertreelimit;
-    int bestlength;
-    int bestinrep;
-    int trbufstart;
+    int bestlength;         // Best tree length over all iterations
+    int bestinrep;          // Best tree length in current iteration of search
+    int trbufstart;         // Position in buffer of first tree to undergo rearrangement
     int tipscoll;
     bool foundbettertr;
     bool success;

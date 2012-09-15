@@ -2,7 +2,7 @@
  *  rearrange.c
  *  Morphy
  *
- *  Functions used in tree rearrangements for heuristic searches.
+ *  Functions used in tree rearrangements for heuristic searches. 
  *
  */
 
@@ -588,6 +588,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     bc2 = base->next->next->outedge;
                     
                     // Reoptimize the clipped tree
+                    
                     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
                     
                     atip = mfl_find_atip(base);

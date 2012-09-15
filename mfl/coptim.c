@@ -681,14 +681,14 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
 
     t->root = t->trnodes[ntax];
     for (i = 0; i < ntax; ++i) {
-            *treelen_p = 0;
-            mfl_temproot(t, i, ntax);
-            mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
-            t->root->visited = 0;
-            mfl_undo_temproot(ntax, t);
-            if (i == 0) {
-                fptreelen = *treelen_p;
-            }
+        *treelen_p = 0;
+        mfl_temproot(t, i, ntax);
+        mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
+        t->root->visited = 0;
+        mfl_undo_temproot(ntax, t);
+        if (i == 0) {
+            fptreelen = *treelen_p;
+        }
     }
     
     mfl_temproot(t, 0, ntax);
