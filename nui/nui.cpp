@@ -645,13 +645,17 @@ bool CNexusUserInterface::fCNexusMenuRatchetSearch        ()
 bool CNexusUserInterface::fCNexusMenuGap                  ()
 {
     string strInput;
-    bool ratchet = false;
+    bool gap_missing = false;
     m_ioNumericSubCommands->GetUserInput(" Select if the gap symbol ('-') will be treated as inapplicability or as missing data\n  1) Inapplicable\n  2) Missing data\n # ", &strInput);
     if (strInput.compare("1") == 0)
     {
-        ratchet = true;
+        gap_missing = MFL_GAP_INAPPLICABLE;
     }
-    mfl_set_parameter(m_mflHandle, MFL_PT_RATCHET_SEARCH, (void*)ratchet);
+    else if (strInput.compare("2") == 0)
+    {
+        gap_missing = MFL_GAP_MISSING_DATA;
+    }
+    mfl_set_parameter(m_mflHandle, MFL_PT_GAP, (void*)gap_missing);
     return true;
 }
 
