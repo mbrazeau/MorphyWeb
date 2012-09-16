@@ -87,7 +87,8 @@ CNexusUserInterface::CNexusUserInterface()
 {
     m_mflHandle = NULL;
     m_pNexusParse = NULL;
-    m_strCwd = "./";
+    m_strCwd = getcwd(NULL, 0);
+    m_strCwd.append("/");
     m_pMainMenu = new CNexusMenuData("Main Menu\nEnter selection#");
     if (!m_pMainMenu)
     {
@@ -186,25 +187,6 @@ CNexusUserInterface::~CNexusUserInterface()
     Delete(m_ioNumericSubCommands);
 }
 
-/*
- * Anytime the user is to give input, the input must come through this function.
- */
-/*
-void CNexusUserInterface::GetUserInput(string strPrompt, string *strInput)
-{
-    cout<<strPrompt;
-    cin>>*strInput;
-    if (cin.fail())
-    {
-        *strInput = "q";
-        throw "Stardard input failure";
-    }
-    if (m_fCommandLog)
-    {
-        m_fCommandLog<<*strInput<<endl;
-    }
-}
-*/
 /*
  * Actually read input from the user, and issue the selected commands
  */
