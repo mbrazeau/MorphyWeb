@@ -1,4 +1,4 @@
-SUBDIRS = mfl tui nui
+SUBDIRS = mfl nui
 ALLFILES = $(addsuffix /*.c, $(SUBDIRS)) $(addsuffix /*.cpp, $(SUBDIRS))
 CSCOPEFILE = cscope.out
 ifndef VERBOSE
