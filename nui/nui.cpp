@@ -192,21 +192,27 @@ CNexusUserInterface::~CNexusUserInterface()
  */
 void CNexusUserInterface::DoMenu()
 {
+    bool ret;
     string strInput;
     fCNexusMenuAbout(false);
     ChangeMenu(m_pMainMenu);
-    try
+    do
     {
-        do
+        try
         {
             strInput.clear();
             m_ioCommands->GetUserInput(m_pMenu->GetPrompt(), &strInput);
-        } while (m_pMenu->RunSelection(strInput, this));
-    }
-    catch (const char *e)
-    {
-        cout<<endl<<"Error: "<<e<<endl;
-    }
+            ret = m_pMenu->RunSelection(strInput, this);
+        }
+        catch (const char *e)
+        {
+            cout<<endl<<"Error: "<<e<<endl;
+        }
+        catch ( ifstream::failure &e )
+        {
+            cout<<endl<<"Error: "<<e.what()<<endl;
+        }
+    } while (ret);
 }
 
 bool CNexusUserInterface::SetMorphyOpenParams()
