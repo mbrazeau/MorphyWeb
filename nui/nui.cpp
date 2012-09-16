@@ -65,7 +65,7 @@ NEW_COMMAND_DEFINE(CNexusMenuCollapse       )
 NEW_COMMAND_DEFINE(CNexusMenuReport         )
 
 /*
- * The followind actually defines the derived class for each command on the set menu
+ * The following actually defines the derived class for each command on the set menu
  */
 NEW_COMMAND_DEFINE(CNexusMenuSearchType     )
 NEW_COMMAND_DEFINE(CNexusMenuBranchSwapType )
