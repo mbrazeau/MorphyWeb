@@ -477,7 +477,7 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
                         int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff)
 {
     /* Traverses the subtree and re-roots it at each branch in preorder and then
-     * calls regrafting traversal (same as used in SPR) */
+     * calls regrafting traversal (same as used in SPR).*/
     
     if (searchrec->success) {
         return;
@@ -499,10 +499,6 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     // Remove the base
     mfl_join_nodes(base->next->outedge, base->next->next->outedge);
-    
-    if (searchrec->success) {
-        return;
-    }
     
     if (n->tip) {
         return;
@@ -578,6 +574,11 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
             subtr->next->outedge->skip = true;
             
             if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
+                
+                /* If the clipped subtree has only 1 or 2 terminals, then it 
+                 * cannot be rerooted. Therefore, only a normal SPR routine is
+                 * required. Otherwise, the procedure can proceed with rerooting
+                 * and reconnecting. */
                 
                 if (mfl_subtr_isrerootable(subtr)) {
                     up->visited = 1;
@@ -658,10 +659,11 @@ void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int
             return &mfl_bisection_traversal;;
             break;
         case MFL_BST_SPR:
+            dbg_printf("Searching by SPR\n");
             return &mfl_pruning_traversal;
         case MFL_BST_NNI:
             dbg_printf("Not implemented\n");
-            //return; // Temporary as would fail if tried
+            //return; // Temporary. Would fail if called.
             break;
         default:
             dbg_printf("Not implemented\n");
@@ -685,7 +687,6 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
     
     tree *newreptree;
-    
     
     charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
     
