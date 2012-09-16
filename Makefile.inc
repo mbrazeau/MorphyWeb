@@ -49,7 +49,7 @@ $(OUTLIB): $(OBJECTS)
 $(OUTEXE): $(OBJECTS) $(ARCHIVES)
 	$(NICEBLDOUTPUT)
 	$(MKODIR)
-	$(SILENT)$(CC) -o $@ $^ $(CFLAGS) $(LIBRARIES) $(ARCHIVES) -Wl,-rpath -Wl,/usr/local/lib/ncl
+	$(SILENT)$(CC) -o $@ $^ $(CFLAGS) $(LIBRARIES) $(ARCHIVES)
 
 .PHONY: clean
 
