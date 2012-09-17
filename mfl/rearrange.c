@@ -661,6 +661,7 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
     
     for (i = 0; i < a_results->n_savetrees; ++i) {
         tree_results[i] = mfl_trstring(savedtrees[i], ntax);
+        //cout << " " << *tree_results[i] << endl;
     }
     
 }
