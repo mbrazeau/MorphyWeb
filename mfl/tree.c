@@ -198,7 +198,11 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
 
 struct node * mfl_seek_ringnode(node *n, int ntax)
 {
-    /*-Used by mfl_copytree-*/
+    /* Used by mfl_insert_branch() to find unoccupied nodes in the ringnode */
+    
+    /* Optimization: Lookit this crap. Why go through the process of checking if
+     * it's the root, then checking again? */
+    
     node *p;
     bool rootnode = false;
     
@@ -224,6 +228,12 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
 
 struct tree *mfl_alloc_noring(int ntax, int numnodes)
 {
+    
+    /* Allocates memory for the node array in a tree struct, but does not create
+     * the ring nodes for the internal nodes. Similar to mfl_alloctree() in that 
+     * none of the nodes are joined. Used by mfl_copytree(), 
+     * mfl_addseq_randasis(), and readNWK(). */
+    
     int i;
     tree *newtree;
     
@@ -282,6 +292,10 @@ void mfl_newring(node *r1, int ntax)
 
 void mfl_newring_to_order(node *r1, int order, int ntax)
 {
+    
+    /* Given a predicted number of branchings (order), returns an internal node
+     * ring with that many branch points */
+    
     int i = 1;
     node *p;
     
@@ -310,11 +324,13 @@ void mfl_newring_to_order(node *r1, int order, int ntax)
     p->order = r1->order;
 }
 
-/*
- * mfl_deletering - deletes a node (ring) by doing the mirror image of newring.
- */
 void mfl_deletering(node *r1)
 {
+    
+    /*
+     * mfl_deletering - deletes a node (ring) by doing the mirror image of newring.
+     */
+    
     if (r1->tipsabove) {
         free(r1->tipsabove);
     }
@@ -346,6 +362,12 @@ void mfl_deletering(node *r1)
 
 struct tree * mfl_copytree(tree *origtr, int ntax, int numnodes)
 {
+    
+    /* Given either a rooted or unrooted tree struct, origtree, copies the 
+     * topology of that tree struct, but nothing else. However, the node indices
+     * should be the same. This is not a guarantee, however, and should be 
+     * tested before you try to make this assumption in any code */
+    
     int i, tmpltorder, begin;
     tree *treecp; // Pointer to the tree copy
     node *p, *q, *r, *s;
@@ -468,7 +490,8 @@ void mfl_set_vweight(node *n)
 
 void mfl_close_ring(node *n)
 {
-    /* Makes sure there isn't a dangling next pointer*/
+    /* Makes sure there isn't a dangling next pointer in an internal node ring */
+    /*ADD AN ERROR CHECK*/
     node *p;
     
     p = n;
@@ -526,6 +549,10 @@ void mfl_reindex_tree(nodearray nds, int ntax, int numnodes)
 
 void mfl_join_apomorphies(node *n)
 {
+    
+    /* Makes it so the all apomorphies pointers of each node in an internal ring 
+     * node point to the same memory. */
+    
     node *p;
     p = n->next;
     while (p != n) {
@@ -536,6 +563,9 @@ void mfl_join_apomorphies(node *n)
 
 void mfl_set_ring_to_n(node *n)
 {
+    /* Sets the initialized and skip values in the members of a ring to the 
+     * same value as those in node n. */
+    
     node *p;
     
     if (n->next) {
