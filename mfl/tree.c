@@ -10,6 +10,9 @@
 
 void mfl_close_all_rings(nodearray nds, int ntax, int numnodes)
 {
+    /* Loops over the internal nodes in the tree's node array, closing up any
+     * rings which may have a dangling next pointer. */
+    
     int i;
     
     for (i = ntax; i < numnodes; ++i) {
@@ -19,6 +22,9 @@ void mfl_close_all_rings(nodearray nds, int ntax, int numnodes)
 
 int mfl_calc_numnodes(int ntax)
 {
+    /* Returns the number of internal and terminal nodes possible for a fully 
+     * binary tree with ntax number of terminal branches */
+    
     int numnodes;
     
     return numnodes = 2 * ntax - 1;
@@ -26,6 +32,9 @@ int mfl_calc_numnodes(int ntax)
 
 void mfl_join_nodes(node *n, node *p)
 {
+    
+    /* Joins two nodes via their outedge pointers */
+    
     if (n->outedge) {
         n->outedge->outedge = NULL;
         //dbg_printf("terminating existing connection in n\n");
@@ -41,6 +50,9 @@ void mfl_join_nodes(node *n, node *p)
 
 struct node * mfl_allocnode(void)
 {
+    
+    /* Allocates a node */
+    
     node *newNode;
     newNode = (node *)malloc(sizeof(node));
     if (newNode == NULL)
@@ -56,6 +68,9 @@ struct node * mfl_allocnode(void)
 
 struct tree * mfl_alloctree(int ntax, int numnodes)
 {
+    /* Allocates memory for a tree, but does not assign values to the outedge
+     * pointers. The returned structure is therefore not yet a true tree */
+    
     int i; //Loop counters
     tree *newtree;
     
