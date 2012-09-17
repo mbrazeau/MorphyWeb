@@ -304,6 +304,7 @@ struct tree * readNWK (char *nwktr, bool isRooted);
 
 /*in rearrange.c*/
 mfl_searchrec * mfl_create_searchrec(void);
+void mfl_part_reset_searchrec(mfl_searchrec *searchrec);
 void mfl_destroy_searchrec(mfl_searchrec *searchrec);
 long long int mfl_rearr_num(bool reset);
 void mfl_bswap(node *p, node *q);
@@ -316,7 +317,9 @@ long int mfl_spr_leftotry(int ntax);
 void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int, int , int, mfl_searchrec*);
 void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff);
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
+node *mfl_find_atip(node *n);
 void mfl_reroot_subtree(node *n, node *subtr, node *base, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
+bool mfl_subtr_isrerootable(node *n);
 bool mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int numnodes, char *txtsrcdata, tree **savedtrees, int starttreelen*/);
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
 void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff);

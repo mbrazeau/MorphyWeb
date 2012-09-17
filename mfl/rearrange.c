@@ -27,7 +27,7 @@ mfl_searchrec * mfl_create_searchrec(void)
     return newsearchrec;
 }
 
-void mfl_reset_searchrec(mfl_searchrec *searchrec)
+void mfl_part_reset_searchrec(mfl_searchrec *searchrec)
 {
     /*Partially resets the searchrec. Used when a new replicate is started. */
     
@@ -404,7 +404,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
      * a pointer to the subtree to mfl_regrafting_traversal. */
     
     node *p, *clipnode, *up, *dn, *subtr;
-    int diff = 0;
     
     if (n->start) {
         mfl_pruning_traversal(n->outedge, swapingon, savedtrees, ntax,
@@ -740,7 +739,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             //if (i > 0) {
                 //dbg_printf("swapping on tree: %li\n", j);
             //}
-            mfl_reset_searchrec(searchrec);
+            mfl_part_reset_searchrec(searchrec);
             //searchrec->foundbettertr = false;
             //searchrec->success = false;
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
