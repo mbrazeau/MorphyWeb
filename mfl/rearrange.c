@@ -649,6 +649,21 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
     }   
 }
 
+void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
+{
+    long int i = 0;
+    string **tree_results;
+    mfl_resultant_data_s *a_results;
+    
+    a_results = mfl_handle->resultant_data;
+    
+    tree_results = new string* [a_results->n_savetrees];
+    
+    for (i = 0; i < a_results->n_savetrees; ++i) {
+        tree_results[i] = mfl_trstring(savedtrees[i], ntax);
+    }
+    
+}
 
 void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int, int , int, mfl_searchrec*)
 {
@@ -789,8 +804,10 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
     mfl_handle->resultant_data->searcht = (timeout - timein);
     
+    //mfl_store_results(mfl_handle, savedtrees, ntax);
+    
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
-     * search procedure. Eventually, all this stuff will be written to a string
+     * search procedure. Eventually, all this stuff will be written to a struct
      * and handed over to the interface for outputting to screen. */
     
     dbg_printf("Total search time: %g\n", timeout - timein);

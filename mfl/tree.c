@@ -1034,7 +1034,7 @@ void mfl_save_newick(node *n, string *nwkstr)
     *nwkstr += string(")");
 }
 
-string mfl_trstring(tree *t, int ntax)
+string *mfl_trstring(tree *t, int ntax)
 {
     string *trstring = new string;
     
@@ -1050,7 +1050,7 @@ string mfl_trstring(tree *t, int ntax)
 
     *trstring += string(";");
     
-    return *trstring;
+    return trstring;
 }
 
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)
