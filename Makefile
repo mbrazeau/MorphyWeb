@@ -28,7 +28,7 @@ clean:
 	echo "Cleaning $$i..."; \
 	(cd $$i; $(MAKE) $(MFLAGS) clean); done
 
-test:
+test: all
 	@for i in $(SUBDIRS); do \
 	echo "Testing $$i..."; \
 	(cd $$i/tests; $(MAKE) $(MFLAGS) test); done

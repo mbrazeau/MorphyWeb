@@ -38,8 +38,8 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection#
- Enter filename: ./Reading "DATA" block...
- ./Ptomacanth_Edit.txt open successfully
+ Enter filename: /home/chrisd/sw/Morphy/nui/tests/Reading "DATA" block...
+ /home/chrisd/sw/Morphy/nui/tests/Ptomacanth_Edit.txt open successfully
 
 Main Menu
 Enter selection#
