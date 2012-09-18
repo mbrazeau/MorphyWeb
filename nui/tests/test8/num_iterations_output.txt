@@ -38,11 +38,11 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection#
- Enter filename: ./Reading "CHARACTERS" block...
+ Enter filename: /home/chrisd/sw/Morphy/nui/tests/Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
- ./Gnathostomes_Nov2010f2.nex open successfully
+ /home/chrisd/sw/Morphy/nui/tests/Gnathostomes_Nov2010f2.nex open successfully
 
 Main Menu
 Enter selection#
@@ -71,9 +71,9 @@ Enter selection#
 Main Menu
 Enter selection#
 
-Nexus file: ./Gnathostomes_Nov2010f2.nex
+Nexus file: /home/chrisd/sw/Morphy/nui/tests/Gnathostomes_Nov2010f2.nex
 Command log file: File not open
-Working directory: ./
+Working directory: /home/chrisd/sw/Morphy/nui/tests/
 
 
 Main Menu

@@ -42,4 +42,5 @@ MFL Error: Nexus file not open - Morphy handle is NULL
 
 Main Menu
 Enter selection#
-Error: Stardard input failure
+Goodbye!
+
