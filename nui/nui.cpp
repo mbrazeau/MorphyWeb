@@ -87,8 +87,7 @@ CNexusUserInterface::CNexusUserInterface()
 {
     m_mflHandle = NULL;
     m_pNexusParse = NULL;
-    m_strCwd = getcwd(NULL, 0);
-    m_strCwd.append("/");
+    m_strCwd = "./";
     m_pMainMenu = new CNexusMenuData("Main Menu\nEnter selection#");
     if (!m_pMainMenu)
     {

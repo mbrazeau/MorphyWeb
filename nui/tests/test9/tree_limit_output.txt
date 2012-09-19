@@ -38,11 +38,11 @@ This program uses the NCL by Paul O. Lewis.
 
 Main Menu
 Enter selection#
- Enter filename: /home/chrisd/sw/Morphy/nui/tests/Reading "CHARACTERS" block...
+ Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (NOTES)...
- /home/chrisd/sw/Morphy/nui/tests/Ohmdenia_Matrix.nex open successfully
+ ./Ohmdenia_Matrix.nex open successfully
 
 Main Menu
 Enter selection#
@@ -68,9 +68,9 @@ Enter selection#
 Main Menu
 Enter selection#
 
-Nexus file: /home/chrisd/sw/Morphy/nui/tests/Ohmdenia_Matrix.nex
+Nexus file: ./Ohmdenia_Matrix.nex
 Command log file: File not open
-Working directory: /home/chrisd/sw/Morphy/nui/tests/
+Working directory: ./
 
 
 Main Menu
