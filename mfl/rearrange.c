@@ -273,6 +273,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     
     if (!(n->visited) && !(n->outedge->visited)) {
         up = n->outedge;
+        
         al = mfl_locreopt_cost(subtr->next->outedge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
         
@@ -352,6 +353,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     // Determine the cost of local reinsertion
     diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
+    
+    // Begin attempting reinsertions
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                              savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
@@ -731,8 +734,13 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
             mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
+
+            /* The branch swapper is the specific type of heuristic search 
+             * routine: either TBR, SPR, or NNI. TBR by default */
             branch_swapper(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                   ntax, nchar, numnodes, searchrec);
+            
+            
             if (searchrec->foundbettertr) {
                 if (i > 0) {
                     dbg_printf("trbuf start %i\n", searchrec->trbufstart);
