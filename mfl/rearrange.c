@@ -460,6 +460,7 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     mfl_join_nodes(base->next, n);
     
     // Reoptimize the subtree base
+    // Not all of these reopt_postorder calls are necessary. They can be avoided, but my efforts so far fail.
     mfl_reopt_postorder(base, nchar);
     //mfl_reopt_subtr_root(base, nchar);
     

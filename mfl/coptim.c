@@ -646,7 +646,7 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
         
         mfl_reopt_postorder(t->root, nchar);
         
-        t->root->visited = 0;
+        //t->root->visited = 0;
         
         mfl_join_nodes(t->trnodes[ntax]->next->next->outedge, n);
         return;
