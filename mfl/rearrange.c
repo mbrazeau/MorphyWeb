@@ -461,8 +461,8 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     // Reoptimize the subtree base
     // Not all of these reopt_postorder calls are necessary. They can be avoided, but my efforts so far fail.
-    mfl_reopt_postorder(base, nchar);
-    //mfl_reopt_subtr_root(base, nchar);
+    //mfl_reopt_postorder(base, nchar);
+    mfl_reopt_subtr_root(base, nchar);
     
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                  savedtrees, ntax, nchar, numnodes, searchrec, diff);
@@ -580,7 +580,9 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     mfl_join_nodes(bc1, bc2);
                     //mfl_devisit_tree(swapingon->trnodes, numnodes);
                     
-                    //mfl_trav_allviews(atip, swapingon, ntax, nchar, NULL, NULL);
+                    atip->start = true;
+                    mfl_subtr_allviews(atip, swapingon, ntax, nchar, NULL, NULL);
+                    atip->start = false;
                     
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
