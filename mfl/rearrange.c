@@ -321,6 +321,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                 searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
             }
             trlength = 0;
+        
         }
         
         mfl_join_nodes(n, up);
@@ -569,6 +570,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                  * and reconnecting. */
                 
                 if (mfl_subtr_isrerootable(subtr)) {
+                    
                     up->visited = 1;
                     dn->visited = 1;
                     
@@ -608,7 +610,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
                     
                     if (searchrec->success) {
-                        // Probably need to free the copied apomorphy arrays
+                        free(basestates);
                         return;
                     }
                     
