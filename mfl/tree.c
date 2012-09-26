@@ -126,11 +126,16 @@ void mfl_freetree(tree *newtree, int numnodes)
     /* free all of the trnodes */
     for (i = 0; i < numnodes; ++i)
     {
+        
         if (newtree->trnodes[i]->next)
         {
             mfl_close_ring(newtree->trnodes[i]);
             mfl_deletering(newtree->trnodes[i]);
         }
+        else {
+            free(newtree->trnodes[i]->apomorphies);
+        }
+
         free(newtree->trnodes[i]);
     }
     /* free the trnode list */

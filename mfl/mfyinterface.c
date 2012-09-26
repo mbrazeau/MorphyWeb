@@ -135,7 +135,7 @@ mfl_handle_t mfl_create_handle()
 void mfl_destroy_handle(mfl_handle_t mfl_handle)
 {
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
-    mfl_free_input_data(mfl_struct);
+    //mfl_free_input_data(mfl_struct);
     free(mfl_struct);
 }
 
