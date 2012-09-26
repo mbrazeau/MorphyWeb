@@ -575,6 +575,13 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     mfl_reopt_subtr_root(base, nchar);
                     diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
                     
+                    // Save the bases original states:
+                    charstate *basestates = (charstate*)malloc(nchar * sizeof(charstate));
+                    memcpy(basestates, base->tempapos, nchar * sizeof(charstate));
+                    
+                    mfl_save_original_recons(swapingon, ntax, nchar);
+                    
+                    
                     // Unroot the source tree
                     mfl_join_nodes(bc1, bc2);
                     //mfl_devisit_tree(swapingon->trnodes, numnodes);
@@ -590,23 +597,23 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                         return;
                     }
                     
+                    
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);
                     
-                    // This reoptimizes the clippled tree because the re-rooting procedure changes some optimizations
-                    //mfl_reopt_postorder(base, nchar);
-                    mfl_reopt_subtr_root(base, nchar);
+                    // Put the original base states back
+                    
+                    memcpy(base->tempapos, basestates, nchar * sizeof(charstate));
+                    free(basestates);
                     
                     up->visited = 0;
                     dn->visited = 0;
-                    //clipnode->clip = false;
-                    if (searchrec->success) {
-                        return;
-                    }
-                    
+                                    
                     mfl_join_nodes(up, p->next);
-                    mfl_join_nodes(dn, p->next->next);            
+                    mfl_join_nodes(dn, p->next->next);
+                    
+                    
                 }
                 else {
                     mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
@@ -803,7 +810,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
-        printNewick(savedtrees[j]->root);
+        //printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }
     dbg_printf("\n");

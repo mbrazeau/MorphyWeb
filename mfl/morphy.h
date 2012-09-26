@@ -105,6 +105,8 @@ typedef struct node {
     int maxsteps;
     int charstates;
     taxbipart *tipsabove;
+    charstate *o_temps; // Temporary storage for the original set
+    charstate *o_apos;// Temporary storage for the original set
     charstate *tempapos;
     charstate *apomorphies;
 } node;
@@ -192,6 +194,10 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 /*in coptim.c*/
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
+
+void mfl_save_original_recons(tree *t, int ntax, int nchar);
+void mfl_restore_original_recons(tree *t, int ntax, int nchar);
+
 void mfl_reopt_subtr(node *src, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);
 void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);

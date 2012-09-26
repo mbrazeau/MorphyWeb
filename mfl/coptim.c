@@ -82,6 +82,38 @@ void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int ncha
     }
 }
 
+
+void mfl_save_original_recons(tree *t, int ntax, int nchar)
+{
+    int i;
+    node **trns;
+    
+    trns = t->trnodes;
+    
+    for (i = 0; i < (2 * ntax - 1); ++i) {
+        
+        trns[i]->o_temps = (charstate*)malloc(nchar * sizeof(charstate));
+        trns[i]->o_apos = (charstate*)malloc(nchar * sizeof(charstate));
+        memcpy(trns[i]->o_temps, trns[i]->tempapos, nchar * sizeof(charstate));
+        memcpy(trns[i]->o_apos, trns[i]->tempapos, nchar * sizeof(charstate));
+    }
+    
+}
+
+void mfl_restore_original_recons(tree *t, int ntax, int nchar)
+{
+    int i;
+    node **trns;
+    
+    trns = t->trnodes;
+    
+    for (i = 0; i < (2 * ntax - 1); ++i) {
+        free(trns[i]->o_temps);
+        free(trns[i]->o_apos);
+    }
+}
+
+
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
 {
     /* Returns cost of inserting subtree src between tgt1 and tgt2 following
