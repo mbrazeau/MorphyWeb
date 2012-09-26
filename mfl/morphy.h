@@ -187,7 +187,7 @@ void mfl_set_tipsabove(node *n, int numfields, taxbipart **hashtab, int *bpcount
 void mfl_free_hashtab(taxbipart **hashtab, int numbiparts);
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes);
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
-bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int *last);
+bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, int *start, long int *last);
 void test_tree_comparison(void);
 int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 

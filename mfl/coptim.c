@@ -100,6 +100,21 @@ void mfl_save_original_recons(tree *t, int ntax, int nchar)
         trns[i]->o_apos = (charstate*)malloc(nchar * sizeof(charstate));
         memcpy(trns[i]->o_apos, trns[i]->apomorphies, nchar * sizeof(charstate));
         
+        if (trns[i]->next) {
+            
+            trns[i]->next->o_temps = (charstate*)malloc(nchar * sizeof(charstate));
+            memcpy(trns[i]->next->o_temps, trns[i]->tempapos, nchar * sizeof(charstate));
+            
+            trns[i]->next->o_apos = (charstate*)malloc(nchar * sizeof(charstate));
+            memcpy(trns[i]->next->o_apos, trns[i]->apomorphies, nchar * sizeof(charstate));
+            
+            trns[i]->next->next->o_temps = (charstate*)malloc(nchar * sizeof(charstate));
+            memcpy(trns[i]->next->next->o_temps, trns[i]->tempapos, nchar * sizeof(charstate));
+            
+            trns[i]->next->next->o_apos = (charstate*)malloc(nchar * sizeof(charstate));
+            memcpy(trns[i]->next->next->o_apos, trns[i]->apomorphies, nchar * sizeof(charstate));
+        }
+        
     }
     
 }
@@ -112,9 +127,28 @@ void mfl_restore_original_recons(tree *t, int ntax, int nchar)
     trns = t->trnodes;
     
     for (i = 0; i < 2 * ntax - 1; ++i) {
-        
+    
+        memcpy(trns[i]->tempapos, trns[i]->o_temps, nchar * sizeof(charstate));
         free(trns[i]->o_temps);
+
+        memcpy(trns[i]->apomorphies, trns[i]->o_apos, nchar * sizeof(charstate));
         free(trns[i]->o_apos);
+        
+        if (trns[i]->next) {
+            
+            memcpy(trns[i]->tempapos, trns[i]->next->o_temps, nchar * sizeof(charstate));
+            free(trns[i]->next->o_temps);
+            
+            memcpy(trns[i]->apomorphies, trns[i]->next->o_apos, nchar * sizeof(charstate));
+            free(trns[i]->next->o_apos);
+            
+            memcpy(trns[i]->tempapos, trns[i]->next->next->o_temps, nchar * sizeof(charstate));
+            free(trns[i]->next->next->o_temps);
+            
+            memcpy(trns[i]->apomorphies, trns[i]->next->next->o_apos, nchar * sizeof(charstate));
+            free(trns[i]->next->next->o_apos);
+        }
+        
     }
 }
 

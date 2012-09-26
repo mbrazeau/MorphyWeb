@@ -312,8 +312,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             mfl_join_nodes(subtr->next->next, up);
             mfl_join_nodes(subtr, n);
             
-            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, (long*)&searchrec->trbufstart, &searchrec->nextinbuffer)) 
+            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &searchrec->trbufstart, &searchrec->nextinbuffer)) 
             {
+                
                 savedtrees[searchrec->nextinbuffer] = mfl_copytree(swapingon, ntax, numnodes);
                 savedtrees[searchrec->nextinbuffer]->index = searchrec->nextinbuffer;
                 savedtrees[searchrec->nextinbuffer]->length = trlength;
@@ -557,7 +558,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         dn = p->next->next->outedge;
         
         subtr = p->next->next;
-        
+
         if (!subtr->next->outedge->skip) {
             
             subtr->next->outedge->skip = true;
@@ -596,7 +597,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     charstate *basestates = (charstate*)malloc(nchar * sizeof(charstate));
                     memcpy(basestates, base->tempapos, nchar * sizeof(charstate));
                     
-                    //mfl_save_original_recons(swapingon, ntax, nchar);
                     
                     // Unroot the source tree
                     mfl_join_nodes(bc1, bc2);
@@ -613,9 +613,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                         free(basestates);
                         return;
                     }
-                    
-                    //mfl_restore_original_recons(swapingon, ntax, nchar);
-                    
+
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);
@@ -652,6 +650,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
              * by finding some way to call this less often--or not at all!*/
             mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);   
         }
+        
         p = p->next;
         clipnode = n->next->outedge;
     }   
