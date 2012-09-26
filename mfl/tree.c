@@ -140,6 +140,10 @@ void mfl_freetree(tree *newtree, int numnodes)
     }
     /* free the trnode list */
     free(newtree->trnodes);
+    if (newtree->compressedtr) {
+        free(newtree->compressedtr);
+    }
+    
     /* free the tree */
     free(newtree);
     
