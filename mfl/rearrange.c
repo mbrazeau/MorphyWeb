@@ -461,7 +461,6 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     // Reoptimize the subtree base
     // Not all of these reopt_postorder calls are necessary. They can be avoided, but my efforts so far fail.
-    //mfl_reopt_postorder(base, nchar);
     mfl_reopt_subtr_root(base, nchar);
     
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
@@ -801,12 +800,12 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
     dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
-    for (j = 0; j < searchrec->nextinbuffer; ++j) {
+    /*for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
         //printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
-    }
+    }*/
     dbg_printf("\n");
     
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);

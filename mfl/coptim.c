@@ -346,9 +346,9 @@ void mfl_reopt_postorder(node *n, int nchar)
     if (n->tip) {
         return;
     }
-    /*if (n->finished) {
+    if (n->finished) {
         return;
-    }*/
+    }
     
     p = n->next;
     while (p != n) {
@@ -364,9 +364,9 @@ void mfl_reopt_postorder(node *n, int nchar)
         mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
     //}
     
-    /*if (n->outedge) {
+    if (n->outedge) {
         n->finished = true;
-    }*/
+    }
     
 }
 
@@ -665,8 +665,9 @@ void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int
     
     /* For subtree reoptimization only. */
     
-    //mfl_definish_tree(t, 2 * ntax - 1);
+    mfl_definish_tree(t, 2 * ntax - 1);
     mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
+    mfl_definish_tree(t, 2 * ntax - 1);
     //mfl_temproot(t, 0, ntax);
     t->trnodes[0]->start = true;
     t->root = NULL;
@@ -678,8 +679,9 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     
     /* For subtree reoptimization only. */
     
-    //mfl_definish_tree(t, 2 * ntax - 1);
+    mfl_definish_tree(t, 2 * ntax - 1);
     mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
+    mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
