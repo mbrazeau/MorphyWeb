@@ -728,16 +728,16 @@ int main(void)
     //bool isRooted = true;
     
     //srandom(481981);
-    srandom(8);
+    srandom(1);
     
     pauseit();
     
     //test_subtree_rerooting();
     
-    test_tree_compress();
+    //test_tree_compress();
     
     //test_tree_comparison();
-    test_char_optimization();
+    //test_char_optimization();
     
     /*numnodes = */mfl_calc_numnodes(ntax);
     
