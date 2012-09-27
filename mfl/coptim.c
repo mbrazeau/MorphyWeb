@@ -514,6 +514,10 @@ void mfl_reopt_postorder(node *n, int nchar)
         return;
     }
     
+    if (n->clip) {
+        return;
+    }
+    
     p = n->next;
     while (p != n) {
         mfl_reopt_postorder(p->outedge, nchar);
@@ -606,21 +610,12 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar)
     int i;
     for (i = 0; i < nchar; ++i) {
         
-        tip->apomorphies[i] = tip->tempapos[i];
-        
         if (tip->tempapos[i] != 1) {
-            if (tip->apomorphies[i] != anc->apomorphies[i]) {
-                if (tip->tempapos[i] & anc->apomorphies[i]) {
-                    tip->apomorphies[i] = tip->tempapos[i] & anc->apomorphies[i];
-                }
+            if (tip->tempapos[i] & anc->apomorphies[i]) {
+                tip->apomorphies[i] = tip->tempapos[i] & anc->apomorphies[i];
             }
         }
-        else {
-            tip->apomorphies[i] = tip->tempapos[i];
-        }
-
     }
-    //tip->finished = true;
 }
 
 void mfl_tip_reopt(tree *t, int ntax, int nchar)

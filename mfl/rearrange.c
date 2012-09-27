@@ -604,6 +604,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     //Clip the tree
                     mfl_join_nodes(up, dn);
+                    up->clip = true;
+                    dn->clip = true;
                     
                     bool *changing = NULL;
                     
@@ -651,6 +653,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
                     
+                    up->clip = false;
+                    dn->clip = false;
                     
                     if (searchrec->success) {
                         free(basestates);
