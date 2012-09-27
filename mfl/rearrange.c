@@ -570,10 +570,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
     if (n->tip || searchrec->success) {
         return;
     }
-    
-    
-    clipnode = n->next->next->outedge;
-    
+        
     p = n->next;
     while (p != n) {
         mfl_bisection_traversal(p->outedge, swapingon, savedtrees, ntax,
@@ -607,11 +604,11 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     up->clip = true;
                     dn->clip = true;
                     
-                    bool *changing = NULL;
+                    /*bool *changing = NULL;
                     
                     if (!up->tip && !dn->tip) {
                         changing = mfl_list_changing(up, dn, nchar);
-                    }
+                    }*/
                     
                     base = subtr->next->outedge;
                     holder = base->tempapos;
@@ -620,12 +617,12 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     // Reoptimize the clipped tree
                     
-                    if (!changing) {
+                    //if (!changing) {
                         mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
-                    }
-                    else {
-                        mfl_trav_allviews_ii(swapingon->trnodes[0], swapingon, ntax, nchar, changing);
-                    }
+                    //}
+                    //else {
+                    //    mfl_trav_allviews_ii(swapingon->trnodes[0], swapingon, ntax, nchar, changing);
+                    //}
 
                     atip = mfl_find_atip(base);
                     
@@ -646,9 +643,9 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     mfl_subtr_allviews(atip, swapingon, ntax, nchar, atip->index);
                     atip->start = false;
                     
-                    if (changing) {
+                    /*if (changing) {
                         free(changing);
-                    }
+                    }*/
                     
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
@@ -674,21 +671,17 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     up->visited = 0;
                     dn->visited = 0;
-                    //clipnode->clip = false;
-                    if (searchrec->success) {
-                        return;
-                    }
                     
                     mfl_join_nodes(up, p->next);
                     mfl_join_nodes(dn, p->next->next);            
                 }
                 else {
                     mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+                    if (searchrec->success) {
+                        return;
+                    }
                 }
                 
-                if (searchrec->success) {
-                    return;
-                }
             }
             subtr->next->outedge->skip = false;
         }
@@ -699,7 +692,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         }
         
         p = p->next;
-        clipnode = n->next->outedge;
     }   
 }
 

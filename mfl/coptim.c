@@ -725,7 +725,7 @@ void mfl_reopt_preorder(node *n, int nchar)
         mfl_tip_apomorphies(dr, n, nchar);
     }
     
-    n->success = false;
+    //n->success = false;
     
     mfl_reopt_preorder(n->next->outedge, nchar);
     mfl_reopt_preorder(n->next->next->outedge, nchar);
@@ -883,6 +883,7 @@ void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip)
     mfl_allviews_traversal(n, t, ntax, nchar, NULL, NULL);
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, atip, ntax);
+    mfl_reopt_postorder(t->root, nchar);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
     t->trnodes[0]->start = true;
