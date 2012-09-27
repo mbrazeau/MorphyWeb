@@ -213,6 +213,7 @@ void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, 
 int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
 void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen);
+void mfl_reopt_comb(node *n, node *anc, int nchar);
 void mfl_combine_up(node *n, node *anc, int nchar);
 void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
@@ -224,7 +225,7 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
 void mfl_tip_reopt(tree *t, int ntax, int nchar);
-void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
+void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_set_rootstates(node *n, int nchar);

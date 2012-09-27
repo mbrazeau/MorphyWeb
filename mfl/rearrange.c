@@ -391,7 +391,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
     
     // Reoptimize the subtree
-    mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+    mfl_reopt_subtr_root_ii(subtr->next->outedge, nchar);
     
     diff = 0;
     
@@ -641,7 +641,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     //mfl_devisit_tree(swapingon->trnodes, numnodes);
                     
                     atip->start = true;
-                    mfl_subtr_allviews(atip, swapingon, ntax, nchar, NULL, NULL);
+                    mfl_subtr_allviews(atip, swapingon, ntax, nchar, atip->index);
                     atip->start = false;
                     
                     if (changing) {

@@ -123,26 +123,6 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     return cost;
 }
 
-int mfl_locreopt_cost_ii(node *src, node *tgt1, node *tgt2, int nchar, int diff)
-{
-    /* Returns cost of inserting subtree src between tgt1 and tgt2 following
-     * the algorithms described by Ronquist (1998. Cladistics) and Goloboff 
-     * (1993, 1996. Cladistics).*/
-    
-    int i;
-    int cost = 0;
-    
-    for (i = 0; i < nchar; ++i) {
-        if ( !(src->apomorphies[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
-            ++cost;
-            if (cost > diff) {
-                return cost;
-            }
-        }
-    }
-    return cost;
-}
-
 void mfl_reopt_subtr_root_ii(node *n, int nchar)
 {
     if (!n->tip) {
@@ -697,7 +677,7 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
         }
     }
     if (allsame) {
-        //n->success = true;
+        n->success = true;
         //n->finished = true;
     }
 }
@@ -729,16 +709,6 @@ void mfl_reopt_preorder(node *n, int nchar)
         return;
     }
     
-    /*if (n->finished) {
-        n->finished = false;
-        return;
-    }*/
-    
-    /*if (n->success) {
-        n->success = false;
-        return;
-    }*/
-    
     if (!n->outedge || n->isroot) {
         mfl_set_rootstates(n, nchar);
     }
@@ -747,24 +717,20 @@ void mfl_reopt_preorder(node *n, int nchar)
     dr = n->next->next->outedge;
     
     if (!dl->tip) {
-        mfl_combine_up(dl, n, nchar);
+        mfl_reopt_comb(dl, n, nchar);
     }
-    else {
+    else if (!dl->success) {
         mfl_tip_apomorphies(dl, n, nchar);
     }
     
     if (!dr->tip) {
-        mfl_combine_up(dr, n, nchar);
+        mfl_reopt_comb(dr, n, nchar);
     }
-    else {
+    else if (!dr->success) {
         mfl_tip_apomorphies(dr, n, nchar);
     }
-
-    //Here's your problem right here:
-    /*if (n->clip) {
-        //dbg_printf("hit the clipnode\n");
-        return;
-    }*/
+    
+    n->success = false;
     
     mfl_reopt_preorder(n->next->outedge, nchar);
     mfl_reopt_preorder(n->next->next->outedge, nchar);
@@ -787,15 +753,14 @@ void mfl_fitch_preorder(node *n, int nchar)
     dr = n->next->next->outedge;
     
     if (!dl->tip) {
-        mfl_combine_up(dl, n, nchar);
+        mfl_reopt_comb(dl, n, nchar);
     }
     else {
         mfl_tip_apomorphies(dl, n, nchar);
     }
-
     
     if (!dr->tip) {
-        mfl_combine_up(dr, n, nchar);
+        mfl_reopt_comb(dr, n, nchar);
     }
     else {
         mfl_tip_apomorphies(dr, n, nchar);
@@ -914,15 +879,15 @@ void mfl_allviews_traversal_ii(node *n, tree *t, int ntax, int nchar, bool *chan
     mfl_allviews_traversal_ii(n->next->next->outedge, t, ntax, nchar, changing);
 }
 
-void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
+void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip)
 {
     
     /* For subtree reoptimization only. */
     
     mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
+    mfl_allviews_traversal(n, t, ntax, nchar, NULL, NULL);
     mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_temproot(t, 0, ntax);
+    mfl_temproot(t, atip, ntax);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
     t->trnodes[0]->start = true;
@@ -952,9 +917,10 @@ void mfl_trav_allviews_ii(node *n, tree *t, int ntax, int nchar, bool *changing)
     /* For subtree reoptimization only. */
     
     mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_allviews_traversal_ii(n, t, ntax, nchar, changing);
+    //mfl_allviews_traversal_ii(n, t, ntax, nchar, changing);
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
+    mfl_reopt_postorder(t->root, nchar);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
     //mfl_tip_reopt(t, ntax, nchar);

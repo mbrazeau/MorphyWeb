@@ -693,7 +693,7 @@ void mini_test_analysis(void)
     mfl_handle->n_treelimit = 50000;
     mfl_handle->addseq_type = MFL_AST_ASIS;
     //mfl_handle->bswap_type = MFL_BST_SPR;
-    mfl_handle->bswap_type = MFL_BST_SPR;
+    mfl_handle->bswap_type = MFL_BST_TBR;
     
     mfl_heuristic_search(mfl_handle);
     
