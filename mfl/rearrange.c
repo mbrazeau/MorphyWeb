@@ -344,6 +344,32 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     }
 }
 
+bool mfl_is_apicalclip(node *subtr, node *up, node *dn, int nchar)
+{
+    bool is_apical = true;
+    
+    /*if (subtr->vweight > 2 ) {
+        if (!subtr->next->next->outedge->tip && !subtr->next->outedge->tip) {
+            is_apical = false;
+        }
+    }*/
+    
+    if ((up->vweight < 3 || dn->vweight < 3)) {
+        if (!memcmp(up->apomorphies, dn->apomorphies, nchar * sizeof(charstate))) {
+            is_apical = true;
+        }
+        else {
+            is_apical = false;
+        }
+    }
+    else {
+        is_apical = false; 
+    }
+    
+    return is_apical;
+    
+}
+
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec)
 {
     
@@ -361,6 +387,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     mfl_join_nodes(up, dn);
     
     // Reoptimize the clipped tree
+    
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
     
     // Reoptimize the subtree
@@ -478,7 +505,7 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     // Reoptimize the subtree base
     // Not all of these reopt_postorder calls are necessary. They can be avoided, but my efforts so far fail.
-    mfl_reopt_subtr_root(base, nchar);
+    mfl_reopt_subtr_root_ii(base, nchar);
     
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                  savedtrees, ntax, nchar, numnodes, searchrec, diff);
@@ -575,8 +602,14 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     up->visited = 1;
                     dn->visited = 1;
                     
-                    //clipnode->clip = true;
+                    //Clip the tree
                     mfl_join_nodes(up, dn);
+                    
+                    bool *changing = NULL;
+                    
+                    if (!up->tip && !dn->tip) {
+                        changing = mfl_list_changing(up, dn, nchar);
+                    }
                     
                     base = subtr->next->outedge;
                     holder = base->tempapos;
@@ -585,12 +618,17 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     // Reoptimize the clipped tree
                     
-                    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
-                    
+                    if (!changing) {
+                        mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+                    }
+                    else {
+                        mfl_trav_allviews_ii(swapingon->trnodes[0], swapingon, ntax, nchar, changing);
+                    }
+
                     atip = mfl_find_atip(base);
                     
                     // Determine the cost of local reinsertion
-                    mfl_reopt_subtr_root(base, nchar);
+                    mfl_reopt_subtr_root_ii(base, nchar);
                     diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
                     
                     // Save the bases original states:
@@ -606,8 +644,13 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     mfl_subtr_allviews(atip, swapingon, ntax, nchar, NULL, NULL);
                     atip->start = false;
                     
+                    if (changing) {
+                        free(changing);
+                    }
+                    
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
+                    
                     
                     if (searchrec->success) {
                         free(basestates);
