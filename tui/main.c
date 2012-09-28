@@ -732,7 +732,7 @@ int main(void)
     //bool isRooted = true;
     
     srandom(481981);
-    //srandom(1);
+    //srandom(10615111);
     
     pauseit();
     

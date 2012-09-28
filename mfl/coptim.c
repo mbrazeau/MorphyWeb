@@ -641,7 +641,7 @@ void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
     }
 
     mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength, besttreelen);
-    //n->visited = 1;
+    n->visited = 1;
     n->vweight = weight;
 }
 

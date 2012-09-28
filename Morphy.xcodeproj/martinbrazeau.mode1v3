@@ -330,7 +330,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1EA205C1615E33E0046FB8A</string>
+										<string>E1EA20AA1615EC890046FB8A</string>
 										<key>history</key>
 										<array>
 											<string>E1250A3014C072EA008C350B</string>
@@ -383,13 +383,13 @@
 											<string>E110FB7C1614FB31005912E4</string>
 											<string>E110FB7D1614FB31005912E4</string>
 											<string>E110FB7F1614FB31005912E4</string>
-											<string>E1EA1F881615CDF50046FB8A</string>
 											<string>E1EA1FA81615D32B0046FB8A</string>
-											<string>E1EA1FAA1615D32B0046FB8A</string>
 											<string>E1EA1FBC1615D47D0046FB8A</string>
-											<string>E1EA1FF91615D83E0046FB8A</string>
 											<string>E1EA1FFA1615D83E0046FB8A</string>
-											<string>E1EA20571615E2C60046FB8A</string>
+											<string>E1EA20921615EB4A0046FB8A</string>
+											<string>E1EA209A1615EBAD0046FB8A</string>
+											<string>E1EA20A81615EC890046FB8A</string>
+											<string>E1EA20A91615EC890046FB8A</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -587,14 +587,14 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E1EA205D1615E33E0046FB8A</string>
+		<string>E1EA20AB1615EC890046FB8A</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E1EA1F5D1615CB1E0046FB8A</string>
 		<string>E1EA1F5E1615CB1E0046FB8A</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1EEC36F13672B3400675581</string>
-		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>3 66 1428 803 0 0 1440 878 </string>
