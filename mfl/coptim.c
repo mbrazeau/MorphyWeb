@@ -137,7 +137,7 @@ void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int n
     charstate lft_chars, rt_chars;
     
     for (i = 0; changers[i]; ++i) {
-        dbg_printf("chk chr: %i\n", changers[i]-1);
+        //dbg_printf("chk chr: %i\n", changers[i]-1);
         if (leftdesc->apomorphies[changers[i]-1] & rightdesc->apomorphies[changers[i]-1]) 
         {
             ancestor->tempapos[changers[i]-1] = leftdesc->apomorphies[changers[i]-1] & rightdesc->apomorphies[changers[i]-1];
@@ -387,9 +387,9 @@ int *mfl_changes_subtr_base(node *n, int nchar)
     //++counter;
     changes_ptr[counter] = 0;
     
-    for (i = 0; changes_ptr[i]; ++i) {
+    /*for (i = 0; changes_ptr[i]; ++i) {
         dbg_printf("second: %i\n", changes_ptr[i]);
-    }
+    }*/
     
     free(temp);
     

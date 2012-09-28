@@ -505,12 +505,12 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     // Reoptimize the subtree base
     
-    if (base->next->outedge->tip || base->next->next->outedge->tip) {
+    //if (base->next->outedge->tip || base->next->next->outedge->tip) {
         mfl_reopt_subtr_root(base, nchar);
-    }
-    else {
-        mfl_reopt_subtr_root_ii(base, nchar, st_changes);
-    }
+    //}
+    //else {
+        //mfl_reopt_subtr_root_ii(base, nchar, st_changes);
+    //}
 
     
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
