@@ -115,18 +115,14 @@ struct tree * mfl_alloctree(int ntax, int numnodes)
     return (newtree);
 }
 
-/*
- * mfl_freetree - deletes an entire tree, by doing the mirror image
- * of mfl_alloctree.
- */
-void mfl_freetree(tree *newtree, int numnodes)
+
+void mfl_free_trnodes(tree *newtree, int numnodes)
 {
     int i;
     
     /* free all of the trnodes */
     for (i = 0; i < numnodes; ++i)
-    {
-        
+    {        
         if (newtree->trnodes[i]->next)
         {
             mfl_close_ring(newtree->trnodes[i]);
@@ -138,11 +134,25 @@ void mfl_freetree(tree *newtree, int numnodes)
                 free(newtree->trnodes[i]->c_changing);
             }
         }
-
+        
         free(newtree->trnodes[i]);
     }
-    /* free the trnode list */
     free(newtree->trnodes);
+    newtree->trnodes = NULL;
+}
+
+void mfl_freetree(tree *newtree, int numnodes)
+{
+    /*
+     * mfl_freetree - deletes an entire tree, by doing the mirror image
+     * of mfl_alloctree.
+     */
+    
+    if (newtree->trnodes) {
+        mfl_free_trnodes(newtree, numnodes);
+    }
+    
+    /* free the trnode list */
     if (newtree->compressedtr) {
         free(newtree->compressedtr);
     }

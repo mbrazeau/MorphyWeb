@@ -835,7 +835,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             }
             else {
                 savedtrees[j]->swapped = true;
-                //mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
+                mfl_free_trnodes(savedtrees[j], numnodes);
                 ++j;
             }
             
@@ -882,7 +882,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
-        mfl_root_tree(savedtrees[j], 0, ntax);
+        //mfl_root_tree(savedtrees[j], 0, ntax);
         //printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }

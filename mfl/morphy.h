@@ -268,6 +268,7 @@ void mfl_close_all_rings(nodearray nds, int ntax, int numnodes);
 int mfl_calc_numnodes(int ntax);
 void mfl_join_nodes(node *n, node *p);
 struct tree *mfl_alloctree(int ntax, int numnodes);
+void mfl_free_trnodes(tree *newtree, int numnodes);
 void mfl_freetree(tree *newtree, int numnodes);
 struct tree *mfl_alloc_noring(int ntax, int numnodes);
 struct node * mfl_allocnode(void);
