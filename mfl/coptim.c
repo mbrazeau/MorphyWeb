@@ -303,135 +303,6 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
     n->nodelen = *trlength;
 }
 
-void mfl_set_changing(node *n, int nchar)
-{
-    int i;
-    
-    charstate *lft_chars, *rt_chars;
-    
-    lft_chars = n->next->outedge->apomorphies;
-    rt_chars = n->next->next->outedge->apomorphies;
-    
-    for (i = 0; i < nchar; ++i) {
-        n->c_changing[i] = lft_chars[i] | rt_chars[i];
-    }
-    
-}
-
-int *mfl_changes_subtr_base(node *n, int nchar)
-{
-    int i, counter = 0;
-    
-    int *changes_ptr = NULL;
-    int *temp = (int*)malloc( (nchar+1) * sizeof(int));
-    
-    charstate *finals = n->apomorphies;
-    charstate *prelim = n->tempapos;
-    
-    for (i = 0; i < nchar; ++i) {
-        if (finals[i] != prelim[i]) {
-            temp[i] = i + 1;
-            ++counter;
-            //dbg_printf("first: %i\n", i);
-        }
-        else {
-            temp[i] = 0;
-        }
-
-    }
-    
-    ++counter;
-    
-    changes_ptr = (int*)malloc((counter+1) * sizeof(int));
-    
-    counter = 0;
-    
-    for (i = 0; i < nchar; ++i) {
-        if (temp[i]) {
-            changes_ptr[counter] = temp[i];
-            ++counter;
-        }
-    }
-    //++counter;
-    changes_ptr[counter] = 0;
-    
-    /*for (i = 0; changes_ptr[i]; ++i) {
-        dbg_printf("second: %i\n", changes_ptr[i]);
-    }*/
-    
-    free(temp);
-    
-    return changes_ptr; 
-}
-
-bool *mfl_list_changing(node *up, node *dn, int nchar)
-{
-    
-    int i;
-    bool *changing = (bool*)malloc(nchar * sizeof(bool));
-    
-    charstate *cs_union = (charstate*)malloc(nchar * sizeof(charstate));
-    
-    memset(changing, 0, nchar * sizeof(bool));
-    
-    if (!up->tip && !dn->tip) {
-        for (i = 0; i < nchar; ++i) {
-            if (!(up->c_changing[i] & dn->c_changing[i])) {
-                changing[i] = true;
-                //dbg_printf("char %i will change\n", i);
-            }
-            else {
-                changing[i] = false;
-            }
-            
-        }
-    }
-    /*else if (up->tip) {
-        for (i = 0; i < nchar; ++i) {
-            if (!(up->c_changing[i] ^ dn->c_changing[i])) {
-                changing[i] = true;
-                //dbg_printf("char %i will change\n", i);
-            }
-            else {
-                changing[i] = false;
-            }
-            
-        }
-    }
-    else if (dn->tip) {
-        for (i = 0; i < nchar; ++i) {
-            if (!(up->c_changing[i] ^ dn->c_changing[i])) {
-                changing[i] = true;
-                //dbg_printf("char %i will change\n", i);
-            }
-            else {
-                changing[i] = false;
-            }
-            
-        }
-    }*/
-    
-    free(cs_union);
-    
-    return changing;
-}
-
-void mfl_find_changing(node *n, int nchar)
-{
-    if (n->tip) {
-        return;
-    }
-    
-    mfl_find_changing(n->next->outedge, nchar);
-    mfl_find_changing(n->next->next->outedge, nchar);
-    
-    if (!n->c_changing) {
-        n->c_changing = (charstate*)malloc(nchar * sizeof(charstate));
-    }
-    
-    mfl_set_changing(n, nchar);
-}
-
 void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
 {
     int i;
@@ -806,17 +677,21 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     
 }
 
-void mfl_changing_inviews(tree *t, int ntax, int nchar)
+void mfl_set_calcroot(node *n)
 {
-    int i;
-
-    //t->root = t->trnodes[ntax];
+    node *p;
     
-    for (i = 0; i < ntax; ++i) {
-        mfl_temproot(t, i, ntax);
-        mfl_find_changing(t->root, nchar);
-        mfl_undo_temproot(ntax, t);
+    if (n->tip) {
+        return;
     }
+    
+    p = n->next;
+    while (p != n) {
+        mfl_set_calcroot(p->outedge);
+        p = p->next;
+    }
+    
+    n->crootv = true;
 }
 
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
@@ -832,6 +707,9 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     for (i = 0; i < ntax; ++i) {
         *treelen_p = 0;
         mfl_temproot(t, i, ntax);
+        if (i == 0) {
+            mfl_set_calcroot(t->root);
+        }
         mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
         t->root->visited = 0;
         mfl_undo_temproot(ntax, t);
@@ -844,8 +722,6 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     t->root->visited = 0;
     mfl_fitch_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
-    
-    //mfl_changing_inviews(t, ntax, nchar);
     
     return fptreelen;
 }

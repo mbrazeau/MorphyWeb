@@ -102,6 +102,7 @@ typedef struct node {
     bool clip;
     bool bottom;
     bool isroot;
+    bool crootv;
     int minsteps;
     int maxsteps;
     int charstates;
@@ -193,10 +194,6 @@ void test_tree_comparison(void);
 int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 
 /*in coptim.c*/
-
-void mfl_set_changing(node *n, int nchar);
-int *mfl_changes_subtr_base(node *n, int nchar);
-bool *mfl_list_changing(node *up, node *dn, int nchar);
 
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);

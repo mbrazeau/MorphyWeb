@@ -507,8 +507,16 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
 
     mfl_reopt_subtr_root(base, nchar);
     
+    if (!up->origbase && !dn->origbase) {
+        up->visited = 0;
+        dn->visited = 0;
+    }
+    
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                  savedtrees, ntax, nchar, numnodes, searchrec, diff);
+    
+    up->visited = 1;
+    dn->visited = 1;
     
     if (searchrec->success) {
         return;
@@ -573,11 +581,14 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         
     p = n->next;
     while (p != n) {
+        
         mfl_bisection_traversal(p->outedge, swapingon, savedtrees, ntax,
                               nchar, numnodes, searchrec);
+        
         if (searchrec->success) {
             return;
         }
+        
         up = p->next->outedge;
         dn = p->next->next->outedge;
         
@@ -586,6 +597,10 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         if (!subtr->next->outedge->skip) {
             
             subtr->next->outedge->skip = true;
+            
+            if (!p->outedge->crootv && !p->tip) {
+                //dbg_printf("error: subtree might contain calculation root\n");
+            }
             
             if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
                 
@@ -608,6 +623,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     holder = base->tempapos;
                     bc1 = base->next->outedge;
                     bc2 = base->next->next->outedge;
+                    bc1->origbase = true;
+                    bc2->origbase = true;
                     
                     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
                 
@@ -637,6 +654,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff, NULL);                    
                     
+                    bc1->origbase = false;
+                    bc2->origbase = false;
                     up->clip = false;
                     dn->clip = false;
                     
