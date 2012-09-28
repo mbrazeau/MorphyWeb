@@ -123,38 +123,6 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     return cost;
 }
 
-void mfl_reopt_subtr_root_ii(node *n, int nchar, int *changers)
-{
-    
-    if (!n->tip) {
-        mfl_subtree_count_ii(n->next->outedge, n->next->next->outedge, n, nchar, changers);
-    }
-}
-
-void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changers)
-{
-    int i=0;
-    charstate lft_chars, rt_chars;
-    
-    for (i = 0; changers[i]; ++i) {
-        //dbg_printf("chk chr: %i\n", changers[i]-1);
-        if (leftdesc->apomorphies[changers[i]-1] & rightdesc->apomorphies[changers[i]-1]) 
-        {
-            ancestor->tempapos[changers[i]-1] = leftdesc->apomorphies[changers[i]-1] & rightdesc->apomorphies[changers[i]-1];
-        }
-        else
-        {
-            lft_chars = leftdesc->apomorphies[changers[i]-1];
-            rt_chars = rightdesc->apomorphies[changers[i]-1];
-            ancestor->tempapos[changers[i]-1] = lft_chars | rt_chars;
-            
-            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                ancestor->tempapos[changers[i]-1] = ancestor->tempapos[changers[i]-1] & IS_APPLIC;
-            }
-        }
-    }
-}
-
 void mfl_reopt_subtr_root(node *n, int nchar)
 {
     if (!n->tip) {
@@ -464,49 +432,6 @@ void mfl_find_changing(node *n, int nchar)
     mfl_set_changing(n, nchar);
 }
 
-void mfl_reopt_fitch_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, bool *changing)
-{
-    int i;
-    charstate lft_chars, rt_chars, temp;
-    bool allsame = false;
-    
-    for (i = 0; i < nchar; ++i) {
-        if (changing[i]) {
-            if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
-            {
-                temp = leftdesc->tempapos[i] & rightdesc->tempapos[i];
-                if (temp != ancestor->tempapos[i]) {
-                    ancestor->tempapos[i] = temp;
-                    allsame = false;
-                }
-            }
-            else
-            {
-                lft_chars = leftdesc->tempapos[i];
-                rt_chars = rightdesc->tempapos[i];
-                
-                temp = lft_chars | rt_chars;
-                
-                if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                    temp = temp & IS_APPLIC;
-                }
-                
-                if (temp != ancestor->tempapos[i]) {
-                    ancestor->tempapos[i] = temp;
-                    allsame = false;
-                }
-            }
-        }
-        /*else {
-            dbg_printf("skipping\n");
-        }*/
-
-        if (allsame) {
-            ancestor->success = true;
-        }
-    }
-}
-
 void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
 {
     int i;
@@ -579,39 +504,6 @@ void mfl_reopt_postorder(node *n, int nchar)
     }
     
 }
-
-void mfl_reopt_postorder_ii(node *n, int nchar, bool *changing)
-{
-    node *p;
-    /*bool allsame = true;*/
-    
-    if (n->tip) {
-        return;
-    }
-    if (n->finished) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        mfl_reopt_postorder_ii(p->outedge, nchar, changing);
-        if (!p->outedge->success) {
-            /*allsame = false;*/
-        }
-        //p->outedge->success = false;
-        p = p->next;
-    }
-    
-    //if (!allsame) {
-    mfl_reopt_fitch_ii(n->next->outedge, n->next->next->outedge, n, nchar, changing);
-    //}
-    
-    if (n->outedge) {
-        n->finished = true;
-    }
-    
-}
-
 
 void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
 {
@@ -881,41 +773,6 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
     mfl_allviews_traversal(n->next->next->outedge, t, ntax, nchar, treelen, besttreelen);
 }
 
-void mfl_allviews_traversal_ii(node *n, tree *t, int ntax, int nchar, bool *changing)
-{
-    
-    
-    if (n->start) {
-        mfl_allviews_traversal_ii(n->outedge, t, ntax, nchar, changing);
-        return;
-    }
-    
-    
-    if (n->tip || n->outedge->tip) {
-        
-        //dbg_printf("working on node %i\n", n->index);
-        t->root = NULL;
-        
-        mfl_join_nodes(n->outedge, t->trnodes[ntax]->next->next);
-        mfl_join_nodes(n, t->trnodes[ntax]->next);
-        
-        t->root = t->trnodes[ntax];
-        
-        mfl_reopt_postorder_ii(t->root, nchar, changing);
-        
-        t->root->visited = 0;
-        
-        mfl_join_nodes(t->trnodes[ntax]->next->next->outedge, n);
-        
-        if (n->tip) {
-            return;
-        }
-    }
-    
-    mfl_allviews_traversal_ii(n->next->outedge, t, ntax, nchar, changing);
-    mfl_allviews_traversal_ii(n->next->next->outedge, t, ntax, nchar, changing);
-}
-
 void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip, int *changes_ptr)
 {
     
@@ -943,22 +800,6 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
     mfl_reopt_postorder(t->root, nchar);
-    mfl_reopt_preorder(t->root, nchar);
-    mfl_undo_temproot(ntax, t);
-    //mfl_tip_reopt(t, ntax, nchar);
-    
-}
-
-void mfl_trav_allviews_ii(node *n, tree *t, int ntax, int nchar, bool *changing)
-{
-    
-    /* For subtree reoptimization only. */
-    
-    mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_allviews_traversal_ii(n, t, ntax, nchar, changing);
-    mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_temproot(t, 0, ntax);
-    //mfl_reopt_postorder(t->root, nchar);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
     //mfl_tip_reopt(t, ntax, nchar);
@@ -1004,7 +845,7 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     mfl_fitch_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
     
-    mfl_changing_inviews(t, ntax, nchar);
+    //mfl_changing_inviews(t, ntax, nchar);
     
     return fptreelen;
 }

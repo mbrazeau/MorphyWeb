@@ -197,13 +197,6 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 void mfl_set_changing(node *n, int nchar);
 int *mfl_changes_subtr_base(node *n, int nchar);
 bool *mfl_list_changing(node *up, node *dn, int nchar);
-void mfl_reopt_postorder_ii(node *n, int nchar, bool *changing);
-void mfl_reopt_fitch_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, bool *changing);
-void mfl_allviews_traversal_ii(node *n, tree *t, int ntax, int nchar, int *changing);
-void mfl_trav_allviews_ii(node *n, tree *t, int ntax, int nchar, bool *changing);
-void mfl_reopt_subtr_root_ii(node *n, int nchar, int *changers);
-void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changers);
-int mfl_locreopt_cost_ii(node *src, node *tgt1, node *tgt2, int nchar, int diff);
 
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);

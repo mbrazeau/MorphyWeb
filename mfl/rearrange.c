@@ -504,14 +504,8 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     mfl_join_nodes(base->next, n);
     
     // Reoptimize the subtree base
-    
-    //if (base->next->outedge->tip || base->next->next->outedge->tip) {
-        mfl_reopt_subtr_root(base, nchar);
-    //}
-    //else {
-        //mfl_reopt_subtr_root_ii(base, nchar, st_changes);
-    //}
 
+    mfl_reopt_subtr_root(base, nchar);
     
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                  savedtrees, ntax, nchar, numnodes, searchrec, diff);
@@ -627,7 +621,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Save the bases original states:
                     charstate *basestates = (charstate*)malloc(nchar * sizeof(charstate));
                     memcpy(basestates, base->tempapos, nchar * sizeof(charstate));
-                    
                     
                     // Unroot the source tree
                     mfl_join_nodes(bc1, bc2);

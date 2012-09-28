@@ -274,7 +274,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>24</integer>
+									<integer>19</integer>
 									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rearrange.c</string>
+								<string>coptim.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rearrange.c</string>
+										<string>coptim.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1EA20AA1615EC890046FB8A</string>
+										<string>E1EA20C61615EDC70046FB8A</string>
 										<key>history</key>
 										<array>
 											<string>E1250A3014C072EA008C350B</string>
@@ -380,16 +380,16 @@
 											<string>E110F9D11614D4AD005912E4</string>
 											<string>E110FB1A1614F4E3005912E4</string>
 											<string>E110FB1E1614F4E3005912E4</string>
-											<string>E110FB7C1614FB31005912E4</string>
 											<string>E110FB7D1614FB31005912E4</string>
 											<string>E110FB7F1614FB31005912E4</string>
 											<string>E1EA1FA81615D32B0046FB8A</string>
 											<string>E1EA1FBC1615D47D0046FB8A</string>
 											<string>E1EA1FFA1615D83E0046FB8A</string>
-											<string>E1EA20921615EB4A0046FB8A</string>
 											<string>E1EA209A1615EBAD0046FB8A</string>
 											<string>E1EA20A81615EC890046FB8A</string>
-											<string>E1EA20A91615EC890046FB8A</string>
+											<string>E1EA20C41615EDC70046FB8A</string>
+											<string>E1EA20C51615EDC70046FB8A</string>
+											<string>E1EA20921615EB4A0046FB8A</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -587,14 +587,14 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E1EA20AB1615EC890046FB8A</string>
+		<string>E1EA20C71615EDC70046FB8A</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E1EA1F5D1615CB1E0046FB8A</string>
 		<string>E1EA1F5E1615CB1E0046FB8A</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1EEC36F13672B3400675581</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>3 66 1428 803 0 0 1440 878 </string>
@@ -829,12 +829,14 @@
 							<key>Dock</key>
 							<array>
 								<dict>
+									<key>BecomeActive</key>
+									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>main.c</string>
+										<string>morphy.h</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -843,7 +845,7 @@
 										<key>Frame</key>
 										<string>{{0, 0}, {1050, 482}}</string>
 										<key>RubberWindowFrame</key>
-										<string>594 36 1050 842 0 0 1440 878 </string>
+										<string>390 36 1050 842 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXNavigatorGroup</string>
@@ -855,8 +857,6 @@
 							<string>482pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -869,7 +869,7 @@
 								<key>Frame</key>
 								<string>{{0, 487}, {1050, 314}}</string>
 								<key>RubberWindowFrame</key>
-								<string>594 36 1050 842 0 0 1440 878 </string>
+								<string>390 36 1050 842 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXProjectFindModule</string>
@@ -898,7 +898,7 @@
 				<string>1CD0528E0623707200166675</string>
 			</array>
 			<key>WindowString</key>
-			<string>594 36 1050 842 0 0 1440 878 </string>
+			<string>390 36 1050 842 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1C530D57069F1CE1000CFCEE</string>
 			<key>WindowToolIsVisible</key>
