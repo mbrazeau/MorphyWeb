@@ -160,6 +160,7 @@ typedef struct {
     bool success;
     long int niter_total;
     long int niter_ontree;
+    int *subtree_changes;
 } mfl_searchrec;
 
 /*Function prototypes*/
@@ -193,14 +194,15 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 /*in coptim.c*/
 
 void mfl_set_changing(node *n, int nchar);
+int *mfl_changes_subtr_base(node *n, int nchar);
 bool *mfl_list_changing(node *up, node *dn, int nchar);
 void mfl_reopt_postorder_ii(node *n, int nchar, bool *changing);
 void mfl_reopt_fitch_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, bool *changing);
-void mfl_allviews_traversal_ii(node *n, tree *t, int ntax, int nchar, bool *changing);
+void mfl_allviews_traversal_ii(node *n, tree *t, int ntax, int nchar, int *changing);
 void mfl_trav_allviews_ii(node *n, tree *t, int ntax, int nchar, bool *changing);
-void mfl_reopt_subtr_root_ii(node *n, int nchar);
+void mfl_reopt_subtr_root_ii(node *n, int nchar, int *changers);
+void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changers);
 int mfl_locreopt_cost_ii(node *src, node *tgt1, node *tgt2, int nchar, int diff);
-void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
 
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
@@ -225,7 +227,7 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
 void mfl_tip_reopt(tree *t, int ntax, int nchar);
-void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip);
+void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip, int *changes_ptr);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_set_rootstates(node *n, int nchar);
@@ -336,7 +338,7 @@ void mfl_reroot_subtree(node *n, node *subtr, node *base, tree *swapingon, tree 
 bool mfl_subtr_isrerootable(node *n);
 bool mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int numnodes, char *txtsrcdata, tree **savedtrees, int starttreelen*/);
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
-void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff);
+void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff, int *st_changes);
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
 
 /* in mfyinterface.c*/
