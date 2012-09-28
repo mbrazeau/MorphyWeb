@@ -1,0 +1,417 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* Morphy.1 */; };
+		E100BD2E1500E077008A987F /* randtree.c in Sources */ = {isa = PBXBuildFile; fileRef = E100BD2D1500E077008A987F /* randtree.c */; };
+		E1250B5914C09D1D008C350B /* readnewick.c in Sources */ = {isa = PBXBuildFile; fileRef = E1250B5814C09D1D008C350B /* readnewick.c */; };
+		E1449F0D16090329009B44BC /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
+		E161E0EE14F3E23100F8589E /* drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = E161E0ED14F3E23100F8589E /* drawtree.c */; };
+		E1A6576214EC32DF00A348E2 /* coptim.c in Sources */ = {isa = PBXBuildFile; fileRef = E1A6576114EC32DF00A348E2 /* coptim.c */; };
+		E1ACBC9B14A8BD13005BB9D5 /* rearrange.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9614A8BD13005BB9D5 /* rearrange.c */; };
+		E1ACBC9C14A8BD13005BB9D5 /* taxpart.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9714A8BD13005BB9D5 /* taxpart.c */; };
+		E1ACBC9D14A8BD13005BB9D5 /* tree.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */; };
+		E1C66D05150937A800080F05 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */; };
+		E1DA9AF414E7D8FF006E4DFB /* compare.c in Sources */ = {isa = PBXBuildFile; fileRef = E1C322EF14E2E4340076AE7A /* compare.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		8DD76FB20486AB0100D96B5E /* Morphy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Morphy; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6A0FF2C0290799A04C91782 /* Morphy.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Morphy.1; sourceTree = "<group>"; };
+		E100BD2D1500E077008A987F /* randtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = randtree.c; sourceTree = "<group>"; };
+		E1250B5814C09D1D008C350B /* readnewick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = readnewick.c; sourceTree = "<group>"; };
+		E134E0D114D02F98001A1A63 /* NexusParse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusParse.cpp; sourceTree = "<group>"; };
+		E134E0D214D02F98001A1A63 /* NexusParse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusParse.h; sourceTree = "<group>"; };
+		E134E0D314D02F98001A1A63 /* NexusReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusReader.cpp; sourceTree = "<group>"; };
+		E134E0D414D02F98001A1A63 /* NexusReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusReader.h; sourceTree = "<group>"; };
+		E134E0D514D02F98001A1A63 /* nui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nui.h; sourceTree = "<group>"; };
+		E134E49D14D1E38A001A1A63 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
+		E161E0ED14F3E23100F8589E /* drawtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = drawtree.c; sourceTree = "<group>"; };
+		E179D7A814F966D8001EA295 /* cdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdata.c; sourceTree = "<group>"; };
+		E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
+		E1A6576114EC32DF00A348E2 /* coptim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coptim.c; sourceTree = "<group>"; };
+		E1ACBC9314A8BD13005BB9D5 /* exhaustive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = exhaustive.c; sourceTree = "<group>"; };
+		E1ACBC9514A8BD13005BB9D5 /* morphy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = morphy.h; sourceTree = "<group>"; };
+		E1ACBC9614A8BD13005BB9D5 /* rearrange.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rearrange.c; sourceTree = "<group>"; };
+		E1ACBC9714A8BD13005BB9D5 /* taxpart.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = taxpart.c; sourceTree = "<group>"; };
+		E1ACBC9814A8BD13005BB9D5 /* tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tree.c; sourceTree = "<group>"; };
+		E1ACBCA114A8BD34005BB9D5 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		E1C322EF14E2E4340076AE7A /* compare.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compare.c; sourceTree = "<group>"; };
+		E1D5257614C949B00079F5EC /* nui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nui.cpp; sourceTree = "<group>"; };
+		E1D5259A14C94BCE0079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E1D5259C14C94BEC0079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E1D5259E14C94C010079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E1D525A014C94C0E0079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E1D525A114C94C0E0079F5EC /* Makefile.inc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.pascal; path = Makefile.inc; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* Morphy */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = Morphy;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				E1D525A014C94C0E0079F5EC /* Makefile */,
+				E1D525A114C94C0E0079F5EC /* Makefile.inc */,
+				E1D5257314C949B00079F5EC /* nui */,
+				E1ACBC9214A8BD13005BB9D5 /* mfl */,
+				E1ACBCA014A8BD34005BB9D5 /* tui */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FB20486AB0100D96B5E /* Morphy */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6A0FF2C0290799A04C91782 /* Morphy.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+		E1ACBC9214A8BD13005BB9D5 /* mfl */ = {
+			isa = PBXGroup;
+			children = (
+				E1D5259A14C94BCE0079F5EC /* Makefile */,
+				E134E49D14D1E38A001A1A63 /* mfl.h */,
+				E1ACBC9514A8BD13005BB9D5 /* morphy.h */,
+				E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */,
+				E179D7A814F966D8001EA295 /* cdata.c */,
+				E1C322EF14E2E4340076AE7A /* compare.c */,
+				E1A6576114EC32DF00A348E2 /* coptim.c */,
+				E161E0ED14F3E23100F8589E /* drawtree.c */,
+				E1ACBC9314A8BD13005BB9D5 /* exhaustive.c */,
+				E100BD2D1500E077008A987F /* randtree.c */,
+				E1250B5814C09D1D008C350B /* readnewick.c */,
+				E1ACBC9614A8BD13005BB9D5 /* rearrange.c */,
+				E1ACBC9714A8BD13005BB9D5 /* taxpart.c */,
+				E1ACBC9814A8BD13005BB9D5 /* tree.c */,
+			);
+			path = mfl;
+			sourceTree = "<group>";
+		};
+		E1ACBCA014A8BD34005BB9D5 /* tui */ = {
+			isa = PBXGroup;
+			children = (
+				E1D5259E14C94C010079F5EC /* Makefile */,
+				E1ACBCA114A8BD34005BB9D5 /* main.c */,
+			);
+			path = tui;
+			sourceTree = "<group>";
+		};
+		E1D5257314C949B00079F5EC /* nui */ = {
+			isa = PBXGroup;
+			children = (
+				E134E0D114D02F98001A1A63 /* NexusParse.cpp */,
+				E134E0D214D02F98001A1A63 /* NexusParse.h */,
+				E134E0D314D02F98001A1A63 /* NexusReader.cpp */,
+				E134E0D414D02F98001A1A63 /* NexusReader.h */,
+				E1D5257614C949B00079F5EC /* nui.cpp */,
+				E134E0D514D02F98001A1A63 /* nui.h */,
+				E1D5259C14C94BEC0079F5EC /* Makefile */,
+			);
+			path = nui;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76FA90486AB0100D96B5E /* Morphy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "Morphy" */;
+			buildPhases = (
+				8DD76FAB0486AB0100D96B5E /* Sources */,
+				8DD76FAD0486AB0100D96B5E /* Frameworks */,
+				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Morphy;
+			productInstallPath = "$(HOME)/bin";
+			productName = Morphy;
+			productReference = 8DD76FB20486AB0100D96B5E /* Morphy */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Morphy" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* Morphy */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76FA90486AB0100D96B5E /* Morphy */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76FAB0486AB0100D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1ACBC9B14A8BD13005BB9D5 /* rearrange.c in Sources */,
+				E1ACBC9C14A8BD13005BB9D5 /* taxpart.c in Sources */,
+				E1ACBC9D14A8BD13005BB9D5 /* tree.c in Sources */,
+				E1250B5914C09D1D008C350B /* readnewick.c in Sources */,
+				E1DA9AF414E7D8FF006E4DFB /* compare.c in Sources */,
+				E1A6576214EC32DF00A348E2 /* coptim.c in Sources */,
+				E161E0EE14F3E23100F8589E /* drawtree.c in Sources */,
+				E100BD2E1500E077008A987F /* randtree.c in Sources */,
+				E1C66D05150937A800080F05 /* mfyinterface.c in Sources */,
+				E1449F0D16090329009B44BC /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB928608733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = Morphy;
+			};
+			name = Debug;
+		};
+		1DEB928A08733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				DEBUG_INFORMATION_FORMAT = stabs;
+				ENABLE_OPENMP_SUPPORT = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_OPTIMIZATION_LEVEL = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = MFY_DEBUG;
+				GCC_STRICT_ALIASING = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
+				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = NO;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = NO;
+				GCC_WARN_MISSING_PARENTHESES = NO;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_SHADOW = NO;
+				GCC_WARN_SIGN_COMPARE = NO;
+				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = NO;
+				GCC_WARN_UNDECLARED_SELECTOR = NO;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GCC_WARN_UNUSED_FUNCTION = NO;
+				GCC_WARN_UNUSED_LABEL = NO;
+				GCC_WARN_UNUSED_PARAMETER = NO;
+				GCC_WARN_UNUSED_VALUE = NO;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/lib/ncl,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib/ncl,
+					/usr/local/lib,
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ledit",
+					"-lncl",
+					"-lm",
+					"-lgsl",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = x86_64;
+				WARNING_CFLAGS = "-Wall";
+				WARNING_LDFLAGS = "";
+			};
+			name = Debug;
+		};
+		E139ECA716050C9000800B30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ENABLE_OPENMP_SUPPORT = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_OPTIMIZATION_LEVEL = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_STRICT_ALIASING = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
+				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
+				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = NO;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = NO;
+				GCC_WARN_MISSING_PARENTHESES = NO;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_SHADOW = NO;
+				GCC_WARN_SIGN_COMPARE = NO;
+				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = NO;
+				GCC_WARN_UNDECLARED_SELECTOR = NO;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GCC_WARN_UNUSED_FUNCTION = NO;
+				GCC_WARN_UNUSED_LABEL = NO;
+				GCC_WARN_UNUSED_PARAMETER = NO;
+				GCC_WARN_UNUSED_VALUE = NO;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib/ncl,
+					/usr/local/lib,
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ledit",
+					"-lncl",
+					"-lm",
+					"-lgsl",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = x86_64;
+				WARNING_CFLAGS = "-Wall";
+				WARNING_LDFLAGS = "";
+			};
+			name = Release;
+		};
+		E139ECA816050C9000800B30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = Morphy;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "Morphy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928608733DD80010E9CD /* Debug */,
+				E139ECA816050C9000800B30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Morphy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928A08733DD80010E9CD /* Debug */,
+				E139ECA716050C9000800B30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
