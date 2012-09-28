@@ -512,9 +512,17 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
         //mfl_reopt_subtr_root_ii(base, nchar, st_changes);
     //}
 
+    if (n->origbase) {
+        up->visited = 0;
+        dn->visited = 0;
+    }
     
     mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                                  savedtrees, ntax, nchar, numnodes, searchrec, diff);
+    if (!n->origbase && !n->outedge->origbase) {
+        up->visited = 1;
+        dn->visited = 1;
+    }
     
     if (searchrec->success) {
         return;
@@ -620,6 +628,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     holder = base->tempapos;
                     bc1 = base->next->outedge;
                     bc2 = base->next->next->outedge;
+                    bc1->origbase = true;
+                    bc2->origbase = true;
                     
                     int *st_changes = NULL;
                     
@@ -660,6 +670,10 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff, st_changes);                    
+                    up->visited = 0;
+                    dn->visited = 0;
+                    bc1->origbase = false;
+                    bc2->origbase = false;
                     
                     free(searchrec->subtree_changes);
                     
@@ -681,9 +695,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     free(basestates);
                     
                     //dbg_printf("succeeded with restoration before SIGBRT\n");
-                    
-                    up->visited = 0;
-                    dn->visited = 0;
                     
                     mfl_join_nodes(up, p->next);
                     mfl_join_nodes(dn, p->next->next);            

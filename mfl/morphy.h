@@ -94,6 +94,7 @@ typedef struct node {
     int order;
     int nodelen;
     int cpindex;
+    bool origbase;
     bool success;
     bool finished;
     bool start;
