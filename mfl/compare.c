@@ -21,13 +21,8 @@ bool mfl_compare_trees(int *t1, int *t2, int numnodes)
     
     assert(t2 != NULL);
     
-    if (memcmp(t1, t2, numnodes * sizeof(int))) {
-        return false;
-    }
-    else {
-        return true;
-    }
-
+    return memcmp(t1, t2, numnodes * sizeof(int));
+    
 }
 
 void mfl_clear_cpindex(tree *t, int numnodes)
@@ -130,9 +125,9 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * function in order to speed it up. Otherwise it will be a major time hog 
      * if/when somebody loads a noisy dataset. */
     
-    for (i = *start; i < *last; ++i) {
+    for (i = *last - 1; i >= *start; --i) {
         if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
-            if (mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
+            if (!mfl_compare_trees(newtr, savedtrees[i]->compressedtr, numnodes)) {
                 foundtr = true;
                 break;
             }
