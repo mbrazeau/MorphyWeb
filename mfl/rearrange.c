@@ -297,6 +297,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             else {
                 mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
             }
+            free(swapingon->compressedtr);
+            swapingon->compressedtr = mfl_compress_tree(swapingon, ntax, numnodes);
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
             return;
         }
@@ -901,14 +903,30 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
-    dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
-    /*for (j = 0; j < searchrec->nextinbuffer; ++j) {
+    /*dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
+    for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
         printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }
     dbg_printf("\n");*/
+    
+    /*for (i = 0; i < searchrec->nextinbuffer; ++i) {
+        for (j = 1; j < searchrec->nextinbuffer ; ++j) {
+            if (!mfl_compare_trees(savedtrees[i]->compressedtr, savedtrees[j]->compressedtr, ntax)) {
+                dbg_printf("found a dupe: i: %li, j: %li\n", i, j);
+            }
+        }
+    }*/
+    
+    for (i = 0; i < numnodes; ++i) {
+        dbg_printf("%i ", savedtrees[0]->compressedtr[i]);
+    }
+    dbg_printf("\n");
+    for (i = 0; i < numnodes; ++i) {
+        dbg_printf("%i ", savedtrees[1]->compressedtr[i]);
+    }
     
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
     free(savedtrees);
