@@ -9,6 +9,8 @@
  */
 
 
+void mini_test_analysis(void);
+
 #include "morphy.h"
 
 /*temporary defs for testing*/
@@ -535,13 +537,17 @@ void mini_test_analysis(void)
      * in the Newick string below. */
     
     int i;
-    int ntax = 47, nchar = 134; // These values would be supplied by the datafile
+    int ntax;
+    int nchar; // These values would be supplied by the datafile
 
+    ntax = 47;
+    nchar = 134;
+    
     //Ptomacanth_Edit:  ntax = 47, nchar = 134;
     //Ohmdenia          ntax = 28, nchar = 95;
     //Opistho           ntax = 17, nchar = 138;
     
-    mfl_calc_numnodes(ntax);
+    //mfl_calc_numnodes(ntax);
     
     /* A completely balanced tree topology. 
      * This is simple enough to create a 'rigged' dataset for.*/
@@ -727,7 +733,7 @@ void test_tree_compress(void);
 
 int main(void)
 {
-    int ntax = 9;
+    //int ntax = 9;
     /*int numnodes;*/
     //bool isRooted = true;
     
@@ -749,7 +755,7 @@ int main(void)
     //test_tree_comparison();
     //test_char_optimization();
     
-    /*numnodes = */mfl_calc_numnodes(ntax);
+    //numnodes = mfl_calc_numnodes(ntax);
     
     mini_test_analysis();
    
