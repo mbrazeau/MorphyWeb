@@ -806,6 +806,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         if (i == 0) {
             /* The particular addition sequence will have to be selected by the user */
             savedtrees[0] = newreptree;
+            savedtrees[0]->compressedtr = mfl_compress_tree(savedtrees[0], ntax, numnodes);
             searchrec->bestinrep = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestinrep);
             searchrec->bestlength = searchrec->bestinrep;
             
@@ -901,13 +902,13 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
     dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
-    for (j = 0; j < searchrec->nextinbuffer; ++j) {
+    /*for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
-        //mfl_root_tree(savedtrees[j], 0, ntax);
-        //printNewick(savedtrees[j]->root);
+        mfl_root_tree(savedtrees[j], 0, ntax);
+        printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
     }
-    dbg_printf("\n");
+    dbg_printf("\n");*/
     
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
     free(savedtrees);
