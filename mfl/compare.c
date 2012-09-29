@@ -17,9 +17,9 @@
 bool mfl_compare_trees(int *t1, int *t2, int ntax)
 {
     /* could probably change these errors/exits to some kind of exception thing. I'm just not sure how */
-    assert(t1 != NULL);
+    //assert(t1 != NULL);
     
-    assert(t2 != NULL);
+    //assert(t2 != NULL);
     
     int pos = ntax - 1;
     
@@ -95,6 +95,11 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
     
     //storedtr[numnodes] = '\0';
     
+    /*for (i = 0; i <= numnodes; ++i) {
+        dbg_printf("%i ", storedtr[i]);
+    }
+    dbg_printf("\n");*/
+    
     return storedtr;
 }
 
@@ -129,13 +134,13 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * function in order to speed it up. Otherwise it will be a major time hog 
      * if/when somebody loads a noisy dataset. */
     
-    for (i = *last - 1; i >= *start; i--) {
-        if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
-            if (!mfl_compare_trees(newtr, savedtrees[i]->compressedtr, ntax)) {
-                foundtr = true;
-                break;
-            }
+    for (i = *last - 1; i > *start; --i) {
+        //if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
+        if (!mfl_compare_trees(newtr, savedtrees[i]->compressedtr, ntax)) {
+            foundtr = true;
+            break;
         }
+        //}
     }
     
     if (foundtr) {
