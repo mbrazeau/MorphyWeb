@@ -180,6 +180,7 @@ void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
 
 /*in compare.c*/
+bool mfl_compare_trees(int *t1, int *t2, int ntax);
 int mfl_compare_ints(const void * a, const void * b);
 int mfl_compare_ints2(const void * a, const void * b);
 int mfl_count_fields(int ntax);
@@ -211,6 +212,7 @@ void mfl_combine_up(node *n, node *anc, int nchar);
 void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
+void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
 void mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
