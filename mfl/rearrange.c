@@ -398,7 +398,21 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
     
     // Reoptimize the subtree
-    mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+    //mfl_reopt_subtr_root(subtr->next->outedge, nchar);
+    //subtr->next->outedge->isroot = true;
+    mfl_reopt_postorder(subtr->next->outedge, nchar);
+    //mfl_reopt_preorder(subtr->next->outedge, nchar);
+    if (!subtr->next->outedge->tip) {
+        mfl_set_rootstates(subtr->next->outedge, nchar);
+    }
+    else {
+        int i;
+        for (i = 0; i < nchar; ++i) {
+            subtr->next->outedge->apomorphies[i] = subtr->next->outedge->tempapos[i];
+        }
+    }
+
+    //subtr->next->outedge->isroot = false;
     
     diff = 0;
     
@@ -665,6 +679,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Determine the cost of local reinsertion
                     mfl_reopt_subtr_root(base, nchar);
                     
+                    //mfl_reopt_postorder(base, nchar);
+                    
                     diff = mfl_subtr_reinsertion(base, up, dn, nchar);
                     
                     // Save the bases original states:
@@ -679,13 +695,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     mfl_subtr_allviews(atip, swapingon, ntax, nchar, atip->index, NULL);
                     atip->start = false;
                     
-                    /*if (changing) {
-                        free(changing);
-                    }*/
-                    
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff, NULL);                    
-                    
                     
                     up->visited = 0;
                     dn->visited = 0;
@@ -702,7 +713,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);
-                    
                     
                     // Put the original base states back
                     memcpy(base->tempapos, basestates, nchar * sizeof(charstate));
