@@ -682,14 +682,14 @@ void mini_test_analysis(void)
         
         
     
-    printf("User tip data:\n");
-    for (i = 0; usrTipdata[i]; ++i) {
-        printf("%c", usrTipdata[i]);
+    //printf("User tip data:\n");
+    //for (i = 0; usrTipdata[i]; ++i) {
+        //printf("%c", usrTipdata[i]);
         /*for (j = 0; j < nchar; ++j) {
             printf("%c", usrTipdata[j + i * nchar]);
         }
         printf("\n");*/
-    }
+    //}
     printf("\n");
     
     //tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));

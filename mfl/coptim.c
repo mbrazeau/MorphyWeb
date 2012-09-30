@@ -117,9 +117,12 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     
     int i;
     int cost = 0;
+    charstate *srctemps = src->tempapos;
+    charstate *tgt1apos = tgt1->apomorphies;
+    charstate *tgt2apos = tgt2->apomorphies;
     
     for (i = 0; i < nchar; ++i) {
-        if ( !(src->tempapos[i] & (tgt1->apomorphies[i] | tgt2->apomorphies[i])) ) {
+        if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
             ++cost;
         }
     }
