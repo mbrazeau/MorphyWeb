@@ -315,19 +315,23 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
     charstate lft_chars, rt_chars, temp;
     bool allsame = false;
     
+    charstate *ldtemps = leftdesc->tempapos;
+    charstate *rdtemps = rightdesc->tempapos;
+    charstate *antemps = ancestor->tempapos;
+    
     for (i = 0; i < nchar; ++i) {
-        if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
+        if (ldtemps[i] & rdtemps[i]) 
         {
-            temp = leftdesc->tempapos[i] & rightdesc->tempapos[i];
-            if (temp != ancestor->tempapos[i]) {
-                ancestor->tempapos[i] = temp;
+            temp = ldtemps[i] & rdtemps[i];
+            if (temp != antemps[i]) {
+                antemps[i] = temp;
                 allsame = false;
             }
         }
         else
         {
-            lft_chars = leftdesc->tempapos[i];
-            rt_chars = rightdesc->tempapos[i];
+            lft_chars = ldtemps[i];
+            rt_chars = rdtemps[i];
 
             temp = lft_chars | rt_chars;
 
@@ -335,8 +339,8 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
                 temp = temp & IS_APPLIC;
             }
             
-            if (temp != ancestor->tempapos[i]) {
-                ancestor->tempapos[i] = temp;
+            if (temp != antemps[i]) {
+                antemps[i] = temp;
                 allsame = false;
             }
         }
@@ -419,11 +423,15 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar)
     /* Reconstructs the tip set if it is polymorphic */
     
     int i;
+    charstate *tiptemp = tip->tempapos;
+    charstate *tipapos = tip->apomorphies;
+    charstate *ancapos = anc->apomorphies;
+    
     for (i = 0; i < nchar; ++i) {
         
-        if (tip->tempapos[i] != 1) {
-            if (tip->tempapos[i] & anc->apomorphies[i]) {
-                tip->apomorphies[i] = tip->tempapos[i] & anc->apomorphies[i];
+        if (tiptemp[i] != 1) {
+            if (tiptemp[i] & ancapos[i]) {
+                tipapos[i] = tiptemp[i] & ancapos[i];
             }
         }
     }
@@ -442,15 +450,19 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
     int i;
     charstate lft_chars, rt_chars;
     charstate temp;
+    charstate *ntemps = n->tempapos;
+    charstate *napos = n->apomorphies;
+    charstate *ancapos = anc->apomorphies;
+    
     bool allsame = true;
     
     for (i = 0; i < nchar; ++i) {
         
-        if ((n->tempapos[i] & anc->apomorphies[i]) == anc->apomorphies[i]) 
+        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
         {
-            temp = n->tempapos[i] & anc->apomorphies[i]; 
-            if (temp != n->apomorphies[i]) {
-                n->apomorphies[i] = temp;
+            temp = ntemps[i] & ancapos[i]; 
+            if (temp != napos[i]) {
+                napos[i] = temp;
                 allsame = false;
             }
         }
@@ -460,23 +472,23 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
             
             if ( lft_chars & rt_chars ) { //III
                 //V
-                temp = (n->tempapos[i] |(anc->apomorphies[i] &(lft_chars | rt_chars)));// & IS_APPLIC;
-                if (temp != n->apomorphies[i]) {
-                    n->apomorphies[i] = temp;
+                temp = (ntemps[i] |(ancapos[i] &(lft_chars | rt_chars)));// & IS_APPLIC;
+                if (temp != napos[i]) {
+                    napos[i] = temp;
                     allsame = false;
                 }
             }
             else {
                 //IV
-                if ( (anc->apomorphies[i] & IS_APPLIC) && (n->tempapos[i] & IS_APPLIC)) {
-                    temp = (n->tempapos[i] | anc->apomorphies[i]) & IS_APPLIC;
+                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
+                    temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
                 }
                 else {
-                    temp = n->tempapos[i] | anc->apomorphies[i];
+                    temp = ntemps[i] | ancapos[i];
                 }
                 
                 if (temp != n->apomorphies[i]) {
-                    n->apomorphies[i] = temp;
+                    napos[i] = temp;
                     allsame = false;
                 }
             }

@@ -197,48 +197,7 @@
 	<key>Notifications</key>
 	<array/>
 	<key>OpenEditors</key>
-	<array>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
-				<string>E161111716186430009FC035</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>main.c</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>E161111816186430009FC035</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>main.c</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>E161111916186430009FC035</string>
-						<key>history</key>
-						<array>
-							<string>E1611111161863FB009FC035</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {1438, 833}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>2 4 1438 874 0 0 1440 878 </string>
-			</dict>
-		</dict>
-	</array>
+	<array/>
 	<key>PerspectiveWidths</key>
 	<array>
 		<integer>-1</integer>
@@ -270,8 +229,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -316,8 +273,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>29</integer>
-									<integer>27</integer>
+									<integer>24</integer>
+									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -353,6 +310,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -370,20 +329,20 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E161111616186430009FC035</string>
+										<string>E161114316186A51009FC035</string>
 										<key>history</key>
 										<array>
 											<string>E1B2E81A161703C50076343F</string>
 											<string>E16A60E316173CE400049EC6</string>
-											<string>E16A61A7161787A400049EC6</string>
 											<string>E16110B716179B77009FC035</string>
 											<string>E16110CA1617A4B9009FC035</string>
 											<string>E16110CC1617A4B9009FC035</string>
 											<string>E16110DC1617A97C009FC035</string>
 											<string>E16110DD1617A97C009FC035</string>
-											<string>E16110F3161852F1009FC035</string>
 											<string>E161111416186430009FC035</string>
-											<string>E161111516186430009FC035</string>
+											<string>E161114016186A51009FC035</string>
+											<string>E161114116186A51009FC035</string>
+											<string>E161114216186A51009FC035</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -581,13 +540,12 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E161111A16186430009FC035</string>
+		<string>E161114416186A51009FC035</string>
 		<string>E1611037161787CF009FC035</string>
 		<string>E1611038161787CF009FC035</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
-		<string>E161111716186430009FC035</string>
 		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
