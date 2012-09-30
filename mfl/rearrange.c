@@ -601,6 +601,12 @@ bool mfl_subtr_isrerootable(node *n)
     return rerootable;
 }
 
+void report_tips(node *n)
+{
+    printNewick(n);
+    dbg_printf("\n");
+}
+
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
                            int nchar, int numnodes, mfl_searchrec *searchrec)
 {
@@ -676,27 +682,20 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 
                     atip = mfl_find_atip(base);
                     
-                    // Determine the cost of local reinsertion
-                    mfl_reopt_subtr_root(base, nchar);
-                    
-                    //mfl_reopt_postorder(base, nchar);
-                    
+                    // Reoptimize the subtree and determine the cost of local reinsertion
+                    mfl_subtr_allviews(base, swapingon, nchar);
                     diff = mfl_subtr_reinsertion(base, up, dn, nchar);
-                    
+
                     // Save the bases original states:
                     charstate *basestates = (charstate*)malloc(nchar * sizeof(charstate));
                     memcpy(basestates, base->tempapos, nchar * sizeof(charstate));
                     
                     // Unroot the source tree
                     mfl_join_nodes(bc1, bc2);
-                    //mfl_devisit_tree(swapingon->trnodes, numnodes);
-                    
-                    atip->start = true;
-                    mfl_subtr_allviews(atip, swapingon, ntax, nchar, atip->index, NULL);
-                    atip->start = false;
                     
                     // Call rerooting function
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff, NULL);                    
+                    
                     
                     up->visited = 0;
                     dn->visited = 0;
@@ -713,6 +712,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     // Reroot the source tree on its base
                     mfl_join_nodes(bc1, base->next);
                     mfl_join_nodes(bc2, base->next->next);
+                    
                     
                     // Put the original base states back
                     memcpy(base->tempapos, basestates, nchar * sizeof(charstate));

@@ -688,20 +688,14 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
     mfl_allviews_traversal(n->next->next->outedge, t, ntax, nchar, treelen, besttreelen);
 }
 
-void mfl_subtr_allviews(node *n, tree *t, int ntax, int nchar, int atip, int *changes_ptr)
+void mfl_subtr_allviews(node *base, tree *t, int nchar)
 {
     
     /* For subtree reoptimization only. */
-    
-    mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_allviews_traversal(n, t, ntax, nchar, NULL, NULL);
-    mfl_definish_tree(t, 2 * ntax - 1);
-    mfl_temproot(t, atip, ntax);
-    mfl_reopt_postorder(t->root, nchar);
-    mfl_reopt_preorder(t->root, nchar);
-    mfl_undo_temproot(ntax, t);
-    t->trnodes[0]->start = true;
-    t->root = NULL;
+    base->isroot = true;
+    mfl_reopt_postorder(base, nchar);
+    mfl_reopt_preorder(base, nchar);
+    base->isroot = false;
     
 }
 
@@ -710,8 +704,6 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     
     /* For subtree reoptimization only. */
     
-    mfl_definish_tree(t, 2 * ntax - 1);
-    //mfl_allviews_traversal(n, t, ntax, nchar, treelen, besttreelen);
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
     mfl_reopt_postorder(t->root, nchar);
