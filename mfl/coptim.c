@@ -513,7 +513,7 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
                     temp = ntemps[i] | ancapos[i];
                 }
                 
-                if (temp != n->apomorphies[i]) {
+                if (temp != napos[i]) {
                     napos[i] = temp;
                     allsame = false;
                 }
