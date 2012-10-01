@@ -129,13 +129,13 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     return cost;
 }
 
-void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
+void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar)
 {
     int i;
     charstate lft_chars, rt_chars;
     
     for (i = 0; i < nchar; ++i) {
-        if (leftdesc->apomorphies[i] & rightdesc->apomorphies[i]) 
+        /*if (leftdesc->apomorphies[i] & rightdesc->apomorphies[i]) 
         {
             ancestor->apomorphies[i] = leftdesc->apomorphies[i] & rightdesc->apomorphies[i];
         }
@@ -147,18 +147,18 @@ void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int n
             
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 ancestor->apomorphies[i] = ancestor->apomorphies[i] & IS_APPLIC;
-                if (trlength) {
-                    *trlength = *trlength + 1;
-                }
             }
-        }
+        }*/
+        lft_chars = leftdesc->apomorphies[i];
+        rt_chars = rightdesc->apomorphies[i];
+        ancestor->apomorphies[i] = lft_chars | rt_chars;
     }
 }
 
 void mfl_reopt_subtr_root(node *n, int nchar)
 {
     if (!n->tip) {
-        mfl_subtree_count_ii(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
+        mfl_subtree_count_ii(n->next->outedge, n->next->next->outedge, n, nchar);
         /*n->isroot = true;
         mfl_reopt_preorder(n, nchar);
         n->isroot = false;*/
