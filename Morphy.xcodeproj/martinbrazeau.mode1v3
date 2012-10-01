@@ -274,7 +274,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>24</integer>
+									<integer>15</integer>
 									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rearrange.c</string>
+								<string>coptim.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rearrange.c</string>
+										<string>coptim.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1688017161A36E400418073</string>
+										<string>E1688046161A3F3900418073</string>
 										<key>history</key>
 										<array>
 											<string>E1B2E81A161703C50076343F</string>
@@ -342,9 +342,9 @@
 											<string>E16114441618E1A9009FC035</string>
 											<string>E16114A616196F1E009FC035</string>
 											<string>E1687FCC161A2E6D00418073</string>
-											<string>E1688014161A36E400418073</string>
 											<string>E1688015161A36E400418073</string>
-											<string>E1688016161A36E400418073</string>
+											<string>E168803F161A3E6800418073</string>
+											<string>E1688040161A3E6800418073</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -542,7 +542,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E1688018161A36E400418073</string>
 		<string>E1687FA6161A28D100418073</string>
 		<string>E1687FA7161A28D100418073</string>
 		<string>1CD10A99069EF8BA00B06720</string>
@@ -887,18 +886,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1440, 776}}</string>
+								<string>{{0, 0}, {698, 771}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 60 1440 817 0 0 1440 878 </string>
+								<string>704 66 698 812 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
 							<key>Proportion</key>
-							<string>776pt</string>
+							<string>771pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>776pt</string>
+					<string>771pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -918,7 +917,7 @@
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>0 60 1440 817 0 0 1440 878 </string>
+			<string>704 66 698 812 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>

@@ -379,7 +379,7 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
 void mfl_reopt_postorder(node *n, int nchar)
 {
     node *p;
-    /*bool allsame = true;*/
+    //bool allsame = true;
         
     if (n->tip) {
         return;
@@ -396,7 +396,7 @@ void mfl_reopt_postorder(node *n, int nchar)
     while (p != n) {
         mfl_reopt_postorder(p->outedge, nchar);
         if (!p->outedge->success) {
-            /*allsame = false;*/
+            //allsame = false;
         }
         //p->outedge->success = false;
         p = p->next;

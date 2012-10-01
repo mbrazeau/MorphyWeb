@@ -860,6 +860,23 @@ void mfl_definish_tree(tree *t, int numnodes)
     }
 }
 
+void mfl_desuccess_tree(tree *t, int numnodes)
+{
+    int i;
+    node *p;
+    for (i = 0; i < numnodes; ++i) {
+        t->trnodes[i]->success = false;
+        
+        if (t->trnodes[i]->next) {
+            p = t->trnodes[i]->next;
+            while (p != t->trnodes[i]) {
+                p->success = false;
+                p = p->next;
+            }
+        }
+    }
+}
+
 void mfl_deinit_tree(tree *t, int numnodes)
 {
     int i;

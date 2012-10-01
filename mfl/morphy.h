@@ -288,6 +288,7 @@ void mfl_set_order(node *n);
 void mfl_clear_order(node *n);
 void mfl_set_index(node *n);
 void mfl_devisit_tree(nodearray nds, int numnodes);
+void mfl_desuccess_tree(tree *t, int numnodes);
 void mfl_put_branch_in_ring(node *n, node *rnode);
 void mfl_insert_branch(node *br, node *target, int ntax);
 void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes);
