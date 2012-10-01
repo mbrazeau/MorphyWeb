@@ -253,8 +253,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
      * subtree at each node and (hopefully) skipping a reinsertion at the original
      * site of pruning (flagged by the "visited" boolean values in those nodes) */
     
-    //dbg_printf("visiting site\n");
-    
     if (searchrec->success) {
         return;
     }
@@ -415,10 +413,10 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     mfl_regrafting_traversal(dn, subtr, swapingon, 
                              savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
+    up->visited = 0;
+    dn->visited = 0;
     //clipnode->clip = false;
     if (searchrec->success) {
-        up->visited = 0;
-        dn->visited = 0;
         return;
     }
     
@@ -779,7 +777,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             
             /* TESTING ONLY */
             dbg_printf("The starting tree:\n");
-            //printNewick(savedtrees[0]->trnodes[0]);
+            printNewick(savedtrees[0]->trnodes[0]);
             dbg_printf("\n");
             dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
             /* END TESTING ONLY */

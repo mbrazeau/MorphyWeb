@@ -746,7 +746,7 @@ int main(void)
     //Any seed
     //srandom(420355);
     
-    //srandom(2);
+    //srandom(7);
     
     pauseit();
     

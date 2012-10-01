@@ -274,8 +274,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>15</integer>
-									<integer>12</integer>
+									<integer>29</integer>
+									<integer>27</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>coptim.c</string>
+								<string>main.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>coptim.c</string>
+										<string>main.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1688046161A3F3900418073</string>
+										<string>E16880A0161A4C2400418073</string>
 										<key>history</key>
 										<array>
 											<string>E1B2E81A161703C50076343F</string>
@@ -341,10 +341,10 @@
 											<string>E16114321618DF1F009FC035</string>
 											<string>E16114441618E1A9009FC035</string>
 											<string>E16114A616196F1E009FC035</string>
-											<string>E1687FCC161A2E6D00418073</string>
-											<string>E1688015161A36E400418073</string>
-											<string>E168803F161A3E6800418073</string>
-											<string>E1688040161A3E6800418073</string>
+											<string>E168804D161A457F00418073</string>
+											<string>E168804E161A457F00418073</string>
+											<string>E168809E161A4C2400418073</string>
+											<string>E168809F161A4C2400418073</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -546,8 +546,8 @@
 		<string>E1687FA7161A28D100418073</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 59 1440 819 0 0 1440 878 </string>
