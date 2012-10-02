@@ -586,6 +586,20 @@ void mfl_join_apomorphies(node *n)
     }
 }
 
+void mfl_join_tempapos(node *n)
+{
+    
+    /* Makes it so the all apomorphies pointers of each node in an internal ring 
+     * node point to the same memory. */
+    
+    node *p;
+    p = n->next;
+    while (p != n) {
+        p->tempapos = n->apomorphies;
+        p = p->next;
+    }
+}
+
 void mfl_set_ring_to_n(node *n)
 {
     /* Sets the initialized and skip values in the members of a ring to the 
