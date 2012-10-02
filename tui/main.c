@@ -296,9 +296,6 @@ void print_nodedata(node *n, int nchar, int ntax)
     }
     
     printf("Node: %i\n", n->index);
-    if (n->tipsabove) {
-        print_bipartition(*n->tipsabove, ntax);
-    }
     printf("nodelen %i\n", n->nodelen);
     print_dp_states(n, nchar);
     print_f_states(n, nchar);
@@ -739,10 +736,10 @@ int main(void)
     //bool isRooted = true;
     
     //A known seed with large tree returns for Ptomacanth_Edit.txt data
-    srandom(481981);
+    //srandom(481981);
     
     //A known problem seed
-    //srandom(10615111);
+    srandom(10615111);
     
     //Any seed
     //srandom(420355);

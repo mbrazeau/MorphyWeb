@@ -102,11 +102,11 @@ typedef struct node {
     bool clip;
     bool bottom;
     bool isroot;
-    bool crootv;
+    bool tocalcroot;
     int minsteps;
     int maxsteps;
     int charstates;
-    taxbipart *tipsabove;
+    charstate *origstates;
     charstate *c_changing; // Temporary storage for the original set
     charstate *tempapos;
     charstate *apomorphies;
@@ -222,6 +222,8 @@ charstate *mfl_get_changing(node *n, int nchar);
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
 void mfl_tip_reopt(tree *t, int ntax, int nchar);
+void mfl_save_originals(node *n, charstate *originals, int nchar);
+void mfl_restore_originals(node *n, charstate *originals, int nchar);
 void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);

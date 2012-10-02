@@ -353,9 +353,6 @@ void mfl_deletering(node *r1)
      * mfl_deletering - deletes a node (ring) by doing the mirror image of newring.
      */
     
-    if (r1->tipsabove) {
-        free(r1->tipsabove);
-    }
     if (r1->tempapos) {
         free(r1->tempapos);
     }
@@ -371,9 +368,6 @@ void mfl_deletering(node *r1)
     p = r1->next;
     while (p != r1) {
         q = p->next;
-        if (p->tipsabove) {
-            free(p->tipsabove);
-        }
         if (p->tempapos) {
             free(p->tempapos);
         }

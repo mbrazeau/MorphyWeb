@@ -382,9 +382,9 @@ void mfl_reopt_postorder(node *n, int nchar)
         p = p->next;
     }
     
-    if (!allsame) {
+    //if (!allsame) {
         mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
-    }
+    //}
     
 }
 
@@ -650,6 +650,41 @@ void mfl_wipe_states(node *n, int nchar)
     memset(n->tempapos, 0, nchar * sizeof(charstate));
 }
 
+void mfl_set_calcroot(node *n)
+{
+    
+    node *p;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    p = n->next;
+    
+    while (p != n) {
+        p->tocalcroot = false;
+        mfl_set_calcroot(p->outedge);
+        p = p->next;
+    }
+    
+    n->tocalcroot = true;
+    
+}
+
+void mfl_save_originals(node *n, charstate *originals, int nchar)
+{
+    n->origstates = (charstate*)malloc(nchar * sizeof(charstate));
+    
+    memcpy(n->origstates, originals, nchar * sizeof(charstate));
+}
+
+void mfl_restore_originals(node *n, charstate *originals, int nchar)
+{
+    memcpy(n->tempapos, originals, nchar * sizeof(charstate));
+    
+    free(originals);
+}
+
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
 {
 
@@ -723,17 +758,20 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     mfl_devisit_tree(t->trnodes, 2 * ntax - 1);
     mfl_definish_tree(t, 2 * ntax - 1);
 
-    t->root = t->trnodes[ntax];
-    for (i = 0; i < ntax; ++i) {
+    //t->root = t->trnodes[ntax];
+    //for (i = 0; i < ntax; ++i) {
         *treelen_p = 0;
         mfl_temproot(t, i, ntax);
         mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
         t->root->visited = 0;
-        mfl_undo_temproot(ntax, t);
+        
         if (i == 0) {
             fptreelen = *treelen_p;
+            mfl_set_calcroot(t->root);
         }
-    }
+        
+        mfl_undo_temproot(ntax, t);
+    //}
     
     mfl_temproot(t, 0, ntax);
     t->root->visited = 0;
