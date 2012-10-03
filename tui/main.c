@@ -739,12 +739,12 @@ int main(void)
     //srandom(481981);
     
     //A known problem seed
-    srandom(10615111);
+    //srandom(10615111);
     
     //Any seed
     //srandom(420355);
     
-    //srandom(7);
+    srandom(3);
     
     pauseit();
     

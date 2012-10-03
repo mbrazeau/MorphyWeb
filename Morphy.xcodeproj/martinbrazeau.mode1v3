@@ -229,8 +229,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -276,7 +274,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>15</integer>
+									<integer>19</integer>
 									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -313,6 +311,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -330,22 +330,22 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E168836C161B4A9000418073</string>
+										<string>E16884B8161C6AAF00418073</string>
 										<key>history</key>
 										<array>
 											<string>E1B2E81A161703C50076343F</string>
 											<string>E16114091618DE09009FC035</string>
-											<string>E161140C1618DE09009FC035</string>
 											<string>E168825D161B1D3100418073</string>
 											<string>E1688277161B27AD00418073</string>
-											<string>E1688293161B307D00418073</string>
 											<string>E16882F3161B3E4200418073</string>
 											<string>E168834E161B475A00418073</string>
-											<string>E168834F161B475A00418073</string>
-											<string>E1688351161B475A00418073</string>
-											<string>E1688365161B49ED00418073</string>
 											<string>E1688366161B49ED00418073</string>
-											<string>E1688367161B49ED00418073</string>
+											<string>E1688449161C579C00418073</string>
+											<string>E168844A161C579C00418073</string>
+											<string>E168849E161C637000418073</string>
+											<string>E168849F161C637000418073</string>
+											<string>E16884A6161C66AB00418073</string>
+											<string>E16884A7161C66AB00418073</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -357,14 +357,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1239, 741}}</string>
+								<string>{{0, 0}, {1239, 739}}</string>
 								<key>RubberWindowFrame</key>
 								<string>16 59 1419 819 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>741pt</string>
+							<string>739pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -377,14 +377,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 745}, {1239, 33}}</string>
+								<string>{{0, 744}, {1239, 34}}</string>
 								<key>RubberWindowFrame</key>
 								<string>16 59 1419 819 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>33pt</string>
+							<string>34pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -403,9 +403,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>E1687F9A161A28D100418073</string>
+				<string>E16883DC161B6B7D00418073</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>E1687F9B161A28D100418073</string>
+				<string>E16883DD161B6B7D00418073</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -543,14 +543,13 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E168836D161B4A9000418073</string>
-		<string>1C530D57069F1CE1000CFCEE</string>
-		<string>E1687FA6161A28D100418073</string>
-		<string>E1687FA7161A28D100418073</string>
+		<string>E16884B9161C6AAF00418073</string>
+		<string>E16883FE161B6EB600418073</string>
+		<string>E16883FF161B6EB600418073</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>16 59 1419 819 0 0 1440 878 </string>
@@ -569,14 +568,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>main.c</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -632,7 +629,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>E1B2E820161703C50076343F</string>
-				<string>E1687F9D161A28D100418073</string>
+				<string>E16883DF161B6B7D00418073</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -754,13 +751,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>E1687F9E161A28D100418073</string>
+				<string>E16883F6161B6EB600418073</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>E1687F9F161A28D100418073</string>
-				<string>E1687FA0161A28D100418073</string>
-				<string>E1687FA1161A28D100418073</string>
-				<string>E1687FA2161A28D100418073</string>
-				<string>E1687FA3161A28D100418073</string>
+				<string>E16883F7161B6EB600418073</string>
+				<string>E16883F8161B6EB600418073</string>
+				<string>E16883F9161B6EB600418073</string>
+				<string>E16883FA161B6EB600418073</string>
+				<string>E16883FB161B6EB600418073</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -916,7 +913,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>E1687FA4161A28D100418073</string>
+				<string>E16883FC161B6EB600418073</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>

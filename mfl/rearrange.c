@@ -414,11 +414,11 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
     
     // Reoptimize the subtree
-    mfl_reopt_postorder(subtr->next->outedge, nchar);
+    //mfl_reopt_postorder(subtr->next->outedge, nchar);
     
     if (!subtr->next->outedge->tip) {
-        mfl_set_rootstates(subtr->next->outedge, nchar);
-        //mfl_subtr_allviews(subtr->next->outedge, swapingon, nchar, NULL);
+        //mfl_set_rootstates(subtr->next->outedge, nchar);
+        mfl_subtr_allviews(subtr->next->outedge, swapingon, nchar, NULL);
     }
     else {
         int i;
@@ -453,6 +453,9 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     mfl_join_nodes(up, up1);
     mfl_join_nodes(dn, dn1);
+    
+    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+    
 }
 
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, 
@@ -687,6 +690,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     }
                     mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
 
+                    
                     up->visited = 0;
                     dn->visited = 0;
                     bc1->origbase = false;
@@ -706,7 +710,9 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     
                     // Reinsert the subtree
                     mfl_join_nodes(up, up1);
-                    mfl_join_nodes(dn, dn1);            
+                    mfl_join_nodes(dn, dn1); 
+                    
+                    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
                 }
                 else {
                     mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
@@ -841,9 +847,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
 
             /* The branch swapper is the specific type of heuristic search 
              * routine: either TBR, SPR, or NNI. TBR by default */
+            mfl_save_origstates(savedtrees[j], ntax, numnodes, nchar);
             branch_swapper(savedtrees[j]->trnodes[0], savedtrees[j], savedtrees, 
                                   ntax, nchar, numnodes, searchrec);
-            
             
             if (searchrec->foundbettertr) {
                 if (i > 0) {

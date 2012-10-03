@@ -524,6 +524,7 @@ void mfl_reopt_preorder(node *n, int nchar)
 {
     
     node *dl, *dr;
+    bool allsame = false;
     
     if (n->tip) {
         return;
@@ -671,9 +672,11 @@ void mfl_set_calcroot(node *n)
     
 }
 
-void mfl_save_originals(node *n, charstate *originals, int nchar)
+void mfl_copy_originals(node *n, charstate *originals, int nchar)
 {
-    n->origstates = (charstate*)malloc(nchar * sizeof(charstate));
+    if (!n->origstates) {
+        n->origstates = (charstate*)malloc(nchar * sizeof(charstate));
+    }
     
     memcpy(n->origstates, originals, nchar * sizeof(charstate));
 }
@@ -681,8 +684,47 @@ void mfl_save_originals(node *n, charstate *originals, int nchar)
 void mfl_restore_originals(node *n, charstate *originals, int nchar)
 {
     memcpy(n->tempapos, originals, nchar * sizeof(charstate));
+}
+
+void mfl_save_origstates(tree *t, int ntax, int numnodes, int nchar)
+{
+    int i;
+    node *p;
+    nodearray tns = t->trnodes;
     
-    free(originals);
+    for (i = ntax; i < numnodes; ++i) {
+        
+        p = tns[i];
+        
+        while (!p->tocalcroot) {
+            p = p->next;
+            if (p == tns[i]) {
+                break;
+                dbg_printf("Error: node has no apomorphies array\n");
+            }
+        }
+        
+        mfl_copy_originals(p, p->tempapos, nchar);
+    }
+}
+
+void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar)
+{
+    int i;
+    node *p;
+    nodearray tns = t->trnodes;
+    
+    for (i = ntax; i < numnodes; ++i) {
+        p = tns[i];
+        while (!p->tocalcroot) {
+            p = p->next;
+            if (p == tns[i]) {
+                break;
+                dbg_printf("Error: node has no apomorphies array\n");
+            }
+        }
+        mfl_restore_originals(p, p->origstates, nchar);
+    }
 }
 
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen)
@@ -726,12 +768,14 @@ void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing)
     int numnodes = 2 * 47 -1;
     
     /* For subtree reoptimization only. */
-    base->isroot = true;
-    mfl_desuccess_tree(t, numnodes);
-    //mfl_reopt_postorder_ii(base, nchar, changing);
-    mfl_reopt_postorder(base, nchar);
-    mfl_reopt_preorder(base, nchar);
-    base->isroot = false;
+    
+    if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
+        base->isroot = true;
+        mfl_desuccess_tree(t, numnodes);
+        //mfl_reopt_postorder(base, nchar);
+        mfl_reopt_preorder(base, nchar);
+        base->isroot = false;
+    }
     
 }
 
@@ -758,21 +802,15 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     mfl_devisit_tree(t->trnodes, 2 * ntax - 1);
     mfl_definish_tree(t, 2 * ntax - 1);
 
-    //t->root = t->trnodes[ntax];
-    //for (i = 0; i < ntax; ++i) {
-        *treelen_p = 0;
-        mfl_temproot(t, i, ntax);
-        mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
-        t->root->visited = 0;
-        
-        if (i == 0) {
-            fptreelen = *treelen_p;
-            mfl_set_calcroot(t->root);
-        }
-        
-        mfl_undo_temproot(ntax, t);
-    //}
+    *treelen_p = 0;
+    mfl_temproot(t, i, ntax);
+    mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
+    t->root->visited = 0;
     
+    fptreelen = *treelen_p;
+    mfl_set_calcroot(t->root);
+
+    mfl_undo_temproot(ntax, t);
     mfl_temproot(t, 0, ntax);
     t->root->visited = 0;
     mfl_fitch_preorder(t->root, nchar);
