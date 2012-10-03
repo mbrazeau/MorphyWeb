@@ -641,92 +641,86 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         }
         
         subtr = p->next->next;
-
-        //if (!subtr->next->outedge->skip) {
+        
+        if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
             
-            subtr->next->outedge->skip = true;
-
-            if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
+            /* If the clipped subtree has only 1 or 2 terminals, then it 
+             * cannot be rerooted. Therefore, only a normal SPR routine is
+             * required. Otherwise, the procedure can proceed with rerooting
+             * and reconnecting. */
+            
+            if (mfl_subtr_isrerootable(subtr)) {
                 
-                /* If the clipped subtree has only 1 or 2 terminals, then it 
-                 * cannot be rerooted. Therefore, only a normal SPR routine is
-                 * required. Otherwise, the procedure can proceed with rerooting
-                 * and reconnecting. */
+                up->visited = 1;
+                dn->visited = 1;
+                up1 = up->outedge;
+                dn1 = dn->outedge;
+                base = subtr->next->outedge;
+                holder = base->tempapos;
+                bc1 = base->next->outedge;
+                bc2 = base->next->next->outedge;
+                bc1->origbase = true;
+                bc2->origbase = true;
                 
-                if (mfl_subtr_isrerootable(subtr)) {
-                    
-                    up->visited = 1;
-                    dn->visited = 1;
-                    up1 = up->outedge;
-                    dn1 = dn->outedge;
-                    base = subtr->next->outedge;
-                    holder = base->tempapos;
-                    bc1 = base->next->outedge;
-                    bc2 = base->next->next->outedge;
-                    bc1->origbase = true;
-                    bc2->origbase = true;
-                    
-                    //charstate *changing = mfl_get_changing(base, nchar);
-                    
-                    //Clip the tree
-                    mfl_join_nodes(up, dn);
-                    up->clip = true;
-                    //dn->clip = true;
-                    
-                    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-                    
-                    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+                //charstate *changing = mfl_get_changing(base, nchar);
                 
-                    atip = mfl_find_atip(base);
-                    
-                    // Reoptimize the subtree and determine the cost of local reinsertion
-                    mfl_subtr_allviews(base, swapingon, nchar, NULL);
-                    diff = mfl_subtr_reinsertion(base, up, dn, nchar);
-                    
-                    // Unroot the source tree
-                    mfl_join_nodes(bc1, bc2);
-                    
-                    // Call rerooting function
-
-                    if (!base->tocalcroot) {
-                        //dbg_printf("not okay before rerooting\n");
-                    }
-                    mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
-
-                    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-                    
-                    up->visited = 0;
-                    dn->visited = 0;
-                    bc1->origbase = false;
-                    bc2->origbase = false;
-                    up->clip = false;
-                    dn->clip = false;
-                    
-                    //free(changing);
-                    
-                    if (searchrec->success) {
-                        return;
-                    }
-
-                    // Reroot the source tree on its base
-                    mfl_join_nodes(bc1, base->next);
-                    mfl_join_nodes(bc2, base->next->next);
-                    
-                    // Reinsert the subtree
-                    mfl_join_nodes(up, up1);
-                    mfl_join_nodes(dn, dn1); 
-                    
-                    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                //Clip the tree
+                mfl_join_nodes(up, dn);
+                up->clip = true;
+                //dn->clip = true;
+                
+                //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                
+                mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+                
+                atip = mfl_find_atip(base);
+                
+                // Reoptimize the subtree and determine the cost of local reinsertion
+                mfl_subtr_allviews(base, swapingon, nchar, NULL);
+                diff = mfl_subtr_reinsertion(base, up, dn, nchar);
+                
+                // Unroot the source tree
+                mfl_join_nodes(bc1, bc2);
+                
+                // Call rerooting function
+                
+                if (!base->tocalcroot) {
+                    //dbg_printf("not okay before rerooting\n");
                 }
-                else {
-                    mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-                    if (searchrec->success) {
-                        return;
-                    }
+                mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
+                
+                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                
+                up->visited = 0;
+                dn->visited = 0;
+                bc1->origbase = false;
+                bc2->origbase = false;
+                up->clip = false;
+                dn->clip = false;
+                
+                //free(changing);
+                
+                if (searchrec->success) {
+                    return;
                 }
                 
-            //}
-            subtr->next->outedge->skip = false;
+                // Reroot the source tree on its base
+                mfl_join_nodes(bc1, base->next);
+                mfl_join_nodes(bc2, base->next->next);
+                
+                // Reinsert the subtree
+                mfl_join_nodes(up, up1);
+                mfl_join_nodes(dn, dn1); 
+                
+                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+            }
+            else {
+                mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+                if (searchrec->success) {
+                    return;
+                }
+            }
+            
         }
         
         up = n->next->outedge;

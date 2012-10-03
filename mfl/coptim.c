@@ -270,6 +270,7 @@ void mfl_subtree_postorder(node *n, int *trlength, int nchar)
     
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->apomorphies, 0, nchar * sizeof(charstate));
         if (n->next) {
             mfl_join_apomorphies(n);
         }
@@ -296,12 +297,14 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
     
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->apomorphies, 0, nchar * sizeof(charstate));
         if (n->next) {
             mfl_join_apomorphies(n);
         }
     }
     if (!n->tempapos) {
         n->tempapos = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->tempapos, 0, nchar * sizeof(charstate));
     }
     
     if (n->tip) {
@@ -395,6 +398,7 @@ void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
     
     if (!n->apomorphies) {
         n->apomorphies = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->apomorphies, 0, nchar * sizeof(charstate));
         if (n->next) {
             mfl_join_apomorphies(n);
         }
@@ -413,6 +417,7 @@ void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
     
     if (!n->tempapos) {
         n->tempapos = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->tempapos, 0, nchar * sizeof(charstate));
     }
 
     mfl_countsteps(n->next->outedge, n->next->next->outedge, n, nchar, trlength, besttreelen);
@@ -451,7 +456,7 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
 {
     int i;
     charstate lft_chars, rt_chars;
-    charstate temp;
+    charstate temp = NULL;
     charstate *ntemps = n->tempapos;
     charstate *napos = n->apomorphies;
     charstate *ancapos = anc->apomorphies;
@@ -769,13 +774,13 @@ void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing)
     
     /* For subtree reoptimization only. */
     
-    if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
+    //if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
         base->isroot = true;
         mfl_desuccess_tree(t, numnodes);
         //mfl_reopt_postorder(base, nchar);
         mfl_reopt_preorder(base, nchar);
         base->isroot = false;
-    }
+    //}
     
 }
 

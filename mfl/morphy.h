@@ -157,12 +157,12 @@ typedef struct {
     int bestlength;         // Best tree length over all iterations
     int bestinrep;          // Best tree length in current iteration of search
     int trbufstart;         // Position in buffer of first tree to undergo rearrangement
-    int tipscoll;
+    //int tipscoll;
     bool foundbettertr;
     bool success;
     long int niter_total;
     long int niter_ontree;
-    int *subtree_changes;
+    //int *subtree_changes;
 } mfl_searchrec;
 
 /*Function prototypes*/

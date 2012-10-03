@@ -744,13 +744,13 @@ int main(void)
     //Any seed
     //srandom(420355);
     
-    srandom(3);
+    srandom(10);
     
     pauseit();
     
     //test_subtree_rerooting();
     
-    test_tree_compress();
+    //test_tree_compress();
     
     //test_tree_comparison();
     //test_char_optimization();

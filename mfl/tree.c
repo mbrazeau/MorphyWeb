@@ -362,6 +362,9 @@ void mfl_deletering(node *r1)
     if (r1->c_changing) {
         free(r1->c_changing);
     }
+    if (r1->origstates) {
+        free(r1->origstates);
+    }
     
     node *p, *q;
     
@@ -373,7 +376,10 @@ void mfl_deletering(node *r1)
         }
         if (p->c_changing) {
             free(p->c_changing);
-         }
+        }
+        if (p->origstates) {
+            free(p->origstates);
+        }
         free(p);
         p = q;
     }
