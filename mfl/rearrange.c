@@ -642,7 +642,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         
         subtr = p->next->next;
 
-        if (!subtr->next->outedge->skip) {
+        //if (!subtr->next->outedge->skip) {
             
             subtr->next->outedge->skip = true;
 
@@ -725,7 +725,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                     }
                 }
                 
-            }
+            //}
             subtr->next->outedge->skip = false;
         }
         
