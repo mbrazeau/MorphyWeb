@@ -490,25 +490,12 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         }
             
         subtr = p->next->next;
-        
-        //if (!subtr->next->outedge->skip) {
-            
-            subtr->next->outedge->skip = true;
-            
-            if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
-                
-                mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
 
-                if (searchrec->success) {
-                    return;
-                }
-                
-                //mfl_join_nodes(up, p->next);
-                //mfl_join_nodes(dn, p->next->next);
-            }
-            
-            subtr->next->outedge->skip = false;
-        //}
+        mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+        
+        if (searchrec->success) {
+            return;
+        }
         
         p = p->next;
         up = n->next->outedge;
@@ -642,7 +629,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         
         subtr = p->next->next;
         
-        if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
+        //if (!(up->tip && dn->tip)) { // Optimization: this conditional might not be necessary
             
             /* If the clipped subtree has only 1 or 2 terminals, then it 
              * cannot be rerooted. Therefore, only a normal SPR routine is
@@ -689,7 +676,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 }
                 mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
                 
-                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
                 
                 up->visited = 0;
                 dn->visited = 0;
@@ -721,7 +708,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 }
             }
             
-        }
+        //}
         
         up = n->next->outedge;
         p = p->next;
@@ -857,7 +844,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             }
             else {
                 savedtrees[j]->swapped = true;
-                //mfl_free_trnodes(savedtrees[j], numnodes);
+                mfl_free_trnodes(savedtrees[j], numnodes);
                 ++j;
             }
             
@@ -902,12 +889,12 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
     dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
-    for (j = 0; j < searchrec->nextinbuffer; ++j) {
+    /*for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
         printNewick(savedtrees[j]->root);
         dbg_printf(";\n");
-    }
+    }*/
     dbg_printf("\n");
     
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
