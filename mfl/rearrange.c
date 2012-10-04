@@ -418,8 +418,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     //mfl_reopt_postorder(subtr->next->outedge, nchar);
     
     if (!subtr->next->outedge->tip) {
-        mfl_set_rootstates(subtr->next->outedge, nchar);
-        //mfl_subtr_allviews(subtr->next->outedge, swapingon, nchar, NULL);
+        //mfl_set_rootstates(subtr->next->outedge, nchar);
+        mfl_subtr_allviews(subtr->next->outedge, swapingon, nchar, NULL);
     }
     else {
         int i;
@@ -478,6 +478,10 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         return;
     }
     
+    if (n->skip) {
+        return;
+    }
+    
     dn = n->outedge;
     p = n->next;
     up = p->next->outedge;
@@ -490,8 +494,11 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         }
             
         subtr = p->next->next;
+        subtr->next->outedge->skip = true;
 
         mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+        
+        subtr->next->outedge->skip = false;
         
         if (searchrec->success) {
             return;
@@ -613,6 +620,10 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         return;
     }
     
+    if (n->skip) {
+        return;
+    }
+    
     dn = n->outedge;
     
     p = n->next;
@@ -643,6 +654,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 up1 = up->outedge;
                 dn1 = dn->outedge;
                 base = subtr->next->outedge;
+                base->skip = true;
                 holder = base->tempapos;
                 bc1 = base->next->outedge;
                 bc2 = base->next->next->outedge;
@@ -684,6 +696,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 bc2->origbase = false;
                 up->clip = false;
                 dn->clip = false;
+                base->skip = false;
                 
                 //free(changing);
                 

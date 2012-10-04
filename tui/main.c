@@ -736,7 +736,7 @@ int main(void)
     //bool isRooted = true;
     
     //A known seed with large tree returns for Ptomacanth_Edit.txt data
-    //srandom(481981);
+    srandom(481981);
     
     //A known problem seed
     //srandom(10615111);
@@ -744,7 +744,7 @@ int main(void)
     //Any seed
     //srandom(420355);
     
-    srandom(10);
+    //srandom(2);
     
     pauseit();
     
