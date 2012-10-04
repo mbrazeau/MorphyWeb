@@ -218,7 +218,7 @@ void mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
 int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
-charstate *mfl_get_changing(node *n, int nchar);
+charstate *mfl_get_changing(node *n, node *up, node *dn, int nchar);
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
 void mfl_tip_reopt(tree *t, int ntax, int nchar);

@@ -563,6 +563,109 @@ void mfl_reopt_preorder(node *n, int nchar)
     
 }
 
+void mfl_reopt_comb_ii(node *n, node *anc, int nchar, charstate *changing)
+{
+    int i, c;
+    charstate lft_chars, rt_chars;
+    charstate temp = NULL;
+    charstate *ntemps = n->tempapos;
+    charstate *napos = n->apomorphies;
+    charstate *ancapos = anc->apomorphies;
+    
+    bool allsame = true;
+    
+    for (c = 0; c < nchar; ++c) {
+        
+        i = c;
+        
+        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
+        {
+            temp = ntemps[i] & ancapos[i]; 
+            if (temp != napos[i]) {
+                //dbg_printf("%i ", i);
+                napos[i] = temp;
+                allsame = false;
+            }
+        }
+        else {
+            lft_chars = n->next->outedge->tempapos[i];
+            rt_chars = n->next->next->outedge->tempapos[i];
+            
+            if ( lft_chars & rt_chars ) { //III
+                //V
+                temp = (ntemps[i] |(ancapos[i] &(lft_chars | rt_chars)));// & IS_APPLIC;
+                if (temp != napos[i]) {
+                    //dbg_printf("%i ", i);
+                    napos[i] = temp;
+                    allsame = false;
+                }
+            }
+            else {
+                //IV
+                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
+                    temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                }
+                else {
+                    temp = ntemps[i] | ancapos[i];
+                }
+                
+                if (temp != napos[i]) {
+                    //dbg_printf("%i ", i);
+                    napos[i] = temp;
+                    allsame = false;
+                }
+            }
+        }
+    }
+    if (allsame) {
+        n->success = true;
+        //n->finished = true;
+    }
+}
+
+void mfl_reopt_preorder_ii(node *n, int nchar, charstate *changing)
+{
+    
+    node *dl, *dr;
+    bool allsame = false;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    if (!n->outedge || n->isroot) {
+        mfl_set_rootstates(n, nchar);
+    }
+    
+    if (n->success) {
+        n->success = false;
+        return;
+    }
+    
+    dl = n->next->outedge;
+    dr = n->next->next->outedge;
+    
+    if (!dl->tip) {
+        mfl_reopt_comb_ii(dl, n, nchar, changing);
+    }
+    else if (!dl->success) {
+        mfl_tip_apomorphies(dl, n, nchar);
+    }
+    
+    if (!dr->tip) {
+        mfl_reopt_comb_ii(dr, n, nchar, changing);
+    }
+    else if (!dr->success) {
+        mfl_tip_apomorphies(dr, n, nchar);
+    }
+    
+    //n->success = false;
+    
+    mfl_reopt_preorder_ii(n->next->outedge, nchar, changing);
+    mfl_reopt_preorder_ii(n->next->next->outedge, nchar, changing);
+    
+}
+
 void mfl_fitch_preorder(node *n, int nchar)
 {
     node *p, *dl, *dr;
@@ -629,7 +732,7 @@ int mfl_get_treelen(tree *t, int ntax, int nchar, int *besttreelen)
     return *treelen_p;
 }
 
-charstate *mfl_get_changing(node *n, int nchar)
+charstate *mfl_get_changing(node *n, node *up, node *dn, int nchar)
 {
     
     int i, j;
@@ -639,12 +742,26 @@ charstate *mfl_get_changing(node *n, int nchar)
     charstate *changing = (charstate*)malloc((nchar + 1) * sizeof(charstate));
     
     j = 0;
+    
+    node *p;
+    
+    
+    
+    //dbg_printf("expected to change:\n");
     for (i = 0; i < nchar; ++i) {
+        //dbg_printf("char: %i, p: %i, f: %i, af: %i ", i, prelims[i], finals[i], n->outedge->apomorphies[i]);
         if (prelims[i] != finals[i]) {
             changing[j] = i;
+            //dbg_printf("%i ", i);
             ++j;
         }
+        /*else {
+            dbg_printf("%i: p: %i; f: %i ", i, prelims[i], finals[i]);
+        }*/
+
     }
+    //dbg_printf("\n");
+    
     changing[j] = '\0';
     
     return changing;
@@ -774,13 +891,19 @@ void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing)
     
     /* For subtree reoptimization only. */
     
-    //if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
-        base->isroot = true;
-        mfl_desuccess_tree(t, numnodes);
-        //mfl_reopt_postorder(base, nchar);
-        mfl_reopt_preorder(base, nchar);
-        base->isroot = false;
-    //}
+    if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
+    base->isroot = true;
+    mfl_desuccess_tree(t, numnodes);
+    //mfl_reopt_postorder(base, nchar);
+        
+    //mfl_reopt_preorder(base, nchar);
+    //dbg_printf("actually changing:\n");
+    mfl_reopt_preorder_ii(base, nchar, changing);
+    //dbg_printf("\n");
+
+    
+    base->isroot = false;
+    }
     
 }
 

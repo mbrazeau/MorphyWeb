@@ -434,7 +434,7 @@ struct tree * mfl_copytree(tree *origtr, int ntax, int numnodes)
         p = origtr->trnodes[i];
         q = treecp->trnodes[i];
         q->initialized = p->initialized;
-        q->visited = p->visited;
+        //q->visited = p->visited;
         q->skip = p->skip;
         if (p->next) 
         {
