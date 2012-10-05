@@ -667,7 +667,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 bc1->origbase = true;
                 bc2->origbase = true;
 
-                //charstate *changing = mfl_get_changing(base, up, dn, nchar);
+                charstate *changing = mfl_get_changing(base, up, dn, nchar);
                 
                 //Clip the tree
                 mfl_join_nodes(up, dn);
@@ -681,7 +681,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 atip = mfl_find_atip(base);
                 
                 // Reoptimize the subtree and determine the cost of local reinsertion
-                mfl_subtr_allviews(base, swapingon, nchar, NULL);
+                mfl_subtr_allviews(base, swapingon, nchar, changing);
                 
                 diff = mfl_subtr_reinsertion(base, up, dn, nchar);
                 
@@ -705,7 +705,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 dn->clip = false;
                 base->skip = false;
                 
-                //free(changing);
+                free(changing);
                 
                 if (searchrec->success) {
                     return;

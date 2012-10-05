@@ -891,19 +891,19 @@ void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing)
     
     /* For subtree reoptimization only. */
     
-    if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
+    //if (memcmp(base->apomorphies, base->tempapos, nchar * sizeof(charstate))) {
     base->isroot = true;
     mfl_desuccess_tree(t, numnodes);
     //mfl_reopt_postorder(base, nchar);
         
-    //mfl_reopt_preorder(base, nchar);
+    mfl_reopt_preorder(base, nchar);
     //dbg_printf("actually changing:\n");
-    mfl_reopt_preorder_ii(base, nchar, changing);
+    //mfl_reopt_preorder_ii(base, nchar, changing);
     //dbg_printf("\n");
 
     
     base->isroot = false;
-    }
+    //}
     
 }
 
