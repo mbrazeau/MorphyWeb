@@ -10,7 +10,6 @@
 		8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* Morphy.1 */; };
 		E100BD2E1500E077008A987F /* randtree.c in Sources */ = {isa = PBXBuildFile; fileRef = E100BD2D1500E077008A987F /* randtree.c */; };
 		E1250B5914C09D1D008C350B /* readnewick.c in Sources */ = {isa = PBXBuildFile; fileRef = E1250B5814C09D1D008C350B /* readnewick.c */; };
-		E1449F0D16090329009B44BC /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 		E161E0EE14F3E23100F8589E /* drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = E161E0ED14F3E23100F8589E /* drawtree.c */; };
 		E1A6576214EC32DF00A348E2 /* coptim.c in Sources */ = {isa = PBXBuildFile; fileRef = E1A6576114EC32DF00A348E2 /* coptim.c */; };
 		E1ACBC9B14A8BD13005BB9D5 /* rearrange.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9614A8BD13005BB9D5 /* rearrange.c */; };
@@ -18,6 +17,7 @@
 		E1ACBC9D14A8BD13005BB9D5 /* tree.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */; };
 		E1C66D05150937A800080F05 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */; };
 		E1DA9AF414E7D8FF006E4DFB /* compare.c in Sources */ = {isa = PBXBuildFile; fileRef = E1C322EF14E2E4340076AE7A /* compare.c */; };
+		E1E89A4D1624A93C000FBA02 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -215,7 +215,7 @@
 				E161E0EE14F3E23100F8589E /* drawtree.c in Sources */,
 				E100BD2E1500E077008A987F /* randtree.c in Sources */,
 				E1C66D05150937A800080F05 /* mfyinterface.c in Sources */,
-				E1449F0D16090329009B44BC /* main.c in Sources */,
+				E1E89A4D1624A93C000FBA02 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

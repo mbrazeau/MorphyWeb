@@ -880,10 +880,8 @@ void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen,
     mfl_allviews_traversal(n->next->next->outedge, t, ntax, nchar, treelen, besttreelen);
 }
 
-void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing)
+void mfl_subtr_allviews(node *base, tree *t, int nchar, int numnodes, charstate *changing)
 {
-    
-    int numnodes = 2 * 47 -1;
     
     /* For subtree reoptimization only. */
     

@@ -226,7 +226,7 @@ void mfl_copy_originals(node *n, charstate *originals, int nchar);
 void mfl_restore_originals(node *n, charstate *originals, int nchar);
 void mfl_save_origstates(tree *t, int ntax, int numnodes, int nchar);
 void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar);
-void mfl_subtr_allviews(node *base, tree *t, int nchar, charstate *changing);
+void mfl_subtr_allviews(node *base, tree *t, int nchar, int numnodes, charstate *changing);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_set_rootstates(node *n, int nchar);
