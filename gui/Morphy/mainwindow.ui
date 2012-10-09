@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
-    <height>629</height>
+    <width>521</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>521</width>
-      <height>551</height>
+      <height>541</height>
      </rect>
     </property>
     <property name="widgetResizable">
@@ -32,7 +32,7 @@
        <x>0</x>
        <y>0</y>
        <width>519</width>
-       <height>549</height>
+       <height>539</height>
       </rect>
      </property>
      <widget class="QPlainTextEdit" name="mwTextDisplay">
@@ -41,7 +41,7 @@
         <x>0</x>
         <y>0</y>
         <width>521</width>
-        <height>561</height>
+        <height>541</height>
        </rect>
       </property>
       <property name="readOnly">
@@ -69,7 +69,7 @@ By Martin D. Brazeau and Chris Desjardins</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>520</width>
+     <width>521</width>
      <height>22</height>
     </rect>
    </property>
