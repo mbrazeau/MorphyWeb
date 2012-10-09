@@ -574,9 +574,9 @@ void mfl_reopt_comb_ii(node *n, node *anc, int nchar, charstate *changing)
     
     bool allsame = true;
     
-    for (c = 0; c < nchar; ++c) {
+    for (c = 0; changing[c]; ++c) {
         
-        i = c;
+        i = changing[c] - 1;
         
         if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
         {
@@ -743,15 +743,11 @@ charstate *mfl_get_changing(node *n, node *up, node *dn, int nchar)
     
     j = 0;
     
-    node *p;
-    
-    
-    
     //dbg_printf("expected to change:\n");
     for (i = 0; i < nchar; ++i) {
         //dbg_printf("char: %i, p: %i, f: %i, af: %i ", i, prelims[i], finals[i], n->outedge->apomorphies[i]);
         if (prelims[i] != finals[i]) {
-            changing[j] = i;
+            changing[j] = i + 1;
             //dbg_printf("%i ", i);
             ++j;
         }

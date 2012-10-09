@@ -691,7 +691,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 // Call rerooting function
                 
                 if (!base->tocalcroot) {
-                    //dbg_printf("not okay before rerooting\n");
+                    dbg_printf("not okay before rerooting\n");
                 }
                 mfl_reroot_subtree(atip->outedge, atip, subtr, base, up, dn, swapingon, savedtrees, ntax, nchar, numnodes, searchrec, diff);                    
                 
@@ -819,9 +819,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             j = 0;
             
             /* TESTING ONLY */
-            dbg_printf("The starting tree:\n");
-            printNewick(savedtrees[0]->trnodes[0]);
-            dbg_printf("\n");
+            //dbg_printf("The starting tree:\n");
+            //printNewick(savedtrees[0]->trnodes[0]);
+            //dbg_printf("\n");
             dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
             /* END TESTING ONLY */
         }
