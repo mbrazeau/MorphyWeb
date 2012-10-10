@@ -152,27 +152,27 @@ By Martin D. Brazeau and Chris Desjardins</string>
   </action>
   <action name="actionExhaustive_Search">
    <property name="text">
-    <string>Exhaustive Search</string>
+    <string>Exhaustive Search...</string>
    </property>
   </action>
   <action name="actionBranch_and_Bound_Search">
    <property name="text">
-    <string>Branch-and-Bound Search</string>
+    <string>Branch-and-Bound Search...</string>
    </property>
   </action>
   <action name="actionHeuristic_Search">
    <property name="text">
-    <string>Heuristic Search</string>
+    <string>Heuristic Search...</string>
    </property>
   </action>
   <action name="actionBootstrap">
    <property name="text">
-    <string>Bootstrap</string>
+    <string>Bootstrap...</string>
    </property>
   </action>
   <action name="actionJackknife">
    <property name="text">
-    <string>Jackknife</string>
+    <string>Jackknife...</string>
    </property>
   </action>
   <action name="actionShow_Trees">
@@ -192,17 +192,17 @@ By Martin D. Brazeau and Chris Desjardins</string>
   </action>
   <action name="actionGlobal_Search_Parameters">
    <property name="text">
-    <string>Global Search Parameters</string>
+    <string>Global Search Parameters...</string>
    </property>
   </action>
   <action name="actionSettsTaxaAndOutgroup">
    <property name="text">
-    <string>Taxa and Outgroup</string>
+    <string>Taxa and Outgroup...</string>
    </property>
   </action>
   <action name="actionSettsCharacters">
    <property name="text">
-    <string>Characters</string>
+    <string>Characters...</string>
    </property>
   </action>
  </widget>

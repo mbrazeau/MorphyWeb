@@ -6,6 +6,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow morphym;
     morphym.show();
-    
+
     return a.exec();
 }

@@ -20,7 +20,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionHeuristic_Search_triggered()
 {
     heuristicSearchDialog hsearchd;
-    hsearchd.exec();
+    if (hsearchd.exec()) {ui->mwTextDisplay->appendPlainText("\nInitiating Heuristic Search...\n");}
 }
 
 void MainWindow::on_actionSettsTaxaAndOutgroup_triggered()
@@ -33,4 +33,9 @@ void MainWindow::on_actionSettsCharacters_triggered()
 {
     charactersDialog chard;
     chard.exec();
+}
+
+void MainWindow::on_acceptHeuristicSearch()
+{
+
 }

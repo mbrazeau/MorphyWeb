@@ -26,6 +26,8 @@ private slots:
 
     void on_actionSettsCharacters_triggered();
 
+    void on_acceptHeuristicSearch();
+
 private:
     Ui::MainWindow *ui;
 };
