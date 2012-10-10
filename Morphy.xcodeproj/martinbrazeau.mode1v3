@@ -274,8 +274,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>29</integer>
-									<integer>27</integer>
+									<integer>19</integer>
+									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>main.c</string>
+								<string>coptim.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>main.c</string>
+										<string>coptim.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1CD22DE16260AEC0084D771</string>
+										<string>E1CD22FE162611180084D771</string>
 										<key>history</key>
 										<array>
 											<string>E16114091618DE09009FC035</string>
@@ -350,12 +350,12 @@
 											<string>E1CD21F11625EDD10084D771</string>
 											<string>E1CD22121625EFF80084D771</string>
 											<string>E1CD22131625EFF80084D771</string>
-											<string>E1CD22391625F7E90084D771</string>
 											<string>E1CD223A1625F7E90084D771</string>
 											<string>E1CD22431625F8220084D771</string>
 											<string>E1CD22A1162603400084D771</string>
-											<string>E1CD22DC16260AEC0084D771</string>
-											<string>E1CD22DD16260AEC0084D771</string>
+											<string>E1CD22F616260EB70084D771</string>
+											<string>E1CD22F716260EB70084D771</string>
+											<string>E1CD22F816260EB70084D771</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -394,7 +394,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1CD22DF16260AEC0084D771</string>
+										<string>E1CD22FF162611180084D771</string>
 										<key>history</key>
 										<array>
 											<string>E16114091618DE09009FC035</string>
@@ -623,8 +623,8 @@
 		<string>E1CD21081625CE980084D771</string>
 		<string>E1CD21091625CE980084D771</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>E1B2E820161703C50076343F</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>E1B2E820161703C50076343F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -1001,7 +1001,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

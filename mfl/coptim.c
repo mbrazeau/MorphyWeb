@@ -366,6 +366,7 @@ bool mfl_reopt_postorder(node *n, int nchar)
 {
     node *p;
     bool fromclip = false;
+    bool allsame = true;
      
     if (n->clip) {
         //n->clippath = true;
@@ -381,11 +382,16 @@ bool mfl_reopt_postorder(node *n, int nchar)
         if (mfl_reopt_postorder(p->outedge, nchar)) {
             fromclip = true;
         }
+        if (!p->outedge->success) {
+            allsame = false;
+        }
         p = p->next;
     }
     
     if (fromclip) {
-        mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
+        if (!allsame) {
+            mfl_reopt_fitch(n->next->outedge, n->next->next->outedge, n, nchar, NULL);
+        }
         n->clippath = true;
         return true;
     }
