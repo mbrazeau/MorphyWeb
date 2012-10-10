@@ -103,11 +103,12 @@ typedef struct node {
     bool bottom;
     bool isroot;
     bool tocalcroot;
+    bool clippath;
     int minsteps;
     int maxsteps;
     int charstates;
-    charstate *origstates;
-    charstate *c_changing; // Temporary storage for the original set
+    charstate *origfinals;
+    charstate *origtemps; // Temporary storage for the original set
     charstate *tempapos;
     charstate *apomorphies;
 } node;
@@ -214,7 +215,7 @@ void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
-void mfl_reopt_postorder(node *n, int nchar);
+bool mfl_reopt_postorder(node *n, int nchar);
 void mfl_reopt_preorder(node *n, int nchar);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
 int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);

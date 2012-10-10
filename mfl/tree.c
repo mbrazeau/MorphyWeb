@@ -130,8 +130,8 @@ void mfl_free_trnodes(tree *newtree, int numnodes)
         }
         else {
             free(newtree->trnodes[i]->apomorphies);
-            if (newtree->trnodes[i]->c_changing) {
-                free(newtree->trnodes[i]->c_changing);
+            if (newtree->trnodes[i]->origtemps) {
+                free(newtree->trnodes[i]->origtemps);
             }
         }
         
@@ -359,11 +359,11 @@ void mfl_deletering(node *r1)
     if (r1->apomorphies) {
         free(r1->apomorphies);
     }
-    if (r1->c_changing) {
-        free(r1->c_changing);
+    if (r1->origtemps) {
+        free(r1->origtemps);
     }
-    if (r1->origstates) {
-        free(r1->origstates);
+    if (r1->origfinals) {
+        free(r1->origfinals);
     }
     
     node *p, *q;
@@ -374,11 +374,11 @@ void mfl_deletering(node *r1)
         if (p->tempapos) {
             free(p->tempapos);
         }
-        if (p->c_changing) {
-            free(p->c_changing);
+        if (p->origtemps) {
+            free(p->origtemps);
         }
-        if (p->origstates) {
-            free(p->origstates);
+        if (p->origfinals) {
+            free(p->origfinals);
         }
         free(p);
         p = q;
