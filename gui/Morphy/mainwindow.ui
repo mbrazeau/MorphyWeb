@@ -6,51 +6,49 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>485</width>
-    <height>623</height>
+    <width>503</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>- Morphy -</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QToolButton" name="toolButton">
-      <property name="text">
-       <string>...</string>
+   <widget class="QScrollArea" name="scrollArea">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>50</y>
+      <width>521</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>519</width>
+       <height>529</height>
+      </rect>
+     </property>
+     <widget class="QPlainTextEdit" name="mwTextDisplay">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>521</width>
+        <height>531</height>
+       </rect>
       </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QToolButton" name="toolButton_2">
-      <property name="text">
-       <string>...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="4">
-     <widget class="QScrollArea" name="scrollArea">
-      <property name="widgetResizable">
+      <property name="readOnly">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>459</width>
-         <height>508</height>
-        </rect>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QPlainTextEdit" name="mwTextDisplay">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-          <property name="plainText">
-           <string>
+      <property name="plainText">
+       <string>
 
 Welcome to 
 
@@ -58,24 +56,51 @@ Morphy
 GUI Version 0.1
 
 By Martin D. Brazeau and Chris Desjardins</string>
-          </property>
-          <property name="cursorWidth">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      </property>
+      <property name="cursorWidth">
+       <number>0</number>
+      </property>
      </widget>
-    </item>
-   </layout>
+    </widget>
+   </widget>
+   <widget class="QToolButton" name="toolButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton_2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>10</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
+   <zorder>scrollArea</zorder>
+   <zorder>toolButton</zorder>
+   <zorder>toolButton_2</zorder>
+   <zorder>mwTextDisplay</zorder>
+   <zorder>mwTextDisplay</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>485</width>
+     <width>503</width>
      <height>22</height>
     </rect>
    </property>
