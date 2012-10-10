@@ -31,12 +31,6 @@
     </item>
     <item row="2" column="0" colspan="4">
      <widget class="QScrollArea" name="scrollArea">
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAsNeeded</enum>
-      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
