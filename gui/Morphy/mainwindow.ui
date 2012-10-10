@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>606</height>
+    <width>522</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>50</y>
       <width>521</width>
-      <height>541</height>
+      <height>531</height>
      </rect>
     </property>
     <property name="widgetResizable">
@@ -32,7 +32,7 @@
        <x>0</x>
        <y>0</y>
        <width>519</width>
-       <height>539</height>
+       <height>529</height>
       </rect>
      </property>
      <widget class="QPlainTextEdit" name="mwTextDisplay">
@@ -41,7 +41,7 @@
         <x>0</x>
         <y>0</y>
         <width>521</width>
-        <height>541</height>
+        <height>531</height>
        </rect>
       </property>
       <property name="readOnly">
@@ -63,13 +63,39 @@ By Martin D. Brazeau and Chris Desjardins</string>
      </widget>
     </widget>
    </widget>
+   <widget class="QToolButton" name="toolButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton_2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>10</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>521</width>
+     <width>522</width>
      <height>22</height>
     </rect>
    </property>

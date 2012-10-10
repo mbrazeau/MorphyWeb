@@ -38,7 +38,8 @@ void MainWindow::on_actionSettsCharacters_triggered()
     chard.exec();
 }
 
-void MainWindow::on_acceptHeuristicSearch()
-{
 
+void MainWindow::on_toolButton_2_clicked()
+{
+    ui->mwTextDisplay->clear();
 }
