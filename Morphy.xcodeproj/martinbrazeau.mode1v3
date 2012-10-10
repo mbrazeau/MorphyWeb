@@ -274,14 +274,14 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>19</integer>
-									<integer>12</integer>
+									<integer>29</integer>
+									<integer>27</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 2}, {204, 760}}</string>
+							<string>{{0, 0}, {204, 760}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>coptim.c</string>
+								<string>main.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>coptim.c</string>
+										<string>main.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1CD22B31626047C0084D771</string>
+										<string>E1CD22DE16260AEC0084D771</string>
 										<key>history</key>
 										<array>
 											<string>E16114091618DE09009FC035</string>
@@ -353,9 +353,9 @@
 											<string>E1CD22391625F7E90084D771</string>
 											<string>E1CD223A1625F7E90084D771</string>
 											<string>E1CD22431625F8220084D771</string>
-											<string>E1CD22631625FC750084D771</string>
 											<string>E1CD22A1162603400084D771</string>
-											<string>E1CD22A2162603400084D771</string>
+											<string>E1CD22DC16260AEC0084D771</string>
+											<string>E1CD22DD16260AEC0084D771</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -394,7 +394,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1CD22B41626047C0084D771</string>
+										<string>E1CD22DF16260AEC0084D771</string>
 										<key>history</key>
 										<array>
 											<string>E16114091618DE09009FC035</string>
@@ -619,14 +619,13 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E1CD22B51626047C0084D771</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E1CD21081625CE980084D771</string>
 		<string>E1CD21091625CE980084D771</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>8 59 1419 819 0 0 1440 878 </string>

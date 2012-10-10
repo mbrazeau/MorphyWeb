@@ -368,7 +368,7 @@ bool mfl_reopt_postorder(node *n, int nchar)
     bool fromclip = false;
      
     if (n->clip) {
-        n->clippath = true;
+        //n->clippath = true;
         return true;
     }
     
@@ -633,7 +633,6 @@ void mfl_reopt_preorder_ii(node *n, int nchar, charstate *changing)
 {
     
     node *dl, *dr;
-    bool allsame = false;
     
     if (n->tip) {
         return;
@@ -644,7 +643,6 @@ void mfl_reopt_preorder_ii(node *n, int nchar, charstate *changing)
     }
     
     if (n->success) {
-        //n->success = false;
         return;
     }
     
