@@ -197,48 +197,7 @@
 	<key>Notifications</key>
 	<array/>
 	<key>OpenEditors</key>
-	<array>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
-				<string>E162ED6A162751A300906691</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>coptim.c</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>E162ED6B162751A300906691</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>coptim.c</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>E162ED751627528E00906691</string>
-						<key>history</key>
-						<array>
-							<string>E162ED631627516000906691</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {1438, 833}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>2 4 1438 874 0 0 1440 878 </string>
-			</dict>
-		</dict>
-	</array>
+	<array/>
 	<key>PerspectiveWidths</key>
 	<array>
 		<integer>-1</integer>
@@ -359,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rearrange.c</string>
+								<string>coptim.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -367,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rearrange.c</string>
+										<string>coptim.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E162ED741627528E00906691</string>
+										<string>E162ED9E1627574200906691</string>
 										<key>history</key>
 										<array>
 											<string>E16114091618DE09009FC035</string>
@@ -394,9 +353,9 @@
 											<string>E1DDCE4116270D7700C6587F</string>
 											<string>E1DDCF2D1627237900C6587F</string>
 											<string>E162ED551627502A00906691</string>
-											<string>E162ED66162751A300906691</string>
 											<string>E162ED67162751A300906691</string>
-											<string>E162ED68162751A300906691</string>
+											<string>E162ED7D162754E400906691</string>
+											<string>E162ED9D1627574200906691</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -597,9 +556,8 @@
 		<string>E162ED5D1627502A00906691</string>
 		<string>E162ED5E1627502A00906691</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>E162ED6A162751A300906691</string>
+		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -976,7 +934,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

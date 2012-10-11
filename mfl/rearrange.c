@@ -24,6 +24,7 @@ mfl_searchrec * mfl_create_searchrec(void)
     newsearchrec->success = false;
     newsearchrec->niter_total = 0;
     newsearchrec->niter_ontree = 0;
+    newsearchrec->currentreplicate = 0;
     
     return newsearchrec;
 }

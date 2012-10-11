@@ -164,6 +164,7 @@ typedef struct {
     bool success;
     long int niter_total;
     long int niter_ontree;
+    int currentreplicate;
     //int *subtree_changes;
 } mfl_searchrec;
 
