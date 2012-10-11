@@ -10,7 +10,7 @@
 			E1688228161B18AE00418073 /* rearrange.c:703 */,
 			E1688299161B36F300418073 /* rearrange.c:258 */,
 			E1688329161B43FF00418073 /* rearrange.c:703 */,
-			E162ED8F162755AB00906691 /* coptim.c:941 */,
+			E162ED8F162755AB00906691 /* coptim.c:945 */,
 		);
 		codeSenseManager = E1B2E82D161703C50076343F /* Code sense */;
 		executables = (
@@ -347,7 +347,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 924";
 		rLen = 0;
-		rLoc = 24090;
+		rLoc = 24151;
 		rType = 0;
 		vrLen = 1494;
 		vrLoc = 22987;
@@ -367,7 +367,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 924";
 		rLen = 0;
-		rLoc = 24090;
+		rLoc = 24151;
 		rType = 0;
 		vrLen = 1494;
 		vrLoc = 22987;
@@ -397,7 +397,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 924";
 		rLen = 0;
-		rLoc = 24090;
+		rLoc = 24151;
 		rType = 0;
 		vrLen = 1588;
 		vrLoc = 22987;
@@ -437,7 +437,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 924";
 		rLen = 0;
-		rLoc = 24090;
+		rLoc = 24151;
 		rType = 0;
 		vrLen = 1588;
 		vrLoc = 22987;
@@ -447,7 +447,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 862";
 		rLen = 0;
-		rLoc = 22112;
+		rLoc = 22173;
 		rType = 0;
 		vrLen = 1183;
 		vrLoc = 21507;
@@ -457,12 +457,12 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 927";
 		rLen = 0;
-		rLoc = 23705;
+		rLoc = 23766;
 		rType = 0;
 		vrLen = 1590;
 		vrLoc = 22954;
 	};
-	E162ED8F162755AB00906691 /* coptim.c:941 */ = {
+	E162ED8F162755AB00906691 /* coptim.c:945 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
@@ -474,7 +474,7 @@
 		functionName = "mfl_trav_allviews()";
 		hitCount = 1;
 		ignoreCount = 0;
-		lineNumber = 941;
+		lineNumber = 945;
 		location = Morphy;
 		modificationTime = 371676598.472334;
 		originalNumberOfMultipleMatches = 1;
@@ -485,7 +485,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 957";
 		rLen = 0;
-		rLoc = 24123;
+		rLoc = 24184;
 		rType = 0;
 		vrLen = 1388;
 		vrLoc = 23457;
@@ -495,7 +495,7 @@
 		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
 		name = "coptim.c: 754";
 		rLen = 0;
-		rLoc = 19774;
+		rLoc = 19835;
 		rType = 0;
 		vrLen = 1210;
 		vrLoc = 14505;
@@ -868,7 +868,7 @@
 	};
 	E1ACBCA114A8BD34005BB9D5 /* main.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1144, 9982}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1144, 10822}}";
 			sepNavSelRange = "{27325, 0}";
 			sepNavVisRange = "{26342, 1314}";
 			sepNavWindowFrame = "{{2, 4}, {1438, 874}}";

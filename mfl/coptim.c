@@ -570,6 +570,10 @@ void mfl_reopt_preorder(node *n, int nchar)
         mfl_tip_apomorphies(dr, n, nchar);
     }
     
+    if (n->finished && n->clip) {
+        return;
+    }
+    
     mfl_reopt_preorder(n->next->outedge, nchar);
     mfl_reopt_preorder(n->next->next->outedge, nchar);
     
