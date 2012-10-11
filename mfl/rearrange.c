@@ -400,8 +400,6 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     // Reoptimize the clipped tree
     
-    mfl_desuccess_tree(swapingon, numnodes);
-    
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
     
     if (!base->tip) {
@@ -438,7 +436,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     mfl_join_nodes(up, up1);
     mfl_join_nodes(dn, dn1);
     
-    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
     
 }
 
@@ -692,7 +690,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 mfl_join_nodes(up, up1);
                 mfl_join_nodes(dn, dn1); 
                 
-                //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
             }
             else {
                 mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
@@ -705,8 +703,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         up = n->next->outedge;
         p = p->next;
     }   
-    
-    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
 }
 
 void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)

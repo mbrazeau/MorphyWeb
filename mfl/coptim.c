@@ -921,7 +921,7 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
     mfl_reopt_postorder(t->root, nchar);
-    //mfl_desuccess_tree(t, 2 * ntax - 1);
+    mfl_desuccess_tree(t, 2 * ntax - 1);
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
