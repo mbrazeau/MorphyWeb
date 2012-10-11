@@ -133,6 +133,9 @@ void mfl_free_trnodes(tree *newtree, int numnodes)
             if (newtree->trnodes[i]->origtemps) {
                 free(newtree->trnodes[i]->origtemps);
             }
+            if (newtree->trnodes[i]->origfinals) {
+                free(newtree->trnodes[i]->origfinals);
+            }
         }
         
         free(newtree->trnodes[i]);

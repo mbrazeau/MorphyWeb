@@ -369,7 +369,7 @@ bool mfl_reopt_postorder(node *n, int nchar)
     bool allsame = true;
      
     if (n->clip) {
-        //n->clippath = true;
+        n->clippath = true;
         return true;
     }
     
@@ -512,7 +512,7 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
         }
     }
     if (allsame) {
-        n->success = true;
+        n->finished = true;
         //n->finished = true;
     }
 }
@@ -544,9 +544,9 @@ void mfl_reopt_preorder(node *n, int nchar)
         return;
     }
     
-    /*if (n->success && !n->clippath) {
+    if (n->finished && !n->clippath) {
         return;
-    }*/
+    }
     
     if (!n->outedge || n->isroot) {
         mfl_set_rootstates(n, nchar);
@@ -558,14 +558,14 @@ void mfl_reopt_preorder(node *n, int nchar)
     if (!dl->tip) {
         mfl_reopt_comb(dl, n, nchar);
     }
-    else if (!dl->success) {
+    else if (!n->finished) {
         mfl_tip_apomorphies(dl, n, nchar);
     }
     
     if (!dr->tip) {
         mfl_reopt_comb(dr, n, nchar);
     }
-    else if (!dr->success) {
+    else if (!n->finished) {
         mfl_tip_apomorphies(dr, n, nchar);
     }
     
@@ -668,8 +668,6 @@ void mfl_reopt_preorder_ii(node *n, int nchar, charstate *changing)
     else if (!dr->success) {
         mfl_tip_apomorphies(dr, n, nchar);
     }
-    
-    //n->success = false;
     
     mfl_reopt_preorder_ii(n->next->outedge, nchar, changing);
     mfl_reopt_preorder_ii(n->next->next->outedge, nchar, changing);
@@ -820,15 +818,17 @@ void mfl_save_origstates(tree *t, int ntax, int numnodes, int nchar)
     node *p;
     nodearray tns = t->trnodes;
     
-    for (i = ntax; i < numnodes; ++i) {
+    for (i = 0; i < numnodes; ++i) {
         
         p = tns[i];
         
-        while (!p->tocalcroot) {
-            p = p->next;
-            if (p == tns[i]) {
-                break;
-                dbg_printf("Error: node has no apomorphies array\n");
+        if (p->next) {
+            while (!p->tocalcroot) {
+                p = p->next;
+                if (p == tns[i]) {
+                    break;
+                    dbg_printf("Error: node has no apomorphies array\n");
+                }
             }
         }
         
@@ -842,13 +842,16 @@ void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar)
     node *p;
     nodearray tns = t->trnodes;
     
-    for (i = ntax; i < numnodes; ++i) {
+    for (i = 0; i < numnodes; ++i) {
         p = tns[i];
-        while (!p->tocalcroot) {
-            p = p->next;
-            if (p == tns[i]) {
-                break;
-                dbg_printf("Error: node has no apomorphies array\n");
+        
+        if (p->next) {
+            while (!p->tocalcroot) {
+                p = p->next;
+                if (p == tns[i]) {
+                    break;
+                    dbg_printf("Error: node has no apomorphies array\n");
+                }
             }
         }
         mfl_restore_originals(p, p->origfinals, nchar);
@@ -918,7 +921,8 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int 
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
     mfl_reopt_postorder(t->root, nchar);
-    mfl_desuccess_tree(t, 2 * ntax - 1);
+    //mfl_desuccess_tree(t, 2 * ntax - 1);
+    mfl_definish_tree(t, 2 * ntax - 1);
     mfl_reopt_preorder(t->root, nchar);
     mfl_undo_temproot(ntax, t);
     //mfl_tip_reopt(t, ntax, nchar);

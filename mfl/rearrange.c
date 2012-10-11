@@ -385,7 +385,9 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     int diff = 0;
     
-    node *up1, *dn1;
+    node *up1, *dn1, *base;
+    
+    base = subtr->next->outedge;
     
     up->visited = 1;
     dn->visited = 1;
@@ -402,18 +404,15 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
     
-    if (!subtr->next->outedge->tip) {
-        mfl_set_rootstates(subtr->next->outedge, nchar);
-        //mfl_subtr_allviews(subtr->next->outedge, swapingon, nchar, NULL);
+    if (!base->tip) {
+        mfl_set_rootstates(base, nchar);
     }
     else {
-        memcpy(subtr->next->outedge->apomorphies, subtr->next->outedge->tempapos, nchar * sizeof(charstate));
+        memcpy(base->apomorphies, base->tempapos, nchar * sizeof(charstate));
     }
     
-    diff = 0;
-    
     // Determine the cost of local reinsertion
-    diff = mfl_subtr_reinsertion(subtr->next->outedge, up, dn, nchar);
+    diff = mfl_subtr_reinsertion(base, up, dn, nchar);
     
     // Begin attempting reinsertions
 
@@ -438,6 +437,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     mfl_join_nodes(up, up1);
     mfl_join_nodes(dn, dn1);
+    
+    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
     
 }
 
@@ -470,7 +471,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         if (searchrec->success) {
             return;
         }
-            
+        
         subtr = p->next->next;
         subtr->next->outedge->skip = true;
 
@@ -601,10 +602,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
     if (n->tip || searchrec->success) {
         return;
     }
-    
-    /*if (n->skip) {
-        return;
-    }*/
     
     dn = n->outedge;
     
