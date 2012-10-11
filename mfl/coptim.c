@@ -132,12 +132,13 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
 void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar)
 {
     int i;
-    charstate lft_chars, rt_chars;
+    charstate *lft_chars = leftdesc->apomorphies;
+    charstate *rt_chars = rightdesc->apomorphies;
+    charstate *anc_chars = ancestor->apomorphies;
+
     
     for (i = 0; i < nchar; ++i) {
-        lft_chars = leftdesc->apomorphies[i];
-        rt_chars = rightdesc->apomorphies[i];
-        ancestor->apomorphies[i] = lft_chars | rt_chars;
+        anc_chars[i] = lft_chars[i] | rt_chars[i];
     }
 }
 
@@ -514,7 +515,6 @@ void mfl_reopt_comb(node *n, node *anc, int nchar)
     }
     if (allsame) {
         n->finished = true;
-        //n->finished = true;
     }
 }
 
