@@ -863,11 +863,13 @@ void mfl_definish_tree(tree *t, int numnodes)
     node *p;
     for (i = 0; i < numnodes; ++i) {
         t->trnodes[i]->finished = false;
+        t->trnodes[i]->changed = false;
         
         if (t->trnodes[i]->next) {
             p = t->trnodes[i]->next;
             while (p != t->trnodes[i]) {
                 p->finished = false;
+                p->changed = false;
                 p = p->next;
             }
         }
@@ -885,6 +887,23 @@ void mfl_desuccess_tree(tree *t, int numnodes)
             p = t->trnodes[i]->next;
             while (p != t->trnodes[i]) {
                 p->success = false;
+                p = p->next;
+            }
+        }
+    }
+}
+
+void mfl_erase_clippath(tree *t, int numnodes)
+{
+    int i;
+    node *p;
+    for (i = 0; i < numnodes; ++i) {
+        t->trnodes[i]->clippath = false;
+        
+        if (t->trnodes[i]->next) {
+            p = t->trnodes[i]->next;
+            while (p != t->trnodes[i]) {
+                p->clippath = false;
                 p = p->next;
             }
         }

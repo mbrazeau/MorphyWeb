@@ -299,15 +299,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             swapingon->compressedtr = mfl_compress_tree(swapingon, ntax, numnodes);
             searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
             
-            if (!subtr->next->outedge->tocalcroot && !subtr->next->outedge->tip) {
-                //dbg_printf("Leaving regraft on shorter tree !OK\n");
-            }
-            
             return;
-        }
-        
-        if (!subtr->next->outedge->tocalcroot && !subtr->next->outedge->tip) {
-            //dbg_printf("Starting regraft on new tree !OK\n");
         }
         
         searchrec->foundbettertr = false;
@@ -347,11 +339,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         mfl_join_nodes(n, up);
     }
     
-    if (!subtr->next->outedge->tocalcroot && !subtr->next->outedge->tip) {
-        //dbg_printf("Leaving regraft on new tree !OK\n");
-    }
-    
-    if (n->tip /*&& !n->start*/) {
+    if (n->tip) {
         return;
     }
 

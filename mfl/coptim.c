@@ -544,9 +544,9 @@ void mfl_reopt_preorder(node *n, int nchar)
         return;
     }
     
-    if (n->success && !n->clippath) {
+    /*if (n->success && !n->clippath) {
         return;
-    }
+    }*/
     
     if (!n->outedge || n->isroot) {
         mfl_set_rootstates(n, nchar);
@@ -756,7 +756,7 @@ charstate *mfl_get_changing(node *n, node *up, node *dn, int nchar)
     //dbg_printf("\nexpected to change:\n");
     for (i = 0; i < nchar; ++i) {
         //dbg_printf("char: %i, p: %i, f: %i, af: %i ", i, prelims[i], finals[i], n->outedge->apomorphies[i]);
-        if (prelims[i] != finals[i] && prelims[i] != IS_APPLIC && finals[i] != IS_APPLIC) {
+        if (prelims[i] != finals[i]) {
             changing[j] = i + 1;
             //dbg_printf("%i ", i);
             ++j;
@@ -899,7 +899,6 @@ void mfl_subtr_allviews(node *base, tree *t, int nchar, int numnodes, charstate 
     base->isroot = true;
     mfl_desuccess_tree(t, numnodes);
     //mfl_reopt_postorder(base, nchar);
-        
     //mfl_reopt_preorder(base, nchar);
     //dbg_printf("actually changing:\n");
     mfl_reopt_preorder_ii(base, nchar, changing);
