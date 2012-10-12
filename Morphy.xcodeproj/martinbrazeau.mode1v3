@@ -274,8 +274,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>29</integer>
-									<integer>27</integer>
+									<integer>19</integer>
+									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>main.c</string>
+								<string>coptim.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>main.c</string>
+										<string>coptim.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E162EDBE16275B4300906691</string>
+										<string>E162EDF416275F1100906691</string>
 										<key>history</key>
 										<array>
 											<string>E16114091618DE09009FC035</string>
@@ -351,11 +351,12 @@
 											<string>E1CD21051625CE980084D771</string>
 											<string>E1DDCDE71626F4B000C6587F</string>
 											<string>E1DDCE4116270D7700C6587F</string>
-											<string>E1DDCF2D1627237900C6587F</string>
 											<string>E162ED67162751A300906691</string>
 											<string>E162EDB816275B2300906691</string>
-											<string>E162EDBC16275B4300906691</string>
-											<string>E162EDBD16275B4300906691</string>
+											<string>E162EDD116275E2E00906691</string>
+											<string>E162EDF116275F1100906691</string>
+											<string>E162EDF216275F1100906691</string>
+											<string>E162EDF316275F1100906691</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -553,6 +554,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E162ED5D1627502A00906691</string>
 		<string>E162ED5E1627502A00906691</string>
 		<string>1CD10A99069EF8BA00B06720</string>
@@ -577,8 +579,6 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -601,6 +601,8 @@
 							<string>273pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -795,14 +797,12 @@
 							<key>Dock</key>
 							<array>
 								<dict>
-									<key>BecomeActive</key>
-									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>coptim.c</string>
+										<string>morphy.h</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -823,6 +823,8 @@
 							<string>359pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -858,8 +860,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>E1DDCD901626EE1600C6587F</string>
-				<string>E1DDCD911626EE1600C6587F</string>
+				<string>E162EDDE16275EA400906691</string>
+				<string>E162EDDF16275EA400906691</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>

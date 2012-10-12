@@ -201,7 +201,6 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
-void mfl_reopt_subtr(node *src, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);
 void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar);
 void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
@@ -229,7 +228,7 @@ void mfl_copy_originals(node *n, charstate *originals, int nchar);
 void mfl_restore_originals(node *n, charstate *originals, int nchar);
 void mfl_save_origstates(tree *t, int ntax, int numnodes, int nchar);
 void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar);
-void mfl_subtr_allviews(node *base, tree *t, int nchar, int numnodes, charstate *changing);
+void mfl_reopt_subtr(node *base, tree *t, int nchar, int numnodes, charstate *changing);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_set_rootstates(node *n, int nchar);

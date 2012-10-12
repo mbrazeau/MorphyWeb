@@ -656,7 +656,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 atip = mfl_find_atip(base);
                 
                 // Reoptimize the subtree and determine the cost of local reinsertion
-                mfl_subtr_allviews(base, swapingon, nchar, numnodes, changing);
+                mfl_reopt_subtr(base, swapingon, nchar, numnodes, changing);
                 
                 diff = mfl_subtr_reinsertion(base, up, dn, nchar);
                 

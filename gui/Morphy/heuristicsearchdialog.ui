@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
-    <height>240</height>
+    <width>477</width>
+    <height>236</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,27 +39,6 @@
    </item>
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="4" column="0">
-      <widget class="QCheckBox" name="checkBox_3">
-       <property name="text">
-        <string>Random</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="checkBox_2">
-       <property name="text">
-        <string>Advancement Index</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="checkBox">
-       <property name="text">
-        <string>Input Order</string>
-       </property>
-      </widget>
-     </item>
      <item row="5" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -86,6 +65,36 @@
         <widget class="QLineEdit" name="lineEdit"/>
        </item>
       </layout>
+     </item>
+     <item row="0" column="0">
+      <widget class="QRadioButton" name="radioButton">
+       <property name="text">
+        <string>Input Order</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroup_2</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QRadioButton" name="radioButton_2">
+       <property name="text">
+        <string>Advancement Index</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroup_2</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QRadioButton" name="radioButton_3">
+       <property name="text">
+        <string>Random</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroup_2</string>
+       </attribute>
+      </widget>
      </item>
     </layout>
    </item>
@@ -131,24 +140,33 @@ Resampled</string>
    <item row="3" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QCheckBox" name="checkBox_5">
+      <widget class="QRadioButton" name="radioButton_5">
        <property name="text">
         <string>TBR</string>
        </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroup</string>
+       </attribute>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox_6">
+      <widget class="QRadioButton" name="radioButton_6">
        <property name="text">
         <string>SPR</string>
        </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroup</string>
+       </attribute>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox_7">
+      <widget class="QRadioButton" name="radioButton_7">
        <property name="text">
         <string>NNI</string>
        </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroup</string>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -200,4 +218,8 @@ Resampled</string>
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
 </ui>
