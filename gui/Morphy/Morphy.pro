@@ -14,14 +14,17 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     heuristicsearchdialog.cpp \
     taxadialog.cpp \
-    charactersdialog.cpp
+    charactersdialog.cpp \
+    treeviewer.cpp
 
 HEADERS  += mainwindow.h \
     heuristicsearchdialog.h \
     taxadialog.h \
-    charactersdialog.h
+    charactersdialog.h \
+    treeviewer.h
 
 FORMS    += mainwindow.ui \
     heuristicsearchdialog.ui \
     taxadialog.ui \
-    charactersdialog.ui
+    charactersdialog.ui \
+    treeviewer.ui
