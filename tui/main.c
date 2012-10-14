@@ -489,7 +489,7 @@ void test_char_optimization(void)
 
     mfl_undo_temproot(ntax, testtree);
     //mfl_wipe_states(testtree->trnodes[ntax], nchar);
-    mfl_trav_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL, NULL);
+    mfl_trav_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL);
     
     diff = mfl_get_treelen(testtree, ntax, nchar, NULL);
     printf("length of three after clipping: %i\n", diff);

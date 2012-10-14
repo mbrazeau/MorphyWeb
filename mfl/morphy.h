@@ -108,6 +108,7 @@ typedef struct node {
     int minsteps;
     int maxsteps;
     int charstates;
+    charstate *ancunion;
     charstate *origfinals;
     charstate *origtemps; // Temporary storage for the original set
     charstate *tempapos;
@@ -210,19 +211,20 @@ void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, 
 int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
 void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen);
-void mfl_reopt_comb(node *n, node *anc, int nchar);
+void mfl_reopt_comb(node *n, node *anc, int nchar, charstate *changing);
 void mfl_combine_up(node *n, node *anc, int nchar);
 void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
-void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
-bool mfl_reopt_postorder(node *n, int nchar);
-void mfl_reopt_preorder(node *n, int nchar);
+void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, charstate *changing);
+bool mfl_reopt_postorder(node *n, int nchar, charstate *changing);
+void mfl_reopt_preorder(node *n, int nchar, charstate *changing);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
 int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
-charstate *mfl_get_changing(node *n, node *up, node *dn, int nchar);
+charstate *mfl_get_subtr_changing(node *n, node *up, node *dn, int nchar);
+charstate *mfl_get_tgt_changing(node *n, node *crownprt, node *rootprt, int nchar);
 void mfl_wipe_states(node *n, int nchar);
-void mfl_tip_apomorphies(node *tip, node *anc, int nchar);
+void mfl_tip_apomorphies(node *tip, node *anc, int nchar, charstate *changing);
 void mfl_tip_reopt(tree *t, int ntax, int nchar);
 void mfl_copy_originals(node *n, charstate *originals, int nchar);
 void mfl_restore_originals(node *n, charstate *originals, int nchar);
@@ -230,7 +232,7 @@ void mfl_save_origstates(tree *t, int ntax, int numnodes, int nchar);
 void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar);
 void mfl_reopt_subtr(node *base, tree *t, int nchar, int numnodes, charstate *changing);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
-void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
+void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, charstate *changing);
 void mfl_set_rootstates(node *n, int nchar);
 
 /*in drawtree*/

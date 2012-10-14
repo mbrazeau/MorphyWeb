@@ -388,6 +388,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     node *up1, *dn1, *base;
     
+    charstate *tgtchanging = mfl_get_tgt_changing(p, up, dn, nchar);
+    
     base = subtr->next->outedge;
     
     up->visited = 1;
@@ -401,7 +403,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     // Reoptimize the clipped tree
     
-    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, tgtchanging);
+    free(tgtchanging);
     
     if (!base->tip) {
         mfl_set_rootstates(base, nchar);
@@ -415,7 +418,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     // Begin attempting reinsertions
 
-    mfl_regrafting_traversal(up, subtr, swapingon, 
+    /*mfl_regrafting_traversal(up, subtr, swapingon, 
                              savedtrees, ntax, nchar, numnodes, searchrec, diff);
     if (searchrec->success) {
         up->visited = 0;
@@ -424,6 +427,9 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
         return;
     }
     mfl_regrafting_traversal(dn, subtr, swapingon, 
+                             savedtrees, ntax, nchar, numnodes, searchrec, diff);*/
+
+    mfl_regrafting_traversal(swapingon->trnodes[0]->outedge, subtr, swapingon, 
                              savedtrees, ntax, nchar, numnodes, searchrec, diff);
     
     up->visited = 0;
@@ -474,7 +480,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         subtr = p->next->next;
         subtr->next->outedge->skip = true;
 
-        mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+        mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
         
         subtr->next->outedge->skip = false;
         
@@ -486,7 +492,7 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         up = n->next->outedge;
     } 
 
-    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
 }
 
 node *mfl_find_atip(node *n)
@@ -642,20 +648,17 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 bc2->origbase = true;
 
                 //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-                charstate *changing = mfl_get_changing(base, up, dn, nchar);
+                charstate *changing = mfl_get_subtr_changing(base, up, dn, nchar);
+                charstate *tgtchanging = mfl_get_tgt_changing(n, up, dn, nchar);
                 
                 //Clip the tree
                 mfl_join_nodes(up, dn);
                 up->clip = true;
-                //dn->clip = true;
                 
-                //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-                
-                mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, NULL, NULL);
+                mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, tgtchanging);
                 
                 atip = mfl_find_atip(base);
                 
-                // Reoptimize the subtree and determine the cost of local reinsertion
                 mfl_reopt_subtr(base, swapingon, nchar, numnodes, changing);
                 
                 diff = mfl_subtr_reinsertion(base, up, dn, nchar);
@@ -678,6 +681,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 base->skip = false;
                 
                 free(changing);
+                free(tgtchanging);
                 
                 if (searchrec->success) {
                     return;
@@ -694,7 +698,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
             }
             else {
-                mfl_spr_cliptrees(p, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+                mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
                 if (searchrec->success) {
                     return;
                 }
@@ -704,6 +708,8 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         up = n->next->outedge;
         p = p->next;
     }   
+    
+    
 }
 
 void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
