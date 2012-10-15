@@ -159,13 +159,13 @@ typedef struct {
     bool undertreelimit;
     int bestlength;         // Best tree length over all iterations
     int bestinrep;          // Best tree length in current iteration of search
-    int trbufstart;         // Position in buffer of first tree to undergo rearrangement
+    long int trbufstart;         // Position in buffer of first tree to undergo rearrangement
     //int tipscoll;
     bool foundbettertr;
     bool success;
     long int niter_total;
     long int niter_ontree;
-    int currentreplicate;
+    long int currentreplicate;
     //int *subtree_changes;
 } mfl_searchrec;
 
@@ -199,7 +199,7 @@ void mfl_set_tipsabove(node *n, int numfields, taxbipart **hashtab, int *bpcount
 void mfl_free_hashtab(taxbipart **hashtab, int numbiparts);
 taxbipart **mfl_tree_biparts(tree *t,int ntax, int numnodes);
 bool mfl_compare_trees(taxbipart **t1, taxbipart **t2, int ntax, int numfields);
-bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, int *start, long int *last);
+bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numnodes, long int *start, long int last);
 void test_tree_comparison(void);
 int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 

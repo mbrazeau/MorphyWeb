@@ -324,9 +324,18 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             mfl_join_nodes(down, n);
 
             
-            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &searchrec->trbufstart, &searchrec->nextinbuffer)) 
+            if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &searchrec->trbufstart, searchrec->nextinbuffer)) 
             {
-                
+                if (searchrec->currentreplicate > 0) {
+                    if (trlength == searchrec->bestlength) {
+                        long int bstart = 0;
+                        if (mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &bstart, searchrec->trbufstart)) {
+                            mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
+                            searchrec->success = true;
+                            return;
+                        }
+                    }
+                }
                 savedtrees[searchrec->nextinbuffer] = mfl_copytree(swapingon, ntax, numnodes);
                 savedtrees[searchrec->nextinbuffer]->index = searchrec->nextinbuffer;
                 savedtrees[searchrec->nextinbuffer]->length = trlength;
@@ -334,7 +343,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                 searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
             }
             trlength = 0;
-        
         }
         
         mfl_join_nodes(n, up);
@@ -748,7 +756,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     int ntax = mfl_handle->n_taxa, nchar = mfl_handle->n_chars;
     int numnodes = mfl_calc_numnodes(ntax);
     long int i = 0, j = 0;
-    long int nreps = 0;
+    long int nreps = mfl_handle->n_iterations;
     double timein = 0;
     double timeout = 0;
     bool quit = false;
@@ -769,18 +777,15 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
      * addition sequence. The variable nreps is the number of times an initial
      * tree is generated using random addition sequence. */
     
-    /*testing only*/
-    nreps = 1;
-    /* end testing only*/
-    
     branch_swapper = mfl_swap_controller(mfl_handle);
     
     for (i = 0; i < nreps; ++i) {
         
         newreptree = mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, mfl_handle->addseq_type, savedtrees);
-        
+        searchrec->currentreplicate = i;
         
         if (i == 0) {
+            dbg_printf("Replicate: %li\n", i + 1);
             /* The particular addition sequence will have to be selected by the user */
             savedtrees[0] = newreptree;
             savedtrees[0]->compressedtr = mfl_compress_tree(savedtrees[0], ntax, numnodes);
@@ -797,14 +802,15 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             /* END TESTING ONLY */
         }
         else {
-            
+            dbg_printf("Replicate: %li\n", i + 1);
+            dbg_printf("next in buff at start of rep: %li\n", searchrec->nextinbuffer);
             savedtrees[searchrec->nextinbuffer] = newreptree;
             searchrec->bestinrep = mfl_all_views(savedtrees[searchrec->nextinbuffer], ntax, nchar, &searchrec->bestinrep);
-            dbg_printf("Best length in replicate: %i\n", searchrec->bestinrep);
+            //dbg_printf("Best length in replicate: %i\n", searchrec->bestinrep);
             j = searchrec->nextinbuffer;
             searchrec->trbufstart = searchrec->nextinbuffer;
             searchrec->foundbettertr = false;
-            dbg_printf("j = %li\n", searchrec->nextinbuffer);
+            //dbg_printf("j = %li\n", searchrec->nextinbuffer);
             quit = false;
             //break;
         }
@@ -828,13 +834,15 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             
             if (searchrec->foundbettertr) {
                 if (i > 0) {
-                    dbg_printf("trbuf start %i\n", searchrec->trbufstart);
+                    //dbg_printf("trbuf start %li\n", searchrec->trbufstart);
                 }
                 j = searchrec->trbufstart;
             }
             else {
                 savedtrees[j]->swapped = true;
-                mfl_free_trnodes(savedtrees[j], numnodes);
+                /*if (savedtrees[j]->trnodes) {
+                    mfl_free_trnodes(savedtrees[j], numnodes);
+                }*/
                 ++j;
             }
             
@@ -842,8 +850,6 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
                 dbg_printf("number of rearrangements tried: %li\n", searchrec->niter_total);
                 quit = true;
             }
-            
-            //dbg_printf("saved trees: %li\n", searchrec->nextinbuffer);
             
         } while (!quit);
         
@@ -878,7 +884,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
-    dbg_printf("\nThe optimal tree(s) found by subtree pruning and regrafting:\n");
+    dbg_printf("\nThe optimal tree(s) found by heuristic search:\n");
     /*for (j = 0; j < searchrec->nextinbuffer; ++j) {
         dbg_printf("TREE str_%li = [&U] ", j+1);
         mfl_root_tree(savedtrees[j], 0, ntax);
