@@ -791,15 +791,8 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             savedtrees[0]->compressedtr = mfl_compress_tree(savedtrees[0], ntax, numnodes);
             searchrec->bestinrep = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestinrep);
             searchrec->bestlength = searchrec->bestinrep;
-            
             j = 0;
-            
-            /* TESTING ONLY */
-            //dbg_printf("The starting tree:\n");
-            //printNewick(savedtrees[0]->trnodes[0]);
-            //dbg_printf("\n");
-            dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
-            /* END TESTING ONLY */
+            //dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
         }
         else {
             dbg_printf("Replicate: %li\n", i + 1);
@@ -840,9 +833,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             }
             else {
                 savedtrees[j]->swapped = true;
-                /*if (savedtrees[j]->trnodes) {
+                if (savedtrees[j]->trnodes) {
                     mfl_free_trnodes(savedtrees[j], numnodes);
-                }*/
+                }
                 ++j;
             }
             
