@@ -1220,8 +1220,8 @@ void mfl_reinit_tbinrange(tree **treebuffer, tree *newbest, long int start, long
 
 void mfl_reinit_treebuffer(tree **treebuffer, tree *newbest, long int *numsavedtrees, int numnodes)
 {    
-    //dbg_printf("Found shorter tree. Reinitializing the treebuffer\n");
-    //dbg_printf("Best tree length: %i\n", newbest->length);
+    dbg_printf("Found shorter tree. Reinitializing the treebuffer\n");
+    dbg_printf("Best tree length: %i\n", newbest->length);
     int i;
     for (i = 0; i < *numsavedtrees; ++i) {
         if (treebuffer[i] && treebuffer[i] != newbest) {

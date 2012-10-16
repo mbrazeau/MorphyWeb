@@ -97,7 +97,7 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     charstate *tgt2apos = tgt2->apomorphies;
    
     for (i = 0; i < nchar; ++i) {
-        if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
+        if ( !(*(srctemps++) & (*(tgt1apos++) | *(tgt2apos++))) ) {
             ++cost;
             if (cost > diff) {
                 return cost;
@@ -552,6 +552,48 @@ void mfl_set_rootstates(node *n, int nchar)
     }
 }
 
+void mfl_reopt_rootstates(node *n, int nchar, int *changing)
+{
+    int i, c;
+    charstate lft_chars, rt_chars, temp;
+    bool allsame = false;
+    
+    charstate *ldtemps = n->next->outedge->tempapos;
+    charstate *rdtemps = n->next->next->outedge->tempapos;
+    charstate *antemps = n->apomorphies;
+    
+    for (c = 0; changing[c]; ++c) {
+        i = changing[c]-1;
+        if (ldtemps[i] & rdtemps[i]) 
+        {
+            temp = ldtemps[i] & rdtemps[i];
+            if (temp != antemps[i]) {
+                antemps[i] = temp;
+                allsame = false;
+            }
+        }
+        else
+        {
+            lft_chars = ldtemps[i];
+            rt_chars = rdtemps[i];
+            
+            temp = lft_chars | rt_chars;
+            
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                temp = temp & IS_APPLIC;
+            }
+            
+            if (temp != antemps[i]) {
+                antemps[i] = temp;
+                allsame = false;
+            }
+        }
+    }
+    if (allsame) {
+        n->finished = true;
+    }
+}
+
 void mfl_reopt_preorder(node *n, int nchar, int *changing)
 {
     
@@ -566,7 +608,10 @@ void mfl_reopt_preorder(node *n, int nchar, int *changing)
     }
     
     if (!n->outedge || n->isroot) {
-        mfl_set_rootstates(n, nchar);
+        mfl_reopt_rootstates(n, nchar, changing);
+        if (n->finished) {
+            return;
+        }
     }
     
     dl = n->next->outedge;
@@ -585,10 +630,6 @@ void mfl_reopt_preorder(node *n, int nchar, int *changing)
     else if (!n->finished) {
         mfl_tip_apomorphies(dr, n, nchar, changing);
     }
-    
-    /*if (n->finished && n->clip) {
-        return;
-    }*/
     
     mfl_reopt_preorder(n->next->outedge, nchar, changing);
     mfl_reopt_preorder(n->next->next->outedge, nchar, changing);
