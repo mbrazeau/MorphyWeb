@@ -135,12 +135,10 @@ bool mfl_compare_alltrees(tree *newtopol, tree **savedtrees, int ntax, int numno
      * if/when somebody loads a noisy dataset. */
     
     for (i = last; i > *start; --i) {
-        //if (savedtrees[i]->compressedtr) { // <- This condition is a possible source of error.
         if (!mfl_compare_trees(newtr, savedtrees[i-1]->compressedtr, ntax)) {
             foundtr = true;
             break;
         }
-        //}
     }
     
     if (foundtr) {

@@ -265,11 +265,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     node *up;
     bool was_skipped = false;
     
-    if (n->outedge->skip) {
-        was_skipped = true;
-        n->outedge->skip = false;
-    }
-    
     if (!(n->visited) && !(n->outedge->visited)) {
         up = n->outedge;
         
@@ -336,11 +331,13 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                         }
                     }
                 }
+                
                 savedtrees[searchrec->nextinbuffer] = mfl_copytree(swapingon, ntax, numnodes);
                 savedtrees[searchrec->nextinbuffer]->index = searchrec->nextinbuffer;
                 savedtrees[searchrec->nextinbuffer]->length = trlength;
                 savedtrees[searchrec->nextinbuffer]->swapped = false;
                 searchrec->nextinbuffer = searchrec->nextinbuffer + 1;
+                
             }
             trlength = 0;
         }
@@ -354,18 +351,11 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
 
     mfl_regrafting_traversal(n->next->outedge, subtr, swapingon, savedtrees, ntax,
                                  nchar, numnodes, searchrec, diff);
-    /*if (searchrec->foundbettertr) {
+    if (searchrec->success) {
         return;
-    }*/
+    }
     mfl_regrafting_traversal(n->next->next->outedge, subtr, swapingon, savedtrees, ntax,
                              nchar, numnodes, searchrec, diff);
-    /*if (searchrec->foundbettertr) {
-        return;
-    }*/
-    
-    if (was_skipped) {
-        n->outedge->skip = true;
-    }
 
 }
 
@@ -538,6 +528,10 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
         up->visited = 0;
         dn->visited = 0;
     }
+    else {
+        base->skip = false;
+    }
+
     
     searchrec->niter_total = searchrec->niter_total + 1;
     
@@ -546,6 +540,7 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     if (searchrec->success) {
         up->visited = 1;
         dn->visited = 1;
+        base->skip = true;
         return;
     }
     mfl_regrafting_traversal(dn, subtr, swapingon, 
@@ -553,6 +548,7 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, 
     
     up->visited = 1;
     dn->visited = 1;
+    base->skip = true;
     
     if (searchrec->success) {
         return;
