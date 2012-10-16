@@ -264,6 +264,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     int al = 0;
     node *up;
     bool was_skipped = false;
+    static bool island = false;
     
     if (!(n->visited) && !(n->outedge->visited)) {
         up = n->outedge;
@@ -274,6 +275,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         searchrec->niter_total = searchrec->niter_total + 1;
 
         if (trlength < searchrec->bestinrep) {
+            
+            island = true;
+            
             counter = 0;
             
             mfl_join_nodes(subtr->next->next, up);
@@ -321,6 +325,10 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             
             if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &searchrec->trbufstart, searchrec->nextinbuffer)) 
             {
+                if (island) {
+                    dbg_printf("length: %i\n", searchrec->bestinrep);
+                    island = false;
+                }
                 if (searchrec->currentreplicate > 0) {
                     if (trlength == searchrec->bestlength) {
                         long int bstart = 0;
@@ -476,14 +484,16 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
         }
         
         subtr = p->next->next;
-        subtr->next->outedge->skip = true;
-
-        mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-        
-        subtr->next->outedge->skip = false;
-        
-        if (searchrec->success) {
-            return;
+        if (!subtr->next->outedge->skip) {
+            subtr->next->outedge->skip = true;
+            
+            mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
+            
+            subtr->next->outedge->skip = false;
+            
+            if (searchrec->success) {
+                return;
+            }
         }
         
         p = p->next;
@@ -675,7 +685,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 bc2->origbase = false;
                 up->clip = false;
                 dn->clip = false;
-                base->skip = false;
+                //base->skip = false;
                 
                 free(changing->srcchanging);
                 free(changing->tgtchanging);
