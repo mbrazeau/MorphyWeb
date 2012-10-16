@@ -9,6 +9,32 @@
 #include "morphy.h"
 #include <time.h>
 
+/*void check_double_skip(nodearray nds, int numnodes)
+{
+    int i, skipcount = 0;
+    node *p;
+    bool fndskips = false;
+    
+    for (i = 0; i < numnodes; ++i) {
+        if (nds[i]->skip) {
+            ++skipcount;
+        }
+        if (nds[i]->next) {
+            p = nds[i]->next;
+            while (p != nds[i]) {
+                if (p->skip) {
+                    ++skipcount;
+                }
+                p = p->next;
+            }
+        }
+    }
+    
+    if (skipcount > 1) {
+        dbg_printf("doubleskip: %i\n", skipcount);
+    }
+}*/
+
 mfl_searchrec * mfl_create_searchrec(void)
 {
     mfl_searchrec *newsearchrec;
@@ -263,7 +289,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     int trlength = 0;
     int al = 0;
     node *up;
-    bool was_skipped = false;
     static bool island = false;
     
     if (!(n->visited) && !(n->outedge->visited)) {
@@ -495,6 +520,10 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
                 return;
             }
         }
+        else {
+            subtr->next->outedge->skip = false;
+        }
+
         
         p = p->next;
         up = n->next->outedge;
@@ -685,7 +714,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 bc2->origbase = false;
                 up->clip = false;
                 dn->clip = false;
-                //base->skip = false;
+                base->skip = false;
                 
                 free(changing->srcchanging);
                 free(changing->tgtchanging);
@@ -711,6 +740,10 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 }
             }
         }
+        else {
+            base->skip = false;
+        }
+
                 
         up = n->next->outedge;
         p = p->next;
