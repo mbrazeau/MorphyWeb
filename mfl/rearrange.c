@@ -435,12 +435,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     // Reoptimize the clipped tree
     
     //mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, tgtchanging);
-    
-    mfl_erase_clippath(swapingon, numnodes);
-    mfl_definish_tree(swapingon, numnodes);
-    mfl_temproot(swapingon, 0, ntax);
-    mfl_partial_downpass(dn, nchar, tgtchanging);
-    mfl_undo_temproot(ntax, swapingon);
+        
+    mfl_partial_downpass(dn, swapingon, numnodes, ntax, nchar, tgtchanging);
     
     free(tgtchanging);
     
@@ -716,7 +712,9 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
                 mfl_join_nodes(up, dn);
                 up->clip = true;
                 
-                mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, changing->tgtchanging);
+                //mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, changing->tgtchanging);
+                
+                mfl_partial_downpass(dn, swapingon, numnodes, ntax, nchar, changing->tgtchanging);
                 
                 atip = mfl_find_atip(base);
                 

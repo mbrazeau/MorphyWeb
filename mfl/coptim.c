@@ -364,51 +364,52 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
     }
 }
 
-void mfl_partial_downpass(node *n, int nchar, int *changing)
+void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, int *changing)
 {
     
     node *p;
-    
     p = n;
     
-    //dbg_printf("BEGIN A TREE\n");
+    mfl_erase_clippath(t, numnodes);
+    mfl_definish_tree(t, numnodes);
+    mfl_temproot(t, 0, ntax);
+    
     
     while (p->outedge && !p->tip) {
         
         p = p->next;
         
         if (p->tocalcroot || !p->outedge) {
+            
             p->clippath = true;
             
             mfl_reopt_fitch(p->next->outedge, p->next->next->outedge, p, nchar, changing);
             
             if (p->success && p->outedge) {
-                if (p->outedge->tip) {
-                    //dbg_printf("found calcroot\n");
-                    mfl_reopt_preorder(p, nchar, changing);
-                    return;
-                }
                 
-                if (p->outedge->next->tocalcroot) {
-                    mfl_reopt_preorder(p->outedge->next, nchar, changing);
+                /* POTENTIAL PROBLEM AREA: Never gets tested by datasets*/
+                
+                /*if (p->next->outedge->tocalcroot) {
+                    mfl_reopt_preorder(p->next->outedge, nchar, changing);
+                    break;
                 }
-                else {
-                    mfl_reopt_preorder(p->outedge->next->next, nchar, changing);
-                }
-                return;
-            }
-            
-            
-                        
-            if (!p->outedge) {
-                //dbg_printf("found calcroot\n");
+                else if (p->next->next->outedge->tocalcroot) {
+                    mfl_reopt_preorder(p->next->next->outedge, nchar, changing);
+                    break;
+                }*/
                 mfl_reopt_preorder(p, nchar, changing);
                 return;
+            }
+            if (!p->outedge) {
+                mfl_reopt_preorder(p, nchar, changing);
+                break;
             }
             p = p->outedge;
         }
     
     }
+    
+    mfl_undo_temproot(ntax, t);
     
 }
 
