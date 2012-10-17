@@ -364,8 +364,57 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
     }
 }
 
+void mfl_partial_downpass(node *n, int nchar, int *changing)
+{
+    
+    node *p;
+    
+    p = n;
+    
+    //dbg_printf("BEGIN A TREE\n");
+    
+    while (p->outedge && !p->tip) {
+        
+        p = p->next;
+        
+        if (p->tocalcroot || !p->outedge) {
+            p->clippath = true;
+            
+            mfl_reopt_fitch(p->next->outedge, p->next->next->outedge, p, nchar, changing);
+            
+            if (p->success && p->outedge) {
+                if (p->outedge->tip) {
+                    //dbg_printf("found calcroot\n");
+                    mfl_reopt_preorder(p, nchar, changing);
+                    return;
+                }
+                
+                if (p->outedge->next->tocalcroot) {
+                    mfl_reopt_preorder(p->outedge->next, nchar, changing);
+                }
+                else {
+                    mfl_reopt_preorder(p->outedge->next->next, nchar, changing);
+                }
+                return;
+            }
+            
+            
+                        
+            if (!p->outedge) {
+                //dbg_printf("found calcroot\n");
+                mfl_reopt_preorder(p, nchar, changing);
+                return;
+            }
+            p = p->outedge;
+        }
+    
+    }
+    
+}
+
 bool mfl_reopt_postorder(node *n, int nchar, int *changing)
 {
+    
     node *p;
     bool fromclip = false;
     bool allsame = true;

@@ -434,7 +434,14 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon
     
     // Reoptimize the clipped tree
     
-    mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, tgtchanging);
+    //mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, tgtchanging);
+    
+    mfl_erase_clippath(swapingon, numnodes);
+    mfl_definish_tree(swapingon, numnodes);
+    mfl_temproot(swapingon, 0, ntax);
+    mfl_partial_downpass(dn, nchar, tgtchanging);
+    mfl_undo_temproot(ntax, swapingon);
+    
     free(tgtchanging);
     
     if (!base->tip) {
@@ -484,6 +491,22 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
 
     /* Traverses a binary tree clipping out a subtree in postorder and passing 
      * a pointer to the subtree to mfl_regrafting_traversal. */
+    
+    /*int i;
+    node *p, *q;
+    nodearray nds = swapingon->trnodes;
+    int *tgtchanging;
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        p = nds[i];
+        q = p->next;
+        while (p != q) {
+            
+            p = q;
+            q = p->next;
+        }
+    }*/
+    
     
     node *p, *up, *dn, *subtr;
     
@@ -662,7 +685,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
         subtr = p->next->next;
         base = subtr->next->outedge;
         
-        if (!base->skip) {
+        if (!base->skip && searchrec->tipstovisit) {
             
             if (searchrec->success) {
                 return;
@@ -869,9 +892,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             }
             else {
                 savedtrees[j]->swapped = true;
-                /*if (savedtrees[j]->trnodes) {
+                if (savedtrees[j]->trnodes) {
                     mfl_free_trnodes(savedtrees[j], numnodes);
-                }*/
+                }
                 ++j;
             }
             
@@ -903,7 +926,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
     mfl_handle->resultant_data->searcht = (timeout - timein);
     
-    mfl_store_results(mfl_handle, savedtrees, ntax);
+    //mfl_store_results(mfl_handle, savedtrees, ntax);
     
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a struct
@@ -928,7 +951,6 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
     free(savedtrees);
     free(tipdata);
-    
     mfl_destroy_searchrec(searchrec);
     
     return true;

@@ -160,6 +160,7 @@ typedef struct {
     bool undertreelimit;
     int bestlength;         // Best tree length over all iterations
     int bestinrep;          // Best tree length in current iteration of search
+    int tipstovisit;
     long int trbufstart;         // Position in buffer of first tree to undergo rearrangement
     //int tipscoll;
     bool foundbettertr;
@@ -223,6 +224,7 @@ void mfl_fitch_preorder(node *n, int nchar);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changing);
+void mfl_partial_downpass(node *n, int nchar, int *changing);
 bool mfl_reopt_postorder(node *n, int nchar, int *changing);
 void mfl_reopt_preorder(node *n, int nchar, int *changing);
 int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff);
