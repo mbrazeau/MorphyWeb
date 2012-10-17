@@ -755,16 +755,13 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int nt
 void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
 {
     long int i = 0;
-    string **tree_results;
-    mfl_resultant_data_s *a_results;
-    
-    a_results = mfl_handle->resultant_data;
-    
-    tree_results = new string* [a_results->n_savetrees];
+    mfl_resultant_data_s *a_results = mfl_handle->resultant_data;
+    a_results->newicktrees.reserve((long unsigned int)a_results->n_savetrees);
+    string *tstring;
     
     for (i = 0; i < a_results->n_savetrees; ++i) {
-        tree_results[i] = mfl_trstring(savedtrees[i], ntax);
-        //cout << " " << *tree_results[i] << endl;
+        tstring = mfl_trstring(savedtrees[i], ntax);
+        a_results->newicktrees.push_back(*tstring);
     }
     
 }
@@ -872,9 +869,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             }
             else {
                 savedtrees[j]->swapped = true;
-                if (savedtrees[j]->trnodes) {
+                /*if (savedtrees[j]->trnodes) {
                     mfl_free_trnodes(savedtrees[j], numnodes);
-                }
+                }*/
                 ++j;
             }
             
@@ -906,7 +903,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
     mfl_handle->resultant_data->searcht = (timeout - timein);
     
-    //mfl_store_results(mfl_handle, savedtrees, ntax);
+    mfl_store_results(mfl_handle, savedtrees, ntax);
     
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a struct
@@ -916,21 +913,21 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
-    dbg_printf("\nThe optimal tree(s) found by heuristic search:\n");
-    /*for (j = 0; j < searchrec->nextinbuffer; ++j) {
-        dbg_printf("TREE str_%li = [&U] ", j+1);
-        mfl_root_tree(savedtrees[j], 0, ntax);
-        printNewick(savedtrees[j]->root);
-        dbg_printf(";\n");
-    }*/
-    dbg_printf("\n");
+    /*dbg_printf("\nThe optimal tree(s) found by heuristic search:\n");
+    for (j = 0; j < searchrec->nextinbuffer; ++j) {
+        //dbg_printf("TREE str_%li = [&U] ", j+1);
+        //mfl_root_tree(savedtrees[j], 0, ntax);
+        //printNewick(savedtrees[j]->root);
+        cout << "TREE str_" << j+1 << " = [&U] " << mfl_handle->resultant_data->newicktrees[i] << endl;
+        //dbg_printf(";\n");
+    }
+    dbg_printf("\n");*/
+    
+    /* END OF TESTING-ONLY SECTION */
     
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
     free(savedtrees);
-    
     free(tipdata);
-    
-    /* END OF TESTING-ONLY SECTION */
     
     mfl_destroy_searchrec(searchrec);
     

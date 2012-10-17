@@ -23,6 +23,7 @@
 
 
 #include <iostream>
+#include <vector>
 using namespace std;
 
 #ifdef MFY_DEBUG
@@ -52,7 +53,7 @@ typedef struct {
     int n_savetrees;    // Number of trees found and/or saved
     int bestlength;     // Length of the best tree
     time_t searcht;     // Time in search
-    string **newicktrees; // Array of trees in newick format
+    vector<string> newicktrees; // Vector of trees in newick format
     string **texttrees;   // Array of trees drawn as text
 #ifdef VERSION_1_5
     double consist_ind; // Consistency index
