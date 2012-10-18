@@ -207,9 +207,17 @@ void CNexusUserInterface::DoMenu()
         {
             cout<<endl<<"Error: "<<e<<endl;
         }
-        catch ( ifstream::failure &e )
+        catch (ifstream::failure &e)
         {
             cout<<endl<<"Error: "<<e.what()<<endl;
+        }
+        catch (NxsException &e)
+        {
+            cout<<endl<<"Error: "<<e.nxs_what()<<endl;
+        }
+        catch (...)
+        {
+            cout<<endl<<"EXCEPTION!!!"<<endl;
         }
     } while (ret);
 }
