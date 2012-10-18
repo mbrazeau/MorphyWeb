@@ -372,7 +372,7 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
     
     mfl_erase_clippath(t, numnodes);
     mfl_definish_tree(t, numnodes);
-    mfl_temproot(t, 0, ntax);
+    //mfl_temproot(t, 0, ntax);
 
     while (p->edge && !p->tip) {
         
@@ -384,8 +384,18 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
             
             mfl_reopt_fitch(p->next->edge, p->next->next->edge, p, nchar, changing);
             
-            if (p->success) {
-                mfl_reopt_preorder(p, nchar, changing);
+            if (p->success || p->edge->tip) {
+                if (p->edge->tip) {
+                    node *lt = p, *rt = p->edge;
+                    mfl_join_nodes(t->trnodes[ntax]->next, lt);
+                    mfl_join_nodes(t->trnodes[ntax]->next->next, rt);
+                    mfl_reopt_preorder(t->trnodes[ntax], nchar, changing);
+                    mfl_join_nodes(lt, rt);
+                }
+                else {
+                    mfl_reopt_preorder(p, nchar, changing);
+                }
+
                 p->success = false;
                 break;
             } 
@@ -397,7 +407,7 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
         }
     }
     
-    mfl_undo_temproot(ntax, t);
+    //mfl_undo_temproot(ntax, t);
     
 }
 
