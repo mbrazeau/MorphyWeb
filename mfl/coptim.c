@@ -326,7 +326,7 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
 {
     int i, c;
     charstate lft_chars, rt_chars, temp;
-    bool allsame = false;
+    bool allsame = true;
     
     charstate *ldtemps = leftdesc->tempapos;
     charstate *rdtemps = rightdesc->tempapos;
@@ -386,27 +386,16 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
             mfl_reopt_fitch(p->next->outedge, p->next->next->outedge, p, nchar, changing);
             
             if (p->success && p->outedge) {
-                
-                /* POTENTIAL PROBLEM AREA: Never gets tested by datasets*/
-                
-                /*if (p->next->outedge->tocalcroot) {
-                    mfl_reopt_preorder(p->next->outedge, nchar, changing);
-                    break;
-                }
-                else if (p->next->next->outedge->tocalcroot) {
-                    mfl_reopt_preorder(p->next->next->outedge, nchar, changing);
-                    break;
-                }*/
                 mfl_reopt_preorder(p, nchar, changing);
-                return;
-            }
-            if (!p->outedge) {
+                p->success = false;
+                break;
+            } 
+            else if (!p->outedge) {
                 mfl_reopt_preorder(p, nchar, changing);
                 break;
             }
             p = p->outedge;
         }
-    
     }
     
     mfl_undo_temproot(ntax, t);
