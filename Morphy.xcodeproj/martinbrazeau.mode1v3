@@ -329,7 +329,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1D77D49163049FF0013DD13</string>
+										<string>E1D77DFE163060030013DD13</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -358,11 +358,11 @@
 											<string>E1D77C41162FF12B0013DD13</string>
 											<string>E1D77C4F162FF39F0013DD13</string>
 											<string>E1D77CB9163032070013DD13</string>
-											<string>E1D77CFE163038C50013DD13</string>
 											<string>E1D77D0A16303D2E0013DD13</string>
-											<string>E1D77D251630463B0013DD13</string>
-											<string>E1D77D44163048880013DD13</string>
-											<string>E1D77D45163048880013DD13</string>
+											<string>E1D77DB5163055D70013DD13</string>
+											<string>E1D77DF516305F140013DD13</string>
+											<string>E1D77DF616305F140013DD13</string>
+											<string>E1D77DF716305F140013DD13</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -374,14 +374,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1237, 792}}</string>
+								<string>{{0, 0}, {1237, 793}}</string>
 								<key>RubberWindowFrame</key>
 								<string>-2 4 1440 874 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>792pt</string>
+							<string>793pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -560,7 +560,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E1D77D4A163049FF0013DD13</string>
+		<string>E1D77DFF163060030013DD13</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E1D779BF162F25BE0013DD13</string>
 		<string>E1D779C0162F25BE0013DD13</string>
@@ -910,7 +910,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {766, 750}}</string>
 								<key>RubberWindowFrame</key>
-								<string>598 87 766 791 0 0 1440 878 </string>
+								<string>677 87 766 791 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
@@ -939,7 +939,7 @@
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>598 87 766 791 0 0 1440 878 </string>
+			<string>677 87 766 791 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>

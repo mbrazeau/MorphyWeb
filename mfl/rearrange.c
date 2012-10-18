@@ -412,6 +412,23 @@ bool mfl_is_apicalclip(node *subtr, node *up, node *dn, int nchar)
     
 }
 
+void mfl_set_rootstates2(node *n, int nchar)
+{
+    int i;
+    
+    for (i = 0; i < nchar; ++i) {
+        if (n->next->edge->apomorphies[i] & n->next->next->edge->apomorphies[i]) {
+            n->apomorphies[i] = (n->next->edge->apomorphies[i] & n->next->next->edge->apomorphies[i]);
+        }
+        else {
+            n->apomorphies[i] = (n->next->edge->apomorphies[i] | n->next->next->edge->apomorphies[i]);
+            if (n->next->edge->apomorphies[i] & IS_APPLIC && n->next->next->edge->apomorphies[i] & IS_APPLIC) {
+                n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
+            }
+        }
+    }
+}
+
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, 
                        tree *swapingon, tree **savedtrees, int ntax, int nchar, 
                        int numnodes, mfl_searchrec *searchrec)
@@ -452,6 +469,8 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     // Determine the cost of local reinsertion
     diff = mfl_subtr_reinsertion(base, up, dn, nchar);
     
+    //dbg_printf("diff 1: %i\n", diff);
+    
     // Begin attempting reinsertions
 
     mfl_regrafting_traversal(up, subtr, swapingon, savedtrees, ntax, nchar, 
@@ -464,10 +483,6 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     }
     mfl_regrafting_traversal(dn, subtr, swapingon, savedtrees, ntax, nchar, 
                              numnodes, searchrec, diff);
-
-    /*mfl_regrafting_traversal(swapingon->trnodes[0]->edge, subtr, swapingon, 
-                             savedtrees, ntax, nchar, numnodes, searchrec, 
-                             diff);*/
     
     up->visited = 0;
     dn->visited = 0;
@@ -479,6 +494,63 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     
     mfl_join_nodes(up, up1);
     mfl_join_nodes(dn, dn1);
+    
+    // Reverse 
+    
+    /*if (!base->tip) {
+        
+        base = base->edge;
+        
+        if (base->edge->next->edge->tocalcroot) {
+            up = base->edge->next->edge;
+            dn = base->edge->next->next->edge;
+        }
+        else {
+            dn = base->edge->next->edge;
+            up = base->edge->next->next->edge;
+        }
+        
+        //srcchanging = mfl_get_subtr_changing(base, up, dn, nchar);
+        
+        up->visited = 1;
+        dn->visited = 1;
+        up->clip = true;
+        up1 = up->edge;
+        dn1 = dn->edge;
+        
+        mfl_join_nodes(up, dn);
+        //dbg_printf("diff 2a: %i\n", diff);
+        mfl_set_rootstates2(base, nchar);
+        //mfl_partial_downpass(dn, swapingon, numnodes, ntax, nchar, srcchanging);
+        //free(srcchanging);
+        diff = mfl_subtr_reinsertion(base, up, dn, nchar);
+        //dbg_printf("diff 2b: %i\n", diff);
+        
+        //node *subtrh = subtr;
+        subtr = base->edge->next->next;
+        
+        mfl_regrafting_traversal(up, subtr, swapingon, savedtrees, ntax, nchar, 
+                                 numnodes, searchrec, diff);
+        if (searchrec->success) {
+            up->visited = 0;
+            dn->visited = 0;
+            up->clip = false;
+            return;
+        }
+        mfl_regrafting_traversal(dn, subtr, swapingon, savedtrees, ntax, nchar, 
+                                 numnodes, searchrec, diff);
+        
+        up->visited = 0;
+        dn->visited = 0;
+        up->clip = false;
+        
+        if (searchrec->success) {
+            return;
+        }
+        
+        mfl_join_nodes(up, up1);
+        mfl_join_nodes(dn, dn1);
+    }*/
     
     mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
     
