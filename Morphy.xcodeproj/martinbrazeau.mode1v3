@@ -329,7 +329,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1D77DF916305FCE0013DD13</string>
+										<string>E1D77DFE163060030013DD13</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -560,13 +560,14 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>E1D77DFF163060030013DD13</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E1D779BF162F25BE0013DD13</string>
 		<string>E1D779C0162F25BE0013DD13</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>-2 4 1440 874 0 0 1440 878 </string>

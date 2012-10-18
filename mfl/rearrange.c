@@ -497,7 +497,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     
     // Reverse 
     
-    if (!base->tip) {
+    /*if (!base->tip) {
         
         base = base->edge;
         
@@ -550,7 +550,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
         
         mfl_join_nodes(up, up1);
         mfl_join_nodes(dn, dn1);
-    }
+    }*/
     
     mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
     
