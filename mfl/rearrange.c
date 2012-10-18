@@ -488,22 +488,6 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax
     /* Traverses a binary tree clipping out a subtree in postorder and passing 
      * a pointer to the subtree to mfl_regrafting_traversal. */
     
-    /*int i;
-    node *p, *q;
-    nodearray nds = swapingon->trnodes;
-    int *tgtchanging;
-    
-    for (i = ntax + 1; i < numnodes; ++i) {
-        p = nds[i];
-        q = p->next;
-        while (p != q) {
-            
-            p = q;
-            q = p->next;
-        }
-    }*/
-    
-    
     node *p, *up, *dn, *subtr;
     
     if (n->start) {
