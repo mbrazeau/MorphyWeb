@@ -40,12 +40,12 @@ void dump_nodearray(nodearray nds, int ntax, int numnodes)
     
     for (i = 0; i < numnodes; ++i) {
         mfl_set_ring_to_n(nds[i]);
-        printf("Index: %i, tip: %i, order: %i, address: %p, outedge %p", nds[i]->index, nds[i]->tip, nds[i]->order, nds[i], nds[i]->outedge);
+        printf("Index: %i, tip: %i, order: %i, address: %p, edge %p", nds[i]->index, nds[i]->tip, nds[i]->order, nds[i], nds[i]->edge);
         if (i >= ntax && nds[i]->next) {
             printf(", next: %p\n", nds[i]->next);
             p = nds[i]->next;
             while (p != nds[i]) {
-                printf("In ring: index: %i, tip: %i, order: %i, address: %p, outedge: %p, next: %p\n", p->index, p->tip, p->order, p, p->outedge, p->next);
+                printf("In ring: index: %i, tip: %i, order: %i, address: %p, edge: %p, next: %p\n", p->index, p->tip, p->order, p, p->edge, p->next);
                 p = p->next;
             }
         }
@@ -65,8 +65,8 @@ void dump_connections(nodearray nds, int ntax, int numnodes)
     
     for (i = 0; i < numnodes; ++i) {
         //mfl_set_ring_to_n(nds[i]);
-        if (nds[i]->outedge) {
-            nbi = nds[i]->outedge->index;
+        if (nds[i]->edge) {
+            nbi = nds[i]->edge->index;
         }
         else {
             nbi = 999;
@@ -76,8 +76,8 @@ void dump_connections(nodearray nds, int ntax, int numnodes)
         if (i >= ntax && nds[i]->next) {
             p = nds[i]->next;
             while (p != nds[i]) {
-                if (p->outedge) {
-                    nbi = p->outedge->index;
+                if (p->edge) {
+                    nbi = p->edge->index;
                 }
                 else {
                     nbi = 999;
@@ -291,7 +291,7 @@ void print_nodedata(node *n, int nchar, int ntax)
     
     p = n->next;
     while (p != n) {
-        print_nodedata(p->outedge, nchar, ntax);
+        print_nodedata(p->edge, nchar, ntax);
         p = p->next;
     }
     
@@ -313,14 +313,14 @@ void printNewick(node *n)
     
     if (n->start) {
         printf("(%i,", n->tip);
-        printNewick(n->outedge);
+        printNewick(n->edge);
         printf(")");
         return;
     }   
     
-    if (n->tip && n->outedge->next->outedge) {
-        if (n->outedge->next->outedge->tip && 
-            !n->outedge->next->outedge->start) {
+    if (n->tip && n->edge->next->edge) {
+        if (n->edge->next->edge->tip && 
+            !n->edge->next->edge->start) {
             printf("%i", n->tip);
             return;
         }
@@ -335,7 +335,7 @@ void printNewick(node *n)
     
     p = n->next;
     while (p != n) {
-        printNewick(p->outedge);
+        printNewick(p->edge);
         p = p->next;
         if (p != n) {
             printf(",");
@@ -396,9 +396,9 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
     for (i = ntax + 1; i < numnodes; ++i) {
         p = t->trnodes[i];
         do {
-            if ((p->outedge->tip == 11) || (p->outedge->tip == 12)) {
+            if ((p->edge->tip == 11) || (p->edge->tip == 12)) {
                 onetwonode = t->trnodes[i];
-                printf("found: %i\n", p->outedge->tip);
+                printf("found: %i\n", p->edge->tip);
                 break;
             }
             p = p->next;
@@ -408,7 +408,7 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
         } while (p != t->trnodes[i]);
     }
     
-    if (onetwonode->outedge->tip == 11 || onetwonode->outedge->tip == 12) {
+    if (onetwonode->edge->tip == 11 || onetwonode->edge->tip == 12) {
         printf("Must find 'bottom' node\n");
     }
 
@@ -474,11 +474,11 @@ void test_char_optimization(void)
     int pos = 3;
     int diff = 0;
     node *up, *dn;
-    up = mvnode->outedge->next->outedge;
-    dn = mvnode->outedge->next->next->outedge;
+    up = mvnode->edge->next->edge;
+    dn = mvnode->edge->next->next->edge;
     
     printf("mvnode index: %i\n", mvnode->index);
-    printf("mvnode base:  %i\n", mvnode->outedge->index);
+    printf("mvnode base:  %i\n", mvnode->edge->index);
     
     mfl_join_nodes(up, dn);
     printf("The pruned tree:\n");
@@ -497,19 +497,19 @@ void test_char_optimization(void)
     diff = mfl_get_subtreelen(mvnode, ntax, nchar, NULL);
     printf("length of sourcetree: %i\n", diff);
     
-    diff = mfl_subtr_reinsertion(mvnode, testtree->trnodes[pos], testtree->trnodes[pos]->outedge, nchar);
+    diff = mfl_subtr_reinsertion(mvnode, testtree->trnodes[pos], testtree->trnodes[pos]->edge, nchar);
     printf("cost of rejoining to original place: %i\n", diff);
     
-    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[9], testtree->trnodes[9]->outedge, nchar, 10000);
+    diff = mfl_locreopt_cost(mvnode, testtree->trnodes[9], testtree->trnodes[9]->edge, nchar, 10000);
     printf("cost of rejoining to a new place: %i\n", diff);
     
-    printf("target index: %i\n", testtree->trnodes[pos]->outedge->index);
-    printf("target outedge: %i\n", testtree->trnodes[pos]->index);
+    printf("target index: %i\n", testtree->trnodes[pos]->edge->index);
+    printf("target edge: %i\n", testtree->trnodes[pos]->index);
     
     print_final_allviews(testtree, ntax, nchar, numnodes);
     
-    mfl_join_nodes(mvnode->outedge->next, testtree->trnodes[9]->outedge);
-    mfl_join_nodes(mvnode->outedge->next->next, testtree->trnodes[9]);
+    mfl_join_nodes(mvnode->edge->next, testtree->trnodes[9]->edge);
+    mfl_join_nodes(mvnode->edge->next->next, testtree->trnodes[9]);
     //mfl_undo_temproot(ntax, testtree);
     diff = mfl_all_views(testtree, ntax, nchar, NULL);
     printf("length of the tree after placement: %i\n", diff);
@@ -737,7 +737,7 @@ void mini_test_analysis(void)
     printNewick(t->trnodes[0]);
     dbg_printf("\n");
     t->trnodes[0]->start = false;
-    mfl_reroot_subtree(t->trnodes[0]->outedge, n, n);
+    mfl_reroot_subtree(t->trnodes[0]->edge, n, n);
     dbg_printf("\n");
 }*/
 

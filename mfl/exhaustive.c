@@ -82,11 +82,11 @@ void devisit(node *n)
 	
 	if (n->start) {
 		n->visited = 0;
-		devisit(n->outedge);
+		devisit(n->edge);
 		return;
 	}	
 	
-	if (n->tip && n->outedge->next->outedge->tip && !n->outedge->next->outedge->start) {
+	if (n->tip && n->edge->next->edge->tip && !n->edge->next->edge->start) {
 		n->visited = 0;
 		return;
 	}
@@ -100,7 +100,7 @@ void devisit(node *n)
 	
 	p = n->next;
 	while (p != n) {
-		devisit(p->outedge);
+		devisit(p->edge);
 		p = p->next;
 		p->visited = 0;
 	}	
@@ -132,14 +132,14 @@ void newbranch(node *desc, node *ancest, tree *basetree, int taxon, int calln)
 	
 	newn->visited = 1;
 	
-	ancest->outedge = newn;
-	newn->outedge = ancest;
+	ancest->edge = newn;
+	newn->edge = ancest;
 	
-	newn->next->outedge = desc;
-	desc->outedge = newn->next;
+	newn->next->edge = desc;
+	desc->edge = newn->next;
 	
-	newn->next->next->outedge = newtip;
-	newtip->outedge = newn->next->next;
+	newn->next->next->edge = newtip;
+	newtip->edge = newn->next->next;
 	
 	newtip->tip = taxon;
 	//*taxon = *taxon + 1;
@@ -155,8 +155,8 @@ void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter)
 	
 	node *p;
 	
-	if (*counter == calln && !n->outedge->start) {
-		newbranch(n, n->outedge, origtree, taxon, calln);
+	if (*counter == calln && !n->edge->start) {
+		newbranch(n, n->edge, origtree, taxon, calln);
 		return;
 	}
 
@@ -165,7 +165,7 @@ void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter)
 	}
 
 	if (n->start) {
-		n = n->outedge;
+		n = n->edge;
 	}
 	
 	p = n->next;
@@ -173,7 +173,7 @@ void insert_allp(node *n, tree *origtree, int taxon, int calln, int *counter)
 	while (p != n) {
 		*counter = *counter + 1;
 		if (*counter <= calln) {
-			insert_allp(p->outedge, origtree, taxon, calln, counter);
+			insert_allp(p->edge, origtree, taxon, calln, counter);
 			p = p->next;
 		} else {
 			return;
@@ -241,13 +241,13 @@ void allunrooted(/*tree *treearray, int ntax*/)
 	
 	mfl_newring(ring1);
 	
-	ring1->outedge = treearray[0].trnodes[0];
-	ring1->next->outedge = treearray[0].trnodes[1];
-	ring1->next->next->outedge = treearray[0].trnodes[2];
+	ring1->edge = treearray[0].trnodes[0];
+	ring1->next->edge = treearray[0].trnodes[1];
+	ring1->next->next->edge = treearray[0].trnodes[2];
 	
-	treearray[0].trnodes[0]->outedge = ring1;
-	treearray[0].trnodes[1]->outedge = ring1->next;
-	treearray[0].trnodes[2]->outedge = ring1->next->next;
+	treearray[0].trnodes[0]->edge = ring1;
+	treearray[0].trnodes[1]->edge = ring1->next;
+	treearray[0].trnodes[2]->edge = ring1->next->next;
 	
 	treearray[0].trnodes[0]->start = true;
 	

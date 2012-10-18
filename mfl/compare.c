@@ -66,7 +66,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
     
     for (i = 0; i < ntax; ++i) {        
         
-        p = t->trnodes[i]->outedge;
+        p = t->trnodes[i]->edge;
         n = t->trnodes[i];
         n->cpindex = i;
         
@@ -78,7 +78,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes)
                     ++j;
                     storedtr[n->cpindex] = p->cpindex;                    
                     n = p;
-                    p = p->outedge;
+                    p = p->edge;
 
                 }
                 else if (p->cpindex) {
@@ -112,8 +112,8 @@ tree *mfl_decompress_tree(int *savedtr, int ntax, int numnodes)
     
     for (i = 0; i < numnodes; ++i) {
         if (i < ntax) {
-            t->trnodes[i]->outedge = mfl_allocnode();
-            t->trnodes[i]->outedge->outedge = t->trnodes[i];
+            t->trnodes[i]->edge = mfl_allocnode();
+            t->trnodes[i]->edge->edge = t->trnodes[i];
         }
     }
     

@@ -44,7 +44,7 @@ using namespace std;
  * Felsenstein (2004. Inferring Phylogenies. Sinauer, Mass.) and implemented in 
  * Felsenstein et al.'s 2004. Phylip package. This includes representing 
  * internal nodes as a ring of (minmally) three nodes joined by the next 
- * pointer. The outedge pointer joins the node to either a leaf or the nearest 
+ * pointer. The edge pointer joins the node to either a leaf or the nearest 
  * internal node. */
 
 
@@ -85,7 +85,7 @@ typedef int32_t charstate;
 typedef int64_t taxbipart;
 
 typedef struct node {
-    struct node *outedge, *next;
+    struct node *edge, *next;
     char *tipname;
     int tip;
     int index;

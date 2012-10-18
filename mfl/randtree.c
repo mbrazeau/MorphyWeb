@@ -88,7 +88,7 @@ struct tree *randunrooted(int ntax, int numnodes)
     randtree = mfl_alloctree(ntax, numnodes);
     
     randtree->trnodes[0]->start = true;
-    randtree->trnodes[0]->outedge = randtree->trnodes[taxarray[0]];
+    randtree->trnodes[0]->edge = randtree->trnodes[taxarray[0]];
     
     // Join all the internal nodes (except the root) together
     for (i = 1; i <= (ntax - 3); ++i) {
@@ -102,12 +102,12 @@ struct tree *randunrooted(int ntax, int numnodes)
     mfl_join_nodes(randtree->trnodes[ntax + 1], randtree->trnodes[taxarray[0] - 1]);
     
     for (i = 1; i < ntax - 1; ++i) {
-        randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[ntax + i]->next;
-        randtree->trnodes[ntax + i]->next->outedge = randtree->trnodes[taxarray[i] - 1];
+        randtree->trnodes[taxarray[i] - 1]->edge = randtree->trnodes[ntax + i]->next;
+        randtree->trnodes[ntax + i]->next->edge = randtree->trnodes[taxarray[i] - 1];
     } 
     
-    randtree->trnodes[2 * ntax - 2]->next->next->outedge = randtree->trnodes[taxarray[i] - 1];
-    randtree->trnodes[taxarray[i] - 1]->outedge = randtree->trnodes[2 * ntax - 2]->next->next;
+    randtree->trnodes[2 * ntax - 2]->next->next->edge = randtree->trnodes[taxarray[i] - 1];
+    randtree->trnodes[taxarray[i] - 1]->edge = randtree->trnodes[2 * ntax - 2]->next->next;
     
     free(taxarray);
     
@@ -132,7 +132,7 @@ struct node * mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int 
     int trlen = 0;
     node *p;
     
-    if (n->outedge) {
+    if (n->edge) {
         mfl_insert_branch(newbranch, n, ntax);
         trlen = mfl_get_sttreelen(starttree, tipdata, ntax, nchar, bestlen);
         starttree->length = trlen;
@@ -155,7 +155,7 @@ struct node * mfl_tryall(node *n, node *newbranch, node *bestpos, int ntax, int 
     
     p = n->next;
     while (p != n) {
-        bestpos = mfl_tryall(p->outedge, newbranch, bestpos, ntax, nchar, numnodes, 
+        bestpos = mfl_tryall(p->edge, newbranch, bestpos, ntax, nchar, numnodes, 
                    bestlen, starttree, savedtrees, tipdata);
         p = p->next;
     }

@@ -33,19 +33,19 @@ int mfl_calc_numnodes(int ntax)
 void mfl_join_nodes(node *n, node *p)
 {
     
-    /* Joins two nodes via their outedge pointers */
+    /* Joins two nodes via their edge pointers */
     
-    if (n->outedge) {
-        n->outedge->outedge = NULL;
+    if (n->edge) {
+        n->edge->edge = NULL;
         //dbg_printf("terminating existing connection in n\n");
     }
-    if (p->outedge) {
-        p->outedge->outedge = NULL;
+    if (p->edge) {
+        p->edge->edge = NULL;
         //dbg_printf("terminating existing connection in p\n");
     }
     
-    n->outedge = p;
-    p->outedge = n;
+    n->edge = p;
+    p->edge = n;
 }
 
 struct node * mfl_allocnode(void)
@@ -68,7 +68,7 @@ struct node * mfl_allocnode(void)
 
 struct tree * mfl_alloctree(int ntax, int numnodes)
 {
-    /* Allocates memory for a tree, but does not assign values to the outedge
+    /* Allocates memory for a tree, but does not assign values to the edge
      * pointers. The returned structure is therefore not yet a true tree */
     
     int i; //Loop counters
@@ -106,7 +106,7 @@ struct tree * mfl_alloctree(int ntax, int numnodes)
             mfl_newring(newtree->trnodes[i], ntax);
         }
         
-        newtree->trnodes[i]->outedge = NULL;
+        newtree->trnodes[i]->edge = NULL;
     }
     
     newtree->root = NULL;
@@ -177,7 +177,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
     bool isUsed = false;
     
     for (i = ntax + 1; i < numnodes; ++i) {
-        if (!nds[i]->next /*&& !nds[i]->initialized*/ && !nds[i]->outedge) {
+        if (!nds[i]->next /*&& !nds[i]->initialized*/ && !nds[i]->edge) {
             unused = nds[i];
             i = 2 * ntax;
         }
@@ -193,7 +193,7 @@ struct node * mfl_seek_internal(int ntax, int numnodes, node **nds)
                 p = nds[i];                
                 do
                 {
-                    if (p->outedge) 
+                    if (p->edge) 
                     {
                         isUsed = true;
                         p = nds[i];
@@ -235,12 +235,12 @@ struct node * mfl_seek_ringnode(node *n, int ntax)
         rootnode = true;
     }
     
-    if (!rootnode && !n->outedge) {
+    if (!rootnode && !n->edge) {
         return n;
     } else {
         p = n->next;
         while (p != n) {
-            if (!p->outedge) {
+            if (!p->edge) {
                 return p;
             }
             p = p->next;
@@ -447,15 +447,15 @@ struct tree * mfl_copytree(tree *origtr, int ntax, int numnodes)
             }
             do 
             {
-                if (p->outedge && p->outedge->tip) 
+                if (p->edge && p->edge->tip) 
                 {
-                    mfl_join_nodes(q, treecp->trnodes[p->outedge->index]);
+                    mfl_join_nodes(q, treecp->trnodes[p->edge->index]);
                 }
-                if (p->outedge && !p->outedge->tip && !q->outedge) 
+                if (p->edge && !p->edge->tip && !q->edge) 
                 {
-                    r = origtr->trnodes[p->outedge->index];
-                    s = treecp->trnodes[p->outedge->index];
-                    while (r->outedge->index != p->index) 
+                    r = origtr->trnodes[p->edge->index];
+                    s = treecp->trnodes[p->edge->index];
+                    while (r->edge->index != p->index) 
                     {
                         r = r->next;
                         s = s->next;
@@ -512,7 +512,7 @@ void mfl_set_vweight(node *n)
     node *p;
     p = n->next;
     while (p != n) {
-        n->vweight = n->vweight + p->outedge->vweight;
+        n->vweight = n->vweight + p->edge->vweight;
     }
 }
 
@@ -651,7 +651,7 @@ void mfl_collapse(node *n1, nodearray nds)
 {
     node *an1, *an2, *n2, *tmp;
     
-    an1 = n1->outedge;
+    an1 = n1->edge;
     an2 = an1->next;
     tmp = an2;
     while (an2->next != an1) {
@@ -666,8 +666,8 @@ void mfl_collapse(node *n1, nodearray nds)
     n2->next = an1->next;
     an1->next = NULL;
     n1->next = NULL;
-    n1->outedge = NULL;
-    an1->outedge = NULL;
+    n1->edge = NULL;
+    an1->edge = NULL;
     free(an1);
     nds[n1->index] = n1;
     mfl_set_order(tmp);
@@ -695,11 +695,11 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     if (in->next) {
         mfl_as_noring(in);
     }
-    if (in->outedge) {
-        if (in->outedge->outedge) {
-            in->outedge->outedge = NULL;
+    if (in->edge) {
+        if (in->edge->edge) {
+            in->edge->edge = NULL;
         }
-        in->outedge = NULL;
+        in->edge = NULL;
     }
     
     /* Randomly select branches to join to it. Cycles through the ring (skipping 
@@ -729,8 +729,8 @@ void mfl_arb_resolve(node *n, node **nds, int ntax, int numnodes)
     }
     
     p->next = mfl_allocnode();
-    if (p->next->outedge) {
-        p->next->outedge = NULL;
+    if (p->next->edge) {
+        p->next->edge = NULL;
     }
     p = p->next;
     p->next = in;
@@ -756,10 +756,10 @@ void mfl_collap_binode(node *n)
     n2 = n->next;
     n3 = n2->next;
     
-    an1 = n->outedge;
+    an1 = n->edge;
     an2 = an1->next;
     
-    mfl_join_nodes(an1, n2->outedge);
+    mfl_join_nodes(an1, n2->edge);
     
     an1->next = n3;
     n3->next = an2;
@@ -777,7 +777,7 @@ int mfl_determ_order(node *n)
     int i = 0;
     node *p;
     
-    if (n->outedge) {
+    if (n->edge) {
         i = 1;
     }
     
@@ -788,7 +788,7 @@ int mfl_determ_order(node *n)
     p = n->next;
     while (p != n) 
     {
-        if (p->outedge) {
+        if (p->edge) {
             ++i;
         }
         p = p->next;
@@ -945,7 +945,7 @@ void mfl_deinit_tree(tree *t, int numnodes)
 
 void mfl_put_branch_in_ring(node *n, node *rnode)
 {
-    /* Given a branch (two nodes joined by their outedge pointers), places the 
+    /* Given a branch (two nodes joined by their edge pointers), places the 
      * branch in a ring */
     
     node *rnode2 = NULL;
@@ -973,7 +973,7 @@ void mfl_temproot(tree *trtoroot, int root, int ntax)
     node *lftbr, *rtbr;
     
     lftbr = trtoroot->trnodes[root];
-    rtbr = lftbr->outedge;
+    rtbr = lftbr->edge;
     
     if (!trtoroot->trnodes[ntax]->next) {
         mfl_newring(trtoroot->trnodes[ntax], ntax);
@@ -990,8 +990,8 @@ void mfl_undo_temproot(int ntax, tree *trtounroot)
 {
     node *lftbr, *rtbr;
     
-    lftbr = trtounroot->trnodes[ntax]->next->outedge;
-    rtbr = trtounroot->trnodes[ntax]->next->next->outedge;
+    lftbr = trtounroot->trnodes[ntax]->next->edge;
+    rtbr = trtounroot->trnodes[ntax]->next->next->edge;
     
     mfl_join_nodes(lftbr, rtbr);
     
@@ -1014,7 +1014,7 @@ void mfl_point_bottom(node *n, node **nodes)
     p = n->next;
     while (p != n) {
         p->bottom = false;
-        mfl_point_bottom(p->outedge, nodes);
+        mfl_point_bottom(p->edge, nodes);
         p = p->next;        
     }
     n->bottom = true;
@@ -1031,7 +1031,7 @@ void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
         mfl_newring(trtoroot->trnodes[ntax]->next, ntax);
     }
     
-    nodeptr = trtoroot->trnodes[nRoot]->outedge;
+    nodeptr = trtoroot->trnodes[nRoot]->edge;
     r2 = trtoroot->trnodes[ntax]->next;
     r3 = trtoroot->trnodes[ntax]->next->next;
     
@@ -1039,7 +1039,7 @@ void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
     mfl_join_nodes(r3, nodeptr);
     
     trtoroot->root = trtoroot->trnodes[ntax];
-    trtoroot->trnodes[ntax]->outedge = NULL;
+    trtoroot->trnodes[ntax]->edge = NULL;
     
     mfl_point_bottom(trtoroot->root, trtoroot->trnodes);
     trtoroot->trnodes[0]->start = false;
@@ -1083,7 +1083,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
             }
             m->next = NULL;
             
-            ftip = proot->next->outedge;
+            ftip = proot->next->edge;
             mfl_join_nodes(ftip, subnode);
             subnode->next = p;
             q->next = subnode;
@@ -1093,7 +1093,7 @@ void mfl_unroot(int ntax, tree *rootedtree)
         }
         else 
         {
-            ftip = proot->next->outedge;
+            ftip = proot->next->edge;
             mfl_join_nodes(ftip, subnode);
             proot->next = NULL;
             subnode->next = p;
@@ -1102,8 +1102,8 @@ void mfl_unroot(int ntax, tree *rootedtree)
     }
     else 
     {
-        leftdesc = proot->next->outedge;
-        rightdesc = proot->next->next->outedge;
+        leftdesc = proot->next->edge;
+        rightdesc = proot->next->next->edge;
         mfl_join_nodes(leftdesc, rightdesc);
     }
     
@@ -1124,14 +1124,14 @@ void mfl_save_newick(node *n, string *nwkstr)
     if (n->start) {
         sprintf(cbuffer, "(%i,", n->tip);
         *nwkstr += string(cbuffer);
-        mfl_save_newick(n->outedge, nwkstr);
+        mfl_save_newick(n->edge, nwkstr);
         *nwkstr += string(")");
         return;
     }   
     
-    if (n->tip && n->outedge->next->outedge) {
-        if (n->outedge->next->outedge->tip && 
-            !n->outedge->next->outedge->start) {
+    if (n->tip && n->edge->next->edge) {
+        if (n->edge->next->edge->tip && 
+            !n->edge->next->edge->start) {
             sprintf(cbuffer, "%i", n->tip);
             *nwkstr += string(cbuffer);
             return;
@@ -1148,7 +1148,7 @@ void mfl_save_newick(node *n, string *nwkstr)
     
     p = n->next;
     while (p != n) {
-        mfl_save_newick(p->outedge, nwkstr);
+        mfl_save_newick(p->edge, nwkstr);
         p = p->next;
         if (p != n) {
             *nwkstr += string(",");
