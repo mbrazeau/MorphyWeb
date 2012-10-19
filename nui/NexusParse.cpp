@@ -49,7 +49,8 @@ bool CNexusParse::ReadNexusFile(string *infname, string *outfname)
     m_cNexusReader = new CNexusReader(infname, outfname);
     m_cTaxa  = new NxsTaxaBlock();
     m_cChars = new NxsCharactersBlock(0, 0);
-    m_cData  = new NxsDataBlock(0, 0);
+    m_cData  = new NxsDataBlock(m_cTaxa, 0);
+    
     if (m_cNexusReader && m_cTaxa && m_cChars && m_cData)
     {
         m_cTrees = new NxsTreesBlock(m_cTaxa);
