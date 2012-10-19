@@ -292,10 +292,10 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     static bool island = false;
     
     if (!(n->visited) && !(n->edge->visited)) {
-        /*up = n->edge;
+        up = n->edge;
         
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
-        trlength = searchrec->bestinrep - diff + al;*/
+        trlength = searchrec->bestinrep - diff + al;
         
         searchrec->niter_total = searchrec->niter_total + 1;
 
@@ -634,6 +634,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
             
             mfl_regrafting_traversal(t_dn, src->edge->next->next, swapingon, savedtrees, ntax, nchar, 
                                      numnodes, searchrec, diff);
+
             t_up->visited = false;
             t_dn->visited = false;
             
