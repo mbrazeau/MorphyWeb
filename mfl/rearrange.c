@@ -392,140 +392,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
 
 }
 
-bool mfl_is_apicalclip(node *subtr, node *up, node *dn, int nchar)
-{
-    bool is_apical = true;
-    
-    if ((up->vweight < 3 || dn->vweight < 3)) {
-        if (!memcmp(up->apomorphies, dn->apomorphies, nchar * sizeof(charstate))) {
-            is_apical = true;
-        }
-        else {
-            is_apical = false;
-        }
-    }
-    else {
-        is_apical = false; 
-    }
-    
-    return is_apical;
-    
-}
-
-void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, 
-                       tree *swapingon, tree **savedtrees, int ntax, int nchar, 
-                       int numnodes, mfl_searchrec *searchrec)
-{
-    
-    int diff = 0;
-    
-    node *up1, *dn1, *base;
-    
-    int *tgtchanging = mfl_get_tgt_changing(p, up, dn, nchar);
-    
-    base = subtr->next->edge;
-    
-    up->visited = 1;
-    dn->visited = 1;
-    up->clip = true;
-    
-    up1 = up->edge;
-    dn1 = dn->edge;
-    
-    mfl_join_nodes(up, dn);
-    
-    // Reoptimize the clipped tree
-        
-    mfl_partial_downpass(dn, swapingon, numnodes, ntax, nchar, tgtchanging);
-    
-    free(tgtchanging);
-    
-    if (!base->tip) {
-        mfl_set_rootstates(base, nchar);
-    }
-    else {
-        memcpy(base->apomorphies, base->tempapos, nchar * sizeof(charstate));
-    }
-    
-    // Determine the cost of local reinsertion
-    diff = mfl_subtr_reinsertion(base, up, dn, nchar);
-    
-    // Begin attempting reinsertions
-
-    mfl_regrafting_traversal(up, subtr, swapingon, savedtrees, ntax, nchar, 
-                             numnodes, searchrec, diff);
-    if (searchrec->success) {
-        up->visited = 0;
-        dn->visited = 0;
-        up->clip = false;
-        return;
-    }
-    mfl_regrafting_traversal(dn, subtr, swapingon, savedtrees, ntax, nchar, 
-                             numnodes, searchrec, diff);
-    
-    up->visited = 0;
-    dn->visited = 0;
-    up->clip = false;
-    
-    if (searchrec->success) {
-        return;
-    }
-    
-    mfl_join_nodes(up, up1);
-    mfl_join_nodes(dn, dn1);
-    
-    // Reverse 
-    
-    if (!base->tip) {
-        
-        base = base->edge;
-        
-        if (base->edge->next->edge->tocalcroot) {
-            up = base->edge->next->edge;
-            dn = base->edge->next->next->edge;
-        }
-        else {
-            dn = base->edge->next->edge;
-            up = base->edge->next->next->edge;
-        }
-        
-        up->visited = 1;
-        dn->visited = 1;
-        up->clip = true;
-        up1 = up->edge;
-        dn1 = dn->edge;
-        
-        mfl_join_nodes(up, dn);
-        diff = mfl_subtr_reinsertion(base, up, dn, nchar);
-        subtr = base->edge->next->next;
-        
-        mfl_regrafting_traversal(up, subtr, swapingon, savedtrees, ntax, nchar, 
-                                 numnodes, searchrec, diff);
-        if (searchrec->success) {
-            up->visited = 0;
-            dn->visited = 0;
-            up->clip = false;
-            return;
-        }
-        mfl_regrafting_traversal(dn, subtr, swapingon, savedtrees, ntax, nchar, 
-                                 numnodes, searchrec, diff);
-        
-        up->visited = 0;
-        dn->visited = 0;
-        up->clip = false;
-        
-        if (searchrec->success) {
-            return;
-        }
-        
-        mfl_join_nodes(up, up1);
-        mfl_join_nodes(dn, dn1);
-    }
-    
-    mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-    
-}
-
 void mfl_set_updown(node *n, node **up, node **dn)
 {
     if (n->next->tocalcroot) {
@@ -543,177 +409,108 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                          int nchar, int numnodes, mfl_searchrec *searchrec)
 {
     
-    /* Traverses a binary tree clipping out a subtree in postorder and passing 
-     * a pointer to the subtree to mfl_regrafting_traversal. */
+    /* Indexes over the node array of a tree, pruning subtrees and calling
+     * the regrafting function */
     
     int i, diff, *srcchanging, *tgtchanging;
     node *p, *q, *src, *tgt, *s_dn, *s_up, *t_dn, *t_up, *t_dn_N, *t_up_N;
     node *s_dn_N, *s_up_N;
     nodearray nds = swapingon->trnodes;
     
-    // For all internal nodes in the tree
     
     for (i = ntax + 1; i < numnodes; ++i) {
         
-        // Set the node in the array to P.
         p = nds[i];
         q = nds[i];
+        
+        p->skip = true;
+        
         do {
-            // Set SRC to P->EDGE
-            src = p->edge;
-            // TGT to P
-            tgt = p;
-            
-            // If: SRC->TIP
-            if (src->tip) {
-                // Set all apomorphies to tempapos
-                memcpy(src->apomorphies, src->tempapos, nchar * sizeof(charstate));
-            }
-            else if (src->tocalcroot) { // Identify whether P resides in the part containing the calc. root relative to the node's edge neighbour
-                // Reoptimize as a root
-                mfl_set_rootstates(src, nchar);
-            }
-            else {
+            if (!p->skip) {
+                src = p->edge;
+                tgt = p;
                 
-                mfl_set_updown(src, &s_up, &s_dn);
-                // Estimate states expected to change in the src tree
-                srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, s_dn, nchar);
-                
-                // Reoptimize with PARTIAL DOWNPASS
-                s_up_N = s_up->edge;
-                s_dn_N = s_dn->edge;
-                mfl_join_nodes(s_dn, s_up);
-                mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, nchar, srcchanging);
-                mfl_join_nodes(s_up_N, s_up);
-                mfl_join_nodes(s_dn_N, s_dn);
-                mfl_reopt_subtr_root(src, nchar);
-                free(srcchanging);
-            }
-            
-            if (!tgt->tocalcroot) {// Identify whether P->EDGE resides in a part containing the calc. root
-                // if not:
-                
-                mfl_set_updown(tgt, &t_up, &t_dn);
-                
-                // Estimate states expected to change in the target tree TGTCHANGING
-                tgtchanging = mfl_get_tgt_changing(t_dn->edge, t_up, t_dn, nchar);
-                
-                // Pop out redundant node:
-                t_up_N = t_up->edge;
-                t_dn_N = t_dn->edge;
-                mfl_join_nodes(t_up, t_dn);
-                
-                // Reoptimize with PARTIAL DOWNPASS
-                mfl_partial_downpass(t_dn, swapingon, numnodes, ntax, nchar, tgtchanging);
-                free(tgtchanging);
-            }
-            else {
-                if (tgt->next->edge->tocalcroot) {
-                    t_up = tgt->next->edge;
-                    t_dn = tgt->next->next->edge;
+                if (src->tip) {
+                    memcpy(src->apomorphies, src->tempapos, 
+                           nchar * sizeof(charstate));
+                }
+                else if (src->tocalcroot) {
+                    mfl_set_rootstates(src, nchar);
                 }
                 else {
-                    t_dn = tgt->next->edge;
-                    t_up = tgt->next->next->edge;
+                    
+                    mfl_set_updown(src, &s_up, &s_dn);
+                    srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, s_dn, 
+                                                       nchar);
+                    
+                    s_up_N = s_up->edge;
+                    s_dn_N = s_dn->edge;
+                    mfl_join_nodes(s_dn, s_up);
+                    mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, nchar, 
+                                         srcchanging);
+                    mfl_join_nodes(s_up_N, s_up);
+                    mfl_join_nodes(s_dn_N, s_dn);
+                    mfl_reopt_subtr_root(src, nchar);
+                    free(srcchanging);
                 }
                 
-                // Pop out the redundant node:
-                t_up_N = t_up->edge;
-                t_dn_N = t_dn->edge;
-                mfl_join_nodes(t_up, t_dn);
+                if (!tgt->tocalcroot) {
+                    
+                    mfl_set_updown(tgt, &t_up, &t_dn);
+                    
+                    tgtchanging = mfl_get_tgt_changing(t_dn->edge, t_up, t_dn, 
+                                                       nchar);
+                    
+                    // Pop out redundant node:
+                    t_up_N = t_up->edge;
+                    t_dn_N = t_dn->edge;
+                    mfl_join_nodes(t_up, t_dn);
+                    
+                    mfl_partial_downpass(t_dn, swapingon, numnodes, ntax, nchar, 
+                                         tgtchanging);
+                    free(tgtchanging);
+                }
+                else {
+                    mfl_set_updown(tgt, &t_up, &t_dn);
+                    // Pop out the redundant node:
+                    t_up_N = t_up->edge;
+                    t_dn_N = t_dn->edge;
+                    mfl_join_nodes(t_up, t_dn);
+                }
+                
+                diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
+                
+                // Perform all reinsertions of SRC on TGT
+                t_up->visited = true;
+                t_dn->visited = true;
+                mfl_regrafting_traversal(t_up, src->edge->next->next, swapingon, 
+                                         savedtrees, ntax, nchar, numnodes, 
+                                         searchrec, diff);
+                
+                mfl_regrafting_traversal(t_dn, src->edge->next->next, swapingon, 
+                                         savedtrees, ntax, nchar, numnodes, 
+                                         searchrec, diff);
+                
+                t_up->visited = false;
+                t_dn->visited = false;
+                p->skip = false;
+                if (searchrec->success) {
+                    return;
+                }
+                
+                mfl_join_nodes(t_up, t_up_N);
+                mfl_join_nodes(t_dn, t_dn_N);
+                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
             }
-            
-            // Calculate DIFF
-            diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
-            
-            // Perform all reinsertions of SRC on TGT
-            t_up->visited = true;
-            t_dn->visited = true;
-            mfl_regrafting_traversal(t_up, src->edge->next->next, swapingon, savedtrees, ntax, nchar, 
-                                     numnodes, searchrec, diff);
-            
-            mfl_regrafting_traversal(t_dn, src->edge->next->next, swapingon, savedtrees, ntax, nchar, 
-                                     numnodes, searchrec, diff);
+            else {
+                p->skip = false;
+            }
 
-            t_up->visited = false;
-            t_dn->visited = false;
-            
-            // If a SEARCHREC->SUCCESS, RETURN
-            if (searchrec->success) {
-                return;
-            }
-            
-            // Otherwise, put the node back in:
-            mfl_join_nodes(t_up, t_up_N);
-            mfl_join_nodes(t_dn, t_dn_N);
-            
-            // set P = P->NEXT
             p = p->next;
             
-            mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-            
-        } while (p != q); // Repeat while P != TRNODES[i]
+        } while (p != q);
         
     }
-    
-    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-}
-
-void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, 
-                           int ntax, int nchar, int numnodes, 
-                           mfl_searchrec *searchrec)
-{
-
-    mfl_subtree_pruning(n, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
-    /* Traverses a binary tree clipping out a subtree in postorder and passing 
-     * a pointer to the subtree to mfl_regrafting_traversal. */
-    
-    /*node *p, *up, *dn, *subtr;
-    
-    if (n->start) {
-        mfl_pruning_traversal(n->edge, swapingon, savedtrees, ntax,
-                              nchar, numnodes, searchrec);
-        return;
-    }
-    
-    if (n->tip || searchrec->success) {
-        return;
-    }
-    
-    dn = n->edge;
-    p = n->next;
-    up = p->next->edge;
-    
-    while (p != n) {
-        mfl_pruning_traversal(p->edge, swapingon, savedtrees, ntax, nchar, 
-                              numnodes, searchrec);
-        if (searchrec->success) {
-            return;
-        }
-        
-        subtr = p->next->next;
-        if (!subtr->next->edge->skip) {
-            subtr->next->edge->skip = true;
-            
-            mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, 
-                              nchar, numnodes, searchrec);
-            
-            subtr->next->edge->skip = false;
-            
-            if (searchrec->success) {
-                return;
-            }
-        }
-        else {
-            subtr->next->edge->skip = false;
-        }
-
-        
-        p = p->next;
-        up = n->next->edge;
-    } */
-
-    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
 }
 
 node *mfl_find_atip(node *n)
@@ -799,18 +596,15 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up,
 
 bool mfl_subtr_isrerootable(node *n)
 {
-    node *p;
     bool rerootable = true;
     
-    if (n->next->edge->tip){
-        rerootable = false;
+    if(n->tip) {
+        return false;
     }
+    
     else {
-        
-        p = n->next->edge;
-        
-        if (p->next->edge->tip) {
-            if (p->next->next->edge->tip) {
+        if (n->next->edge->tip) {
+            if (n->next->next->edge->tip) {
                 rerootable = false;
             }
         }
@@ -826,7 +620,139 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
     /* Traverses a binary tree clipping out a subtree in postorder and passing 
      * a pointer to the subtree to mfl_reroot_subtree. */
     
-    int diff = 0;
+    
+    int i, diff, *srcchanging, *tgtchanging;
+    node *p, *q, *src, *tgt, *s_dn, *s_up, *t_dn, *t_up, *t_dn_N, *t_up_N;
+    node *s_dn_N, *s_up_N, *atip;
+    nodearray nds = swapingon->trnodes;
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        
+        p = nds[i];
+        q = nds[i];
+        p->skip = true;
+        
+        do {
+            if (!p->skip) {
+                src = p->edge;
+                tgt = p;
+                
+                if (src->tip) {
+                    memcpy(src->apomorphies, src->tempapos, 
+                           nchar * sizeof(charstate));
+                }
+                else if (src->tocalcroot) {
+                    mfl_set_updown(src, &s_up, &s_dn);
+                    s_up_N = s_up->edge;
+                    s_dn_N = s_dn->edge;
+                    
+                    srcchanging = mfl_get_subtr_changing(src, NULL, NULL, nchar);
+                    mfl_reopt_subtr(src, swapingon, nchar, numnodes, srcchanging);
+                }
+                else {
+                    
+                    mfl_set_updown(src, &s_up, &s_dn);
+                    srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, s_dn, 
+                                                       nchar);
+                    
+                    s_up_N = s_up->edge;
+                    s_dn_N = s_dn->edge;
+                    mfl_join_nodes(s_dn, s_up);
+                    
+                    mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, nchar, 
+                                         srcchanging);
+                    
+                    mfl_join_nodes(s_up_N, s_up);
+                    mfl_join_nodes(s_dn_N, s_dn);
+                    
+                    //mfl_reopt_subtr_root(src, nchar);
+                    free(srcchanging);
+                }
+                
+                if (!tgt->tocalcroot) {
+                    
+                    mfl_set_updown(tgt, &t_up, &t_dn);
+                    
+                    tgtchanging = mfl_get_tgt_changing(t_dn->edge, t_up, t_dn, 
+                                                       nchar);
+                    
+                    // Pop out redundant node:
+                    t_up_N = t_up->edge;
+                    t_dn_N = t_dn->edge;
+                    mfl_join_nodes(t_up, t_dn);
+                    
+                    mfl_partial_downpass(t_dn, swapingon, numnodes, ntax, nchar, 
+                                         tgtchanging);
+                    free(tgtchanging);
+                }
+                else {
+                    mfl_set_updown(tgt, &t_up, &t_dn);
+                    // Pop out the redundant node:
+                    t_up_N = t_up->edge;
+                    t_dn_N = t_dn->edge;
+                    mfl_join_nodes(t_up, t_dn);
+                }
+                
+                diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
+                
+                // Perform all reinsertions of SRC on TGT
+                t_up->visited = true;
+                t_dn->visited = true;
+                
+                if (mfl_subtr_isrerootable(src)) {
+                    
+                    atip = mfl_find_atip(src);
+                    
+                    mfl_join_nodes(s_up, s_dn);
+                    
+                    mfl_reroot_subtree(atip->edge, atip, src->edge->next->next, 
+                                       src, t_up, t_dn, swapingon, savedtrees, 
+                                       ntax, nchar, numnodes, searchrec, diff);
+                    
+                    if (searchrec->success) {
+                        t_up->visited = false;
+                        t_dn->visited = false;
+                        p->skip = false;
+                        return;
+                    }
+                    mfl_join_nodes(s_up_N, s_up);
+                    mfl_join_nodes(s_dn_N, s_dn);
+                    
+                }
+                else {
+                    mfl_regrafting_traversal(t_up, src->edge->next->next, swapingon, 
+                                             savedtrees, ntax, nchar, numnodes, 
+                                             searchrec, diff);
+                    
+                    mfl_regrafting_traversal(t_dn, src->edge->next->next, swapingon, 
+                                             savedtrees, ntax, nchar, numnodes, 
+                                             searchrec, diff);
+                }
+                
+                t_up->visited = false;
+                t_dn->visited = false;
+                p->skip = false;
+                
+                if (searchrec->success) {
+                    return;
+                }
+                
+                mfl_join_nodes(t_up, t_up_N);
+                mfl_join_nodes(t_dn, t_dn_N);
+                
+                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+            }
+            else {
+                p->skip = false;
+            }
+
+            p = p->next;
+            
+        } while (p != q);
+        
+    }
+    
+    /*int diff = 0;
     node *p, *up, *dn, *up1, *dn1, *subtr, *atip, *base, *bc1, *bc2;
         
     if (n->start) {
@@ -856,14 +782,14 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
             
             if (searchrec->success) {
                 return;
-            }
+            }*/
             
             /* If the clipped subtree has only 1 or 2 terminals, then it 
              * cannot be rerooted. Therefore, only a normal SPR routine is
              * required. Otherwise, the procedure can proceed with rerooting
              * and reconnecting. */
             
-            if (mfl_subtr_isrerootable(subtr)) {
+            /*if (mfl_subtr_isrerootable(subtr)) {
                 
                 up->visited = 1;
                 dn->visited = 1;
@@ -939,7 +865,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                 
         up = n->next->edge;
         p = p->next;
-    }   
+    }   */
     
     
 }
@@ -963,11 +889,11 @@ void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int
     switch (mfl_handle->bswap_type) {
         case MFL_BST_TBR:
             dbg_printf("Searching by TBR\n");
-            return &mfl_bisection_traversal;;
+            return &mfl_bisection_traversal;
             break;
         case MFL_BST_SPR:
             dbg_printf("Searching by SPR\n");
-            return &mfl_pruning_traversal;
+            return &mfl_subtree_pruning;
         case MFL_BST_NNI:
             dbg_printf("Not implemented\n");
             //return; // Temporary. Would fail if called.
