@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* Morphy.1 */; };
+		E117201F1631602A0021AAA7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 		E1DCB79B1629A08600C50BF3 /* tree.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */; };
 		E1DCB79D1629A08D00C50BF3 /* rearrange.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBC9614A8BD13005BB9D5 /* rearrange.c */; };
 		E1DCB79E1629A08E00C50BF3 /* readnewick.c in Sources */ = {isa = PBXBuildFile; fileRef = E1250B5814C09D1D008C350B /* readnewick.c */; };
@@ -16,7 +17,6 @@
 		E1DCB7A21629A0A900C50BF3 /* coptim.c in Sources */ = {isa = PBXBuildFile; fileRef = E1A6576114EC32DF00A348E2 /* coptim.c */; };
 		E1DCB7A31629A0AB00C50BF3 /* compare.c in Sources */ = {isa = PBXBuildFile; fileRef = E1C322EF14E2E4340076AE7A /* compare.c */; };
 		E1DCB7B61629A11D00C50BF3 /* drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = E161E0ED14F3E23100F8589E /* drawtree.c */; };
-		E1F266F3162EF31F00C856AF /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -227,7 +227,7 @@
 				E1DCB7A21629A0A900C50BF3 /* coptim.c in Sources */,
 				E1DCB7A31629A0AB00C50BF3 /* compare.c in Sources */,
 				E1DCB7B61629A11D00C50BF3 /* drawtree.c in Sources */,
-				E1F266F3162EF31F00C856AF /* main.c in Sources */,
+				E117201F1631602A0021AAA7 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -412,23 +412,6 @@ bool mfl_is_apicalclip(node *subtr, node *up, node *dn, int nchar)
     
 }
 
-void mfl_set_rootstates2(node *n, int nchar)
-{
-    int i;
-    
-    for (i = 0; i < nchar; ++i) {
-        if (n->next->edge->apomorphies[i] & n->next->next->edge->apomorphies[i]) {
-            n->apomorphies[i] = (n->next->edge->apomorphies[i] & n->next->next->edge->apomorphies[i]);
-        }
-        else {
-            n->apomorphies[i] = (n->next->edge->apomorphies[i] | n->next->next->edge->apomorphies[i]);
-            if (n->next->edge->apomorphies[i] & IS_APPLIC && n->next->next->edge->apomorphies[i] & IS_APPLIC) {
-                n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
-            }
-        }
-    }
-}
-
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, 
                        tree *swapingon, tree **savedtrees, int ntax, int nchar, 
                        int numnodes, mfl_searchrec *searchrec)
@@ -452,8 +435,6 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     mfl_join_nodes(up, dn);
     
     // Reoptimize the clipped tree
-    
-    //mfl_trav_allviews(swapingon->trnodes[0], swapingon, ntax, nchar, tgtchanging);
         
     mfl_partial_downpass(dn, swapingon, numnodes, ntax, nchar, tgtchanging);
     
@@ -468,8 +449,6 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     
     // Determine the cost of local reinsertion
     diff = mfl_subtr_reinsertion(base, up, dn, nchar);
-    
-    //dbg_printf("diff 1: %i\n", diff);
     
     // Begin attempting reinsertions
 
@@ -497,7 +476,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     
     // Reverse 
     
-    /*if (!base->tip) {
+    if (!base->tip) {
         
         base = base->edge;
         
@@ -510,8 +489,6 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
             up = base->edge->next->next->edge;
         }
         
-        //srcchanging = mfl_get_subtr_changing(base, up, dn, nchar);
-        
         up->visited = 1;
         dn->visited = 1;
         up->clip = true;
@@ -519,14 +496,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
         dn1 = dn->edge;
         
         mfl_join_nodes(up, dn);
-        //dbg_printf("diff 2a: %i\n", diff);
-        mfl_set_rootstates2(base, nchar);
-        //mfl_partial_downpass(dn, swapingon, numnodes, ntax, nchar, srcchanging);
-        //free(srcchanging);
         diff = mfl_subtr_reinsertion(base, up, dn, nchar);
-        //dbg_printf("diff 2b: %i\n", diff);
-        
-        //node *subtrh = subtr;
         subtr = base->edge->next->next;
         
         mfl_regrafting_traversal(up, subtr, swapingon, savedtrees, ntax, nchar, 
@@ -550,7 +520,7 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
         
         mfl_join_nodes(up, up1);
         mfl_join_nodes(dn, dn1);
-    }*/
+    }
     
     mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
     
@@ -569,6 +539,10 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees,
     if (n->start) {
         mfl_pruning_traversal(n->edge, swapingon, savedtrees, ntax,
                               nchar, numnodes, searchrec);
+        
+        mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, 
+                          nchar, numnodes, searchrec);
+        
         return;
     }
     
@@ -611,6 +585,22 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees,
 
     //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
 }
+
+/*void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax, 
+                         int nchar, int numnodes, mfl_searchrec *searchrec)
+{*/
+    
+    /* Traverses a binary tree clipping out a subtree in postorder and passing 
+     * a pointer to the subtree to mfl_regrafting_traversal. */
+    
+    // For all internal nodes in the tree
+        // Identify whether the node resides in the part containing the calc. root relative to the node's edge neighbor
+        // Break the tree in two by popping the redundant node out of the part with the calcroot
+        // Reoptimize the subtree with the calc. root
+        // Reoptimize the subtree without the calc. root
+        
+    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+//}
 
 node *mfl_find_atip(node *n)
 {
@@ -916,7 +906,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             searchrec->bestinrep = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestinrep);
             searchrec->bestlength = searchrec->bestinrep;
             j = 0;
-            //dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
+            dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
         }
         else {
             dbg_printf("Replicate: %li\n", i + 1);
