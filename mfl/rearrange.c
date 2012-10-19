@@ -292,10 +292,10 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     static bool island = false;
     
     if (!(n->visited) && !(n->edge->visited)) {
-        up = n->edge;
+        /*up = n->edge;
         
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
-        trlength = searchrec->bestinrep - diff + al;
+        trlength = searchrec->bestinrep - diff + al;*/
         
         searchrec->niter_total = searchrec->niter_total + 1;
 
@@ -526,23 +526,152 @@ void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr,
     
 }
 
+void mfl_set_updown(node *n, node **up, node **dn)
+{
+    if (n->next->tocalcroot) {
+        *dn = n->next->edge;
+        *up = n->next->next->edge;
+    }
+    else {
+        *up = n->next->edge;
+        *dn = n->next->next->edge;
+    }
+}
+
+
+void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax, 
+                         int nchar, int numnodes, mfl_searchrec *searchrec)
+{
+    
+    /* Traverses a binary tree clipping out a subtree in postorder and passing 
+     * a pointer to the subtree to mfl_regrafting_traversal. */
+    
+    int i, diff, *srcchanging, *tgtchanging;
+    node *p, *q, *src, *tgt, *s_dn, *s_up, *t_dn, *t_up, *t_dn_N, *t_up_N;
+    node *s_dn_N, *s_up_N;
+    nodearray nds = swapingon->trnodes;
+    
+    // For all internal nodes in the tree
+    
+    for (i = ntax + 1; i < numnodes; ++i) {
+        
+        // Set the node in the array to P.
+        p = nds[i];
+        q = nds[i];
+        do {
+            // Set SRC to P->EDGE
+            src = p->edge;
+            // TGT to P
+            tgt = p;
+            
+            // If: SRC->TIP
+            if (src->tip) {
+                // Set all apomorphies to tempapos
+                memcpy(src->apomorphies, src->tempapos, nchar * sizeof(charstate));
+            }
+            else if (src->tocalcroot) { // Identify whether P resides in the part containing the calc. root relative to the node's edge neighbour
+                // Reoptimize as a root
+                mfl_set_rootstates(src, nchar);
+            }
+            else {
+                
+                mfl_set_updown(src, &s_up, &s_dn);
+                // Estimate states expected to change in the src tree
+                srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, s_dn, nchar);
+                
+                // Reoptimize with PARTIAL DOWNPASS
+                s_up_N = s_up->edge;
+                s_dn_N = s_dn->edge;
+                mfl_join_nodes(s_dn, s_up);
+                mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, nchar, srcchanging);
+                mfl_join_nodes(s_up_N, s_up);
+                mfl_join_nodes(s_dn_N, s_dn);
+                mfl_reopt_subtr_root(src, nchar);
+                free(srcchanging);
+            }
+            
+            if (!tgt->tocalcroot) {// Identify whether P->EDGE resides in a part containing the calc. root
+                // if not:
+                
+                mfl_set_updown(tgt, &t_up, &t_dn);
+                
+                // Estimate states expected to change in the target tree TGTCHANGING
+                tgtchanging = mfl_get_tgt_changing(t_dn->edge, t_up, t_dn, nchar);
+                
+                // Pop out redundant node:
+                t_up_N = t_up->edge;
+                t_dn_N = t_dn->edge;
+                mfl_join_nodes(t_up, t_dn);
+                
+                // Reoptimize with PARTIAL DOWNPASS
+                mfl_partial_downpass(t_dn, swapingon, numnodes, ntax, nchar, tgtchanging);
+                free(tgtchanging);
+            }
+            else {
+                if (tgt->next->edge->tocalcroot) {
+                    t_up = tgt->next->edge;
+                    t_dn = tgt->next->next->edge;
+                }
+                else {
+                    t_dn = tgt->next->edge;
+                    t_up = tgt->next->next->edge;
+                }
+                
+                // Pop out the redundant node:
+                t_up_N = t_up->edge;
+                t_dn_N = t_dn->edge;
+                mfl_join_nodes(t_up, t_dn);
+            }
+            
+            // Calculate DIFF
+            diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
+            
+            // Perform all reinsertions of SRC on TGT
+            t_up->visited = true;
+            t_dn->visited = true;
+            mfl_regrafting_traversal(t_up, src->edge->next->next, swapingon, savedtrees, ntax, nchar, 
+                                     numnodes, searchrec, diff);
+            
+            mfl_regrafting_traversal(t_dn, src->edge->next->next, swapingon, savedtrees, ntax, nchar, 
+                                     numnodes, searchrec, diff);
+            t_up->visited = false;
+            t_dn->visited = false;
+            
+            // If a SEARCHREC->SUCCESS, RETURN
+            if (searchrec->success) {
+                return;
+            }
+            
+            // Otherwise, put the node back in:
+            mfl_join_nodes(t_up, t_up_N);
+            mfl_join_nodes(t_dn, t_dn_N);
+            
+            // set P = P->NEXT
+            p = p->next;
+            
+            mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+            
+        } while (p != q); // Repeat while P != TRNODES[i]
+        
+    }
+    
+    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+}
+
 void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees, 
                            int ntax, int nchar, int numnodes, 
                            mfl_searchrec *searchrec)
 {
 
+    mfl_subtree_pruning(n, swapingon, savedtrees, ntax, nchar, numnodes, searchrec);
     /* Traverses a binary tree clipping out a subtree in postorder and passing 
      * a pointer to the subtree to mfl_regrafting_traversal. */
     
-    node *p, *up, *dn, *subtr;
+    /*node *p, *up, *dn, *subtr;
     
     if (n->start) {
         mfl_pruning_traversal(n->edge, swapingon, savedtrees, ntax,
                               nchar, numnodes, searchrec);
-        
-        mfl_spr_cliptrees(n, up, dn, subtr, swapingon, savedtrees, ntax, 
-                          nchar, numnodes, searchrec);
-        
         return;
     }
     
@@ -581,26 +710,10 @@ void mfl_pruning_traversal(node *n, tree *swapingon, tree **savedtrees,
         
         p = p->next;
         up = n->next->edge;
-    } 
+    } */
 
     //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
 }
-
-/*void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax, 
-                         int nchar, int numnodes, mfl_searchrec *searchrec)
-{*/
-    
-    /* Traverses a binary tree clipping out a subtree in postorder and passing 
-     * a pointer to the subtree to mfl_regrafting_traversal. */
-    
-    // For all internal nodes in the tree
-        // Identify whether the node resides in the part containing the calc. root relative to the node's edge neighbor
-        // Break the tree in two by popping the redundant node out of the part with the calcroot
-        // Reoptimize the subtree with the calc. root
-        // Reoptimize the subtree without the calc. root
-        
-    //mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-//}
 
 node *mfl_find_atip(node *n)
 {
