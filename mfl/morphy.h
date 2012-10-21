@@ -95,6 +95,7 @@ typedef struct node {
     int order;
     int nodelen;
     int cpindex;
+    bool done;
     bool origbase;
     bool success;
     bool finished;
@@ -233,6 +234,7 @@ int *mfl_get_subtr_changing(node *n, node *up, node *dn, int nchar);
 int *mfl_get_tgt_changing(node *n, node *crownprt, node *rootprt, int nchar);
 
 mfl_changing *mfl_get_changing(node *base, node *subtr, node *crownprt, node *rootprt, int nchar);
+void mfl_set_rootstates2(node *n, int nchar);
 
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing);

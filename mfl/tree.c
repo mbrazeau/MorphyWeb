@@ -1018,7 +1018,7 @@ void mfl_point_bottom(node *n, node **nodes)
         p = p->next;        
     }
     n->bottom = true;
-    nodes[n->index] = n;
+    //nodes[n->index] = n;
 }
 
 void mfl_root_tree(tree *trtoroot, int nRoot, int ntax)
