@@ -332,8 +332,8 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
     charstate *rdtemps = rightdesc->tempapos;
     charstate *antemps = ancestor->tempapos;
     
-    for (c = 0; changing[c]; ++c) {
-        i = changing[c]-1;
+    for (c = 0; c < nchar; ++c) {
+        i = c;
         if (ldtemps[i] & rdtemps[i]) 
         {
             temp = ldtemps[i] & rdtemps[i];
@@ -495,7 +495,7 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
     charstate *tipapos = tip->apomorphies;
     charstate *ancapos = anc->apomorphies;
     
-    if (changing != NULL) {
+    /*if (changing != NULL) {
         for (c = 0; changing[c]; ++c) {
             i = changing[c]-1;
             if (tiptemp[i] != 1) {
@@ -505,16 +505,27 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
             }
         }
     }
-    else {
+    else {*/
         for (i = 0; i < nchar; ++i) {
             
             if (tiptemp[i] != 1) {
-                if (tiptemp[i] & ancapos[i]) {
-                    tipapos[i] = tiptemp[i] & ancapos[i];
+                
+                if (tiptemp[i] != (tiptemp[i] & -tiptemp[i])) {
+                    
+                    if (ancapos[i] != (tiptemp[i] & ancapos[i])) {
+                        tipapos[i] = tiptemp[i];
+                    }
+                    else {
+                        tipapos[i] = (tiptemp[i] & ancapos[i]);
+                    }
                 }
+                else {
+                    tipapos[i] = tiptemp[i];
+                }
+
             }
         }
-    }
+    //}
 
 }
 
@@ -537,9 +548,9 @@ void mfl_reopt_comb(node *n, node *anc, int nchar, int *changing)
     
     bool allsame = true;
     
-    for (c = 0; changing[c]; ++c) {
+    for (c = 0; c < nchar; ++c) {
         
-        i = changing[c]-1;
+        i = c;
         
         if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
         {
@@ -610,8 +621,8 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
     charstate *rdtemps = n->next->next->edge->tempapos;
     charstate *antemps = n->apomorphies;
     
-    for (c = 0; changing[c]; ++c) {
-        i = changing[c]-1;
+    for (c = 0; c < nchar; ++c) {
+        i = c;
         if (ldtemps[i] & rdtemps[i]) 
         {
             temp = ldtemps[i] & rdtemps[i];
@@ -651,9 +662,9 @@ void mfl_reopt_preorder(node *n, int nchar, int *changing)
         return;
     }
     
-    if (n->finished && !n->clippath) {
+    /*if (n->finished && !n->clippath) {
         return;
-    }
+    }*/
     
     if (!n->edge || n->isroot) {
         mfl_reopt_rootstates(n, nchar, changing);
@@ -668,14 +679,14 @@ void mfl_reopt_preorder(node *n, int nchar, int *changing)
     if (!dl->tip) {
         mfl_reopt_comb(dl, n, nchar, changing);
     }
-    else if (!n->finished) {
+    else /*if (!n->finished)*/ {
         mfl_tip_apomorphies(dl, n, nchar, changing);
     }
     
     if (!dr->tip) {
         mfl_reopt_comb(dr, n, nchar, changing);
     }
-    else if (!n->finished) {
+    else /*if (!n->finished)*/ {
         mfl_tip_apomorphies(dr, n, nchar, changing);
     }
     
@@ -695,9 +706,9 @@ void mfl_reopt_comb_ii(node *n, node *anc, int nchar, int *changing)
     
     bool allsame = true;
     
-    for (c = 0; changing[c]; ++c) {
+    for (c = 0; c < nchar; ++c) {
         
-        i = changing[c] - 1;
+        i = c;
         
         if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
         {
@@ -768,14 +779,14 @@ void mfl_reopt_preorder_ii(node *n, int nchar, int *changing)
     if (!dl->tip) {
         mfl_reopt_comb_ii(dl, n, nchar, changing);
     }
-    else if (!dl->success) {
+    else /*if (!dl->finished)*/ {
         mfl_tip_apomorphies(dl, n, nchar, changing);
     }
     
     if (!dr->tip) {
         mfl_reopt_comb_ii(dr, n, nchar, changing);
     }
-    else if (!dr->success) {
+    else /*if (!dr->finished)*/ {
         mfl_tip_apomorphies(dr, n, nchar, changing);
     }
     
@@ -851,7 +862,7 @@ int mfl_get_treelen(tree *t, int ntax, int nchar, int *besttreelen)
     return *treelen_p;
 }
 
-charstate *mfl_get_subtr_changing(node *n, node *up, node *dn, int nchar)
+int *mfl_get_subtr_changing(node *n, node *up, node *dn, int nchar)
 {
     /* Compares preliminary and final states in the source tree in heuristic 
      * searches and lists characters that are expected to require reoptimization*/
@@ -1018,8 +1029,8 @@ void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar)
             while (!p->tocalcroot) {
                 p = p->next;
                 if (p == tns[i]) {
-                    break;
                     dbg_printf("Error: node has no apomorphies array\n");
+                    break;
                 }
             }
         }
@@ -1073,9 +1084,11 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *changing)
     
     mfl_definish_tree(t, 2 * ntax - 1);
     mfl_temproot(t, 0, ntax);
+    mfl_reset_nodes1(t->trnodes, 2 * ntax - 1, nchar);
     mfl_erase_clippath(t, 2 * ntax - 1);
     mfl_reopt_postorder(t->root, nchar, changing);
-    mfl_find_lastchanged(t->root, nchar, changing);
+    //mfl_find_lastchanged(t->root, nchar, changing);
+    mfl_reopt_preorder(t->root, nchar, changing);
     mfl_undo_temproot(ntax, t);
     
 }

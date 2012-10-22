@@ -843,6 +843,51 @@ void mfl_set_index(node *n)
     }   
 }
 
+void mfl_reset_nodes1(nodearray nds, int numnodes, int nchar)
+{
+    /* Resets all the flags used in a single round of optimization */
+    
+    int i;
+    node *p;
+    
+    for (i = 0; i < numnodes; ++i) {
+        
+        p = nds[i];
+        
+        do {
+            
+            p->origbase = false;
+            p->success = false;
+            p->visited = false;
+            p->finished = false;
+            p->changed = false;
+            p->clip = false;
+            p->clippath = false;
+            p->initialized = false;
+            /*if (p->ancunion) {
+                memset(p->ancunion, 0, nchar * sizeof(charstate));
+            }
+            if (p->origfinals) {
+                memset(p->origfinals, 0, nchar * sizeof(charstate));
+            }
+            if (p->origtemps) {
+                memset(p->origtemps, 0, nchar * sizeof(charstate));
+
+            }           
+            if (p->tempapos) {
+                memset(p->tempapos, 0, nchar * sizeof(charstate));
+            }
+            if (p->apomorphies) {
+                memset(p->apomorphies, 0, nchar * sizeof(charstate));
+            }*/
+            
+            if (p->next) {
+                p = p->next;
+            }
+        } while (p != nds[i]);
+    }
+}
+
 void mfl_devisit_tree(nodearray nds, int numnodes)
 {
     int i;

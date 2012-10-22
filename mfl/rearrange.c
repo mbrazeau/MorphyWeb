@@ -417,6 +417,15 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
     node *s_dn_N, *s_up_N;
     nodearray nds = swapingon->trnodes;
     
+    for (i = 0; i < numnodes; ++i) {
+        p = nds[i];
+        do {
+            p->done = false;
+            if (p->next) {
+                p = p->next;
+            }
+        } while (p != nds[i]);
+    }
     
     for (i = ntax + 1; i < numnodes; ++i) {
         
@@ -424,12 +433,12 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
         q = nds[i];
         
         do {
+            
             if (!p->edge->skip) {
                 p->edge->skip = true;
                 src = p->edge;
                 tgt = p;
-                
-                if (!(tgt->next->edge->tip && tgt->next->next->edge->tip)) {
+                src->done = true;
                 
                 if (src->tip) {
                     memcpy(src->apomorphies, src->tempapos, 
@@ -443,12 +452,12 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     mfl_set_updown(src, &s_up, &s_dn);
                     srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, s_dn, 
                                                        nchar);
-                    
                     s_up_N = s_up->edge;
                     s_dn_N = s_dn->edge;
                     mfl_join_nodes(s_dn, s_up);
                     mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, nchar, 
                                          srcchanging);
+                    //mfl_trav_allviews(p, swapingon, ntax, nchar, tgtchanging);
                     mfl_join_nodes(s_up_N, s_up);
                     mfl_join_nodes(s_dn_N, s_dn);
                     mfl_reopt_subtr_root(src, nchar);
@@ -469,6 +478,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     
                     mfl_partial_downpass(t_dn, swapingon, numnodes, ntax, nchar, 
                                          tgtchanging);
+                    //mfl_trav_allviews(p, swapingon, ntax, nchar, tgtchanging);
                     free(tgtchanging);
                 }
                 else {
@@ -482,7 +492,13 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     mfl_join_nodes(t_up, t_dn);
                 }
                 
-                diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
+                //if (src->tocalcroot || src->tip) {
+                    diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
+                //}
+                //else {
+                  //  diff = mfl_subtr_reinsertion(tgt, s_up, s_dn, nchar);
+                //}
+
                 
                 // Perform all reinsertions of SRC on TGT
                 t_up->visited = true;
@@ -504,13 +520,15 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 
                 mfl_join_nodes(t_up, t_up_N);
                 mfl_join_nodes(t_dn, t_dn_N);
-                }
+                
+                mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
             }
             else {
                 p->edge->skip = false;
             }
-            mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-
+            
+            
+            
             p = p->next;
             
         } while (p != q);
@@ -552,12 +570,12 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up,
     mfl_reopt_subtr_root(base, nchar);
 
     if (!base->next->edge->origbase && !base->next->next->edge->origbase) {
-        up->visited = 0;
-        dn->visited = 0;
+        //up->visited = 0;
+        //dn->visited = 0;
     }
-    else {
+    /*else {
         base->skip = false;
-    }
+    }*/
     
     mfl_regrafting_traversal(up, subtr, swapingon, savedtrees, ntax, nchar, 
                              numnodes, searchrec, diff);
@@ -646,13 +664,11 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                 
             src = p->edge;
             tgt = p;
+            src->done = true;
             
-            //if (!src->skip) {
-                
-                if (!(tgt->next->edge->tip && tgt->next->next->edge->tip)) {
-                    //src->skip = true;
-                    //src->done = true;
-                    
+            if (!tgt->done) {
+                if (!src->skip) {
+                    src->skip = true;
                     if (src->tip) {
                         memcpy(src->apomorphies, src->tempapos, 
                                nchar * sizeof(charstate));
@@ -727,12 +743,14 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                         
                         s_up->origbase = false;
                         s_dn->origbase = false;
+                        
                         if (searchrec->success) {
                             t_up->visited = false;
                             t_dn->visited = false;
                             src->skip = false;
                             return;
                         }
+                        
                         mfl_join_nodes(s_up_N, s_up);
                         mfl_join_nodes(s_dn_N, s_dn);
                         
@@ -759,11 +777,11 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                     mfl_join_nodes(t_dn, t_dn_N);
                     
                     mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-                }    
-            /*}
-            else {
-                src->skip = false;
-            }*/
+                }
+                else {
+                    src->skip = false;
+                }
+            }
             
             assert(q == nds[i]);
             
@@ -959,6 +977,8 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         newreptree = mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, mfl_handle->addseq_type, savedtrees);
         searchrec->currentreplicate = i;
         
+        printNewick(newreptree->trnodes[0]);
+        
         if (i == 0) {
             dbg_printf("Replicate: %li\n", i + 1);
             /* The particular addition sequence will have to be selected by the user */
@@ -975,7 +995,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             dbg_printf("next in buff at start of rep: %li\n", searchrec->nextinbuffer);
             savedtrees[searchrec->nextinbuffer] = newreptree;
             searchrec->bestinrep = mfl_all_views(savedtrees[searchrec->nextinbuffer], ntax, nchar, &searchrec->bestinrep);
-            //dbg_printf("Best length in replicate: %i\n", searchrec->bestinrep);
+            dbg_printf("Best length in replicate: %i\n", searchrec->bestinrep);
             j = searchrec->nextinbuffer;
             searchrec->trbufstart = searchrec->nextinbuffer;
             searchrec->foundbettertr = false;
@@ -991,6 +1011,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             mfl_part_reset_searchrec(searchrec);
             //searchrec->foundbettertr = false;
             //searchrec->success = false;
+            mfl_reset_nodes1(savedtrees[j]->trnodes, numnodes, nchar);
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
             mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
