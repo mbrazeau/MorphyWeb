@@ -274,14 +274,14 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>19</integer>
+									<integer>24</integer>
 									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 28}, {181, 815}}</string>
+							<string>{{0, 0}, {181, 815}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -318,7 +318,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>coptim.c</string>
+								<string>rearrange.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -326,11 +326,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>coptim.c</string>
+										<string>rearrange.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E14E43A41636F8D5005611A4</string>
+										<string>E14E443716373DA3005611A4</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -357,14 +357,14 @@
 											<string>E14E40BC16359570005611A4</string>
 											<string>E14E425116368B4C005611A4</string>
 											<string>E14E42611636A72C005611A4</string>
-											<string>E14E42CE1636BFED005611A4</string>
 											<string>E14E435C1636E8DF005611A4</string>
 											<string>E14E435E1636E8DF005611A4</string>
 											<string>E14E43781636F2EC005611A4</string>
-											<string>E14E43791636F2EC005611A4</string>
 											<string>E14E43901636F63F005611A4</string>
-											<string>E14E439C1636F7F8005611A4</string>
-											<string>E14E439D1636F7F8005611A4</string>
+											<string>E14E43F51637243C005611A4</string>
+											<string>E14E441216373116005611A4</string>
+											<string>E14E443516373DA3005611A4</string>
+											<string>E14E443616373DA3005611A4</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -562,13 +562,14 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>E14E443816373DA3005611A4</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>E14E3DE616353062005611A4</string>
 		<string>E14E3DE716353062005611A4</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>E1B2E820161703C50076343F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>-3 4 1440 874 0 0 1440 878 </string>
@@ -805,8 +806,6 @@
 							<key>Dock</key>
 							<array>
 								<dict>
-									<key>BecomeActive</key>
-									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
@@ -833,6 +832,8 @@
 							<string>529pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -944,7 +945,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

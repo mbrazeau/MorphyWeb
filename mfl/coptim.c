@@ -97,7 +97,7 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     charstate *tgt2apos = tgt2->apomorphies;
    
     for (i = 0; i < nchar; ++i) {
-        if ( !(*(srctemps++) & (*(tgt1apos++) | *(tgt2apos++))) ) {
+        if ( !(*(srctemps+i) & (*(tgt1apos+ i) | *(tgt2apos + i)) ) ) {
             ++cost;
             if (cost > diff) {
                 return cost;
@@ -404,8 +404,8 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
                     mfl_join_nodes(lt, rt);
                 }
                 else {
-                    //mfl_reopt_comb(p, p->edge, nchar, changing);
-                    mfl_reopt_preorder(q, nchar, changing);
+                    mfl_reopt_comb(p, p->edge, nchar, changing);
+                    mfl_reopt_preorder(p, nchar, changing);
                 }
 
                 p->success = false;
@@ -563,7 +563,7 @@ void mfl_reopt_comb(node *n, node *anc, int nchar, int *changing)
             
             if ( lft_chars & rt_chars ) { //III
                 //V
-                temp = (ntemps[i] |(ancapos[i] &(lft_chars | rt_chars)));// & IS_APPLIC;
+                temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)) );// & IS_APPLIC;
                 if (temp != napos[i]) {
                     napos[i] = temp;
                     allsame = false;
