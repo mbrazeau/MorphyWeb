@@ -598,7 +598,7 @@ void mfl_join_tempapos(node *n)
     node *p;
     p = n->next;
     while (p != n) {
-        p->tempapos = n->apomorphies;
+        p->tempapos = n->tempapos;
         p = p->next;
     }
 }

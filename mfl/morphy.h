@@ -154,6 +154,12 @@ typedef struct tree {
 } chardata;*/
 
 typedef struct {
+    int **island_trees;
+    long int island_size;
+    int island_length;
+} mfl_island_data;
+
+typedef struct {
     
     /* Keeps a record of the state of tree rearrangment.*/
     
@@ -169,7 +175,14 @@ typedef struct {
     long int niter_total;
     long int niter_ontree;
     long int currentreplicate;
-    //int *subtree_changes;
+    int island_number;
+    mfl_island_data island_data;
+    
+    bool dbg_flag;      /* A flag used in debugging the heuristic seach. 
+                         * Generic use for stopping the search at a certain 
+                         * point based on a variable not available within a 
+                         * particular fucntion call*/
+    
 } mfl_searchrec;
 
 typedef struct {
@@ -233,6 +246,7 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar);
 int *mfl_get_subtr_changing(node *n, node *up, node *dn, int nchar);
 int *mfl_get_tgt_changing(node *n, node *crownprt, node *rootprt, int nchar);
 
+void mfl_reopt_rootstates(node *n, int nchar, int *changing);
 mfl_changing *mfl_get_changing(node *base, node *subtr, node *crownprt, node *rootprt, int nchar);
 void mfl_set_rootstates2(node *n, int nchar);
 

@@ -713,7 +713,7 @@ void mini_test_analysis(void)
     mfl_handle->bswap_type = MFL_BST_TBR;
     
     //srandom(481981);
-    mfl_heuristic_search(mfl_handle);
+    //mfl_heuristic_search(mfl_handle);
     
     //srandom(10615111);
     //mfl_heuristic_search(mfl_handle);
