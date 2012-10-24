@@ -307,20 +307,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             counter = 0;
             
             dbg_printf("length: %i\n", trlength);
-            if (searchrec->dbg_flag) {
-                /*if (subtr->next->edge->tocalcroot) {
-                    printNewick(subtr->next->edge);
-                    dbg_printf("\n");
-                }*/
-            }
             
             mfl_join_nodes(subtr->next->next, up);
             mfl_join_nodes(subtr, n);
-            
-            //if (searchrec->dbg_flag) {
-                printNewick(swapingon->trnodes[0]);
-                dbg_printf("\n");
-            //}
             
             searchrec->foundbettertr = true;
             searchrec->success = true;
@@ -368,6 +357,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                     printNewick(swapingon->trnodes[0]);
                     island = false;
                 }*/
+                
                 if (searchrec->currentreplicate > 0) {
                     if (trlength == searchrec->bestlength) {
                         long int bstart = 0;
@@ -448,10 +438,6 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
         
         do {
             
-            /*if (searchrec->dbg_flag) {
-                dbg_printf("hold\n");
-            }*/
-            
             if (!p->edge->skip) {
                 p->edge->skip = true;
                 src = p->edge;
@@ -475,7 +461,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 else {
                     mfl_set_updown(tgt, &t_up, &t_dn);
                     
-                    if (tgt->next->edge->tip && tgt->next->next->edge->tip) {;
+                    if (t_up->tip && t_dn->tip) {
                         p = p->next;
                         continue;
                     }
@@ -495,7 +481,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 }
                 
                 if (src->tip) {
-                    memcpy(src->apomorphies, src->origtemps, 
+                    memcpy(src->apomorphies, src->tempapos, 
                            nchar * sizeof(charstate));
                 }
                 else if (src->tocalcroot) {
@@ -523,14 +509,6 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     }
                 }
                 
-                /*if (searchrec->dbg_flag) {
-                    dbg_printf("hold\n");
-                    if (src->tocalcroot) {
-                        printNewick(src);
-                        dbg_printf("\n");
-                    }
-                }*/
-                
                 diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
                 
                 // Perform all reinsertions of SRC on TGT
@@ -555,6 +533,8 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 mfl_join_nodes(t_dn, t_dn_N);
                 
                 mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                
+                p->edge->skip = false;
             }
             else {
                 p->edge->skip = false;
@@ -562,7 +542,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
             
             p = p->next;
             
-        } while (p != q);
+        } while (p != nds[i]);
         
     }
 }
@@ -1024,13 +1004,6 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         }
         else {
             dbg_printf("Replicate: %li\n", i + 1);
-            if (i+1 == 20 || i+1 == 44) {
-                searchrec->dbg_flag = true;
-            }
-            else {
-                searchrec->dbg_flag = false;
-            }
-
             dbg_printf("next in buff at start of rep: %li\n", searchrec->nextinbuffer);
             savedtrees[searchrec->nextinbuffer] = newreptree;
             searchrec->bestinrep = mfl_all_views(savedtrees[searchrec->nextinbuffer], ntax, nchar, &searchrec->bestinrep);

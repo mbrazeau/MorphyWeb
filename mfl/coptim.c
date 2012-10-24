@@ -376,21 +376,22 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
 void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, int *changing)
 {
     
-    node *p, *q;
+    node *p;
     p = n;
     
     mfl_erase_clippath(t, numnodes);
     mfl_definish_tree(t, numnodes);
+    mfl_desuccess_tree(t, numnodes);
     //mfl_temproot(t, 0, ntax);
 
-    //n->edge->clippath = true;
+    n->edge->clippath = true;
     
     while (p->edge && !p->tip) {
         
         p = p->next;
         
         if (p->tocalcroot || !p->edge) {
-            q = p;
+
             p->clippath = true;
             
             mfl_reopt_fitch(p->next->edge, p->next->next->edge, p, nchar, changing);
@@ -405,6 +406,7 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
                 }
                 else {
                     mfl_reopt_comb(p, p->edge, nchar, changing);
+                    p->finished = false;
                     mfl_reopt_preorder(p, nchar, changing);
                 }
 
@@ -506,20 +508,43 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
     if (changing != NULL) {
         for (c = 0; changing[c]; ++c) {
             i = changing[c]-1;
-            if (tiptemp[i] != 1) {
-                if (tiptemp[i] & ancapos[i]) {
-                    tipapos[i] = tiptemp[i] & ancapos[i];
+            
+            if (tiptemp[i] != IS_APPLIC) {
+                if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i])))) {
+                    if (tiptemp[i] & ancapos[i]) {
+                        tipapos[i] = tiptemp[i] & ancapos[i];
+                    }
+                    else {
+                        tipapos[i] = tiptemp[i];
+                    }
+                }
+                else {
+                    tipapos[i] = tiptemp[i];
                 }
             }
+            else {
+                tipapos[i] = ancapos[i];
+            }
+
         }
     }
     else {
         for (i = 0; i < nchar; ++i) {
-            
-            if (tiptemp[i] != 1) {
-                if (tiptemp[i] & ancapos[i]) {
-                    tipapos[i] = tiptemp[i] & ancapos[i];
+            if (tiptemp[i] != IS_APPLIC) {
+                if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i])))) {
+                    if (tiptemp[i] & ancapos[i]) {
+                        tipapos[i] = tiptemp[i] & ancapos[i];
+                    }
+                    else {
+                        tipapos[i] = tiptemp[i];
+                    }
                 }
+                else {
+                    tipapos[i] = tiptemp[i];
+                }
+            }
+            else {
+                tipapos[i] = ancapos[i];
             }
         }
     }
@@ -673,14 +698,14 @@ void mfl_reopt_preorder(node *n, int nchar, int *changing)
     if (!dl->tip) {
         mfl_reopt_comb(dl, n, nchar, changing);
     }
-    else if (!n->finished) {
+    else /*if (!n->finished)*/ {
         mfl_tip_apomorphies(dl, n, nchar, changing);
     }
     
     if (!dr->tip) {
         mfl_reopt_comb(dr, n, nchar, changing);
     }
-    else if (!n->finished) {
+    else /*if (!n->finished)*/ {
         mfl_tip_apomorphies(dr, n, nchar, changing);
     }
     
@@ -773,14 +798,14 @@ void mfl_reopt_preorder_ii(node *n, int nchar, int *changing)
     if (!dl->tip) {
         mfl_reopt_comb_ii(dl, n, nchar, changing);
     }
-    else if (!dl->finished) {
+    else if (!n->finished) {
         mfl_tip_apomorphies(dl, n, nchar, changing);
     }
     
     if (!dr->tip) {
         mfl_reopt_comb_ii(dr, n, nchar, changing);
     }
-    else if (!dr->finished) {
+    else if (!n->finished) {
         mfl_tip_apomorphies(dr, n, nchar, changing);
     }
     
@@ -982,7 +1007,9 @@ void mfl_copy_originals(node *n, charstate *originals, int nchar)
 
 void mfl_restore_originals(node *n, charstate *originals, int nchar)
 {
-    memcpy(n->tempapos, n->origtemps, nchar * sizeof(charstate));
+    if (!n->tip) {
+        memcpy(n->tempapos, n->origtemps, nchar * sizeof(charstate));
+    }
     memcpy(n->apomorphies, n->origfinals, nchar * sizeof(charstate));
 }
 

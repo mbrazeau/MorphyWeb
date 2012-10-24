@@ -33,7 +33,7 @@ using namespace std;
 #endif
 
 #define MORPHY_DEFAULT_TREE_LIMIT 200
-#define IS_APPLIC ~1//(-1^1)
+#define IS_APPLIC ((unsigned)~1)//(-1^1)
 #define MORPHY_MAX_STATES 32
 
 
