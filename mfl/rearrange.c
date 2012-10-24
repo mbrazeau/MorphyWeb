@@ -292,6 +292,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     node *down, *top;
     static bool island = false;
     
+    int trulen = 0;
+    
     if (!(n->visited) && !(n->edge->visited)) {
         up = n->edge;
         
@@ -310,6 +312,17 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             
             mfl_join_nodes(subtr->next->next, up);
             mfl_join_nodes(subtr, n);
+            
+            /*printNewick(swapingon->trnodes[0]);
+            dbg_printf("\n");*/
+            
+            mfl_temproot(swapingon, 0, ntax);
+            mfl_fitch_postorder(swapingon->root, &trulen, nchar, NULL);
+            mfl_undo_temproot(ntax, swapingon);
+            
+            if (trulen != trlength) {
+                dbg_printf("\nYer program is crap: true length = %i\n\n", trulen);
+            }
             
             searchrec->foundbettertr = true;
             searchrec->success = true;
@@ -466,9 +479,11 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     }
                     else {
                         //mfl_set_updown(tgt, &t_up, &t_dn);
-                        tgtchanging = mfl_get_subtr_changing(tgt, NULL, NULL, nchar);
+                        tgtchanging = mfl_get_subtr_changing(tgt, NULL, NULL, 
+                                                             nchar);
                         tgt->isroot = true;
-                        mfl_reopt_subtr(tgt, swapingon, nchar, numnodes, tgtchanging);
+                        mfl_reopt_subtr(tgt, swapingon, nchar, numnodes, 
+                                        tgtchanging);
                         tgt->isroot = false;
                         free(tgtchanging);
                     }
@@ -493,14 +508,13 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     }
                     else {
                         mfl_set_updown(src, &s_up, &s_dn);
-                        srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, s_dn, 
-                                                           nchar);
+                        srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, 
+                                                           s_dn, nchar);
                         s_up_N = s_up->edge;
                         s_dn_N = s_dn->edge;
                         mfl_join_nodes(s_dn, s_up);
-                        mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, nchar, 
-                                             srcchanging);
-                        //mfl_trav_allviews(p, swapingon, ntax, nchar, tgtchanging);
+                        mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, 
+                                             nchar, srcchanging);
                         mfl_join_nodes(s_up_N, s_up);
                         mfl_join_nodes(s_dn_N, s_dn);
                         mfl_reopt_subtr_root(src, nchar);
@@ -588,8 +602,8 @@ void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up,
     mfl_reopt_subtr_root(base, nchar);
 
     if (!base->next->edge->origbase && !base->next->next->edge->origbase) {
-        //up->visited = 0;
-        //dn->visited = 0;
+        up->visited = 0;
+        dn->visited = 0;
     }
     /*else {
         base->skip = false;
@@ -684,10 +698,10 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
             tgt = p;
             src->done = true;
             
-            
             if (!tgt->done) {
                 if (!src->skip) {
                     src->skip = true;
+                    
                     if (src->tip) {
                         memcpy(src->apomorphies, src->tempapos, 
                                nchar * sizeof(charstate));
@@ -706,17 +720,20 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                             free(srcchanging);
                         }
                         else {
-                            srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, 
-                                                               s_dn, nchar);
-                            mfl_join_nodes(s_dn, s_up);
-                            
-                            mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, 
-                                                 nchar, srcchanging);
-                            
-                            mfl_join_nodes(s_up_N, s_up);
-                            mfl_join_nodes(s_dn_N, s_dn);
-                            
-                            free(srcchanging);
+                            if (src->next->edge->tip && src->next->next->edge->tip) {
+                                mfl_set_rootstates(src, nchar);
+                            }
+                            else {
+                                srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, 
+                                                                   s_dn, nchar);
+                                mfl_join_nodes(s_dn, s_up);
+                                mfl_partial_downpass(s_dn, swapingon, numnodes, ntax, 
+                                                     nchar, srcchanging);
+                                mfl_join_nodes(s_up_N, s_up);
+                                mfl_join_nodes(s_dn_N, s_dn);
+                                mfl_reopt_subtr_root(src, nchar);
+                                free(srcchanging);
+                            }
                         }
                     }
                     
@@ -725,7 +742,6 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                     t_dn_N = t_dn->edge;
                     
                     if (!tgt->tocalcroot) {
-                        
                         tgtchanging = mfl_get_tgt_changing(t_dn->edge, t_up, t_dn, 
                                                            nchar);
                         // Pop out redundant node:
@@ -735,11 +751,14 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                         free(tgtchanging);
                     }
                     else {
-                        tgtchanging = mfl_get_subtr_changing(tgt, NULL, NULL, nchar);
-                        mfl_reopt_subtr(tgt, swapingon, nchar, numnodes, tgtchanging);
+                        tgtchanging = mfl_get_subtr_changing(tgt, NULL, NULL, 
+                                                             nchar);
+                        tgt->isroot = true;
+                        mfl_reopt_subtr(tgt, swapingon, nchar, numnodes, 
+                                        tgtchanging);
+                        tgt->isroot = false;
+                        free(tgtchanging);
                         // Pop out the redundant node:
-                        t_up_N = t_up->edge;
-                        t_dn_N = t_dn->edge;
                         mfl_join_nodes(t_up, t_dn);
                     }
                     
@@ -796,6 +815,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                     mfl_join_nodes(t_dn, t_dn_N);
                     
                     mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
+                    src->skip = false;
                 }
                 else {
                     src->skip = false;

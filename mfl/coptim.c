@@ -384,20 +384,20 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
     mfl_desuccess_tree(t, numnodes);
     //mfl_temproot(t, 0, ntax);
 
-    //n->edge->clippath = true;
+    n->edge->clippath = true;
     
-    while (p->edge && !p->tip) {
+    while (p->edge /*&& !p->tip*/) {
         
-        p = p->next;
-        
-        if (p->tocalcroot || !p->edge) {
+        if (p->tocalcroot || !p->edge || p->tip) {
 
             p->clippath = true;
             
-            mfl_reopt_fitch(p->next->edge, p->next->next->edge, p, nchar, changing);
+            if (!p->tip) {
+                mfl_reopt_fitch(p->next->edge, p->next->next->edge, p, nchar, changing);
+            }
             
-            if (p->success || p->edge->tip) {
-                if (p->edge->tip) {
+            if (p->success || p->edge->tip || p->tip) {
+                if (p->edge->tip || p->tip) {
                     node *lt = p, *rt = p->edge;
                     mfl_join_nodes(t->trnodes[ntax]->next, lt);
                     mfl_join_nodes(t->trnodes[ntax]->next->next, rt);
@@ -415,9 +415,9 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
             } 
             p = p->edge;
         }
+        
+        p = p->next;
     }
-    
-    //mfl_undo_temproot(ntax, t);
     
 }
 
@@ -670,9 +670,9 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
             }
         }
     }
-    if (allsame) {
+    /*if (allsame) {
         n->finished = true;
-    }
+    }*/
 }
 
 void mfl_reopt_preorder(node *n, int nchar, int *changing)
@@ -796,14 +796,14 @@ void mfl_reopt_preorder_ii(node *n, int nchar, int *changing)
     dr = n->next->next->edge;
     
     if (!dl->tip) {
-        mfl_reopt_comb_ii(dl, n, nchar, changing);
+        mfl_reopt_comb(dl, n, nchar, changing);
     }
     else if (!n->finished) {
         mfl_tip_apomorphies(dl, n, nchar, changing);
     }
     
     if (!dr->tip) {
-        mfl_reopt_comb_ii(dr, n, nchar, changing);
+        mfl_reopt_comb(dr, n, nchar, changing);
     }
     else if (!n->finished) {
         mfl_tip_apomorphies(dr, n, nchar, changing);
