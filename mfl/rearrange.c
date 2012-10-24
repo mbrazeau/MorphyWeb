@@ -442,7 +442,6 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 p->edge->skip = true;
                 src = p->edge;
                 tgt = p;
-                src->done = true;
                 
                 if (!tgt->tocalcroot) {
                     
@@ -512,6 +511,14 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
                 
                 // Perform all reinsertions of SRC on TGT
+                /* OPTIMIZATION: This program can be greatly speeded up by 
+                 * taking advantage of the fact that the two subtrees are 
+                 * already reoptimized at this stage. Once one set of 
+                 * reinsertions has been completed and did not result in a
+                 * better tree, this function can reverse the order and begin
+                 * reinserting the old target tree on the source tree. In this 
+                 * diff may need to be recalculated. */
+                
                 t_up->visited = true;
                 t_dn->visited = true;
                 mfl_regrafting_traversal(t_up, src->edge->next->next, swapingon, 
@@ -676,6 +683,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
             src = p->edge;
             tgt = p;
             src->done = true;
+            
             
             if (!tgt->done) {
                 if (!src->skip) {

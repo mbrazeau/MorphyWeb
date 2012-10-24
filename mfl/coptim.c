@@ -384,7 +384,7 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
     mfl_desuccess_tree(t, numnodes);
     //mfl_temproot(t, 0, ntax);
 
-    n->edge->clippath = true;
+    //n->edge->clippath = true;
     
     while (p->edge && !p->tip) {
         
@@ -698,14 +698,14 @@ void mfl_reopt_preorder(node *n, int nchar, int *changing)
     if (!dl->tip) {
         mfl_reopt_comb(dl, n, nchar, changing);
     }
-    else /*if (!n->finished)*/ {
+    else if (!n->finished) {
         mfl_tip_apomorphies(dl, n, nchar, changing);
     }
     
     if (!dr->tip) {
         mfl_reopt_comb(dr, n, nchar, changing);
     }
-    else /*if (!n->finished)*/ {
+    else if (!n->finished) {
         mfl_tip_apomorphies(dr, n, nchar, changing);
     }
     
