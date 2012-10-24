@@ -326,6 +326,7 @@ void mfl_set_order(node *n);
 void mfl_clear_order(node *n);
 void mfl_set_index(node *n);
 void mfl_reset_nodes1(nodearray nds, int numnodes, int nchar);
+void mfl_undone_tree(nodearray nds, int numnodes);
 void mfl_devisit_tree(nodearray nds, int numnodes);
 void mfl_desuccess_tree(tree *t, int numnodes);
 void mfl_erase_clippath(tree *t, int numnodes);

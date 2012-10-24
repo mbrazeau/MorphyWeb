@@ -905,6 +905,22 @@ void mfl_devisit_tree(nodearray nds, int numnodes)
     }
 }
 
+void mfl_undone_tree(nodearray nds, int numnodes)
+{
+    int i;
+    node *p;
+    
+    for (i = 0; i < numnodes; ++i) {
+        p = nds[i];
+        do {
+            p->done = false;
+            if (p->next) {
+                p = p->next;
+            }
+        } while (p != nds[i]);
+    }
+}
+
 void mfl_definish_tree(tree *t, int numnodes)
 {
     int i;
