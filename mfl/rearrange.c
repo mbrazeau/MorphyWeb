@@ -880,7 +880,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         newreptree = mfl_addseq_randasis(ntax, nchar, numnodes, tipdata, mfl_handle->addseq_type, savedtrees);
         searchrec->currentreplicate = i;
         
-        printNewick(newreptree->trnodes[0]);
+        //printNewick(newreptree->trnodes[0]);
         dbg_printf("\n");
         
         if (i == 0) {
