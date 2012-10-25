@@ -864,22 +864,6 @@ void mfl_reset_nodes1(nodearray nds, int numnodes, int nchar)
             p->clip = false;
             p->clippath = false;
             p->initialized = false;
-            /*if (p->ancunion) {
-                memset(p->ancunion, 0, nchar * sizeof(charstate));
-            }
-            if (p->origfinals) {
-                memset(p->origfinals, 0, nchar * sizeof(charstate));
-            }
-            if (p->origtemps) {
-                memset(p->origtemps, 0, nchar * sizeof(charstate));
-
-            }           
-            if (p->tempapos) {
-                memset(p->tempapos, 0, nchar * sizeof(charstate));
-            }
-            if (p->apomorphies) {
-                memset(p->apomorphies, 0, nchar * sizeof(charstate));
-            }*/
             
             if (p->next) {
                 p = p->next;

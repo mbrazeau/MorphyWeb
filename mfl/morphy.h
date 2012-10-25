@@ -110,7 +110,7 @@ typedef struct node {
     int minsteps;
     int maxsteps;
     int charstates;
-    charstate *ancunion;
+    charstate *runion;
     charstate *origfinals;
     charstate *origtemps; // Temporary storage for the original set
     charstate *tempapos;
