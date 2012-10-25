@@ -18,4 +18,6 @@ public:
 
     CNexusReader        *m_cNexusReader;
 private:
+    bool HasDataBlock();
+
 };

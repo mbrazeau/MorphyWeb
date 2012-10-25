@@ -70,7 +70,25 @@ bool CNexusParse::ReadNexusFile(string *infname, string *outfname)
             }
         }
     }
+    if (HasDataBlock())
+    {
+        m_cData->TransferTo(*m_cChars);
+    }
     return bRet;
+}
+
+bool CNexusParse::HasDataBlock()
+{
+    BlockReaderList b1 = m_cNexusReader->GetUsedBlocksInOrder();
+    for (std::list<NxsBlock *>::iterator i = b1.begin(); i != b1.end(); ++i) 
+    {
+        NxsBlock * b = (*i);
+        if (b->GetID().compare("DATA") == 0)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void CNexusParse::Report()
