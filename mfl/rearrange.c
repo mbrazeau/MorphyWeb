@@ -427,15 +427,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
     node *s_dn_N, *s_up_N;
     nodearray nds = swapingon->trnodes;
     
-    for (i = 0; i < numnodes; ++i) {
-        p = nds[i];
-        do {
-            p->done = false;
-            if (p->next) {
-                p = p->next;
-            }
-        } while (p != nds[i]);
-    }
+    mfl_undone_tree(swapingon->trnodes, numnodes);
     
     for (i = ntax + 1; i < numnodes; ++i) {
         
@@ -538,7 +530,7 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 
                 t_up->visited = false;
                 t_dn->visited = false;
-                //p->edge->skip = false;
+                p->edge->skip = false;
                 if (searchrec->success) {
                     return;
                 }
@@ -548,11 +540,8 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 
                 mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
                 
-                p->edge->skip = false;
             }
-            else {
-                p->edge->skip = false;
-            }
+            p->edge->skip = false;
             
             p = p->next;
             

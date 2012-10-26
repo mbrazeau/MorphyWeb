@@ -865,7 +865,7 @@ void mfl_runion_traversal(node *n, int nchar)
     
     if (!n->runion) {
         n->runion = (charstate*)malloc(nchar * sizeof(charstate));
-        n->edge->runion = n->runion;
+        //n->edge->runion = n->runion;
     }
     n->edge->runion = n->runion;
     mfl_runion(n, n->edge, n->runion, nchar);
