@@ -14,6 +14,9 @@ public:
         m_strHelpText = strHelpText;
         transform(m_strCommand.begin(), m_strCommand.end(), m_strCommand.begin(), ::toupper);
     }
+    virtual ~CNexusMenuBase()
+    {
+    }
 
     string GetMenuOutput()
     {
