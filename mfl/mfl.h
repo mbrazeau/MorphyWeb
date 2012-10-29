@@ -10,6 +10,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <stdexcept>
 
 using namespace std;
@@ -300,8 +301,8 @@ int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resulta
  * Also making the search functions return bool, tho that might not be what you want?
  * I am not sure, but something needs to go there to get this file to compile.
  */
-string *mfl_get_saved_trees_newick(mfl_handle_t mfl_handle);
-string *mfl_get_saved_trees       (mfl_handle_t mfl_handle);
+vector<string> mfl_get_saved_trees_newick(mfl_handle_t mfl_handle);
+vector<string> mfl_get_saved_trees       (mfl_handle_t mfl_handle);
 
 bool mfl_heuristic           (mfl_handle_t mfl_handle);
 bool mfl_exhaustive          (mfl_handle_t mfl_handle);
