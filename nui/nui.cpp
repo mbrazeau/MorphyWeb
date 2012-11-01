@@ -146,8 +146,8 @@ CNexusUserInterface::CNexusUserInterface()
     m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("Q"         , "Return to main menu"));
 
     m_ioCommands = new CEditLineHist("nui1234567890", &m_fCommandLog);
-    m_ioFiles = new CEditLineHist("nui12345678901234567890", &m_fCommandLog);
-    m_ioLogs = new CEditLineHist("nui1234567890", &m_fCommandLog);
+    m_ioInputFiles = new CEditLineHist("nui12345678901234567890", &m_fCommandLog);
+    m_ioLogFiles = new CEditLineHist("nui1234567890", &m_fCommandLog);
     m_ioWorkingDir = new CEditLineHist("nui1234567890", &m_fCommandLog);
     m_ioNumericSubCommands = new CEditLineHist("nui1234567890", &m_fCommandLog);
 }
@@ -180,8 +180,8 @@ CNexusUserInterface::~CNexusUserInterface()
     }
     DestroyHandle();
     Delete(m_ioCommands);
-    Delete(m_ioFiles);
-    Delete(m_ioLogs);
+    Delete(m_ioInputFiles);
+    Delete(m_ioLogFiles);
     Delete(m_ioWorkingDir);
     Delete(m_ioNumericSubCommands);
 }
@@ -215,9 +215,9 @@ void CNexusUserInterface::DoMenu()
         {
             cout<<endl<<"Error: "<<e.nxs_what()<<endl;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
-            cout<<endl<<"EXCEPTION!!!"<<endl;
+            cout<<endl<<"Error: "<<e.what()<<endl;
         }
     } while (ret);
 }
@@ -249,7 +249,7 @@ bool CNexusUserInterface::fCNexusMenuOpenNexusFile()
 
     if (!m_pNexusParse)
     {
-        m_ioFiles->GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
+        m_ioInputFiles->GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
         strFilename = m_strCwd + strFilename;
         m_pNexusParse = new CNexusParse();
         if (m_pNexusParse)
@@ -295,7 +295,27 @@ void CNexusUserInterface::CreateHandle()
 
 bool CNexusUserInterface::fCNexusMenuSaveFile       ()
 {
-    cout<<"Not implemented"<<endl;
+    string strFilename;
+    myofstream fSave;
+
+    m_ioLogFiles->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+    strFilename = m_strCwd + strFilename;
+    fSave.open(strFilename.c_str());
+    if (fSave)
+    {
+        vector<string> newicks = mfl_get_saved_trees_newick(m_mflHandle);
+        vector<string>::iterator it;
+        for (it = newicks.begin(); it != newicks.end(); it++)
+        {
+            fSave<<*it<<endl;
+        }
+        fSave.close();
+        cout<<" Successfully opened '"<<strFilename<<"'"<<endl;
+    }
+    else
+    {
+        cout<<" Error: Unable to open '"<<strFilename<<"'"<<endl;
+    }
     return true;
 }
 
@@ -356,7 +376,7 @@ bool CNexusUserInterface::fCNexusMenuCommandLog     ()
     
     if (!m_fCommandLog)
     {
-        m_ioLogs->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+        m_ioLogFiles->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
         strFilename = m_strCwd + strFilename;
        
         m_fCommandLog.open(strFilename.c_str());

@@ -33,6 +33,7 @@ public:
     bool fCNexusMenuQuit           ();
     bool fCNexusMenuAbout          (bool bShowBuildTime = true);
     bool fCNexusMenuCommandLog     ();
+    bool fCNexusMenuSave           ();
     bool fCNexusMenuStatus         ();
     bool fCNexusMenuChdir          ();
                
@@ -85,8 +86,9 @@ private:
     mfl_handle_t m_mflHandle;
 
     CEditLineHist *m_ioWorkingDir;
-    CEditLineHist *m_ioLogs;
-    CEditLineHist *m_ioFiles;
+    CEditLineHist *m_ioLogFiles;
+    CEditLineHist *m_ioInputFiles;
+    CEditLineHist *m_ioSaveFiles;
     CEditLineHist *m_ioCommands;
     CEditLineHist *m_ioNumericSubCommands;
 };

@@ -1,0 +1,6 @@
+o
+Opistho.nex
+hs
+s
+out.txt
+q
