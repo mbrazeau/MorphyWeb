@@ -132,6 +132,13 @@ mfl_handle_t mfl_create_handle()
     return mfl_s2t(mfl_struct);
 }
 
+vector<string> mfl_get_saved_trees_newick(mfl_handle_t mfl_handle)
+{
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    
+    return mfl_struct->resultant_data->newicktrees;
+}
+
 void mfl_destroy_handle(mfl_handle_t mfl_handle)
 {
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
