@@ -383,6 +383,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int num
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
 void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff, int *st_changes);
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
+void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax);
 
 /* in mfyinterface.c*/
 bool mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data);

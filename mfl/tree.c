@@ -1290,9 +1290,10 @@ char *mfl_alloc_newick(int ntax)
     --nwksize;
     
     /*there is one comma and two brackets for every node in the tree*/
-    nwksize = nwksize + (numnodes * 3);
+    nwksize = nwksize + (numnodes * 3) + 1;
     
     nwkstr = (char*)malloc(nwksize * sizeof(char));
+    memset(nwkstr, 0, (nwksize + 1) * sizeof(char));
     
     return nwkstr;
     
@@ -1311,6 +1312,8 @@ char *mfl_newick_cstring(tree *t, int ntax)
     else {
         dbg_printf("Error: tree has no starting node\n");
     }
+    
+    strcat(nwkstr, ";");
     
     return nwkstr;
 }

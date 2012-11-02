@@ -806,10 +806,21 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
     long int i = 0;
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data;
         
+    /* This is just for testing out saving in a c-style pointer */
+    char **newicktrees = (char **)malloc(a_results->n_savetrees * sizeof(char*));
+    
     for (i = 0; i < a_results->n_savetrees; ++i) {
-        a_results->newicktrees.push_back(mfl_trstring(savedtrees[i], ntax));
+        // This works:
+        newicktrees[i] = savedtrees[i]->newick_tree;
+        //savedtrees[i]->newick_tree = NULL;
+        
+        // This doesn't:
         //a_results->newicktrees.push_back(savedtrees[i]->newick_tree);
     }
+    
+    /* because we're not currently returning c-style strings, just freeing this 
+     * array*/
+    free(newicktrees);
 }
 
 void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int, int , int, mfl_searchrec*)
