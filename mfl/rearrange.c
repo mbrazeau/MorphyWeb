@@ -956,7 +956,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
     mfl_handle->resultant_data->searcht = (timeout - timein);
     
-    //mfl_store_results(mfl_handle, savedtrees, ntax);
+    mfl_store_results(mfl_handle, savedtrees, ntax);
     
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a struct

@@ -331,7 +331,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1CBAC4F164402C30025143B</string>
+										<string>E1CBAC741644041B0025143B</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -367,9 +367,9 @@
 											<string>E1CFC19816431EDE00CB8806</string>
 											<string>E1CFC2E11643D80200CB8806</string>
 											<string>E1CFC3C11643FEC900CB8806</string>
-											<string>E1CFC3C21643FEC900CB8806</string>
 											<string>E1CBAC4E164402C30025143B</string>
-											<string>E1CFC3CB1643FEF600CB8806</string>
+											<string>E1CBAC69164403EE0025143B</string>
+											<string>E1CBAC6A164403EE0025143B</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -567,8 +567,13 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>E1CBAC751644041B0025143B</string>
+		<string>E1CBAC6C164403EE0025143B</string>
+		<string>E1CBAC6D164403EE0025143B</string>
+		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 4 1440 874 0 0 1440 878 </string>
@@ -770,13 +775,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>E1CFBFB91642F8E800CB8806</string>
+				<string>E1CBAC58164403020025143B</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>E1CFBFBA1642F8E800CB8806</string>
-				<string>E1CFBFBB1642F8E800CB8806</string>
-				<string>E1CFBFBC1642F8E800CB8806</string>
-				<string>E1CFBFBD1642F8E800CB8806</string>
-				<string>E1CFBFBE1642F8E800CB8806</string>
+				<string>E1CBAC59164403020025143B</string>
+				<string>E1CBAC5A164403020025143B</string>
+				<string>E1CBAC5B164403020025143B</string>
+				<string>E1CBAC5C164403020025143B</string>
+				<string>E1CBAC5D164403020025143B</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -907,18 +912,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1440, 777}}</string>
+								<string>{{0, 0}, {500, 425}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 60 1440 818 0 0 1440 878 </string>
+								<string>797 410 500 466 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
 							<key>Proportion</key>
-							<string>777pt</string>
+							<string>425pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>777pt</string>
+					<string>425pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -932,17 +937,17 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C78EAAD065D492600B07095</string>
-				<string>E1CFBFBF1642F8E800CB8806</string>
+				<string>E1CBAC5E164403020025143B</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>0 60 1440 818 0 0 1440 878 </string>
+			<string>797 410 500 466 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Identifier</key>
