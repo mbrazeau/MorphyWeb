@@ -358,18 +358,14 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             
             if (!mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &searchrec->trbufstart, searchrec->nextinbuffer)) 
             {
-                /*if (island) {
-                    dbg_printf("length: %i\n", searchrec->bestinrep);
-                    printNewick(swapingon->trnodes[0]);
-                    island = false;
-                }*/
-                
                 if (searchrec->currentreplicate > 0) {
                     if (trlength == searchrec->bestlength) {
                         long int bstart = 0;
+                        
                         if (mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &bstart, searchrec->trbufstart)) {
                             mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
                             searchrec->success = true;
+                            searchrec->nextinbuffer = searchrec->trbufstart + 1;
                             return;
                         }
                     }
@@ -895,6 +891,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         else {
             dbg_printf("Replicate: %li\n", i + 1);
             dbg_printf("next in buff at start of rep: %li\n", searchrec->nextinbuffer);
+            
             savedtrees[searchrec->nextinbuffer] = newreptree;
             searchrec->bestinrep = mfl_all_views(savedtrees[searchrec->nextinbuffer], ntax, nchar, &searchrec->bestinrep);
             dbg_printf("Best length in replicate: %i\n", searchrec->bestinrep);
@@ -907,12 +904,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         }
         
         do {
-            //if (i > 0) {
-                //dbg_printf("swapping on tree: %li\n", j);
-            //}
             mfl_part_reset_searchrec(searchrec);
-            //searchrec->foundbettertr = false;
-            //searchrec->success = false;
             mfl_reset_nodes1(savedtrees[j]->trnodes, numnodes, nchar);
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
@@ -932,11 +924,11 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             }
             else {
                 savedtrees[j]->swapped = true;
-                if (savedtrees[j]->trnodes) {
+                //if (savedtrees[j]->trnodes) {
                     savedtrees[j]->newick_tree = mfl_newick_cstring(savedtrees[j], ntax);
                     //dbg_printf("%s\n",savedtrees[j]->newick_tree);
-                    //mfl_free_trnodes(savedtrees[j], numnodes);
-                }
+                    mfl_free_trnodes(savedtrees[j], numnodes);
+                //}
                 ++j;
             }
             

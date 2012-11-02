@@ -159,6 +159,9 @@ void mfl_freetree(tree *newtree, int numnodes)
     if (newtree->compressedtr) {
         free(newtree->compressedtr);
     }
+    if (newtree->cmptrholder) {
+        free(newtree->cmptrholder);
+    }
     if (newtree->newick_tree) {
         free(newtree->newick_tree);
     }
@@ -1290,9 +1293,9 @@ char *mfl_alloc_newick(int ntax)
     --nwksize;
     
     /*there is one comma and two brackets for every node in the tree*/
-    nwksize = nwksize + (numnodes * 3) + 1;
+    nwksize = nwksize + (numnodes * 3);
     
-    nwkstr = (char*)malloc(nwksize * sizeof(char));
+    nwkstr = (char*)malloc((nwksize + 1) * sizeof(char));
     memset(nwkstr, 0, (nwksize + 1) * sizeof(char));
     
     return nwkstr;
