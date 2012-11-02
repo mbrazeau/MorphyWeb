@@ -1202,21 +1202,23 @@ void mfl_save_newick(node *n, string *nwkstr)
     *nwkstr += string(")");
 }
 
-string *mfl_trstring(tree *t, int ntax)
+string mfl_trstring(tree *t, int ntax)
 {
-    string *trstring = new string;
+    string trstring;
     
     if (t->root) {
-        mfl_save_newick(t->root, trstring);
+        trstring += string("= [&R] ");
+        mfl_save_newick(t->root, &trstring);
     }
     else if (!t->root && t->trnodes[0]->start) {
-        mfl_save_newick(t->trnodes[0], trstring);
+        trstring += string("= [&U] ");
+        mfl_save_newick(t->trnodes[0], &trstring);
     }
     else {
         dbg_printf("Error: tree has no starting node\n");
     }
 
-    *trstring += string(";");
+    trstring += string(";");
     
     return trstring;
 }

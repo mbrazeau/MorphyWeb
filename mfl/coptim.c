@@ -1184,7 +1184,6 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *changing)
 
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
 {
-    int i=0;
     int treelen = 0, fptreelen;
     int *treelen_p = &treelen;
     

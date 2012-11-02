@@ -805,12 +805,12 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
 {
     long int i = 0;
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data;
-    a_results->newicktrees.reserve((long unsigned int)a_results->n_savetrees);
-    string *tstring;
-    
+    //a_results->newicktrees.reserve((long unsigned int)a_results->n_savetrees);
+    //string tstring;
+        
     for (i = 0; i < a_results->n_savetrees; ++i) {
-        tstring = mfl_trstring(savedtrees[i], ntax);
-        a_results->newicktrees.push_back(*tstring);
+        //tstring = mfl_trstring(savedtrees[i], ntax);
+        a_results->newicktrees.push_back(mfl_trstring(savedtrees[i], ntax));
     }
     
 }
@@ -881,7 +881,8 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             searchrec->bestlength = searchrec->bestinrep;
             j = 0;
             dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
-            //printNewick(newreptree->trnodes[0]);
+            printNewick(newreptree->trnodes[0]);
+            dbg_printf("\n");
         }
         else {
             dbg_printf("Replicate: %li\n", i + 1);
