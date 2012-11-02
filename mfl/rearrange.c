@@ -805,14 +805,10 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
 {
     long int i = 0;
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data;
-    //a_results->newicktrees.reserve((long unsigned int)a_results->n_savetrees);
-    //string tstring;
         
     for (i = 0; i < a_results->n_savetrees; ++i) {
-        //tstring = mfl_trstring(savedtrees[i], ntax);
         a_results->newicktrees.push_back(mfl_trstring(savedtrees[i], ntax));
     }
-    
 }
 
 void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int, int , int, mfl_searchrec*)
@@ -881,8 +877,8 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             searchrec->bestlength = searchrec->bestinrep;
             j = 0;
             dbg_printf("The length of the starting tree: %i steps\n\n", searchrec->bestinrep);
-            printNewick(newreptree->trnodes[0]);
-            dbg_printf("\n");
+            //printNewick(newreptree->trnodes[0]);
+            //dbg_printf("\n");
         }
         else {
             dbg_printf("Replicate: %li\n", i + 1);
@@ -925,7 +921,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             else {
                 savedtrees[j]->swapped = true;
                 if (savedtrees[j]->trnodes) {
-                    //mfl_free_trnodes(savedtrees[j], numnodes);
+                    savedtrees[j]->newick_tree = mfl_newick_cstring(savedtrees[j], ntax);
+                    //dbg_printf("%s\n",savedtrees[j]->newick_tree);
+                    mfl_free_trnodes(savedtrees[j], numnodes);
                 }
                 ++j;
             }
@@ -958,7 +956,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
     mfl_handle->resultant_data->searcht = (timeout - timein);
     
-    mfl_store_results(mfl_handle, savedtrees, ntax);
+    //mfl_store_results(mfl_handle, savedtrees, ntax);
     
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a struct

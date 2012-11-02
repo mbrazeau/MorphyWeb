@@ -159,6 +159,9 @@ void mfl_freetree(tree *newtree, int numnodes)
     if (newtree->compressedtr) {
         free(newtree->compressedtr);
     }
+    if (newtree->newick_tree) {
+        free(newtree->newick_tree);
+    }
     
     /* free the tree */
     free(newtree);
@@ -1221,6 +1224,95 @@ string mfl_trstring(tree *t, int ntax)
     trstring += string(";");
     
     return trstring;
+}
+
+void mfl_save_newick_c(node *n, char *nwkstr)
+{   
+    /* Stores a treen in a c-style string in Newick format. In an unrooted tree, 
+     * function will be called on a terminal node that has its start variable 
+     * set to 1. */
+    
+    node *p;
+    char cbuffer[64];
+    
+    if (n->start) {
+        sprintf(cbuffer, "(%i,", n->tip);
+        strcat(nwkstr, cbuffer);
+        mfl_save_newick_c(n->edge, nwkstr);
+        strcat(nwkstr, ")");
+        return;
+    }   
+    
+    if (n->tip && n->edge->next->edge) {
+        if (n->edge->next->edge->tip && 
+            !n->edge->next->edge->start) {
+            sprintf(cbuffer, "%i", n->tip);
+            strcat(nwkstr, cbuffer);
+            return;
+        }
+    }
+    
+    if (n->tip && !n->start) {
+        sprintf(cbuffer, "%i", n->tip);
+        strcat(nwkstr, cbuffer);
+        return;
+    }
+    
+    strcat(nwkstr, "(");
+    
+    p = n->next;
+    while (p != n) {
+        mfl_save_newick_c(p->edge, nwkstr);
+        p = p->next;
+        if (p != n) {
+            strcat(nwkstr, ",");
+        }
+    }   
+    strcat(nwkstr, ")");
+}
+
+char *mfl_alloc_newick(int ntax)
+{
+    /* Returns the number of chars*/
+    
+    int i = 0;
+    int n = ntax;
+    int numnodes = 2 * ntax - 1;
+    int nwksize = ntax;
+    char *nwkstr;
+    
+    /* Get number of digits for ntax*/
+    while (n) {
+        nwksize = nwksize + ntax - (10*i-1);
+        n = n/10;
+        ++i;
+    }
+    --nwksize;
+    
+    /*there is one comma and two brackets for every node in the tree*/
+    nwksize = nwksize + (numnodes * 3);
+    
+    nwkstr = (char*)malloc(nwksize * sizeof(char));
+    
+    return nwkstr;
+    
+}
+
+char *mfl_newick_cstring(tree *t, int ntax)
+{
+    char *nwkstr = mfl_alloc_newick(ntax);
+    
+    if (t->root) {
+        mfl_save_newick_c(t->root, nwkstr);
+    }
+    else if (!t->root && t->trnodes[0]->start) {
+        mfl_save_newick_c(t->trnodes[0], nwkstr);
+    }
+    else {
+        dbg_printf("Error: tree has no starting node\n");
+    }
+    
+    return nwkstr;
 }
 
 void mfl_resize_treebuffer(tree **treebuffer, int *treelimit, int sizeincrease)

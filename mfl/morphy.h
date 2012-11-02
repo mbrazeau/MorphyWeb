@@ -131,6 +131,7 @@ typedef struct tree {
     bool swapped;
     int *compressedtr;
     int *cmptrholder;
+    char *newick_tree;
     taxbipart **bipartitions;
     taxbipart **hashtabholder;
     int index;
@@ -349,6 +350,10 @@ void mfl_unroot(int ntax, tree *rootedtree);
 void mfl_collap_binode(node *n);
 void mfl_save_newick(node *n, string *nwkstr);
 string mfl_trstring(tree *t, int ntax);
+
+void mfl_save_newick_c(node *n, char *nwkstr);
+char *mfl_alloc_newick(int ntax);
+char *mfl_newick_cstring(tree *t, int ntax);
 
 /*in readnewick.c*/
 struct node * cpyfromNWK(char *nwktr, int nwklen, int ntax, int numnodes, int *pos, nodearray nds, bool isRooted);
