@@ -807,7 +807,8 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data;
         
     for (i = 0; i < a_results->n_savetrees; ++i) {
-        a_results->newicktrees.push_back(string(savedtrees[i]->newick_tree));
+        a_results->newicktrees.push_back(mfl_trstring(savedtrees[i], ntax));
+        //a_results->newicktrees.push_back(savedtrees[i]->newick_tree);
     }
 }
 
@@ -923,7 +924,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
                 if (savedtrees[j]->trnodes) {
                     savedtrees[j]->newick_tree = mfl_newick_cstring(savedtrees[j], ntax);
                     //dbg_printf("%s\n",savedtrees[j]->newick_tree);
-                    mfl_free_trnodes(savedtrees[j], numnodes);
+                    //mfl_free_trnodes(savedtrees[j], numnodes);
                 }
                 ++j;
             }
