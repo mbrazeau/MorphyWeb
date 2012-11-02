@@ -275,7 +275,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>15</integer>
+									<integer>24</integer>
 									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
@@ -331,7 +331,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1CBACCC1644079A0025143B</string>
+										<string>E1CBACE8164409520025143B</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -362,14 +362,14 @@
 											<string>E1CFC09016430C3600CB8806</string>
 											<string>E1CFC0E61643133500CB8806</string>
 											<string>E1CFC1031643162200CB8806</string>
-											<string>E1CFC19716431EDE00CB8806</string>
-											<string>E1CFC19816431EDE00CB8806</string>
 											<string>E1CFC2E11643D80200CB8806</string>
-											<string>E1CFC3C11643FEC900CB8806</string>
 											<string>E1CBAC4E164402C30025143B</string>
-											<string>E1CBAC8E164405220025143B</string>
 											<string>E1CBAC8F164405220025143B</string>
-											<string>E1CBAC85164404F90025143B</string>
+											<string>E1CBACE3164409520025143B</string>
+											<string>E1CBACE4164409520025143B</string>
+											<string>E1CBACE5164409520025143B</string>
+											<string>E1CBACE6164409520025143B</string>
+											<string>E1CBACE7164409520025143B</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -571,8 +571,8 @@
 		<string>E1CBAC6D164403EE0025143B</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>1C78EAAD065D492600B07095</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C78EAAD065D492600B07095</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 4 1440 874 0 0 1440 878 </string>

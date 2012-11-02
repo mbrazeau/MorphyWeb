@@ -21,7 +21,7 @@ bool mfl_compare_trees(int *t1, int *t2, int ntax)
     
     //assert(t2 != NULL);
     
-    int pos = ntax - 1;
+    int pos = 2 * ntax - 1;
     
     return memcmp(t1, t2, pos * sizeof(int));
     
