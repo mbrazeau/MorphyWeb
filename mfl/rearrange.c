@@ -365,7 +365,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                         if (mfl_compare_alltrees(swapingon, savedtrees, ntax, numnodes, &bstart, searchrec->trbufstart)) {
                             mfl_reinit_tbinrange(savedtrees, swapingon, searchrec->trbufstart, &searchrec->nextinbuffer, numnodes);
                             searchrec->success = true;
-                            searchrec->nextinbuffer = searchrec->trbufstart + 1;
                             return;
                         }
                     }
@@ -801,7 +800,7 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
 {
     long int i = 0;
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data; 
-    
+    //vector<string> nwkvect;
     /* This is just for testing out saving in a c-style pointer */
     char **newicktrees = (char **)malloc(a_results->n_savetrees * sizeof(char*));
     
@@ -810,12 +809,14 @@ void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
         newicktrees[i] = savedtrees[i]->newick_tree;
         //savedtrees[i]->newick_tree = NULL;
         
-        // This doesn't:
-        a_results->newicktrees.push_back(savedtrees[i]->newick_tree);
+        // This doesn't do anything:
+        //string a(savedtrees[i]->newick_tree);
+        //a_results->newicktrees.push_back(a);
     }
     
     /* because we're not currently returning c-style strings, just freeing this 
      * array*/
+    
     free(newicktrees);
 }
 
@@ -929,6 +930,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
                     //dbg_printf("%s\n",savedtrees[j]->newick_tree);
                     mfl_free_trnodes(savedtrees[j], numnodes);
                 //}
+                if (searchrec->success) {
+                    mfl_freetree(savedtrees[j], numnodes);
+                }
                 ++j;
             }
             
@@ -954,6 +958,10 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
     mfl_handle->resultant_data = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
+    if (mfl_handle->resultant_data == NULL) {
+        dbg_printf("error in allocating mfl_resultant_data_s\n");
+        
+    }
     
     mfl_handle->resultant_data->bestlength = searchrec->bestlength;
     mfl_handle->resultant_data->n_rearrangements = searchrec->niter_total;
@@ -970,15 +978,15 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     dbg_printf("Number of saved trees: %li\n", searchrec->nextinbuffer);
     
-    /*dbg_printf("\nThe optimal tree(s) found by heuristic search:\n");
+    dbg_printf("\nThe optimal tree(s) found by heuristic search:\n");
     for (j = 0; j < searchrec->nextinbuffer; ++j) {
         //dbg_printf("TREE str_%li = [&U] ", j+1);
         //mfl_root_tree(savedtrees[j], 0, ntax);
         //printNewick(savedtrees[j]->root);
-        cout << "TREE str_" << j+1 << " = [&U] " << mfl_handle->resultant_data->newicktrees[i] << endl;
-        //dbg_printf(";\n");
+        cout << "TREE str_" << j+1 << " = [&U] ";// << mfl_handle->resultant_data->newicktrees[i] << endl;
+        dbg_printf("%s\n", savedtrees[j]->newick_tree);
     }
-    dbg_printf("\n");*/
+    dbg_printf("\n");
     
     /* END OF TESTING-ONLY SECTION */
     

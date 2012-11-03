@@ -47,6 +47,7 @@
 		E134E0D514D02F98001A1A63 /* nui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nui.h; sourceTree = "<group>"; };
 		E134E49D14D1E38A001A1A63 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
 		E161E0ED14F3E23100F8589E /* drawtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = drawtree.c; sourceTree = "<group>"; };
+		E174F753164542B70074DCFD /* mfl_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl_error.h; sourceTree = "<group>"; };
 		E179D7A814F966D8001EA295 /* cdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdata.c; sourceTree = "<group>"; };
 		E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
 		E1A6576114EC32DF00A348E2 /* coptim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coptim.c; sourceTree = "<group>"; };
@@ -130,6 +131,7 @@
 			children = (
 				E1D5259A14C94BCE0079F5EC /* Makefile */,
 				E134E49D14D1E38A001A1A63 /* mfl.h */,
+				E174F753164542B70074DCFD /* mfl_error.h */,
 				E1ACBC9514A8BD13005BB9D5 /* morphy.h */,
 				E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */,
 				E179D7A814F966D8001EA295 /* cdata.c */,
