@@ -36,7 +36,6 @@ using namespace std;
 #define IS_APPLIC ((unsigned)~1)//(-1^1)
 #define MORPHY_MAX_STATES 32
 
-
 #define TREELIMIT 50000 //A temporary tree limit for testing.
 
 
@@ -55,12 +54,13 @@ typedef struct {
     time_t searcht;     // Time in search
     vector<string> newicktrees; // Vector of trees in newick format
     string **texttrees;   // Array of trees drawn as text
+    int num_islands;    // Number of parsimony islands hit
+    int *islands;
+    int *times_hit;      // List of times each island was hit
 #ifdef VERSION_1_5
     double consist_ind; // Consistency index
     double ret_ind;     // Retention index
     double resc_ci;     // Rescaled consistency index
-    int num_islands;    // Number of parsimony islands hit
-    int *times_hit      // List of times each island was hit
 #endif    
 } mfl_resultant_data_s;
 
@@ -177,7 +177,8 @@ typedef struct {
     long int niter_ontree;
     long int currentreplicate;
     int island_number;
-    mfl_island_data island_data;
+    int island_length;
+    //mfl_island_data island_data;
     
     bool dbg_flag;      /* A flag used in debugging the heuristic seach. 
                          * Generic use for stopping the search at a certain 
