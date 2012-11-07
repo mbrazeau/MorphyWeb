@@ -1296,7 +1296,7 @@ char *mfl_alloc_newick(int ntax, bool rooted)
     nwksize = nwksize + (numnodes * 3);
     
     nwkstr = (char*)malloc((nwksize + 6) * sizeof(char)); // 6 is the size of the rooted/unrooted headers appended below
-    //memset(nwkstr, 0, (nwksize + 1) * sizeof(char));
+    memset(nwkstr, 0, (nwksize + 1) * sizeof(char));
     
     if (rooted) {
         strcat(nwkstr, "[&R] ");
