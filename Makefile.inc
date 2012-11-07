@@ -85,9 +85,17 @@ clean:
 # If the output file does not exactly match the output NUI gave during
 # the make test run, then the test failed and you need to fix it!
 #
+# To run the tests, you have the following params:
+#   to update one specific test case:
+#       UPDATE=test1
+#   to update all test cases:
+#       UPDATE=all
+#   to run the "quick" tests
+#       QUICKTEST=1
+#
 $(TESTDIRS): 
 	$(eval TMP_IN := $(wildcard $@/*input.txt))
 	$(eval TMP_OUT := $(wildcard $@/*output.txt))
-	$(SILENT)./runtest.pl --test=$@ --input="$(TMP_IN)" --expected="$(TMP_OUT)" --update="$(UPDATE)"
+	$(SILENT)./runtest.pl --test=$@ --input="$(TMP_IN)" --expected="$(TMP_OUT)" --update="$(UPDATE)" --quick="$(QUICKTEST)"
 
 

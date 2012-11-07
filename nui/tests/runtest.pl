@@ -6,10 +6,12 @@ my $g_input_file;
 my $g_expected_output_file;
 my $g_test_dir;
 my $g_update_dirs;
+my $g_quick_test;
 
 GetOptions( "input=s" => \$g_input_file,
             "expected:s" => \$g_expected_output_file,
             "test=s" => \$g_test_dir,
+            "quick:s" => \$g_quick_test,
             "update:s" => \$g_update_dirs);
 
 sub execute_nui(@)
@@ -86,7 +88,11 @@ sub diff_results(@)
 
 sub runtest(@)
 {
-    my ($input_file, $expected_output_file, $test_dir) = @_;
+    my ($input_file, $expected_output_file, $test_dir, $quick_test) = @_;
+    if (($quick_test) && (-e "$test_dir/longtest"))
+    {
+        return 0;
+    }
     my $actual_results = execute_nui($input_file);
     my $actual_output_file = "$test_dir/actual.out";
     my $expected_save_file = "$test_dir/savefile_expected.txt";
@@ -108,4 +114,4 @@ sub runtest(@)
     return 0;
 }
 
-exit(runtest($g_input_file, $g_expected_output_file, $g_test_dir));
+exit(runtest($g_input_file, $g_expected_output_file, $g_test_dir, $g_quick_test));
