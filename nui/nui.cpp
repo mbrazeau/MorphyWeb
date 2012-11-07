@@ -303,11 +303,13 @@ bool CNexusUserInterface::fCNexusMenuSaveFile       ()
     fSave.open(strFilename.c_str());
     if (fSave)
     {
-        vector<string> newicks = mfl_get_saved_trees_newick(m_mflHandle);
-        vector<string>::iterator it;
-        for (it = newicks.begin(); it != newicks.end(); it++)
+        //vector<string> newicks = mfl_get_saved_trees_newick(m_mflHandle);
+        char **newicks = mfl_get_saved_trees_newick(m_mflHandle);
+        //vector<string>::iterator it;
+        int it;
+        for (it = 0/*newicks.begin()*/; newicks[it]/*it != newicks.end()*/; it++)
         {
-            fSave<<*it<<endl;
+            fSave<<newicks[it]/*it*/<<endl;
         }
         fSave.close();
         cout<<" Successfully opened '"<<strFilename<<"'"<<endl;

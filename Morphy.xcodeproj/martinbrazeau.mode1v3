@@ -229,6 +229,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -275,8 +277,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>25</integer>
-									<integer>12</integer>
+									<integer>9</integer>
+									<integer>4</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -312,14 +314,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rearrange.c</string>
+								<string>nui.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rearrange.c</string>
+										<string>nui.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1BC58D3164A77F300D55D5F</string>
+										<string>E1BC58E9164A7B2000D55D5F</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -346,7 +346,6 @@
 											<string>E1172022163161860021AAA7</string>
 											<string>E117204B16316A3A0021AAA7</string>
 											<string>E14E40BC16359570005611A4</string>
-											<string>E102FF8516387A4D00F4F662</string>
 											<string>E102FF8616387A4D00F4F662</string>
 											<string>E1B67F9F16396605006AB769</string>
 											<string>E1E8045E16428A3000F83EE4</string>
@@ -358,7 +357,6 @@
 											<string>E1FD803816445376007DFEE8</string>
 											<string>E1FD803916445376007DFEE8</string>
 											<string>E1FD803A16445376007DFEE8</string>
-											<string>E1FD803B16445376007DFEE8</string>
 											<string>E174F77B1645503A0074DCFD</string>
 											<string>E1C35F051647C06D00769311</string>
 											<string>E1C35F061647C06D00769311</string>
@@ -367,11 +365,13 @@
 											<string>E1F69D0916484A88003F5228</string>
 											<string>E1F69D0B16484A88003F5228</string>
 											<string>E180E7A5164A775900B0DF48</string>
-											<string>E180E7A6164A775900B0DF48</string>
-											<string>E180E7A7164A775900B0DF48</string>
-											<string>E180E7A8164A775900B0DF48</string>
 											<string>E180E7A9164A775900B0DF48</string>
-											<string>E180E7AC164A775B00B0DF48</string>
+											<string>E1BC58DF164A7A1400D55D5F</string>
+											<string>E1BC58E0164A7A1400D55D5F</string>
+											<string>E1BC58E1164A7A1400D55D5F</string>
+											<string>E1BC58E2164A7A1400D55D5F</string>
+											<string>E1BC58E3164A7A1400D55D5F</string>
+											<string>E1BC58E4164A7A1400D55D5F</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -575,6 +575,7 @@
 		<string>1C78EAAD065D492600B07095</string>
 		<string>E1B2E820161703C50076343F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>1C530D57069F1CE1000CFCEE</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 4 1440 874 0 0 1440 878 </string>
@@ -816,7 +817,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>morphy.h</string>
+										<string>nui.cpp</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -872,8 +873,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>E180E710164A556300B0DF48</string>
-				<string>E180E711164A556300B0DF48</string>
+				<string>E1BC58E6164A7A1400D55D5F</string>
+				<string>E1BC58E7164A7A1400D55D5F</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -882,7 +883,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C530D57069F1CE1000CFCEE</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>Identifier</key>
