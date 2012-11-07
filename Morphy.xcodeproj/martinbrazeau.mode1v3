@@ -275,8 +275,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>27</integer>
-									<integer>12</integer>
+									<integer>9</integer>
+									<integer>4</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -319,7 +319,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>tree.c</string>
+								<string>nui.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>tree.c</string>
+										<string>nui.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1BC5973164A92A900D55D5F</string>
+										<string>E1BC5982164A951300D55D5F</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -361,17 +361,17 @@
 											<string>E1BC58DF164A7A1400D55D5F</string>
 											<string>E1BC58E1164A7A1400D55D5F</string>
 											<string>E1BC58E2164A7A1400D55D5F</string>
-											<string>E1BC5938164A8C4300D55D5F</string>
 											<string>E1BC5939164A8C4300D55D5F</string>
 											<string>E1BC593A164A8C4300D55D5F</string>
 											<string>E1BC593B164A8C4300D55D5F</string>
 											<string>E1BC593C164A8C4300D55D5F</string>
 											<string>E1BC5950164A8EFB00D55D5F</string>
 											<string>E1BC5952164A8EFB00D55D5F</string>
-											<string>E1BC5955164A8F7E00D55D5F</string>
-											<string>E1BC5956164A8F7E00D55D5F</string>
-											<string>E1BC5970164A927B00D55D5F</string>
-											<string>E1BC5971164A927B00D55D5F</string>
+											<string>E1BC5976164A941200D55D5F</string>
+											<string>E1BC597A164A946400D55D5F</string>
+											<string>E1BC597D164A94AF00D55D5F</string>
+											<string>E1BC597F164A94F300D55D5F</string>
+											<string>E1BC5980164A94F300D55D5F</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -574,8 +574,8 @@
 		<string>E1BC58D7164A77F300D55D5F</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 4 1440 874 0 0 1440 878 </string>
@@ -916,18 +916,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {750, 770}}</string>
+								<string>{{0, 0}, {1440, 777}}</string>
 								<key>RubberWindowFrame</key>
-								<string>676 67 750 811 0 0 1440 878 </string>
+								<string>0 60 1440 818 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
 							<key>Proportion</key>
-							<string>770pt</string>
+							<string>777pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>770pt</string>
+					<string>777pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -947,7 +947,7 @@
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>676 67 750 811 0 0 1440 878 </string>
+			<string>0 60 1440 818 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>

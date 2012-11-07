@@ -811,9 +811,10 @@ char **mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
     
     for (i = 0; i < a_results->n_savetrees; ++i) {
         newicktrees[i] = savedtrees[i]->newick_tree;
+        savedtrees[i]->newick_tree = NULL;
     }
     
-    newicktrees[a_results->n_savetrees + 1] = NULL; // NULL signifies the end of the tree array
+    newicktrees[a_results->n_savetrees] = NULL; // NULL signifies the end of the tree array
     
     return newicktrees;
 }
