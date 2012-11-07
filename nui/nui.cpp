@@ -303,14 +303,29 @@ bool CNexusUserInterface::fCNexusMenuSaveFile       ()
     fSave.open(strFilename.c_str());
     if (fSave)
     {
+        fSave<<"#NEXUS"<<endl;
+        fSave<<"BEGIN TREES;"<<endl<<"\tTranslate"<<endl;
+        int it;
+        int n_taxa = m_pNexusParse->m_cTaxa->GetNumTaxonLabels();
+        for (it = 0; it < n_taxa ; ++it) {
+            fSave<<"\t\t"<<it+1<<" "<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it);
+            if (it < n_taxa-1) {
+                fSave<<",";
+            }
+            fSave<<endl;
+        }
+        fSave<<"\t\t;"<<endl<<endl;
         //vector<string> newicks = mfl_get_saved_trees_newick(m_mflHandle);
         char **newicks = mfl_get_saved_trees_newick(m_mflHandle);
         //vector<string>::iterator it;
-        int it;
+        
         for (it = 0/*newicks.begin()*/; newicks[it]/*it != newicks.end()*/; it++)
         {
-            fSave<<"TREE Morphy_"<<it+1<<" = "<< newicks[it]/*it*/<<endl;
+            fSave<<"\t\tTREE Morphy_"<<it+1<<" = "<< newicks[it]/*it*/<<endl;
         }
+        
+        fSave<<"END;";
+        
         fSave.close();
         cout<<" Successfully opened '"<<strFilename<<"'"<<endl;
     }
