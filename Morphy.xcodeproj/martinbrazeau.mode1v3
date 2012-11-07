@@ -275,8 +275,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>9</integer>
-									<integer>4</integer>
+									<integer>30</integer>
+									<integer>28</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -319,7 +319,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>mfyinterface.c</string>
+								<string>main.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>mfyinterface.c</string>
+										<string>main.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1BC5A9E164B012600D55D5F</string>
+										<string>E1BC5AA8164B01B200D55D5F</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -358,7 +358,6 @@
 											<string>E1BC593B164A8C4300D55D5F</string>
 											<string>E1BC5950164A8EFB00D55D5F</string>
 											<string>E1BC597F164A94F300D55D5F</string>
-											<string>E1BC599A164A9B4B00D55D5F</string>
 											<string>E1BC5A04164AB5DD00D55D5F</string>
 											<string>E1BC5A69164AE99400D55D5F</string>
 											<string>E1BC5A6A164AE99400D55D5F</string>
@@ -371,7 +370,8 @@
 											<string>E1BC5A80164AFDF600D55D5F</string>
 											<string>E1BC5A8D164AFF3200D55D5F</string>
 											<string>E1BC5A8E164AFF3200D55D5F</string>
-											<string>E1BC5A89164AFEBA00D55D5F</string>
+											<string>E1BC5AA5164B01A400D55D5F</string>
+											<string>E1BC5AA6164B01A400D55D5F</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
