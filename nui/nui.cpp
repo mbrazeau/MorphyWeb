@@ -308,7 +308,14 @@ bool CNexusUserInterface::fCNexusMenuSaveFile       ()
         int it;
         int n_taxa = m_pNexusParse->m_cTaxa->GetNumTaxonLabels();
         for (it = 0; it < n_taxa ; ++it) {
-            fSave<<"\t\t"<<it+1<<" "<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it);
+            fSave<<"\t\t"<<it+1<<" ";
+            if (m_pNexusParse->m_cTaxa->NeedsQuotes(it)) {
+                fSave<<"'"<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it)<<"'";
+            }
+            else {
+                fSave<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it);
+            }
+
             if (it < n_taxa-1) {
                 fSave<<",";
             }

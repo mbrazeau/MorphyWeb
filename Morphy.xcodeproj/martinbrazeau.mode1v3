@@ -202,28 +202,43 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
-				<string>E1BC5A18164AB79500D55D5F</string>
+				<string>E1BC5A23164AC37300D55D5F</string>
 				<key>PBXProjectModuleLabel</key>
-				<string>morphy.h</string>
+				<string>nui.cpp</string>
 				<key>PBXSplitModuleInNavigatorKey</key>
 				<dict>
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
-						<string>E1BC5A19164AB79500D55D5F</string>
+						<string>E1BC5A24164AC37300D55D5F</string>
 						<key>PBXProjectModuleLabel</key>
-						<string>morphy.h</string>
+						<string>nui.cpp</string>
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>E1BC5A1A164AB79500D55D5F</string>
+						<string>E1BC5A5E164AC81500D55D5F</string>
 						<key>history</key>
 						<array>
-							<string>E1BC5A00164AB5C200D55D5F</string>
+							<string>E1BC5A1D164AC2E200D55D5F</string>
+						</array>
+					</dict>
+					<key>Split1</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>E1BC5A29164AC42300D55D5F</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>nui.cpp</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>E1BC5A5F164AC81500D55D5F</string>
+						<key>history</key>
+						<array>
+							<string>E1BC5A2A164AC42300D55D5F</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
-					<string>1</string>
+					<string>2</string>
 				</dict>
 				<key>StatusBarVisibility</key>
 				<true/>
@@ -235,7 +250,7 @@
 				<key>PBXModuleWindowStatusBarHidden2</key>
 				<false/>
 				<key>RubberWindowFrame</key>
-				<string>2 4 1438 874 0 0 1440 878 </string>
+				<string>0 4 1438 874 0 0 1440 878 </string>
 			</dict>
 		</dict>
 	</array>
@@ -270,6 +285,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -316,8 +333,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>14</integer>
-									<integer>12</integer>
+									<integer>9</integer>
+									<integer>4</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -370,7 +387,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1BC5A10164AB79500D55D5F</string>
+										<string>E1BC5A5C164AC81500D55D5F</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -432,14 +449,12 @@
 							<string>377pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>mfl.h</string>
+								<string>morphy.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -447,11 +462,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>mfl.h</string>
+										<string>morphy.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1BC5A17164AB79500D55D5F</string>
+										<string>E1BC5A5D164AC81500D55D5F</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -488,10 +503,10 @@
 											<string>E1BC5A01164AB5DD00D55D5F</string>
 											<string>E1BC5A11164AB79500D55D5F</string>
 											<string>E1BC5A12164AB79500D55D5F</string>
-											<string>E1BC5A13164AB79500D55D5F</string>
-											<string>E1BC5A14164AB79500D55D5F</string>
 											<string>E1BC5A15164AB79500D55D5F</string>
-											<string>E1BC5A16164AB79500D55D5F</string>
+											<string>E1BC5A1F164AC37300D55D5F</string>
+											<string>E1BC5A20164AC37300D55D5F</string>
+											<string>E1BC5A21164AC37300D55D5F</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -697,8 +712,8 @@
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>1C78EAAD065D492600B07095</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>E1BC5A18164AB79500D55D5F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
+		<string>E1BC5A23164AC37300D55D5F</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 4 1440 874 0 0 1440 878 </string>
