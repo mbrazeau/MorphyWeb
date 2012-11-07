@@ -811,7 +811,7 @@ char **mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
     
     for (i = 0; i < a_results->n_savetrees; ++i) {
         newicktrees[i] = savedtrees[i]->newick_tree;
-        savedtrees[i]->newick_tree = NULL;
+        savedtrees[i]->newick_tree = NULL; // Prevents the newick string from being freed later
     }
     
     newicktrees[a_results->n_savetrees] = NULL; // NULL signifies the end of the tree array
@@ -971,9 +971,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
      * search procedure. Eventually, all this stuff will be written to a struct
      * and handed over to the interface for outputting to screen. */
     
-    for (j = 0; mfl_handle->resultant_data->newicktrees[j]; ++j) {
+    /*for (j = 0; mfl_handle->resultant_data->newicktrees[j]; ++j) {
         dbg_printf("%s\n", mfl_handle->resultant_data->newicktrees[j]);
-    }
+    }*/
     
     dbg_printf("Total search time: %g\n", timeout - timein);
     

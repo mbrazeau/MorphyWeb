@@ -229,6 +229,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -275,8 +277,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>9</integer>
-									<integer>4</integer>
+									<integer>20</integer>
+									<integer>12</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -312,14 +314,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>nui.cpp</string>
+								<string>morphy.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>nui.cpp</string>
+										<string>morphy.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E1BC5983164A961E00D55D5F</string>
+										<string>E1BC599D164A9B4B00D55D5F</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -359,19 +359,19 @@
 											<string>E1F69D0B16484A88003F5228</string>
 											<string>E180E7A5164A775900B0DF48</string>
 											<string>E1BC58DF164A7A1400D55D5F</string>
-											<string>E1BC58E1164A7A1400D55D5F</string>
 											<string>E1BC58E2164A7A1400D55D5F</string>
 											<string>E1BC5939164A8C4300D55D5F</string>
 											<string>E1BC593A164A8C4300D55D5F</string>
 											<string>E1BC593B164A8C4300D55D5F</string>
-											<string>E1BC593C164A8C4300D55D5F</string>
 											<string>E1BC5950164A8EFB00D55D5F</string>
 											<string>E1BC5952164A8EFB00D55D5F</string>
-											<string>E1BC5976164A941200D55D5F</string>
-											<string>E1BC597A164A946400D55D5F</string>
-											<string>E1BC597D164A94AF00D55D5F</string>
 											<string>E1BC597F164A94F300D55D5F</string>
-											<string>E1BC5980164A94F300D55D5F</string>
+											<string>E1BC598C164A9A5300D55D5F</string>
+											<string>E1BC598D164A9A5300D55D5F</string>
+											<string>E1BC599A164A9B4B00D55D5F</string>
+											<string>E1BC599B164A9B4B00D55D5F</string>
+											<string>E1BC599C164A9B4B00D55D5F</string>
+											<string>E1BC5998164A9B4900D55D5F</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -383,14 +383,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1237, 778}}</string>
+								<string>{{0, 0}, {1237, 794}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 4 1440 874 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>778pt</string>
+							<string>794pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -403,14 +403,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 783}, {1237, 50}}</string>
+								<string>{{0, 799}, {1237, 34}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 4 1440 874 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>50pt</string>
+							<string>34pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -573,8 +573,8 @@
 		<string>E1BC58D6164A77F300D55D5F</string>
 		<string>E1BC58D7164A77F300D55D5F</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>E1B2E820161703C50076343F</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>E1B2E820161703C50076343F</string>
 		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -812,12 +812,14 @@
 							<key>Dock</key>
 							<array>
 								<dict>
+									<key>BecomeActive</key>
+									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>mfyinterface.c</string>
+										<string>morphy.h</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -838,8 +840,6 @@
 							<string>529pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -951,7 +951,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C78EAAD065D492600B07095</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>
