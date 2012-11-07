@@ -804,6 +804,10 @@ char **mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
     long int i = 0;
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data; 
     char **newicktrees = (char **)malloc((a_results->n_savetrees + 1) * sizeof(char*));
+    if (newicktrees == NULL) {
+        dbg_printf("Malloc failure in store results\n");
+        return NULL;
+    }
     
     for (i = 0; i < a_results->n_savetrees; ++i) {
         newicktrees[i] = savedtrees[i]->newick_tree;
@@ -965,6 +969,10 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a struct
      * and handed over to the interface for outputting to screen. */
+    
+    for (j = 0; mfl_handle->resultant_data->newicktrees[j]; ++j) {
+        dbg_printf("%s\n", mfl_handle->resultant_data->newicktrees[j]);
+    }
     
     dbg_printf("Total search time: %g\n", timeout - timein);
     

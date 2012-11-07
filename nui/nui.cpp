@@ -309,7 +309,7 @@ bool CNexusUserInterface::fCNexusMenuSaveFile       ()
         int it;
         for (it = 0/*newicks.begin()*/; newicks[it]/*it != newicks.end()*/; it++)
         {
-            fSave<<newicks[it]/*it*/<<endl;
+            fSave<< newicks[it]/*it*/<<endl;
         }
         fSave.close();
         cout<<" Successfully opened '"<<strFilename<<"'"<<endl;

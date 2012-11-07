@@ -1274,7 +1274,7 @@ void mfl_save_newick_c(node *n, char *nwkstr)
     strcat(nwkstr, ")");
 }
 
-char *mfl_alloc_newick(int ntax)
+char *mfl_alloc_newick(int ntax, bool rooted)
 {
     /* Returns the number of chars*/
     
@@ -1295,21 +1295,30 @@ char *mfl_alloc_newick(int ntax)
     /*there is one comma and two brackets for every node in the tree*/
     nwksize = nwksize + (numnodes * 3);
     
-    nwkstr = (char*)malloc((nwksize + 1) * sizeof(char));
-    memset(nwkstr, 0, (nwksize + 1) * sizeof(char));
+    nwkstr = (char*)malloc((nwksize + 6) * sizeof(char)); // 6 is the size of the rooted/unrooted headers appended below
+    //memset(nwkstr, 0, (nwksize + 1) * sizeof(char));
     
+    if (rooted) {
+        strcat(nwkstr, "[&R] ");
+    } 
+    else {
+        strcat(nwkstr, "[&U] ");
+    }
+
     return nwkstr;
     
 }
 
 char *mfl_newick_cstring(tree *t, int ntax)
 {
-    char *nwkstr = mfl_alloc_newick(ntax);
+    char *nwkstr;
     
     if (t->root) {
+        nwkstr = mfl_alloc_newick(ntax, true);
         mfl_save_newick_c(t->root, nwkstr);
     }
     else if (!t->root && t->trnodes[0]->start) {
+        nwkstr = mfl_alloc_newick(ntax, false);
         mfl_save_newick_c(t->trnodes[0], nwkstr);
     }
     else {
