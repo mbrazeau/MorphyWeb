@@ -58,15 +58,15 @@ sub update_expected_output(@)
 
 sub process_results(@)
 {
-    my ($diffresults, $input_file, $expected_output_file, $actual_output_file, $test_dir) = @_;
+    my ($diffresults, $expected_output_file, $actual_output_file, $test_dir, $test_tag) = @_;
     if (length($diffresults) == 0)
     {
-        print ("  $test_dir - pass\n");
+        print ("  $test_dir - pass $test_tag\n");
     }
     else
     {
         my $tests_to_update = get_tests_to_update($test_dir);
-        print("\n\n\n************* $test_dir FAILURE - $diffresults\n");
+        print("\n\n\n************* $test_dir FAILURE $test_tag - $diffresults\n");
         if ($tests_to_update->{$test_dir})
         {
             print("Updating test: $test_dir\n\n");
@@ -76,20 +76,34 @@ sub process_results(@)
     }
 }
 
+sub diff_results(@)
+{
+    my ($expected_output_file, $actual_output_file, $test_dir, $test_tag) = @_;
+    my $diffresults = `diff $actual_output_file $expected_output_file 2>&1`;
+
+    process_results($diffresults, $expected_output_file, $actual_output_file, $test_dir, $test_tag);
+}
+
 sub runtest(@)
 {
     my ($input_file, $expected_output_file, $test_dir) = @_;
     my $actual_results = execute_nui($input_file);
     my $actual_output_file = "$test_dir/actual.out";
+    my $expected_save_file = "$test_dir/savefile_expected.txt";
+    my $actual_save_file = "$test_dir/savefile.txt";
 
     $expected_output_file = update_expected_output($input_file, $expected_output_file);
 
     open(OUTPUTF, ">$actual_output_file");
     print OUTPUTF "$actual_results";
     close(OUTPUTF);
-    my $diffresults = `diff $actual_output_file $expected_output_file 2>&1`;
 
-    process_results($diffresults, $input_file, $expected_output_file, $actual_output_file, $test_dir);
+    diff_results($expected_output_file, $actual_output_file, $test_dir, "Standard I/O");
+
+    if (-e $expected_save_file)
+    {
+        diff_results($expected_save_file, $actual_save_file, $test_dir, "Save file");
+    }
 
     return 0;
 }

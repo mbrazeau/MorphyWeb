@@ -91,3 +91,12 @@ Enter selection#
 
 Main Menu
 Enter selection#
+
+Main Menu
+Enter selection#
+ Enter save filename: ./ Successfully opened './test15/savefile.txt'
+
+Main Menu
+Enter selection#
+Goodbye!
+
