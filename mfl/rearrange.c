@@ -316,7 +316,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             mfl_join_nodes(subtr, n);
             
             mfl_temproot(swapingon, 0, ntax);
-            mfl_fitch_postorder(swapingon->root, &trulen, nchar, NULL);
+            mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
             mfl_undo_temproot(ntax, swapingon);
             
             searchrec->foundbettertr = true;

@@ -189,6 +189,10 @@ int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, i
     return *treelen_p;
 }
 
+
+/*
+ * FUNCTIONS FOR WAGNER PARSIMONY 
+ */
 int mfl_wagner_count(charstate lchar, charstate rchar)
 {
     int length = 0;
@@ -207,8 +211,21 @@ int mfl_wagner_count(charstate lchar, charstate rchar)
     }
     return length;
 }
+/*
+ * End Wagner functions
+ */
 
-void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
+
+/*
+ *
+ * FUNCTIONS FOR FITCH PARSIMONY
+ * These functions perform the step counting operations for non-additive 
+ * characters Functions with "reopt" in the name are employed during the 
+ * reoptimization of subtrees during branch-swapping operations.
+ *
+ */
+
+void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
 {
     int i;
     charstate lft_chars, rt_chars;
@@ -235,7 +252,7 @@ void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, 
     }
 }
 
-void mfl_combine_up(node *n, node *anc, int nchar)
+void mfl_fitch_final(node *n, node *anc, int nchar)
 {
     
     assert(!n->tip);
@@ -272,6 +289,110 @@ void mfl_combine_up(node *n, node *anc, int nchar)
     }
 }
 
+void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changing)
+{
+    int i, c;
+    charstate lft_chars, rt_chars, temp;
+    bool allsame = true;
+    
+    charstate *ldtemps = leftdesc->tempapos;
+    charstate *rdtemps = rightdesc->tempapos;
+    charstate *antemps = ancestor->tempapos;
+    
+    for (c = 0; changing[c]; ++c) {
+        
+        i = changing[c]-1;
+        
+        if (ldtemps[i] & rdtemps[i]) 
+        {
+            temp = ldtemps[i] & rdtemps[i];
+            if (temp != antemps[i]) {
+                antemps[i] = temp;
+                allsame = false;
+            }
+        }
+        else
+        {
+            lft_chars = ldtemps[i];
+            rt_chars = rdtemps[i];
+            
+            temp = lft_chars | rt_chars;
+            
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                temp = temp & IS_APPLIC;
+            }
+            
+            if (temp != antemps[i]) {
+                antemps[i] = temp;
+                allsame = false;
+            }
+        }
+    }
+    if (allsame) {
+        ancestor->success = true;
+    }
+}
+
+void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
+{
+    int i, c;
+    charstate lft_chars, rt_chars;
+    charstate temp = NULL;
+    charstate *ntemps = n->tempapos;
+    charstate *napos = n->apomorphies;
+    charstate *ancapos = anc->apomorphies;
+    
+    bool allsame = true;
+    
+    for (c = 0; changing[c]; ++c) {
+        
+        i = changing[c]-1;
+        
+        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
+        {
+            temp = ntemps[i] & ancapos[i]; 
+            if (temp != napos[i]) {
+                napos[i] = temp;
+                allsame = false;
+            }
+        }
+        else {
+            lft_chars = n->next->edge->tempapos[i];
+            rt_chars = n->next->next->edge->tempapos[i];
+            
+            if ( lft_chars & rt_chars ) { //III
+                //V
+                temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)) ) & IS_APPLIC;
+                if (temp != napos[i]) {
+                    napos[i] = temp;
+                    allsame = false;
+                }
+            }
+            else {
+                //IV
+                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
+                    temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                }
+                else {
+                    temp = ntemps[i] | ancapos[i];
+                }
+                
+                if (temp != napos[i]) {
+                    napos[i] = temp;
+                    allsame = false;
+                }
+            }
+        }
+    }
+    if (allsame) {
+        n->finished = true;
+    }
+}
+
+/*
+ * End Fitch functions
+ */
+
 void mfl_subtree_postorder(node *n, int *trlength, int nchar)
 {
     node *p;
@@ -299,7 +420,7 @@ void mfl_subtree_postorder(node *n, int *trlength, int nchar)
     mfl_subtree_count(n->next->edge, n->next->next->edge, n, nchar, trlength);
 }
 
-void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
+void mfl_count_postorder(node *n, int *trlength, int nchar, int *besttreelen)
 {
     node *p;
     
@@ -321,56 +442,12 @@ void mfl_fitch_postorder(node *n, int *trlength, int nchar, int *besttreelen)
     
     p = n->next;
     while (p != n) {
-        mfl_fitch_postorder(p->edge, trlength, nchar, besttreelen);
+        mfl_count_postorder(p->edge, trlength, nchar, besttreelen);
         p = p->next;
     }
 
-    mfl_countsteps(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
+    mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
     n->nodelen = *trlength;
-}
-
-void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changing)
-{
-    int i, c;
-    charstate lft_chars, rt_chars, temp;
-    bool allsame = true;
-    
-    charstate *ldtemps = leftdesc->tempapos;
-    charstate *rdtemps = rightdesc->tempapos;
-    charstate *antemps = ancestor->tempapos;
-    
-    for (c = 0; changing[c]; ++c) {
-        
-        i = changing[c]-1;
-        
-        if (ldtemps[i] & rdtemps[i]) 
-        {
-            temp = ldtemps[i] & rdtemps[i];
-            if (temp != antemps[i]) {
-                antemps[i] = temp;
-                allsame = false;
-            }
-        }
-        else
-        {
-            lft_chars = ldtemps[i];
-            rt_chars = rdtemps[i];
-
-            temp = lft_chars | rt_chars;
-
-            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                temp = temp & IS_APPLIC;
-            }
-            
-            if (temp != antemps[i]) {
-                antemps[i] = temp;
-                allsame = false;
-            }
-        }
-    }
-    if (allsame) {
-        ancestor->success = true;
-    }
 }
 
 void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, int *changing)
@@ -405,7 +482,7 @@ void mfl_partial_downpass(node *n, tree *t, int numnodes, int ntax, int nchar, i
                     mfl_join_nodes(lt, rt);
                 }
                 else {
-                    mfl_reopt_comb(p, p->edge, nchar, changing);
+                    mfl_reopt_fitch_final(p, p->edge, nchar, changing);
                     p->finished = false;
                     mfl_reopt_preorder(p, nchar, changing);
                 }
@@ -462,7 +539,7 @@ bool mfl_reopt_postorder(node *n, int nchar, int *changing)
 
 }
 
-void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
+void mfl_postorder_allviews(node *n, int *trlength, int nchar, int *besttreelen)
 {
     node *p;
     int weight = 0;
@@ -481,7 +558,7 @@ void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
     
     p = n->next;
     while (p != n) {
-        mfl_fitch_allviews(p->edge, trlength, nchar, besttreelen);
+        mfl_postorder_allviews(p->edge, trlength, nchar, besttreelen);
         weight = weight + p->edge->vweight;
         p = p->next;
     }
@@ -491,9 +568,123 @@ void mfl_fitch_allviews(node *n, int *trlength, int nchar, int *besttreelen)
         memset(n->tempapos, 0, nchar * sizeof(charstate));
     }
 
-    mfl_countsteps(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
+    mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
     n->visited = 1;
     n->vweight = weight;
+}
+
+void mfl_reopt_preorder(node *n, int nchar, int *changing)
+{
+    
+    node *dl, *dr;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    if (n->finished && !n->clippath) {
+        return;
+    }
+    
+    if (!n->edge || n->isroot) {
+        mfl_reopt_rootstates(n, nchar, changing);
+    }
+    
+    dl = n->next->edge;
+    dr = n->next->next->edge;
+    
+    if (!dl->tip) {
+        mfl_reopt_fitch_final(dl, n, nchar, changing);
+    }
+    else if (!n->finished) {
+        mfl_tip_apomorphies(dl, n, nchar, changing);
+    }
+    
+    if (!dr->tip) {
+        mfl_reopt_fitch_final(dr, n, nchar, changing);
+    }
+    else if (!n->finished) {
+        mfl_tip_apomorphies(dr, n, nchar, changing);
+    }
+    
+    mfl_reopt_preorder(n->next->edge, nchar, changing);
+    mfl_reopt_preorder(n->next->next->edge, nchar, changing);
+    
+}
+
+void mfl_reopt_preorder_ii(node *n, int nchar, int *changing)
+{
+    
+    node *dl, *dr;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    if (n->finished) {
+        return;
+    }
+    
+    if (!n->edge || n->isroot) {
+        mfl_set_rootstates(n, nchar);
+    }
+    
+    dl = n->next->edge;
+    dr = n->next->next->edge;
+    
+    if (!dl->tip) {
+        mfl_reopt_fitch_final(dl, n, nchar, changing);
+    }
+    else if (!n->finished) {
+        mfl_tip_apomorphies(dl, n, nchar, changing);
+    }
+    
+    if (!dr->tip) {
+        mfl_reopt_fitch_final(dr, n, nchar, changing);
+    }
+    else if (!n->finished) {
+        mfl_tip_apomorphies(dr, n, nchar, changing);
+    }
+    
+    mfl_reopt_preorder_ii(n->next->edge, nchar, changing);
+    mfl_reopt_preorder_ii(n->next->next->edge, nchar, changing);
+    
+}
+
+void mfl_fitch_preorder(node *n, int nchar)
+{
+    node *p, *dl, *dr;
+    
+    if (n->tip) {// || n->clip) {
+        return;
+    }
+    
+    if (!n->edge || n->isroot) {
+        mfl_set_rootstates(n, nchar);
+    }
+    
+    dl = n->next->edge;
+    dr = n->next->next->edge;
+    
+    if (!dl->tip) {
+        mfl_fitch_final(dl, n, nchar);
+    }
+    else {
+        mfl_tip_apomorphies(dl, n, nchar, NULL);
+    }
+    
+    if (!dr->tip) {
+        mfl_fitch_final(dr, n, nchar);
+    }
+    else {
+        mfl_tip_apomorphies(dr, n, nchar, NULL);
+    }
+    
+    p = n->next;
+    while (p != n) {
+        mfl_fitch_preorder(p->edge, nchar);
+        p = p->next;
+    }
 }
 
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
@@ -559,62 +750,6 @@ void mfl_tip_reopt(tree *t, int ntax, int nchar)
     }
 }
 
-void mfl_reopt_comb(node *n, node *anc, int nchar, int *changing)
-{
-    int i, c;
-    charstate lft_chars, rt_chars;
-    charstate temp = NULL;
-    charstate *ntemps = n->tempapos;
-    charstate *napos = n->apomorphies;
-    charstate *ancapos = anc->apomorphies;
-    
-    bool allsame = true;
-    
-    for (c = 0; changing[c]; ++c) {
-        
-        i = changing[c]-1;
-        
-        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
-        {
-            temp = ntemps[i] & ancapos[i]; 
-            if (temp != napos[i]) {
-                napos[i] = temp;
-                allsame = false;
-            }
-        }
-        else {
-            lft_chars = n->next->edge->tempapos[i];
-            rt_chars = n->next->next->edge->tempapos[i];
-            
-            if ( lft_chars & rt_chars ) { //III
-                //V
-                temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)) ) & IS_APPLIC;
-                if (temp != napos[i]) {
-                    napos[i] = temp;
-                    allsame = false;
-                }
-            }
-            else {
-                //IV
-                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
-                    temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
-                }
-                else {
-                    temp = ntemps[i] | ancapos[i];
-                }
-                
-                if (temp != napos[i]) {
-                    napos[i] = temp;
-                    allsame = false;
-                }
-            }
-        }
-    }
-    if (allsame) {
-        n->finished = true;
-    }
-}
-
 
 void mfl_set_rootstates(node *n, int nchar)
 {
@@ -675,218 +810,12 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
     }*/
 }
 
-void mfl_reopt_preorder(node *n, int nchar, int *changing)
-{
-    
-    node *dl, *dr;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    if (n->finished && !n->clippath) {
-        return;
-    }
-    
-    if (!n->edge || n->isroot) {
-        mfl_reopt_rootstates(n, nchar, changing);
-    }
-    
-    dl = n->next->edge;
-    dr = n->next->next->edge;
-    
-    if (!dl->tip) {
-        mfl_reopt_comb(dl, n, nchar, changing);
-    }
-    else if (!n->finished) {
-        mfl_tip_apomorphies(dl, n, nchar, changing);
-    }
-    
-    if (!dr->tip) {
-        mfl_reopt_comb(dr, n, nchar, changing);
-    }
-    else if (!n->finished) {
-        mfl_tip_apomorphies(dr, n, nchar, changing);
-    }
-    
-    mfl_reopt_preorder(n->next->edge, nchar, changing);
-    mfl_reopt_preorder(n->next->next->edge, nchar, changing);
-    
-}
-
-void mfl_reopt_comb_ii(node *n, node *anc, int nchar, int *changing)
-{
-    int i, c;
-    charstate lft_chars, rt_chars;
-    charstate temp = NULL;
-    charstate *ntemps = n->tempapos;
-    charstate *napos = n->apomorphies;
-    charstate *ancapos = anc->apomorphies;
-    
-    bool allsame = true;
-    
-    for (c = 0; changing[c]; ++c) {
-        
-        i = changing[c] - 1;
-        
-        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
-        {
-            temp = ntemps[i] & ancapos[i]; 
-            if (temp != napos[i]) {
-                //dbg_printf("%i ", i);
-                napos[i] = temp;
-                allsame = false;
-            }
-        }
-        else {
-            lft_chars = n->next->edge->tempapos[i];
-            rt_chars = n->next->next->edge->tempapos[i];
-            
-            if ( lft_chars & rt_chars ) { //III
-                //V
-                temp = (ntemps[i] |(ancapos[i] &(lft_chars | rt_chars))) & IS_APPLIC;
-                if (temp != napos[i]) {
-                    //dbg_printf("%i ", i);
-                    napos[i] = temp;
-                    allsame = false;
-                }
-            }
-            else {
-                //IV
-                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
-                    temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
-                }
-                else {
-                    temp = ntemps[i] | ancapos[i];
-                }
-                
-                if (temp != napos[i]) {
-                    //dbg_printf("%i ", i);
-                    napos[i] = temp;
-                    allsame = false;
-                }
-            }
-        }
-    }
-    //dbg_printf("\n");
-    
-    if (allsame) {
-        n->success = true;
-    }
-}
-
-void mfl_reopt_preorder_ii(node *n, int nchar, int *changing)
-{
-    
-    node *dl, *dr;
-    
-    if (n->tip) {
-        return;
-    }
-    
-    if (n->finished) {
-        return;
-    }
-    
-    if (!n->edge || n->isroot) {
-        mfl_set_rootstates(n, nchar);
-    }
-    
-    dl = n->next->edge;
-    dr = n->next->next->edge;
-    
-    if (!dl->tip) {
-        mfl_reopt_comb(dl, n, nchar, changing);
-    }
-    else if (!n->finished) {
-        mfl_tip_apomorphies(dl, n, nchar, changing);
-    }
-    
-    if (!dr->tip) {
-        mfl_reopt_comb(dr, n, nchar, changing);
-    }
-    else if (!n->finished) {
-        mfl_tip_apomorphies(dr, n, nchar, changing);
-    }
-    
-    mfl_reopt_preorder_ii(n->next->edge, nchar, changing);
-    mfl_reopt_preorder_ii(n->next->next->edge, nchar, changing);
-    
-}
-
-void mfl_fitch_preorder(node *n, int nchar)
-{
-    node *p, *dl, *dr;
-    
-    if (n->tip) {// || n->clip) {
-        return;
-    }
-    
-    if (!n->edge || n->isroot) {
-        mfl_set_rootstates(n, nchar);
-    }
-    
-    dl = n->next->edge;
-    dr = n->next->next->edge;
-    
-    if (!dl->tip) {
-        mfl_combine_up(dl, n, nchar);
-    }
-    else {
-        mfl_tip_apomorphies(dl, n, nchar, NULL);
-    }
-    
-    if (!dr->tip) {
-        mfl_combine_up(dr, n, nchar);
-    }
-    else {
-        mfl_tip_apomorphies(dr, n, nchar, NULL);
-    }
-
-    p = n->next;
-    while (p != n) {
-        mfl_fitch_preorder(p->edge, nchar);
-        p = p->next;
-    }
-}
-
-void mfl_runion(node *up, node *dn, charstate *newrunion, int nchar)
-{
-    int i;
-
-    for (i = 0; i < nchar; ++i) {
-        newrunion[i] = (up->apomorphies[i] | dn->apomorphies[i]);
-    }
-}
-
-void mfl_runion_traversal(node *n, int nchar)
-{
-    node *p;
-    
-    if (!n->runion) {
-        n->runion = (charstate*)malloc(nchar * sizeof(charstate));
-        //n->edge->runion = n->runion;
-    }
-    n->edge->runion = n->runion;
-    mfl_runion(n, n->edge, n->runion, nchar);
-    
-    if (n->tip) {
-        return;
-    }
-    
-    p = n->next;
-    while (p != n) {
-        mfl_runion_traversal(p->edge, nchar);
-        p = p->next;
-    }
-}
-
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen)
 {
     int treelen = 0;
     int *treelen_p = &treelen;
     
-    mfl_fitch_postorder(n, treelen_p, nchar, besttreelen);
+    mfl_count_postorder(n, treelen_p, nchar, besttreelen);
     mfl_fitch_preorder(n, nchar);
     
     return *treelen_p;
@@ -900,12 +829,12 @@ int mfl_get_treelen(tree *t, int ntax, int nchar, int *besttreelen)
     
     if (!t->root) {
         mfl_temproot(t, 0, ntax);
-        mfl_fitch_postorder(t->root, treelen_p, nchar, besttreelen);
+        mfl_count_postorder(t->root, treelen_p, nchar, besttreelen);
         mfl_fitch_preorder(t->root, nchar);
         mfl_undo_temproot(ntax, t);
     }
     else {
-        mfl_fitch_postorder(t->root, treelen_p, nchar, besttreelen);
+        mfl_count_postorder(t->root, treelen_p, nchar, besttreelen);
         mfl_fitch_preorder(t->root, nchar);
     }
 
@@ -1192,7 +1121,7 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
 
     *treelen_p = 0;
     mfl_temproot(t, 0, ntax);
-    mfl_fitch_allviews(t->root, treelen_p, nchar, besttreelen);
+    mfl_postorder_allviews(t->root, treelen_p, nchar, besttreelen);
     t->root->visited = 0;
     
     fptreelen = *treelen_p;
