@@ -422,6 +422,19 @@
 			E1BC5A74164AEAD800D55D5F /* PBXTextBookmark */ = E1BC5A74164AEAD800D55D5F /* PBXTextBookmark */;
 			E1BC5A75164AEAD800D55D5F /* PBXTextBookmark */ = E1BC5A75164AEAD800D55D5F /* PBXTextBookmark */;
 			E1BC5A76164AEAD800D55D5F /* PBXTextBookmark */ = E1BC5A76164AEAD800D55D5F /* PBXTextBookmark */;
+			E1BC5A79164AEC7E00D55D5F /* PBXTextBookmark */ = E1BC5A79164AEC7E00D55D5F /* PBXTextBookmark */;
+			E1BC5A7A164AEC7E00D55D5F /* PBXTextBookmark */ = E1BC5A7A164AEC7E00D55D5F /* PBXTextBookmark */;
+			E1BC5A7B164AEC8000D55D5F /* PBXTextBookmark */ = E1BC5A7B164AEC8000D55D5F /* PBXTextBookmark */;
+			E1BC5A7C164AED6400D55D5F /* PBXTextBookmark */ = E1BC5A7C164AED6400D55D5F /* PBXTextBookmark */;
+			E1BC5A7D164AED6400D55D5F /* PBXTextBookmark */ = E1BC5A7D164AED6400D55D5F /* PBXTextBookmark */;
+			E1BC5A7E164AED6400D55D5F /* PBXTextBookmark */ = E1BC5A7E164AED6400D55D5F /* PBXTextBookmark */;
+			E1BC5A7F164AFDF600D55D5F /* PBXTextBookmark */ = E1BC5A7F164AFDF600D55D5F /* PBXTextBookmark */;
+			E1BC5A80164AFDF600D55D5F /* PBXTextBookmark */ = E1BC5A80164AFDF600D55D5F /* PBXTextBookmark */;
+			E1BC5A81164AFDF600D55D5F /* PBXTextBookmark */ = E1BC5A81164AFDF600D55D5F /* PBXTextBookmark */;
+			E1BC5A87164AFEB700D55D5F /* PBXTextBookmark */ = E1BC5A87164AFEB700D55D5F /* PBXTextBookmark */;
+			E1BC5A88164AFEB700D55D5F /* PBXTextBookmark */ = E1BC5A88164AFEB700D55D5F /* PBXTextBookmark */;
+			E1BC5A89164AFEBA00D55D5F /* PBXTextBookmark */ = E1BC5A89164AFEBA00D55D5F /* PBXTextBookmark */;
+			E1BC5A8A164AFEBA00D55D5F /* PBXTextBookmark */ = E1BC5A8A164AFEBA00D55D5F /* PBXTextBookmark */;
 			E1C35F051647C06D00769311 = E1C35F051647C06D00769311 /* PBXTextBookmark */;
 			E1C35F061647C06D00769311 = E1C35F061647C06D00769311 /* PBXTextBookmark */;
 			E1CFC0321642FF0D00CB8806 = E1CFC0321642FF0D00CB8806 /* PBXTextBookmark */;
@@ -592,9 +605,9 @@
 	};
 	E134E49D14D1E38A001A1A63 /* mfl.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1188, 4858}}";
-			sepNavSelRange = "{14580, 0}";
-			sepNavVisRange = "{14385, 1065}";
+			sepNavIntBoundsRect = "{{0, 0}, {1188, 5208}}";
+			sepNavSelRange = "{6535, 0}";
+			sepNavVisRange = "{6084, 2156}";
 			sepNavWindowFrame = "{{2, 4}, {1438, 874}}";
 		};
 	};
@@ -792,9 +805,9 @@
 	};
 	E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1188, 4116}}";
-			sepNavSelRange = "{3887, 0}";
-			sepNavVisRange = "{3782, 1523}";
+			sepNavIntBoundsRect = "{{0, 0}, {1188, 4312}}";
+			sepNavSelRange = "{4099, 0}";
+			sepNavVisRange = "{3561, 1423}";
 			sepNavWindowFrame = "{{2, 4}, {1438, 874}}";
 		};
 	};
@@ -803,7 +816,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 231";
 		rLen = 0;
-		rLoc = 6712;
+		rLoc = 7127;
 		rType = 0;
 		vrLen = 1483;
 		vrLoc = 5874;
@@ -813,7 +826,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 304";
 		rLen = 0;
-		rLoc = 13607;
+		rLoc = 13719;
 		rType = 0;
 		vrLen = 2639;
 		vrLoc = 11960;
@@ -904,9 +917,9 @@
 	};
 	E1A6576114EC32DF00A348E2 /* coptim.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1188, 16086}}";
-			sepNavSelRange = "{17798, 0}";
-			sepNavVisRange = "{15502, 1088}";
+			sepNavIntBoundsRect = "{{0, 0}, {1044, 15764}}";
+			sepNavSelRange = "{28856, 0}";
+			sepNavVisRange = "{13177, 746}";
 			sepNavWindowFrame = "{{2, 14}, {1438, 864}}";
 		};
 	};
@@ -920,9 +933,9 @@
 	};
 	E1ACBC9514A8BD13005BB9D5 /* morphy.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1188, 6286}}";
-			sepNavSelRange = "{1520, 0}";
-			sepNavVisRange = "{2929, 756}";
+			sepNavIntBoundsRect = "{{0, 0}, {1391, 5320}}";
+			sepNavSelRange = "{11038, 0}";
+			sepNavVisRange = "{9155, 2753}";
 			sepNavWindowFrame = "{{2, 4}, {1438, 874}}";
 		};
 	};
@@ -943,9 +956,9 @@
 	};
 	E1ACBC9814A8BD13005BB9D5 /* tree.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1188, 19558}}";
-			sepNavSelRange = "{29437, 0}";
-			sepNavVisRange = "{28734, 1300}";
+			sepNavIntBoundsRect = "{{0, 0}, {1188, 19278}}";
+			sepNavSelRange = "{29490, 0}";
+			sepNavVisRange = "{28926, 1279}";
 			sepNavWindowFrame = "{{2, 13}, {693, 865}}";
 		};
 	};
@@ -1068,7 +1081,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 304";
 		rLen = 0;
-		rLoc = 13607;
+		rLoc = 13719;
 		rType = 0;
 		vrLen = 2639;
 		vrLoc = 11960;
@@ -1738,7 +1751,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 304";
 		rLen = 22;
-		rLoc = 13612;
+		rLoc = 13724;
 		rType = 0;
 		vrLen = 1786;
 		vrLoc = 12775;
@@ -1795,7 +1808,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 304";
 		rLen = 22;
-		rLoc = 13612;
+		rLoc = 13724;
 		rType = 0;
 		vrLen = 2639;
 		vrLoc = 11960;
@@ -2958,7 +2971,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 322";
 		rLen = 190;
-		rLoc = 14389;
+		rLoc = 14501;
 		rType = 0;
 		vrLen = 2445;
 		vrLoc = 12856;
@@ -2968,7 +2981,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 231";
 		rLen = 0;
-		rLoc = 6712;
+		rLoc = 7127;
 		rType = 0;
 		vrLen = 1531;
 		vrLoc = 2973;
@@ -2978,7 +2991,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 153";
 		rLen = 0;
-		rLoc = 4152;
+		rLoc = 4567;
 		rType = 0;
 		vrLen = 1528;
 		vrLoc = 3186;
@@ -2998,7 +3011,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 167";
 		rLen = 0;
-		rLoc = 4568;
+		rLoc = 4983;
 		rType = 0;
 		vrLen = 735;
 		vrLoc = 4003;
@@ -3008,7 +3021,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 167";
 		rLen = 0;
-		rLoc = 4568;
+		rLoc = 4983;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3018,7 +3031,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 634;
 		vrLoc = 3723;
@@ -3068,7 +3081,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 322";
 		rLen = 0;
-		rLoc = 14384;
+		rLoc = 14496;
 		rType = 0;
 		vrLen = 1244;
 		vrLoc = 13731;
@@ -3078,7 +3091,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 325";
 		rLen = 0;
-		rLoc = 14489;
+		rLoc = 14601;
 		rType = 0;
 		vrLen = 1244;
 		vrLoc = 13731;
@@ -3102,7 +3115,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3112,7 +3125,7 @@
 		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
 		name = "mfl.h: 327";
 		rLen = 0;
-		rLoc = 14580;
+		rLoc = 14692;
 		rType = 0;
 		vrLen = 1065;
 		vrLoc = 14385;
@@ -3162,7 +3175,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3212,7 +3225,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3252,7 +3265,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3292,7 +3305,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3332,7 +3345,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3372,7 +3385,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3412,7 +3425,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3452,7 +3465,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3492,7 +3505,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3532,7 +3545,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3572,7 +3585,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3612,7 +3625,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3652,7 +3665,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3692,7 +3705,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 146";
 		rLen = 0;
-		rLoc = 4000;
+		rLoc = 4415;
 		rType = 0;
 		vrLen = 658;
 		vrLoc = 3782;
@@ -3752,7 +3765,7 @@
 		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
 		name = "mfyinterface.c: 143";
 		rLen = 0;
-		rLoc = 3887;
+		rLoc = 4302;
 		rType = 0;
 		vrLen = 1523;
 		vrLoc = 3782;
@@ -3917,6 +3930,136 @@
 		vrLen = 1300;
 		vrLoc = 28734;
 	};
+	E1BC5A79164AEC7E00D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
+		name = "coptim.c: 1124";
+		rLen = 0;
+		rLoc = 28856;
+		rType = 0;
+		vrLen = 746;
+		vrLoc = 13177;
+	};
+	E1BC5A7A164AEC7E00D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1D5257614C949B00079F5EC /* nui.cpp */;
+		name = "nui.cpp: 743";
+		rLen = 0;
+		rLoc = 23006;
+		rType = 0;
+		vrLen = 1091;
+		vrLoc = 19600;
+	};
+	E1BC5A7B164AEC8000D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */;
+		name = "tree.c: 1300";
+		rLen = 0;
+		rLoc = 29490;
+		rType = 0;
+		vrLen = 1264;
+		vrLoc = 28734;
+	};
+	E1BC5A7C164AED6400D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1D5257614C949B00079F5EC /* nui.cpp */;
+		name = "nui.cpp: 326";
+		rLen = 0;
+		rLoc = 12562;
+		rType = 0;
+		vrLen = 1333;
+		vrLoc = 11693;
+	};
+	E1BC5A7D164AED6400D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */;
+		name = "tree.c: 1300";
+		rLen = 0;
+		rLoc = 29490;
+		rType = 0;
+		vrLen = 1264;
+		vrLoc = 28734;
+	};
+	E1BC5A7E164AED6400D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */;
+		name = "tree.c: 1300";
+		rLen = 0;
+		rLoc = 29490;
+		rType = 0;
+		vrLen = 1278;
+		vrLoc = 28756;
+	};
+	E1BC5A7F164AFDF600D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1ACBC9814A8BD13005BB9D5 /* tree.c */;
+		name = "tree.c: 1300";
+		rLen = 0;
+		rLoc = 29490;
+		rType = 0;
+		vrLen = 1279;
+		vrLoc = 28926;
+	};
+	E1BC5A80164AFDF600D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1ACBC9514A8BD13005BB9D5 /* morphy.h */;
+		name = "morphy.h: 300";
+		rLen = 0;
+		rLoc = 11038;
+		rType = 0;
+		vrLen = 2498;
+		vrLoc = 9735;
+	};
+	E1BC5A81164AFDF600D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
+		name = "mfyinterface.c: 146";
+		rLen = 0;
+		rLoc = 3959;
+		rType = 0;
+		vrLen = 1464;
+		vrLoc = 3150;
+	};
+	E1BC5A87164AFEB700D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1A6576114EC32DF00A348E2 /* coptim.c */;
+		name = "coptim.c: 1124";
+		rLen = 0;
+		rLoc = 28856;
+		rType = 0;
+		vrLen = 746;
+		vrLoc = 13177;
+	};
+	E1BC5A88164AFEB700D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E1D5257614C949B00079F5EC /* nui.cpp */;
+		name = "nui.cpp: 743";
+		rLen = 0;
+		rLoc = 23006;
+		rType = 0;
+		vrLen = 1091;
+		vrLoc = 19600;
+	};
+	E1BC5A89164AFEBA00D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */;
+		name = "mfyinterface.c: 153";
+		rLen = 0;
+		rLoc = 4099;
+		rType = 0;
+		vrLen = 1423;
+		vrLoc = 3561;
+	};
+	E1BC5A8A164AFEBA00D55D5F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E134E49D14D1E38A001A1A63 /* mfl.h */;
+		name = "mfl.h: 178";
+		rLen = 0;
+		rLoc = 6535;
+		rType = 0;
+		vrLen = 2156;
+		vrLoc = 6084;
+	};
 	E1C322EF14E2E4340076AE7A /* compare.c */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1188, 2744}}";
@@ -4030,9 +4173,9 @@
 	};
 	E1D5257614C949B00079F5EC /* nui.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1188, 11326}}";
-			sepNavSelRange = "{12562, 0}";
-			sepNavVisRange = "{11758, 1341}";
+			sepNavIntBoundsRect = "{{0, 0}, {1552, 10150}}";
+			sepNavSelRange = "{23006, 0}";
+			sepNavVisRange = "{19600, 1091}";
 			sepNavWindowFrame = "{{0, 4}, {1438, 874}}";
 		};
 	};

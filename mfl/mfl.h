@@ -174,6 +174,8 @@ typedef void* mfl_handle_t;
 
 mfl_handle_t mfl_create_handle();
 void mfl_destroy_handle(mfl_handle_t mfl_handle);
+void mfl_erase_trees_newick(mfl_handle_t mfl_handle);
+void mfl_destroy_resultant_data(mfl_handle_t mfl_handle);
 
 /* MDB: Now that I see some of this new code, I think I now get what the 
  * problem with these functions is. Indeed, the lists of included and excluded 
