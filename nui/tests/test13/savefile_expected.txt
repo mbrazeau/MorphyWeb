@@ -1,0 +1,23 @@
+#NEXUS
+BEGIN TREES;
+	TRANSLATE
+		1 'Pomatomus saltatrix',
+		2 Carangoides,
+		3 Opisthomyzon,
+		4 'Nematistius pectoralis',
+		5 'Seriola dumerili',
+		6 'Coryphaena equiselis',
+		7 'Coryphaena hippurus',
+		8 'Rachycentron canadum',
+		9 'Echeneis naucrates',
+		10 'Echeneis neucratoides',
+		11 'Phtheirichthys lineatus',
+		12 'Remora australis',
+		13 'Remora brachyptera',
+		14 'Remora osteochir',
+		15 'Remora remora',
+		16 'Remorina albescens',
+		17 'Ductor vestenae'
+		;
+
+END;

@@ -293,45 +293,62 @@ void CNexusUserInterface::CreateHandle()
     m_mflHandle = mfl_create_handle();
 }
 
+bool CNexusUserInterface::SaveTranslateTable(myofstream &fSave)
+{
+    int it;
+    int n_taxa = m_pNexusParse->m_cTaxa->GetNumTaxonLabels();
+    for (it = 0; it < n_taxa; it++) 
+    {
+        fSave<<"\t\t"<<it + 1<<" ";
+        if (m_pNexusParse->m_cTaxa->NeedsQuotes(it)) 
+        {
+            fSave<<"'"<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it)<<"'";
+        }
+        else 
+        {
+            fSave<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it);
+        }
+        if (it < n_taxa-1) 
+        {
+            fSave<<",";
+        }
+        fSave<<endl;
+    }
+    return true;
+}
+
+bool CNexusUserInterface::SaveNewickStrings(myofstream &fSave)
+{
+    int it;
+    char **newicks = mfl_get_saved_trees_newick(m_mflHandle);
+    for (it = 0; newicks[it]; it++)
+    {
+        fSave<<"\t\tTREE Morphy_"<<it+1<<" = "<< newicks[it]<<endl;
+    }
+
+    return true;
+}
+
 bool CNexusUserInterface::fCNexusMenuSaveFile       ()
 {
     string strFilename;
     myofstream fSave;
 
-    m_ioLogFiles->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+    m_ioLogFiles->GetUserInput(" Enter save filename: " + m_strCwd, &strFilename);
     strFilename = m_strCwd + strFilename;
     fSave.open(strFilename.c_str());
     if (fSave)
     {
         fSave<<"#NEXUS"<<endl;
-        fSave<<"BEGIN TREES;"<<endl<<"\tTranslate"<<endl;
-        int it;
-        int n_taxa = m_pNexusParse->m_cTaxa->GetNumTaxonLabels();
-        for (it = 0; it < n_taxa ; ++it) {
-            fSave<<"\t\t"<<it+1<<" ";
-            if (m_pNexusParse->m_cTaxa->NeedsQuotes(it)) {
-                fSave<<"'"<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it)<<"'";
-            }
-            else {
-                fSave<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it);
-            }
-            if (it < n_taxa-1) {
-                fSave<<",";
-            }
-            fSave<<endl;
-        }
+        fSave<<"BEGIN TREES;"<<endl<<"\tTRANSLATE"<<endl;
+
+        SaveTranslateTable(fSave);
+
         fSave<<"\t\t;"<<endl<<endl;
-        //vector<string> newicks = mfl_get_saved_trees_newick(m_mflHandle);
-        char **newicks = mfl_get_saved_trees_newick(m_mflHandle);
-        //vector<string>::iterator it;
-        
-        for (it = 0/*newicks.begin()*/; newicks[it]/*it != newicks.end()*/; it++)
-        {
-            fSave<<"\t\tTREE Morphy_"<<it+1<<" = "<< newicks[it]/*it*/<<endl;
-        }
-        
+
+        SaveNewickStrings(fSave);
+
         fSave<<"END;";
-        
         fSave.close();
         cout<<" Successfully opened '"<<strFilename<<"'"<<endl;
     }

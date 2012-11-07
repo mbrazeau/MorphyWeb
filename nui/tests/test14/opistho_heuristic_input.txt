@@ -14,5 +14,5 @@ gap
 q
 hs
 s
-opresult.txt
+test14/savefile.txt
 q

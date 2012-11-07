@@ -73,6 +73,8 @@ protected:
     bool SetMorphyOpenParams();
     void ChangeMenu(CNexusMenuData *pMenu);
     void Delete(CEditLineHist *pMem);
+    bool SaveTranslateTable(myofstream &fSave);
+    bool SaveNewickStrings(myofstream &fSave);
 
 private:
     CNexusMenuData *m_pMainMenu;

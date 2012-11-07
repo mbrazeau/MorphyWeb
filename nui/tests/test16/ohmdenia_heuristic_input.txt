@@ -1,12 +1,12 @@
 o
-Ptomacanth_Edit.txt
+Ohmdenia_Matrix.nex
 set
 branchswap
 1
 addseq
 2
 numite
-10
+1
 treelimit
 10000
 gap
@@ -14,5 +14,5 @@ gap
 q
 hs
 s
-ptomaresults.txt
+test16/savefile.txt
 q

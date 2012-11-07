@@ -15,6 +15,7 @@ GetOptions( "input=s" => \$g_input_file,
 sub execute_nui(@)
 {
     my ($input_file) = @_;
+    open STDERR, '>&STDOUT';
     my $actual_results = `../obj/nui < $input_file 2>&1`;
     return $actual_results;
 }

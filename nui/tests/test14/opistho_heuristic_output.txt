@@ -46,10 +46,55 @@ Skipping unknown block (NOTES)...
 
 Main Menu
 Enter selection#
+ SEARCHTYPE) Set the search type for JK and BTS searches
+ BRANCHSWAP) Set branch swap type for heuristic searches
+ ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
+ COLLAPSEAT) Configure when to collapse nodes
+ COLLAPSEZERO) Enable collapsing of zero length branches during search
+ NUMITE) Set the number of iterations for a heuristic search
+ TREELIMIT) Set the maximum number of trees allowed to be stored in memory
+ RATCHET) Set the ratchet search parameter
+ GAP) Set whether gap symbol ('-') will be treated as inapplicability or as missing data
+ H) Help
+ Q) Return to main menu
+
+
+Set parameters
+Enter selection#
+ Enter branch swap type
+  1) Tree bisection
+  2) Subtree pruning
+  3) Nearist neighbor
+ # 
+Set parameters
+Enter selection#
+ Enter add seq type
+  1) Simple
+  2) Random
+  3) As is
+  4) Closest
+ # 
+Set parameters
+Enter selection#
+ Enter number of iterations# 
+Set parameters
+Enter selection#
+ Enter number of trees to store# 
+Set parameters
+Enter selection#
+ Select if the gap symbol ('-') will be treated as inapplicability or as missing data
+  1) Inapplicable
+  2) Missing data
+ # 
+Set parameters
+Enter selection#
 
 Main Menu
 Enter selection#
- Enter save filename: ./ Successfully opened './test13/savefile.txt'
+
+Main Menu
+Enter selection#
+ Enter save filename: ./ Successfully opened './test14/savefile.txt'
 
 Main Menu
 Enter selection#
