@@ -146,21 +146,29 @@ void mfl_erase_trees_newick(mfl_handle_t mfl_handle)
     char **nwktrees = mfl_struct->resultant_data->newicktrees;
     
     for (i = 0; nwktrees[i]; ++i) {
-        free(nwktrees[i]);
+        if (nwktrees[i]) {
+            free(nwktrees[i]);
+        }
     }
-    
+    free(nwktrees);
 }
 
 void mfl_destroy_resultant_data(mfl_handle_t mfl_handle)
 {
+    
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    if (mfl_struct->resultant_data->newicktrees) {
+        mfl_erase_trees_newick(mfl_handle);
+    }
     free(mfl_struct->resultant_data);
 }
 
 void mfl_destroy_handle(mfl_handle_t mfl_handle)
 {
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
-    //mfl_free_input_data(mfl_struct);
+    if (mfl_struct->resultant_data) {
+        mfl_destroy_resultant_data(mfl_handle);
+    }
     free(mfl_struct);
 }
 
