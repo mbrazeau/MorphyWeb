@@ -146,6 +146,27 @@ void mfl_destroy_handle(mfl_handle_t mfl_handle)
     free(mfl_struct);
 }
 
+int mfl_get_island_count(mfl_handle_t mfl_handle)
+{
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    
+    return mfl_struct->resultant_data->num_islands;
+}
+
+int mfl_get_island_size(mfl_handle_t mfl_handle, int island_number)
+{
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    
+    return mfl_struct->resultant_data->island_sizes[island_number];
+    
+}
+int mfl_get_island_length(mfl_handle_t mfl_handle, int island_number)
+{
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    
+    return mfl_struct->resultant_data->island_lengths[island_number];
+}
+
 bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *param_data)
 {
     bool ret = false;

@@ -304,6 +304,27 @@ int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resulta
 char** mfl_get_saved_trees_newick(mfl_handle_t mfl_handle);
 vector<string> mfl_get_saved_trees       (mfl_handle_t mfl_handle);
 
+
+/* The functions below return the data on the number (count), size, and length of 
+ * each of the islands of optimality found by the search. They can be used to 
+ * print the data about the optimality islands to screen. For instance, after 
+ * completion of a heuristic search with random addition sequences, an interface 
+ * display the following:
+ *
+ *  Island     Size     Length
+ *  ---------------------------
+ *       1     3348        318
+ *       2     1842        318
+ *       3      542        319
+ *       4       12        323
+ * 
+ * To do this, call loop for all i < the value returned by mfl_get_island_count(),
+ * where island_number = i.
+ */
+int mfl_get_island_count(mfl_handle_t mfl_handle);
+int mfl_get_island_size(mfl_handle_t mfl_handle, int island_number);
+int mfl_get_island_length(mfl_handle_t mfl_handle, int island_number);
+
 bool mfl_heuristic           (mfl_handle_t mfl_handle);
 bool mfl_exhaustive          (mfl_handle_t mfl_handle);
 bool mfl_branchandbound      (mfl_handle_t mfl_handle);

@@ -55,8 +55,9 @@ typedef struct {
     char** newicktrees; // Vector of trees in newick format
     string **texttrees;   // Array of trees drawn as text
     int num_islands;    // Number of parsimony islands hit
-    int *islands;
-    int *times_hit;      // List of times each island was hit
+    int *island_lengths;       // Lengths of each island
+    int *island_sizes;
+    int *times_hit_islands;      // List of times each island was hit
 #ifdef VERSION_1_5
     double consist_ind; // Consistency index
     double ret_ind;     // Retention index
