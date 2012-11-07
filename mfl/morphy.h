@@ -52,7 +52,7 @@ typedef struct {
     int n_savetrees;    // Number of trees found and/or saved
     int bestlength;     // Length of the best tree
     time_t searcht;     // Time in search
-    vector<string> newicktrees; // Vector of trees in newick format
+    char** newicktrees; // Vector of trees in newick format
     string **texttrees;   // Array of trees drawn as text
     int num_islands;    // Number of parsimony islands hit
     int *islands;
@@ -127,7 +127,7 @@ typedef struct tree {
      * node. */
     node *root;
     int length;
-    int templen;
+    int island_id;
     bool swapped;
     int *compressedtr;
     int *cmptrholder;
@@ -229,7 +229,6 @@ void mfl_reopt_subtr_root(node *n, int nchar);
 void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar);
 void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
 void mfl_subtree_postorder(node *n, int *trlength, int nchar);
-int mfl_reopt_shortcut(node *src, node *t1, node *t2, int nchar, int *trlength, int templen);
 void mfl_countsteps(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
 int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
@@ -384,7 +383,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle/*int ntax, int nchar, int num
 void mfl_spr_cliptrees(node *p, node *up, node *dn, node *subtr, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
 void mfl_reroot_subtree(node *n, node *atip, node *subtr, node *base, node *up, node *dn, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff, int *st_changes);
 void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec);
-void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax);
+char **mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax);
 
 /* in mfyinterface.c*/
 bool mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data);

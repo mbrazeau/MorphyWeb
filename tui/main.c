@@ -729,7 +729,7 @@ void mini_test_analysis(void)
     mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
     //mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
     mfl_handle->n_treelimit = 100000;
-    mfl_handle->n_iterations = 10;
+    mfl_handle->n_iterations = 1;
     mfl_handle->addseq_type = MFL_AST_RANDOM;
     //mfl_handle->bswap_type = MFL_BST_SPR;
     mfl_handle->bswap_type = MFL_BST_TBR;

@@ -539,8 +539,8 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
                 
             }
+            assert(q == nds[i]);
             p->edge->skip = false;
-            
             p = p->next;
             
         } while (p != nds[i]);
@@ -799,42 +799,18 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
     }
 }
 
-void mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
+char **mfl_store_results(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
 {
     long int i = 0;
     mfl_resultant_data_s *a_results = mfl_handle->resultant_data; 
-    //vector<string> nwkvect;
-    /* This is just for testing out saving in a c-style pointer */
-    char **newicktrees = (char **)malloc(a_results->n_savetrees * sizeof(char*));
+    char **newicktrees = (char **)malloc((a_results->n_savetrees + 1) * sizeof(char*));
     
     for (i = 0; i < a_results->n_savetrees; ++i) {
-        // This works:
         newicktrees[i] = savedtrees[i]->newick_tree;
-        //savedtrees[i]->newick_tree = NULL;
-        
-        // This doesn't do anything:
-        string a(savedtrees[i]->newick_tree);
-        a_results->newicktrees.push_back(a);
     }
     
-    /* because we're not currently returning c-style strings, just freeing this 
-     * array*/
+    newicktrees[a_results->n_savetrees + 1] = NULL; // NULL signifies the end of the tree array
     
-    free(newicktrees);
-}
-
-vector<string> mfl_store_results2(mfl_handle_s *mfl_handle, tree **savedtrees, int ntax)
-{
-    long int i = 0;
-    mfl_resultant_data_s *a_results = mfl_handle->resultant_data; 
-    vector<string> newicktrees;
-    //string a;
-    for (i = 0; i < a_results->n_savetrees; ++i) {
-        // This works:
-        string a(savedtrees[i]->newick_tree);
-        newicktrees.push_back(a);
-    }
-
     return newicktrees;
 }
 
@@ -980,16 +956,11 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     
     timeout = (double)(clock() / (double)CLOCKS_PER_SEC);
     
-    
-
-    
     mfl_handle->resultant_data->bestlength = searchrec->bestlength;
     mfl_handle->resultant_data->n_rearrangements = searchrec->niter_total;
     mfl_handle->resultant_data->n_savetrees = searchrec->nextinbuffer;
     mfl_handle->resultant_data->searcht = (timeout - timein);
-    
-    //mfl_store_results(mfl_handle, savedtrees, ntax);
-    mfl_handle->resultant_data->newicktrees = mfl_store_results2(mfl_handle, savedtrees, ntax);
+    mfl_handle->resultant_data->newicktrees = mfl_store_results(mfl_handle, savedtrees, ntax);
     
     /* TESTING ONLY. This is just for checking output as I build up the heuristic
      * search procedure. Eventually, all this stuff will be written to a struct
