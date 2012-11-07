@@ -315,7 +315,6 @@ bool CNexusUserInterface::fCNexusMenuSaveFile       ()
             else {
                 fSave<<m_pNexusParse->m_cTaxa->GetTaxonLabel(it);
             }
-
             if (it < n_taxa-1) {
                 fSave<<",";
             }
