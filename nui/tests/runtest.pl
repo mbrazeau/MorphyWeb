@@ -91,6 +91,7 @@ sub runtest(@)
     my ($input_file, $expected_output_file, $test_dir, $quick_test) = @_;
     if (($quick_test) && (-e "$test_dir/longtest"))
     {
+        print ("  $test_dir - skip\n");
         return 0;
     }
     my $actual_results = execute_nui($input_file);
