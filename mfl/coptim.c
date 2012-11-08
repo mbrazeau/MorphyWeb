@@ -337,7 +337,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
 {
     int i, c;
     charstate lft_chars, rt_chars;
-    charstate temp = NULL;
+    charstate temp = 0;
     charstate *ntemps = n->tempapos;
     charstate *napos = n->apomorphies;
     charstate *ancapos = anc->apomorphies;
@@ -772,7 +772,8 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
 {
     int i, c;
     charstate lft_chars, rt_chars, temp;
-    bool allsame = true;
+    // cjd - fix compiler warning
+    //bool allsame = true;
     
     charstate *ldtemps = n->next->edge->tempapos;
     charstate *rdtemps = n->next->next->edge->tempapos;
@@ -785,7 +786,7 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
             temp = ldtemps[i] & rdtemps[i];
             if (temp != antemps[i]) {
                 antemps[i] = temp;
-                allsame = false;
+                //allsame = false;
             }
         }
         else
@@ -801,7 +802,7 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
             
             if (temp != antemps[i]) {
                 antemps[i] = temp;
-                allsame = false;
+                //allsame = false;
             }
         }
     }
@@ -1022,8 +1023,8 @@ void mfl_restore_origstates(tree *t, int ntax, int numnodes, int nchar)
 bool mfl_find_lastchanged(node *n, int nchar, int *changing)
 {
     node *p;
-    
-    bool found = false;
+    //cjd - fix compiler warning
+    //bool found = false;
     
     if (n->tip) {
         return false;
@@ -1037,7 +1038,7 @@ bool mfl_find_lastchanged(node *n, int nchar, int *changing)
     p = n->next;
     while (p != n) {
         if (mfl_find_lastchanged(p->edge, nchar, changing)) {
-            found = true;
+            //found = true;
             break;
         }
         p = p->next;

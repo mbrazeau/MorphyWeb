@@ -75,6 +75,7 @@ protected:
     void Delete(CEditLineHist *pMem);
     bool SaveTranslateTable(myofstream &fSave);
     bool SaveNewickStrings(myofstream &fSave);
+    void PrintIslandData();
 
 private:
     CNexusMenuData *m_pMainMenu;

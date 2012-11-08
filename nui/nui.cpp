@@ -510,9 +510,30 @@ bool CNexusUserInterface::fCNexusMenuSet            ()
     return true;
 }
 
+void CNexusUserInterface::PrintIslandData()
+{
+    mfl_add_sequence_t addseq_type = (mfl_add_sequence_t)(long int)mfl_get_parameter(m_mflHandle, MFL_PT_ADD_SEQUENCE_TYPE);
+    if (addseq_type == MFL_AST_RANDOM)
+    {
+        int count = mfl_get_resultant_data(m_mflHandle, MFL_RT_ISLAND_COUNT,  0);
+        int size;
+        int len;
+        cout<<setw(10)<<"Island"<<setw(10)<<"Size"<<setw(10)<<"Length"<<endl<<count;
+        /*
+        for (int i = 0; i < count; i++)
+        {
+            size = mfl_get_resultant_data(m_mflHandle, MFL_RT_ISLAND_SIZE ,  i);
+            len  = mfl_get_resultant_data(m_mflHandle, MFL_RT_ISLAND_LENGTH, i);
+        }
+        */
+    }
+}
+
 bool CNexusUserInterface::fCNexusMenuHeuristicSearch()
 {
-    return mfl_heuristic(m_mflHandle);
+    bool ret = mfl_heuristic(m_mflHandle);
+    PrintIslandData();
+    return ret;
 }
 
 bool CNexusUserInterface::fCNexusMenuExhaust        ()

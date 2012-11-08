@@ -84,6 +84,12 @@ bool mfl_attach_inputdata(mfl_handle_s *mfl_struct, void *param_data)
     return true;
 }
 
+void* mfl_get_addseq_t(mfl_handle_s *mfl_struct)
+{
+    void* ret = (void*)mfl_struct->addseq_type;
+    return ret;
+}
+
 bool mfl_set_addseq_t(mfl_handle_s *mfl_struct, void *param_data)
 {
     mfl_struct->addseq_type = (mfl_add_sequence_t)(long int)param_data;
@@ -172,25 +178,64 @@ void mfl_destroy_handle(mfl_handle_t mfl_handle)
     free(mfl_struct);
 }
 
-int mfl_get_island_count(mfl_handle_t mfl_handle)
+int mfl_get_island_count(mfl_handle_s *mfl_struct)
 {
-    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
-    
     return mfl_struct->resultant_data->num_islands;
 }
 
-int mfl_get_island_size(mfl_handle_t mfl_handle, int island_number)
+int mfl_get_island_size(mfl_handle_s *mfl_struct, int island_number)
 {
-    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
-    
     return mfl_struct->resultant_data->island_sizes[island_number];
-    
 }
-int mfl_get_island_length(mfl_handle_t mfl_handle, int island_number)
+
+int mfl_get_island_length(mfl_handle_s *mfl_struct, int island_number)
 {
-    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
-    
     return mfl_struct->resultant_data->island_lengths[island_number];
+}
+
+int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resultant_data, int param)
+{
+    int ret;
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    switch (resultant_data)
+    {
+        case MFL_RT_ISLAND_COUNT:
+            ret = mfl_get_island_count(mfl_struct);
+            break;
+        case MFL_RT_ISLAND_SIZE:
+            ret = mfl_get_island_size(mfl_struct, param);
+            break;
+        case MFL_RT_ISLAND_LENGTH:
+            ret = mfl_get_island_length(mfl_struct, param);
+            break;
+        default:
+            /*
+            ** not all cases are handled yet, if you get this assert, 
+            ** then you need to update this code to handle the case
+            ** you need
+            */
+            assert(0);
+            break;
+    }
+    return ret;
+}
+
+void* mfl_get_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type)
+{
+    void *ret = NULL;
+    mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    switch (param_type)
+    {
+        case MFL_PT_ADD_SEQUENCE_TYPE:
+            ret = mfl_get_addseq_t(mfl_struct);
+            break;
+
+        default:
+            /* add other cases as needed... */
+            assert(0);
+            break;
+    }
+    return ret;
 }
 
 bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *param_data)
@@ -198,7 +243,8 @@ bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *pa
     bool ret = false;
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
 
-    switch (param_type) {
+    switch (param_type)
+    {
         case MFL_PT_NUM_TAX:
             ret = mfl_set_ntax(mfl_struct, param_data);
             break;

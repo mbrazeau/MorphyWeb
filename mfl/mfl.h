@@ -106,6 +106,9 @@ typedef enum
     MFL_RT_NUM_SAVED_TREES,   // (long int) number of trees saved during search
     MFL_RT_SHORTEST_TREE_LEN, // (int) number of steps of shortest tree found in search
     MFL_RT_SEARCH_TIME,       // (time_t) amount of time taken for the search
+    MFL_RT_ISLAND_COUNT,      // (int) number of islands
+    MFL_RT_ISLAND_SIZE,       // (int) island size
+    MFL_RT_ISLAND_LENGTH,     // (int) island length
 } mfl_resultant_data_t;
 
 /* 
@@ -200,6 +203,7 @@ mfl_constrain_outgroup_topology(); // user constrains the search to always inclu
 ** bool ret = mfl_set_parameter(mfl_handle, MFL_PT_BRANCH_SWAP_TYPE, (void*)MFL_BST_TBR);
 */
 bool mfl_set_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type, void *param_data);
+void* mfl_get_parameter(mfl_handle_t mfl_handle, mfl_param_t param_type);
 
 /* 
  * CJD: Need to come up with return codes for these, I assume it is a list of trees... 
@@ -277,7 +281,7 @@ string mfl_get_trees(mfl_handle_t mfl_handle);
  * and the APIs just return ready to use information. So I see things like the 
  * following, assuming all of data is of type int, which might not be the case:
  */
-int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resultant_data);
+int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resultant_data, int param);
 /* 
  * note: the string datatype is a real C++ datatype, like char* 
  * but much easier to use, no malloc/free necessary, and it is 
@@ -323,9 +327,11 @@ vector<string> mfl_get_saved_trees       (mfl_handle_t mfl_handle);
  * To do this, call loop for all i < the value returned by mfl_get_island_count(),
  * where island_number = i.
  */
+/* use mfl_get_resultant_data instead
 int mfl_get_island_count(mfl_handle_t mfl_handle);
 int mfl_get_island_size(mfl_handle_t mfl_handle, int island_number);
 int mfl_get_island_length(mfl_handle_t mfl_handle, int island_number);
+*/
 
 bool mfl_heuristic           (mfl_handle_t mfl_handle);
 bool mfl_exhaustive          (mfl_handle_t mfl_handle);
