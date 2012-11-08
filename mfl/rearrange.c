@@ -861,6 +861,8 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_searchrec *searchrec = mfl_create_searchrec();
     
     mfl_handle->resultant_data = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
+    memset(mfl_handle->resultant_data, 0, sizeof(mfl_resultant_data_s));
+    
     if (mfl_handle->resultant_data == NULL) {
         dbg_printf("error in allocating mfl_resultant_data_s\n");
     }
