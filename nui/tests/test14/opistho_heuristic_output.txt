@@ -91,8 +91,8 @@ Enter selection#
 
 Main Menu
 Enter selection#
-    Island      Size    Length
-0
+Island    Size      Length    
+
 Main Menu
 Enter selection#
  Enter save filename: ./ Successfully opened './test14/savefile.txt'

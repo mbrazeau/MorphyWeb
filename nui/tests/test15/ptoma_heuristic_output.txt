@@ -91,6 +91,7 @@ Enter selection#
 
 Main Menu
 Enter selection#
+Island    Size      Length    
 
 Main Menu
 Enter selection#

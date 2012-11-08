@@ -219,6 +219,10 @@ void CNexusUserInterface::DoMenu()
         {
             cout<<endl<<"Error: "<<e.what()<<endl;
         }
+        catch (...)
+        {
+            cout<<endl<<"Error: Unknown exception"<<endl;
+        }
     } while (ret);
 }
 
@@ -518,14 +522,13 @@ void CNexusUserInterface::PrintIslandData()
         int count = mfl_get_resultant_data(m_mflHandle, MFL_RT_ISLAND_COUNT,  0);
         int size;
         int len;
-        cout<<setw(10)<<"Island"<<setw(10)<<"Size"<<setw(10)<<"Length"<<endl<<count;
-        /*
+        cout<<left<<setw(10)<<"Island"<<setw(10)<<"Size"<<setw(10)<<"Length"<<endl;
         for (int i = 0; i < count; i++)
         {
             size = mfl_get_resultant_data(m_mflHandle, MFL_RT_ISLAND_SIZE ,  i);
             len  = mfl_get_resultant_data(m_mflHandle, MFL_RT_ISLAND_LENGTH, i);
+            cout<<setw(10)<<i<<setw(10)<<size<<setw(10)<<len<<endl;
         }
-        */
     }
 }
 
