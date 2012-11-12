@@ -129,6 +129,9 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
             if (srctemps[i] & IS_APPLIC) {
                 if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
+                    if (srctemps[i] & 1) {
+                        int f = 0;
+                    }
                     ++cost;
                 }
             }
@@ -272,7 +275,8 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
         
         if ((n->tempapos[i] & anc->apomorphies[i]) == anc->apomorphies[i]) 
         {
-            n->apomorphies[i] = n->tempapos[i] & anc->apomorphies[i];            
+            n->apomorphies[i] = n->tempapos[i] & anc->apomorphies[i];
+            assert(n->apomorphies[i] != 0);
         }
         else {
             
@@ -282,14 +286,17 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
             if ( lft_chars & rt_chars ) { //III
                 //V
                 n->apomorphies[i] = (n->tempapos[i] | (anc->apomorphies[i] & (lft_chars | rt_chars))) & IS_APPLIC;
+                assert(n->apomorphies[i] != 0);
             }
             else {
                 //IV
                 if ( (anc->apomorphies[i] & IS_APPLIC) && (n->tempapos[i] & IS_APPLIC)) {
                     n->apomorphies[i] = (n->tempapos[i] | anc->apomorphies[i]) & IS_APPLIC;
+                    assert(n->apomorphies[i] != 0);
                 }
                 else {
                     n->apomorphies[i] = n->tempapos[i] | anc->apomorphies[i];
+                    assert(n->apomorphies[i] != 0);
                 }
 
             }
@@ -314,6 +321,7 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
         if (ldtemps[i] & rdtemps[i]) 
         {
             temp = ldtemps[i] & rdtemps[i];
+            assert(temp != 0);
             if (temp != antemps[i]) {
                 antemps[i] = temp;
                 allsame = false;
@@ -325,19 +333,21 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
             rt_chars = rdtemps[i];
             
             temp = lft_chars | rt_chars;
-            
+            assert(temp != 0);
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 temp = temp & IS_APPLIC;
+                assert(temp != 0);
             }
             
             if (temp != antemps[i]) {
                 antemps[i] = temp;
                 allsame = false;
+                assert(temp != 0);
             }
         }
     }
     if (allsame) {
-        //ancestor->success = true;
+        ancestor->success = true;
     }
 }
 
@@ -358,7 +368,8 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
         
         if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
         {
-            temp = ntemps[i] & ancapos[i]; 
+            temp = ntemps[i] & ancapos[i];
+            assert(temp != 0);
             if (temp != napos[i]) {
                 napos[i] = temp;
                 allsame = false;
@@ -371,6 +382,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
             if ( lft_chars & rt_chars ) { //III
                 //V
                 temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)) ) & IS_APPLIC;
+                assert(temp != 0);
                 if (temp != napos[i]) {
                     napos[i] = temp;
                     allsame = false;
@@ -380,9 +392,11 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                 //IV
                 if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
                     temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                    assert(temp != 0);
                 }
                 else {
                     temp = ntemps[i] | ancapos[i];
+                    assert(temp != 0);
                 }
                 
                 if (temp != napos[i]) {
@@ -393,7 +407,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
         }
     }
     if (allsame) {
-        //n->finished = true;
+        n->finished = true;
     }
 }
 
