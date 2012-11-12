@@ -129,9 +129,6 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
             if (srctemps[i] & IS_APPLIC) {
                 if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
-                    if (srctemps[i] & 1) {
-                        int f = 0;
-                    }
                     ++cost;
                 }
             }
@@ -269,14 +266,17 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
     assert(!n->tip);
     
     int i;
+    charstate *ntemps = n->tempapos;
+    charstate *napos = n->apomorphies;
+    charstate *ancapos = anc->apomorphies;
     charstate lft_chars, rt_chars, temp;
     
     for (i = 0; i < nchar; ++i) {
         
-        if ((n->tempapos[i] & anc->apomorphies[i]) == anc->apomorphies[i]) 
+        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
         {
-            n->apomorphies[i] = n->tempapos[i] & anc->apomorphies[i];
-            assert(n->apomorphies[i] != 0);
+            napos[i] = ntemps[i] & ancapos[i];
+            assert(napos[i] != 0);
         }
         else {
             
@@ -285,22 +285,22 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
             
             if ( lft_chars & rt_chars ) { //III
                 //V
-                temp = (n->tempapos[i] | (anc->apomorphies[i] & (lft_chars | rt_chars)));
+                temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
                 if (temp & IS_APPLIC) {
                     temp = temp & IS_APPLIC;
                 }
-                n->apomorphies[i] = temp;
-                assert(n->apomorphies[i] != 0);
+                napos[i] = temp;
+                assert(napos[i] != 0);
             }
             else {
                 //IV
-                if ( (anc->apomorphies[i] & IS_APPLIC) && (n->tempapos[i] & IS_APPLIC)) {
-                    n->apomorphies[i] = (n->tempapos[i] | anc->apomorphies[i]) & IS_APPLIC;
-                    assert(n->apomorphies[i] != 0);
+                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
+                    napos[i] = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                    assert(napos[i] != 0);
                 }
                 else {
-                    n->apomorphies[i] = n->tempapos[i] | anc->apomorphies[i];
-                    assert(n->apomorphies[i] != 0);
+                    napos[i] = ntemps[i] | ancapos[i];
+                    assert(napos[i] != 0);
                 }
 
             }
