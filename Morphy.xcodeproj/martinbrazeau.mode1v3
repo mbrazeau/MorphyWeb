@@ -197,48 +197,7 @@
 	<key>Notifications</key>
 	<array/>
 	<key>OpenEditors</key>
-	<array>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
-				<string>E14DB7EA165155C90007782A</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>coptim.c</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>E14DB7EB165155C90007782A</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>coptim.c</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>E14DB7EC165155C90007782A</string>
-						<key>history</key>
-						<array>
-							<string>E14DB7D7165152E40007782A</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {1438, 823}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>2 14 1438 864 0 0 1440 878 </string>
-			</dict>
-		</dict>
-	</array>
+	<array/>
 	<key>PerspectiveWidths</key>
 	<array>
 		<integer>-1</integer>
@@ -270,8 +229,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -318,8 +275,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>20</integer>
-									<integer>12</integer>
+									<integer>30</integer>
+									<integer>28</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
@@ -355,12 +312,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>rearrange.c</string>
+								<string>coptim.c</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -368,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>rearrange.c</string>
+										<string>coptim.c</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>E14DB7E9165155C90007782A</string>
+										<string>E14DB85316515D260007782A</string>
 										<key>history</key>
 										<array>
 											<string>E196F4F316249E25004449DA</string>
@@ -386,7 +345,6 @@
 											<string>E1172022163161860021AAA7</string>
 											<string>E117204B16316A3A0021AAA7</string>
 											<string>E14E40BC16359570005611A4</string>
-											<string>E1E8045E16428A3000F83EE4</string>
 											<string>E1CFC0321642FF0D00CB8806</string>
 											<string>E1CFC0E61643133500CB8806</string>
 											<string>E1FD7FE2164449DB007DFEE8</string>
@@ -407,12 +365,13 @@
 											<string>E1DA5C81165004C30048033A</string>
 											<string>E1DA5C82165004C30048033A</string>
 											<string>E14DB71D16513D610007782A</string>
-											<string>E14DB71F16513D610007782A</string>
 											<string>E14DB72016513D610007782A</string>
 											<string>E14DB76A165142F70007782A</string>
-											<string>E14DB7E6165155C90007782A</string>
-											<string>E14DB7E7165155C90007782A</string>
-											<string>E14DB7E8165155C90007782A</string>
+											<string>E14DB83D16515AB30007782A</string>
+											<string>E14DB83E16515AB30007782A</string>
+											<string>E14DB83F16515AB30007782A</string>
+											<string>E14DB84016515AB30007782A</string>
+											<string>E14DB84116515AB30007782A</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -610,14 +569,12 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>E14DB7ED165155C90007782A</string>
 		<string>E14DB72716513D610007782A</string>
 		<string>E14DB72816513D610007782A</string>
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>E1B2E820161703C50076343F</string>
-		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
-		<string>E14DB7EA165155C90007782A</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/martinbrazeau/Documents/Morphy/Morphy.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 4 1440 874 0 0 1440 878 </string>

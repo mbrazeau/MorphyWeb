@@ -269,7 +269,7 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
     assert(!n->tip);
     
     int i;
-    charstate lft_chars, rt_chars;
+    charstate lft_chars, rt_chars, temp;
     
     for (i = 0; i < nchar; ++i) {
         
@@ -285,7 +285,11 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
             
             if ( lft_chars & rt_chars ) { //III
                 //V
-                n->apomorphies[i] = (n->tempapos[i] | (anc->apomorphies[i] & (lft_chars | rt_chars))) & IS_APPLIC;
+                temp = (n->tempapos[i] | (anc->apomorphies[i] & (lft_chars | rt_chars)));
+                if (temp & IS_APPLIC) {
+                    temp = temp & IS_APPLIC;
+                }
+                n->apomorphies[i] = temp;
                 assert(n->apomorphies[i] != 0);
             }
             else {
@@ -381,7 +385,12 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
             
             if ( lft_chars & rt_chars ) { //III
                 //V
-                temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)) ) & IS_APPLIC;
+                temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
+                
+                if (temp & IS_APPLIC) {
+                    temp = temp & IS_APPLIC;
+                }
+                
                 assert(temp != 0);
                 if (temp != napos[i]) {
                     napos[i] = temp;
