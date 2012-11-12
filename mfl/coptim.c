@@ -273,38 +273,44 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
     
     for (i = 0; i < nchar; ++i) {
         
-        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
-        {
-            napos[i] = ntemps[i] & ancapos[i];
-            assert(napos[i] != 0);
+        if (ancapos[i]==1) {
+            napos[i] = ntemps[i];
         }
         else {
-            
-            lft_chars = n->next->edge->tempapos[i];
-            rt_chars = n->next->next->edge->tempapos[i];
-            
-            if ( lft_chars & rt_chars ) { //III
-                //V
-                temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
-                if (temp & IS_APPLIC) {
-                    temp = temp & IS_APPLIC;
-                }
-                napos[i] = temp;
+            if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
+            {
+                napos[i] = ntemps[i] & ancapos[i];
                 assert(napos[i] != 0);
             }
             else {
-                //IV
-                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
-                    napos[i] = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                
+                lft_chars = n->next->edge->tempapos[i];
+                rt_chars = n->next->next->edge->tempapos[i];
+                
+                if ( lft_chars & rt_chars ) { //III
+                    //V
+                    temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                    if (temp & IS_APPLIC) {
+                        temp = temp & IS_APPLIC;
+                    }
+                    napos[i] = temp;
                     assert(napos[i] != 0);
                 }
                 else {
-                    napos[i] = ntemps[i] | ancapos[i];
-                    assert(napos[i] != 0);
+                    //IV
+                    if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
+                        napos[i] = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                        assert(napos[i] != 0);
+                    }
+                    else {
+                        napos[i] = ntemps[i] | ancapos[i];
+                        assert(napos[i] != 0);
+                    }
+                    
                 }
-
             }
         }
+
     }
 }
 
@@ -370,27 +376,13 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
         
         i = changing[c]-1;
         
-        if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
-        {
-            temp = ntemps[i] & ancapos[i];
-            assert(temp != 0);
-            if (temp != napos[i]) {
-                napos[i] = temp;
-                allsame = false;
-            }
+        if (ancapos[i] == 1) {
+            napos[i] = ntemps[i];
         }
         else {
-            lft_chars = n->next->edge->tempapos[i];
-            rt_chars = n->next->next->edge->tempapos[i];
-            
-            if ( lft_chars & rt_chars ) { //III
-                //V
-                temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
-                
-                if (temp & IS_APPLIC) {
-                    temp = temp & IS_APPLIC;
-                }
-                
+            if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
+            {
+                temp = ntemps[i] & ancapos[i];
                 assert(temp != 0);
                 if (temp != napos[i]) {
                     napos[i] = temp;
@@ -398,23 +390,44 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                 }
             }
             else {
-                //IV
-                if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
-                    temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                lft_chars = n->next->edge->tempapos[i];
+                rt_chars = n->next->next->edge->tempapos[i];
+                
+                if ( lft_chars & rt_chars ) { //III
+                    //V
+                    temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
+                    
+                    if (temp & IS_APPLIC) {
+                        temp = temp & IS_APPLIC;
+                    }
+                    
                     assert(temp != 0);
+                    if (temp != napos[i]) {
+                        napos[i] = temp;
+                        allsame = false;
+                    }
                 }
                 else {
-                    temp = ntemps[i] | ancapos[i];
-                    assert(temp != 0);
-                }
-                
-                if (temp != napos[i]) {
-                    napos[i] = temp;
-                    allsame = false;
+                    //IV
+                    if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
+                        temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
+                        assert(temp != 0);
+                    }
+                    else {
+                        temp = ntemps[i] | ancapos[i];
+                        assert(temp != 0);
+                    }
+                    
+                    if (temp != napos[i]) {
+                        napos[i] = temp;
+                        allsame = false;
+                    }
                 }
             }
         }
-    }
+        }
+
+        
     if (allsame) {
         n->finished = true;
     }
