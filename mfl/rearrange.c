@@ -297,15 +297,40 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
     node *up;
     node *down, *top;
     
-    int trulen = 0;
-    
     if (!(n->visited) && !(n->edge->visited)) {
         up = n->edge;
         
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
+
+#ifdef MFY_DEBUG
+        /*** BEGIN COMMENT OUT BEFORE COMMIT ***
+        int trulen = 0;
+        if (subtr->tocalcroot) {
+            down = subtr;
+            top = subtr->next->next;
+        }
+        else {
+            down = subtr->next->next;
+            top = subtr;
+        }
         
+        mfl_join_nodes(top, up);
+        mfl_join_nodes(down, n);
+        
+        mfl_temproot(swapingon, 0, ntax);
+        mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
+        mfl_undo_temproot(ntax, swapingon);
+        
+        if (trulen != trlength) {
+            trlength = trulen;
+            dbg_printf("report mismatch\n");
+        }
+        
+        mfl_join_nodes(n, up);
+        *** END COMMENT OUT BEFORE COMMIT ***/
+#endif
         searchrec->niter_total = searchrec->niter_total + 1;
         
         if (trlength < searchrec->bestinrep) {
@@ -314,10 +339,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             
             mfl_join_nodes(subtr->next->next, up);
             mfl_join_nodes(subtr, n);
-            
-            mfl_temproot(swapingon, 0, ntax);
-            mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
-            mfl_undo_temproot(ntax, swapingon);
             
             searchrec->foundbettertr = true;
             searchrec->success = true;

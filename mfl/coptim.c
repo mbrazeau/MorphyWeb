@@ -98,9 +98,13 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     
     for (i = 0; i < nchar; ++i) {
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            ++cost;
-            if (cost > diff) {
-                return cost;
+            if (srctemps[i] & IS_APPLIC) {
+                if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
+                    ++cost;
+                    if (cost > diff) {
+                        return cost;
+                    }
+                }
             }
         }
     }
@@ -123,7 +127,11 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     
     for (i = 0; i < nchar; ++i) {
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            ++cost;
+            if (srctemps[i] & IS_APPLIC) {
+                if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
+                    ++cost;
+                }
+            }
         }
     }
     return cost;
@@ -329,7 +337,7 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
         }
     }
     if (allsame) {
-        ancestor->success = true;
+        //ancestor->success = true;
     }
 }
 
@@ -385,7 +393,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
         }
     }
     if (allsame) {
-        n->finished = true;
+        //n->finished = true;
     }
 }
 
