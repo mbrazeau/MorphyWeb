@@ -189,7 +189,7 @@ void print_f_states(node *n, int nchar)
         //printf("as int % i, ", c);
         c = n->apomorphies[i];
         
-        if (c == -1) {
+        if (c == (unsigned)-1) {
             printf("?; ");
             continue;
         }
@@ -220,11 +220,15 @@ void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
 {
     int i, j;
     
-    for (i = ntax + 1; i < numnodes; ++i) {
+    for (i = ntax; i < numnodes; ++i) {
         //print_f_states(testtree->trnodes[i], nchar);
         node *q = testtree->trnodes[i];
-        printf("node %i\n", i);
-        do {
+        printf("\nnode %i  (joins: l: %i; r: %i)\n", i, q->next->edge->index, q->next->next->edge->index);
+        for (j = 0; j < nchar; ++j) {
+            printf("%u ", q->apomorphies[j]);
+        }
+        printf("\n");
+        /*do {
             if (q->apomorphies) {
                 for (j = 0; j < nchar; ++j) {
                     printf("%u ", q->apomorphies[j]);
@@ -232,7 +236,7 @@ void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
                 printf("\n");
             }
             q = q->next;
-        } while (q != testtree->trnodes[i]);
+        } while (q != testtree->trnodes[i]);*/
     }
 }
 
@@ -417,7 +421,7 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
 
 void test_char_optimization(void)
 {
-    char trstring[] = "(7,((8,(9,10)),(((((1,2),3),(4,(11,12))),5),6)));";
+    char trstring[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";//"((7,(8,(9,10))),(((((1,2),3),(4,(11,12))),5),6));";
     tree *testtree = readNWK(trstring, 1);
     
     
@@ -433,34 +437,35 @@ void test_char_optimization(void)
     charstate *tipdata;
     node *mvnode;
     
-    mfl_trstring(testtree, ntax);
+    //mfl_trstring(testtree, ntax);
     
     //mfl_start_drawtree(testtree, ntax);
     
     char usrTipdata[] = "\
-111111111100000000000\n\
-111111111100000000002\n\
-?01111111100000000002\n\
-?00011111100000000000\n\
-?00000111100000000001\n\
-000000001100000000002\n\
-100000000000000000110\n\
+011111111100000000000\n\
+011111111100000000002\n\
+001111111100000000002\n\
+000011111100000000000\n\
+000000111100000000001\n\
+-00000001100000000002\n\
+-00000000000000000110\n\
 100000000000000011110\n\
 100000000000001111111\n\
-000000000000111111111\n\
--00000000011111111112\n\
--00000000011111111110";
+100000000000111111111\n\
+100000000011111111112\n\
+100000000011111111110";
     
     //old c21 pattern: 122012001120
     
     tipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, false);
     mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
     
-    mvnode = mv_onetwo_to_twelve(testtree, ntax, numnodes);
-    mfl_undo_temproot(ntax, testtree);
+    //mvnode = mv_onetwo_to_twelve(testtree, ntax, numnodes);
+    //mfl_undo_temproot(ntax, testtree);
+    testtree->root = testtree->trnodes[ntax];
     trl = mfl_all_views(testtree, ntax, nchar, trlength);
     //mfl_root_tree(testtree, 0, ntax);
-    mfl_temproot(testtree, 5, ntax);
+    //mfl_temproot(testtree, 5, ntax);
     printf("The altered tree (if move made):\n");
     printNewick(testtree->root);
     printf("\n");
@@ -474,7 +479,7 @@ void test_char_optimization(void)
     int pos = 3;
     int diff = 0;
     node *up, *dn;
-    up = mvnode->edge->next->edge;
+    /*up = mvnode->edge->next->edge;
     dn = mvnode->edge->next->next->edge;
     
     printf("mvnode index: %i\n", mvnode->index);
@@ -487,9 +492,9 @@ void test_char_optimization(void)
     up->clip = true;
     dn->clip = true;
 
-    mfl_undo_temproot(ntax, testtree);
+    mfl_undo_temproot(ntax, testtree);*/
     //mfl_wipe_states(testtree->trnodes[ntax], nchar);
-    mfl_trav_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL);
+    /*mfl_trav_allviews(testtree->trnodes[0], testtree, ntax, nchar, NULL);
     
     diff = mfl_get_treelen(testtree, ntax, nchar, NULL);
     printf("length of three after clipping: %i\n", diff);
@@ -519,7 +524,7 @@ void test_char_optimization(void)
     mfl_temproot(testtree, 6, ntax);
     printf("The altered tree (if move made):\n");
     printNewick(testtree->root);
-    printf("\n");
+    printf("\n");*/
     
     //mfl_freetree(testtree, ntax);
 }
@@ -725,8 +730,8 @@ void mini_test_analysis(void)
     mfl_handle->n_taxa = ntax;
     mfl_handle->n_chars = nchar;
     mfl_handle->input_data = usrTipdata;
-    //mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
-    mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
+    mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
+    //mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
     mfl_handle->n_treelimit = 100000;
     mfl_handle->n_iterations = 1;
     mfl_handle->addseq_type = MFL_AST_RANDOM;
@@ -791,16 +796,17 @@ int main(void)
     
     //srandom(2);
     
-    pauseit();
     
     //test_subtree_rerooting();
     
     //test_tree_compress();
     
     //test_tree_comparison();
-    //test_char_optimization();
+    test_char_optimization();
     
     //numnodes = mfl_calc_numnodes(ntax);
+    
+    pauseit();
     
     mini_test_analysis();
    

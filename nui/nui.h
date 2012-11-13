@@ -76,6 +76,7 @@ protected:
     bool SaveTranslateTable(myofstream &fSave);
     bool SaveNewickStrings(myofstream &fSave);
     void PrintIslandData();
+    void PrintHsearchData();
 
 private:
     CNexusMenuData *m_pMainMenu;

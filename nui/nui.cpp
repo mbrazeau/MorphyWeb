@@ -532,9 +532,23 @@ void CNexusUserInterface::PrintIslandData()
     }
 }
 
+void CNexusUserInterface::PrintHsearchData()
+{
+    cout <<endl<<endl<<"Heuristic search completed" << endl;
+    //int rearr = mfl_get_resultant_data(m_mflHandle, MFL_RT_NUM_REARRANGMENTS, 0);
+    int savedtr = mfl_get_resultant_data(m_mflHandle, MFL_RT_NUM_SAVED_TREES, 0);
+    int bestlen = mfl_get_resultant_data(m_mflHandle, MFL_RT_SHORTEST_TREE_LEN, 0);
+    /* We don't want to report rearrangements until we can set user-defined 
+     * seeds. Otherwise, the number may vary between machines.*/
+    //cout << "    Number of rearrangements tried: "<<rearr<<endl;
+    cout << "    Number of trees saved: "<<savedtr<<endl;
+    cout << "    Length of shortest tree: "<<bestlen<<endl<<endl;
+}
+
 bool CNexusUserInterface::fCNexusMenuHeuristicSearch()
 {
     bool ret = mfl_heuristic(m_mflHandle);
+    PrintHsearchData();
     PrintIslandData();
     return ret;
 }

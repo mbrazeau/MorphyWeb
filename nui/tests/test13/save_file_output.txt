@@ -47,6 +47,12 @@ Skipping unknown block (NOTES)...
 Main Menu
 Enter selection#
 
+
+Heuristic search completed
+    Number of trees saved: 0
+    Length of shortest tree: 0
+
+
 Main Menu
 Enter selection#
  Enter save filename: ./ Successfully opened './test13/savefile.txt'

@@ -50,7 +50,7 @@ charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_mi
         }
         else if (txtsrc[i] == '-') {
             if (na_as_missing) {
-                tipdata[j] = IS_APPLIC;;
+                tipdata[j] = IS_APPLIC;
             }
             else {
                 tipdata[j] = 1;
@@ -205,6 +205,10 @@ int mfl_wagner_count(charstate lchar, charstate rchar)
 {
     int length = 0;
     
+    if (lchar==rchar) {
+        return 0;
+    }
+    
     if (lchar > rchar) {
         while (!(lchar & rchar)) {
             lchar = lchar >> 1;
@@ -289,10 +293,11 @@ void mfl_fitch_final(node *n, node *anc, int nchar)
                 
                 if ( lft_chars & rt_chars ) { //III
                     //V
+                    
                     temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
-                    if (temp & IS_APPLIC) {
+                    /*if (temp & IS_APPLIC) {
                         temp = temp & IS_APPLIC;
-                    }
+                    }*/
                     napos[i] = temp;
                     assert(napos[i] != 0);
                 }
@@ -397,9 +402,9 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                     //V
                     temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
                     
-                    if (temp & IS_APPLIC) {
+                    /*if (temp & IS_APPLIC) {
                         temp = temp & IS_APPLIC;
-                    }
+                    }*/
                     
                     assert(temp != 0);
                     if (temp != napos[i]) {
@@ -1160,23 +1165,30 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
 {
     int treelen = 0, fptreelen;
     int *treelen_p = &treelen;
+    bool wasrooted = false;
     
     mfl_devisit_tree(t->trnodes, 2 * ntax - 1);
     mfl_definish_tree(t, 2 * ntax - 1);
 
     *treelen_p = 0;
-    mfl_temproot(t, 0, ntax);
+    
+    if (!t->root) {
+        mfl_temproot(t, 0, ntax);
+        wasrooted = true;
+    }
+    
     mfl_postorder_allviews(t->root, treelen_p, nchar, besttreelen);
     t->root->visited = 0;
     
     fptreelen = *treelen_p;
     mfl_set_calcroot(t->root);
 
-    mfl_undo_temproot(ntax, t);
-    mfl_temproot(t, 0, ntax);
     t->root->visited = 0;
+    
     mfl_fitch_preorder(t->root, nchar);
-    //mfl_union_construction(t->root, nchar);
-    mfl_undo_temproot(ntax, t);
+
+    if (wasrooted) {
+        mfl_undo_temproot(ntax, t);
+    }
     return fptreelen;
 }

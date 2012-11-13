@@ -91,6 +91,12 @@ Enter selection#
 
 Main Menu
 Enter selection#
+
+
+Heuristic search completed
+    Number of trees saved: 1
+    Length of shortest tree: 270
+
 Island    Size      Length    
 
 Main Menu

@@ -193,6 +193,21 @@ int mfl_get_island_length(mfl_handle_s *mfl_struct, int island_number)
     return mfl_struct->resultant_data->island_lengths[island_number];
 }
 
+long mfl_get_num_rearrangements(mfl_handle_s *mfl_struct)
+{
+    return mfl_struct->resultant_data->n_rearrangements;
+}
+
+int mfl_get_num_savedtrees(mfl_handle_s *mfl_struct)
+{
+    return mfl_struct->resultant_data->n_savetrees;
+}
+
+int mfl_get_shortest_treelen(mfl_handle_s *mfl_struct)
+{
+    return mfl_struct->resultant_data->bestlength;
+}
+
 int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resultant_data, int param)
 {
     int ret;
@@ -207,6 +222,15 @@ int mfl_get_resultant_data(mfl_handle_t mfl_handle, mfl_resultant_data_t resulta
             break;
         case MFL_RT_ISLAND_LENGTH:
             ret = mfl_get_island_length(mfl_struct, param);
+            break;
+        case MFL_RT_NUM_REARRANGMENTS:
+            ret = mfl_get_num_rearrangements(mfl_struct);
+            break;
+        case MFL_RT_NUM_SAVED_TREES:
+            ret = mfl_get_num_savedtrees(mfl_struct);
+            break;
+        case MFL_RT_SHORTEST_TREE_LEN:
+            ret = mfl_get_shortest_treelen(mfl_struct);
             break;
         default:
             /*
