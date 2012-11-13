@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use Getopt::Long;
+use Benchmark;
 
 my $g_input_file;
 my $g_expected_output_file;
@@ -58,20 +59,28 @@ sub update_expected_output(@)
     return $expected_output_file;
 }
 
-sub process_results(@)
+sub print_results(@)
 {
-    my ($diffresults, $expected_output_file, $actual_output_file, $test_dir, $test_tag) = @_;
-    if (length($diffresults) == 0)
+    my ($diffOutput, $diffSave, $dt) = @_;
+    if ((length($diffOutput) == 0) && (length($diffSave) == 0))
     {
-        print ("  $test_dir - pass $test_tag\n");
+        printf("(dt=%-7.3f) - pass\n", $dt);
     }
     else
     {
+        print("************** FAILURE\n$diffOutput\n\n$diffSave");
+    }
+}
+
+sub process_results(@)
+{
+    my ($diffresults, $expected_output_file, $actual_output_file, $test_dir) = @_;
+    if (length($diffresults) > 0)
+    {
         my $tests_to_update = get_tests_to_update($test_dir);
-        print("\n\n\n************* $test_dir FAILURE $test_tag - $diffresults\n");
         if ($tests_to_update->{$test_dir})
         {
-            print("Updating test: $test_dir\n\n");
+            print("Updating test ");
             `cp $expected_output_file $expected_output_file.prev`;
             `cp $actual_output_file $expected_output_file`;
         }
@@ -80,21 +89,24 @@ sub process_results(@)
 
 sub diff_results(@)
 {
-    my ($expected_output_file, $actual_output_file, $test_dir, $test_tag) = @_;
+    my ($expected_output_file, $actual_output_file, $test_dir) = @_;
     my $diffresults = `diff $actual_output_file $expected_output_file 2>&1`;
-
-    process_results($diffresults, $expected_output_file, $actual_output_file, $test_dir, $test_tag);
+    process_results($diffresults, $expected_output_file, $actual_output_file, $test_dir);
+    return $diffresults;
 }
 
 sub runtest(@)
 {
     my ($input_file, $expected_output_file, $test_dir, $quick_test) = @_;
+    printf("%-8s", $test_dir);
     if (($quick_test) && (-e "$test_dir/longtest"))
     {
-        print ("  $test_dir - skip\n");
+        print ("skip\n");
         return 0;
     }
+    my $t0 = Benchmark->new;
     my $actual_results = execute_nui($input_file);
+    my $t1 = Benchmark->new;
     my $actual_output_file = "$test_dir/actual.out";
     my $expected_save_file = "$test_dir/savefile_expected.txt";
     my $actual_save_file = "$test_dir/savefile.txt";
@@ -104,14 +116,14 @@ sub runtest(@)
     open(OUTPUTF, ">$actual_output_file");
     print OUTPUTF "$actual_results";
     close(OUTPUTF);
-
-    diff_results($expected_output_file, $actual_output_file, $test_dir, "Standard I/O");
-
+    my $dt = timediff($t1, $t0);
+    my $diffOutput = diff_results($expected_output_file, $actual_output_file, $test_dir);
+    my $diffSave = "";
     if (-e $expected_save_file)
     {
-        diff_results($expected_save_file, $actual_save_file, $test_dir, "Save file");
+        $diffSave = diff_results($expected_save_file, $actual_save_file, $test_dir);
     }
-
+    print_results($diffOutput, $diffSave, $dt->cpu_c);
     return 0;
 }
 
