@@ -336,7 +336,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         if (trlength < searchrec->bestinrep) {
             
             dbg_printf("length: %i\n", trlength);
-            
+
             mfl_join_nodes(subtr->next->next, up);
             mfl_join_nodes(subtr, n);
             
@@ -503,12 +503,12 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                            nchar * sizeof(charstate));
                 }
                 else if (src->tocalcroot) {
-                    mfl_set_rootstates(src, nchar);
+                    mfl_set_rootstates(src, nchar, NULL);
                 }
                 else {
                     
                     if (src->next->edge->tip && src->next->next->edge->tip) {
-                        mfl_set_rootstates(src, nchar);
+                        mfl_set_rootstates(src, nchar, NULL);
                     }
                     else {
                         mfl_set_updown(src, &s_up, &s_dn);
@@ -711,7 +711,7 @@ void mfl_bisection_traversal(node *n, tree *swapingon, tree **savedtrees,
                         }
                         else {
                             if (src->next->edge->tip && src->next->next->edge->tip) {
-                                mfl_set_rootstates(src, nchar);
+                                mfl_set_rootstates(src, nchar, NULL);
                             }
                             else {
                                 srcchanging = mfl_get_tgt_changing(s_dn->edge, s_up, 
@@ -936,7 +936,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             mfl_reset_nodes1(savedtrees[j]->trnodes, numnodes, nchar);
             mfl_apply_tipdata(savedtrees[j], tipdata, ntax, nchar);
             mfl_all_views(savedtrees[j], ntax, nchar, &searchrec->bestinrep);
-            mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
+            //mfl_devisit_tree(savedtrees[j]->trnodes, numnodes);
 
             /* The branch swapper is the specific type of heuristic search 
              * routine: either TBR, SPR, or NNI. TBR by default */

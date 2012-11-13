@@ -234,8 +234,8 @@ int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
 void mfl_count_postorder(node *n, int *trlength, int nchar, int *besttreelen);
 void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing);
-void mfl_fitch_final(node *n, node *anc, int nchar);
-void mfl_fitch_preorder(node *n, int nchar);
+void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength);
+void mfl_fitch_preorder(node *n, int nchar, int *trlength);
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen);
 int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, int *besttreelen);
 void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *changing);
@@ -262,7 +262,7 @@ bool mfl_find_lastchanged(node *n, int nchar, int *changing);
 void mfl_reopt_subtr(node *base, tree *t, int nchar, int numnodes, int *changing);
 void mfl_allviews_traversal(node *n, tree *t, int ntax, int nchar, int *treelen, int *besttreelen);
 void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *changing);
-void mfl_set_rootstates(node *n, int nchar);
+void mfl_set_rootstates(node *n, int nchar, int *trlength);
 
 /*in drawtree*/
 void mfl_draw_tree(node *n, int *p_in_node, int *depth);
