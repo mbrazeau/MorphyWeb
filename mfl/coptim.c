@@ -303,8 +303,6 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
             }
             else {
                 
-                
-                
                 if ( lft_chars & rt_chars ) { //III
                     //V
                     temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
@@ -821,7 +819,7 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
     node *rightdesc = n->next->next->edge;
     
     for (i = 0; i < nchar; ++i) {
-        if (n->next->edge->tempapos[i] & n->next->next->edge->tempapos[i]) {
+        if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) {
             
             if (leftdesc->tempapos[i] & 1 || rightdesc->tempapos[i] & 1) {
                 n->apomorphies[i] = leftdesc->tempapos[i] | rightdesc->tempapos[i];
