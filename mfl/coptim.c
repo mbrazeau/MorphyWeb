@@ -98,13 +98,9 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     
     for (i = 0; i < nchar; ++i) {
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            if (srctemps[i] & IS_APPLIC) {
-                if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
-                    ++cost;
-                    if (cost > diff) {
-                        return cost;
-                    }
-                }
+            ++cost;
+            if (cost > diff) {
+                return cost;
             }
         }
     }
@@ -127,11 +123,7 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     
     for (i = 0; i < nchar; ++i) {
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            if (srctemps[i] & IS_APPLIC) {
-                if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
-                    ++cost;
-                }
-            }
+            ++cost;
         }
     }
     return cost;
@@ -146,7 +138,15 @@ void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int n
 
     
     for (i = 0; i < nchar; ++i) {
-        anc_chars[i] = lft_chars[i] | rt_chars[i];
+        
+        if (lft_chars[i] & IS_APPLIC && rt_chars[i] & IS_APPLIC) {
+            anc_chars[i] = (lft_chars[i] | rt_chars[i]) & IS_APPLIC;
+        }
+        else {
+            anc_chars[i] = lft_chars[i] | rt_chars[i];
+        }
+
+        
     }
 }
 
@@ -154,6 +154,7 @@ void mfl_reopt_subtr_root(node *n, int nchar)
 {
     if (!n->tip) {
         mfl_subtree_count_ii(n->next->edge, n->next->next->edge, n, nchar);
+        //mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, NULL, NULL);
     }
 }
 
@@ -271,7 +272,9 @@ void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
 
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 //ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
-                *trlength = *trlength + 1;
+                if (trlength) {
+                    *trlength = *trlength + 1;
+                }
             }
         }
     }
@@ -801,7 +804,7 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
         for (c = 0; changing[c]; ++c) {
             i = changing[c]-1;
             
-            if (tiptemp[i] != IS_APPLIC) {
+            if (tiptemp[i] != IS_APPLIC || tiptemp[i] != 1) {
                 if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i])))) {
                     if (tiptemp[i] & ancapos[i]) {
                         tipapos[i] = tiptemp[i] & ancapos[i];
@@ -822,7 +825,7 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
     }
     else {
         for (i = 0; i < nchar; ++i) {
-            if (tiptemp[i] != IS_APPLIC) {
+            if (tiptemp[i] != IS_APPLIC || tiptemp[i] != 1) {
                 if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i])))) {
                     if (tiptemp[i] & ancapos[i]) {
                         tipapos[i] = tiptemp[i] & ancapos[i];

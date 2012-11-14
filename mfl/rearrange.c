@@ -303,7 +303,6 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
-
 #ifdef MFY_DEBUG
         /*** BEGIN COMMENT OUT BEFORE COMMIT ***
         int trulen = 0;
@@ -527,7 +526,6 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 }
                 
                 diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
-                
                 // Perform all reinsertions of SRC on TGT
                 /* OPTIMIZATION: This program can be greatly speeded up by 
                  * taking advantage of the fact that the two subtrees are 
