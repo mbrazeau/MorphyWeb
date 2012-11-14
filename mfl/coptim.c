@@ -864,8 +864,8 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
     for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) {
             
-            if (leftdesc->tempapos[i] & 1 && rightdesc->tempapos[i] & 1) {
-                n->apomorphies[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i] | 1;
+            if ((leftdesc->tempapos[i] & 1) && (rightdesc->tempapos[i] & 1)) {
+                n->apomorphies[i] = (leftdesc->tempapos[i] & rightdesc->tempapos[i]) | 1;
             }
             else {
                 n->apomorphies[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
@@ -1240,7 +1240,7 @@ void mfl_trav_allviews(node *n, tree *t, int ntax, int nchar, int *changing)
 
 int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
 {
-    int treelen = 0, fptreelen, dptreelen;
+    int treelen = 0, /*fptreelen,*/ dptreelen;
     int *treelen_p = &treelen;
     int *dptreelen_p = &dptreelen;
     bool wasrooted = false;
@@ -1259,7 +1259,7 @@ int mfl_all_views(tree *t, int ntax, int nchar, int *besttreelen)
     mfl_postorder_allviews(t->root, treelen_p, nchar, besttreelen);
     t->root->visited = 0;
     
-    fptreelen = *treelen_p;
+    //fptreelen = *treelen_p;
     mfl_set_calcroot(t->root);
 
     t->root->visited = 0;
