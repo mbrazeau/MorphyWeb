@@ -1,4 +1,4 @@
-o
+open
 Ptomacanth_Edit.txt
 set
 branchswap
@@ -12,7 +12,7 @@ treelimit
 gap
 2
 q
-hs
-s
+heuris
+sav
 test15/savefile.txt
 q

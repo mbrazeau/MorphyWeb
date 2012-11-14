@@ -1,4 +1,4 @@
-o
+open
 Ohmdenia_Matrix.nex
 set
 branchswap
@@ -12,7 +12,7 @@ treelimit
 gap
 2
 q
-hs
-s
+heuri
+sav
 test16/savefile.txt
 q

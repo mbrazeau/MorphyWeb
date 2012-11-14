@@ -1,4 +1,4 @@
-o
+open
 Opistho.nex
 set
 branchswap
@@ -12,7 +12,7 @@ treelimit
 gap
 2
 q
-hs
-s
+heuri
+sav
 test14/savefile.txt
 q

@@ -1,4 +1,4 @@
-o
+open
 Opistho.nex
 set
 gap

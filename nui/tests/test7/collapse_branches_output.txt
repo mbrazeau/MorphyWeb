@@ -3,38 +3,38 @@ Copyright 2012 (C) Martin Brazeau and Chris Desjardins. All rights reserved.
 This program uses the NCL by Paul O. Lewis.
 
 === File
- O) Open a nexus file
- C) Close a nexus file
- S) Save according to the options
+ open) Open a nexus file
+ close) Close a nexus file
+ save) Save according to the options
 
 === Program
- LOG) Toggles record of commands, variable states, etc
- STAT) Prints status of all current settings, eg. logmode on/off
- CD) change working directory
- H) Help
- A) About
- Q) Quit
+ log) Toggles record of commands, variable states, etc
+ status) Prints status of all current settings, eg. logmode on/off
+ cd) change working directory
+ help) Help
+ about) About
+ quit) Quit
 
 === Data
- EXC) Exclude taxa or characters
- INC) Include excluded taxa or characters
- OUTG) Assign taxa to outgroup
- ING) Return taxa from outgroup to ingrou
- CHAR) Modify a character's type
- SET) Set morphy configuration parameters
+ exclude) Exclude taxa or characters
+ include) Include excluded taxa or characters
+ outgroup) Assign taxa to outgroup
+ ingroup) Return taxa from outgroup to ingroup
+ char) Modify a character's type
+ set) Set morphy configuration parameters
 
 === Analysis
- HS) Begin a heuristic search
- EXS) Begin an exhaustive search
- BNB) Begin a branch-and-bound search
- BTS) Begin a bootstrap analysis
- JK) Begin a jackknife analysis
- STR) Perform a safe taxonomic reduction
+ heuristic) Begin a heuristic search
+ exhaustive) Begin an exhaustive search
+ branchbound) Begin a branch-and-bound search
+ bootstrap) Begin a bootstrap analysis
+ jackknife) Begin a jackknife analysis
+ safetaxareduction) Perform a safe taxonomic reduction
 
 === Results
- CONSENS) Compute consensus tree for trees in memory
- COLLAPSE) Collapse zero-length branches, condense the tree set
- REPORT) Print a report about the current open nexus file
+ consensus) Compute consensus tree for trees in memory
+ collapse) Collapse zero-length branches, condense the tree set
+ report) Print a report about the current open nexus file
 
 Main Menu
 Enter selection#
@@ -46,39 +46,56 @@ Skipping unknown block (MACCLADE)...
 
 Main Menu
 Enter selection#
- SEARCHTYPE) Set the search type for JK and BTS searches
- BRANCHSWAP) Set branch swap type for heuristic searches
- ADDSEQ) Selects the manner in which branches are added during the generation of starting trees
- COLLAPSEAT) Configure when to collapse nodes
- COLLAPSEZERO) Enable collapsing of zero length branches during search
- NUMITE) Set the number of iterations for a heuristic search
- TREELIMIT) Set the maximum number of trees allowed to be stored in memory
- RATCHET) Set the ratchet search parameter
- GAP) Set whether gap symbol ('-') will be treated as inapplicability or as missing data
- H) Help
- Q) Return to main menu
+ searchtype) Set the search type for JK and BTS searches
+ branchswap) Set branch swap type for heuristic searches
+ addseq) Selects the manner in which branches are added during the generation of starting trees
+ collapseat) Configure when to collapse nodes
+ collapsezero) Enable collapsing of zero length branches during search
+ numite) Set the number of iterations for a heuristic search
+ treelimit) Set the maximum number of trees allowed to be stored in memory
+ ratchet) Set the ratchet search parameter
+ gap) Set whether gap symbol ('-') will be treated as inapplicability or as missing data
+ help) Help
+ quit) Return to main menu
 
 
 Set parameters
-Enter selection# Unknown command: collapse
+Enter selection#
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Invalid collapse at parameter
+
 Set parameters
-Enter selection# Unknown command: 0
+Enter selection#
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # 
 Set parameters
-Enter selection# Unknown command: collapse
+Enter selection#
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # 
 Set parameters
-Enter selection# Unknown command: 1
+Enter selection#
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # 
 Set parameters
-Enter selection# Unknown command: collapse
-Set parameters
-Enter selection# Unknown command: 2
-Set parameters
-Enter selection# Unknown command: collapse
-Set parameters
-Enter selection# Unknown command: 3
-Set parameters
-Enter selection# Unknown command: collapse
-Set parameters
-Enter selection# Unknown command: 4
+Enter selection#
+ Enter when to collapse branches
+  1) When max length is 0
+  2) When min length is 0
+  3) When two incident nodes with equal apomorphies reconstruction sets
+ # MFL Error: Invalid collapse at parameter
+
 Set parameters
 Enter selection#
 

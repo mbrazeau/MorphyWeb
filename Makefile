@@ -28,8 +28,8 @@ clean:
 	echo "Cleaning $$i..."; \
 	(cd $$i; $(MAKE) $(MFLAGS) clean); done
 
-test: all
+test test%: all
 	@for i in $(SUBDIRS); do \
 	echo "Testing $$i..."; \
-	(cd $$i/tests; $(MAKE) $(MFLAGS) test); done
+	(cd $$i/tests; $(MAKE) $(MFLAGS) $@); done
 

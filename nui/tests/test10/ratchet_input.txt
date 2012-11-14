@@ -1,4 +1,4 @@
-o
+open
 Ptomacanth_Edit.txt
 set
 ratchet

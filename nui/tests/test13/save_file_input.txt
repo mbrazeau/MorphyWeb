@@ -1,6 +1,6 @@
-o
+open
 Opistho.nex
-hs
-s
+heuristic
+sav
 test13/savefile.txt
 q

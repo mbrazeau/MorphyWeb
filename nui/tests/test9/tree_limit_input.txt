@@ -1,4 +1,4 @@
-o
+open
 Ohmdenia_Matrix.nex
 set
 treelimit

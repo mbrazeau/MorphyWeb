@@ -1,4 +1,4 @@
-o
+open
 Gnathostomes_Nov2010f2.nex
 set
 addseq
