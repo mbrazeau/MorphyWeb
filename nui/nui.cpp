@@ -25,11 +25,16 @@
     { \
     public:\
         type(const char * strCommand, const char * strHelpText) : CNexusMenuBase(strCommand, strHelpText){}\
-        bool MenuFunction(CNexusUserInterface *pNexusUserInterface)\
+        type(const char * strCommand, const char * strHelpText, vector<string> assignments) : CNexusMenuBase(strCommand, strHelpText, assignments){}\
+        type(const char * strCommand, const char * strHelpText, vector<int>    assignments) : CNexusMenuBase(strCommand, strHelpText, assignments){}\
+        bool MenuFunction(CNexusUserInterface *pNexusUserInterface, string *value)\
         {\
-            return pNexusUserInterface->f##type();\
+            return pNexusUserInterface->f##type(value);\
         }\
     };
+
+#define MAKE_STR_VECTOR(slist)  vector<string>(slist, slist + (sizeof(slist) / sizeof(slist[0])))
+#define MAKE_INT_VECTOR(slist)  vector<int>(slist, slist + (sizeof(slist) / sizeof(slist[0])))
 
 /*
  * The followind actually defines the derived class for each command on the main menu
@@ -51,7 +56,6 @@ NEW_COMMAND_DEFINE(CNexusMenuInclude        )
 NEW_COMMAND_DEFINE(CNexusMenuOutgroup       )
 NEW_COMMAND_DEFINE(CNexusMenuIngroup        )
 NEW_COMMAND_DEFINE(CNexusMenuChar           )
-NEW_COMMAND_DEFINE(CNexusMenuSet            )
 
 NEW_COMMAND_DEFINE(CNexusMenuHeuristicSearch)
 NEW_COMMAND_DEFINE(CNexusMenuExhaust        )
@@ -61,7 +65,7 @@ NEW_COMMAND_DEFINE(CNexusMenuJackknife      )
 NEW_COMMAND_DEFINE(CNexusMenuSTR            )
 
 NEW_COMMAND_DEFINE(CNexusMenuConsens        )
-NEW_COMMAND_DEFINE(CNexusMenuCollapse       )
+//NEW_COMMAND_DEFINE(CNexusMenuCollapse       )
 NEW_COMMAND_DEFINE(CNexusMenuReport         )
 
 /*
@@ -112,7 +116,6 @@ CNexusUserInterface::CNexusUserInterface()
     m_pMainMenu->AddMenuItem(new CNexusMenuOutgroup        ("outGroup"      , "Assign taxa to outgroup"));
     m_pMainMenu->AddMenuItem(new CNexusMenuIngroup         ("inGroup"       , "Return taxa from outgroup to ingroup"));
     m_pMainMenu->AddMenuItem(new CNexusMenuChar            ("char"          , "Modify a character's type"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuSet             ("set"           , "Set morphy configuration parameters"));
 
     m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Analysis"));
     m_pMainMenu->AddMenuItem(new CNexusMenuHeuristicSearch ("heuristic"     , "Begin a heuristic search"));
@@ -120,30 +123,33 @@ CNexusUserInterface::CNexusUserInterface()
     m_pMainMenu->AddMenuItem(new CNexusMenuBNB             ("branchbound"   , "Begin a branch-and-bound search"));
     m_pMainMenu->AddMenuItem(new CNexusMenuBootstrap       ("bootStrap"     , "Begin a bootstrap analysis"));
     m_pMainMenu->AddMenuItem(new CNexusMenuJackknife       ("jackKnife"     , "Begin a jackknife analysis"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuSTR             ("safeTaxaReduction", "Perform a safe taxonomic reduction"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSTR             ("reduction"     , "Perform a safe taxonomic reduction"));
 
     m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Results"));
     m_pMainMenu->AddMenuItem(new CNexusMenuConsens         ("consensus"     , "Compute consensus tree for trees in memory"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuCollapse        ("collapse"      , "Collapse zero-length branches, condense the tree set"));
+    //m_pMainMenu->AddMenuItem(new CNexusMenuCollapse        ("collapse"      , "Collapse zero-length branches, condense the tree set"));
     m_pMainMenu->AddMenuItem(new CNexusMenuReport          ("report"        , "Print a report about the current open nexus file"));
 
-    m_pSetMenu = new CNexusMenuData("Set parameters\nEnter selection#");
-    if (!m_pSetMenu)
-    {
-        throw "Unable to allocate memory for set menu";
-    }
-    m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("searchType"    , "Set the search type for JK and BTS searches"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("branchSwap"    , "Set branch swap type for heuristic searches"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("addSeq"        , "Selects the manner in which branches are added during the generation of starting trees"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseAt       ("collapseAt"    , "Configure when to collapse nodes"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseZero     ("collapseZero"  , "Enable collapsing of zero length branches during search"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuNumIterations    ("numite"        , "Set the number of iterations for a heuristic search"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("treeLimit"     , "Set the maximum number of trees allowed to be stored in memory"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuRatchetSearch    ("ratchet"       , "Set the ratchet search parameter"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuGap              ("gap"           , "Set whether gap symbol ('-') will be treated as inapplicability or as missing data"));
+    const char* SearchType    [] = {"Exhaustive", "BranchBound", "Heuristic"};
+    const char* BranchSwapType[] = {"TreeBisection", "SubtreePruning", "NearistNeighbor"};
+    const char* AddSeqType    [] = {"Simple", "Random", "AsIs", "Closest"};
+    const char* CollapseAt    [] = {"MaxIs0", "MinIs0", "Equal"};
+    const char* CollapseZero  [] = {"Collapse", "NoCollapse"};
+    const int   NumIterations [] = {0, 10000000};
+    const int   TreeLimit     [] = {0, 10000000};
+    const char* RatchetSearch [] = {"Enable", "Disable"};
+    const char* Gap           [] = {"Inapplicable", "Missing"};
 
-    m_pSetMenu->AddMenuItem(new CNexusMenuHelp             ("help"          , "Help"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuMainMenu         ("quit"          , "Return to main menu"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Parameters"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSearchType       ("searchType"    , "Set the search type for JK and BTS searches", MAKE_STR_VECTOR(SearchType)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("branchSwap"    , "Set branch swap type for heuristic searches", MAKE_STR_VECTOR(BranchSwapType)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuAddSeqType       ("addSeq"        , "Selects the manner in which branches are added during the generation of starting trees", MAKE_STR_VECTOR(AddSeqType)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuCollapseAt       ("collapseAt"    , "Configure when to collapse nodes", MAKE_STR_VECTOR(CollapseAt)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuCollapseZero     ("collapseZero"  , "Enable collapsing of zero length branches during search", MAKE_STR_VECTOR(CollapseZero)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuNumIterations    ("numite"        , "Set the number of iterations for a heuristic search", MAKE_INT_VECTOR(NumIterations)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuTreeLimit        ("treeLimit"     , "Set the maximum number of trees allowed to be stored in memory", MAKE_INT_VECTOR(TreeLimit)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuRatchetSearch    ("ratchet"       , "Set the ratchet search parameter", MAKE_STR_VECTOR(RatchetSearch)));
+    m_pMainMenu->AddMenuItem(new CNexusMenuGap              ("gap"           , "Set whether gap symbol ('-') will be treated as inapplicability or as missing data", MAKE_STR_VECTOR(Gap)));
 
     m_ioCommands = new CEditLineHist("nui1234567890", &m_fCommandLog);
     m_ioInputFiles = new CEditLineHist("nui12345678901234567890", &m_fCommandLog);
@@ -155,7 +161,7 @@ CNexusUserInterface::CNexusUserInterface()
 void CNexusUserInterface::ChangeMenu(CNexusMenuData *pMenu)
 {
     m_pMenu = pMenu;
-    fCNexusMenuHelp(false);
+    fCNexusMenuHelp(NULL, false);
 }
 
 void CNexusUserInterface::Delete(CEditLineHist *pMem)
@@ -172,8 +178,7 @@ void CNexusUserInterface::Delete(CEditLineHist *pMem)
 CNexusUserInterface::~CNexusUserInterface()
 {
     delete m_pMainMenu;
-    delete m_pSetMenu;
-    fCNexusMenuCloseNexusFile(false);
+    fCNexusMenuCloseNexusFile(NULL, false);
     if (m_fCommandLog)
     {
         m_fCommandLog.close();
@@ -193,7 +198,7 @@ void CNexusUserInterface::DoMenu()
 {
     bool ret;
     string strInput;
-    fCNexusMenuAbout(false);
+    fCNexusMenuAbout(NULL, false);
     ChangeMenu(m_pMainMenu);
     do
     {
@@ -247,7 +252,7 @@ bool CNexusUserInterface::SetMorphyOpenParams()
  * Run the open file command, just prompt the user for input
  * and attempt to read the nexus file
  */
-bool CNexusUserInterface::fCNexusMenuOpenNexusFile()
+bool CNexusUserInterface::fCNexusMenuOpenNexusFile(string *value)
 {
     string strFilename;
 
@@ -266,7 +271,7 @@ bool CNexusUserInterface::fCNexusMenuOpenNexusFile()
             }
             else
             {
-                fCNexusMenuCloseNexusFile(false);
+                fCNexusMenuCloseNexusFile(NULL, false);
                 cout<<" Error: Unable to read "<<strFilename<<endl;
             }
         }
@@ -333,7 +338,7 @@ bool CNexusUserInterface::SaveNewickStrings(myofstream &fSave)
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuSaveFile       ()
+bool CNexusUserInterface::fCNexusMenuSaveFile       (string *value)
 {
     string strFilename;
     myofstream fSave;
@@ -367,7 +372,7 @@ bool CNexusUserInterface::fCNexusMenuSaveFile       ()
  * Close a file opened with the OpenNexusFile command
  * bVerbose is defaulted to = true
  */
-bool CNexusUserInterface::fCNexusMenuCloseNexusFile(bool bVerbose)
+bool CNexusUserInterface::fCNexusMenuCloseNexusFile(string *value, bool bVerbose)
 {
     if (m_pNexusParse)
     {
@@ -390,19 +395,19 @@ bool CNexusUserInterface::fCNexusMenuCloseNexusFile(bool bVerbose)
 /*
  * Print the menu
  */
-bool CNexusUserInterface::fCNexusMenuHelp           (bool bForceShowMenu)
+bool CNexusUserInterface::fCNexusMenuHelp           (string *value, bool bForceShowMenu)
 {
     m_pMenu->Help(bForceShowMenu);
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuQuit           ()
+bool CNexusUserInterface::fCNexusMenuQuit           (string *value)
 {
     cout<<"Goodbye!"<<endl;
     return false;
 }
 
-bool CNexusUserInterface::fCNexusMenuAbout          (bool bShowBuildTime)
+bool CNexusUserInterface::fCNexusMenuAbout          (string *value, bool bShowBuildTime)
 {
     cout<<"Morphy NUI Version: "<<NUI_MAJOR_VERSION<<"."<<NUI_MINOR_VERSION<<endl;
     cout<<"Copyright 2012 (C) Martin Brazeau and Chris Desjardins. All rights reserved."<<endl;
@@ -414,7 +419,7 @@ bool CNexusUserInterface::fCNexusMenuAbout          (bool bShowBuildTime)
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuCommandLog     ()
+bool CNexusUserInterface::fCNexusMenuCommandLog     (string *value)
 {
     string strFilename;
     
@@ -440,7 +445,7 @@ bool CNexusUserInterface::fCNexusMenuCommandLog     ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuStatus         ()
+bool CNexusUserInterface::fCNexusMenuStatus         (string *value)
 {
     string strNexusFile = "File not open";
 
@@ -456,7 +461,7 @@ bool CNexusUserInterface::fCNexusMenuStatus         ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuChdir          ()
+bool CNexusUserInterface::fCNexusMenuChdir          (string *value)
 {
     string strCwd;
     struct stat st;
@@ -478,39 +483,33 @@ bool CNexusUserInterface::fCNexusMenuChdir          ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuExclude        ()
+bool CNexusUserInterface::fCNexusMenuExclude        (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuInclude        ()
+bool CNexusUserInterface::fCNexusMenuInclude        (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuOutgroup       ()
+bool CNexusUserInterface::fCNexusMenuOutgroup       (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuIngroup        ()
+bool CNexusUserInterface::fCNexusMenuIngroup        (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuChar           ()
+bool CNexusUserInterface::fCNexusMenuChar           (string *value)
 {
     cout<<"Not implemented"<<endl;
-    return true;
-}
-
-bool CNexusUserInterface::fCNexusMenuSet            ()
-{
-    ChangeMenu(m_pSetMenu);
     return true;
 }
 
@@ -545,7 +544,7 @@ void CNexusUserInterface::PrintHsearchData()
     cout << "    Length of shortest tree: "<<bestlen<<endl<<endl;
 }
 
-bool CNexusUserInterface::fCNexusMenuHeuristicSearch()
+bool CNexusUserInterface::fCNexusMenuHeuristicSearch(string *value)
 {
     bool ret = mfl_heuristic(m_mflHandle);
     PrintHsearchData();
@@ -553,49 +552,49 @@ bool CNexusUserInterface::fCNexusMenuHeuristicSearch()
     return ret;
 }
 
-bool CNexusUserInterface::fCNexusMenuExhaust        ()
+bool CNexusUserInterface::fCNexusMenuExhaust        (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuBNB            ()
+bool CNexusUserInterface::fCNexusMenuBNB            (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuBootstrap      ()
+bool CNexusUserInterface::fCNexusMenuBootstrap      (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuJackknife      ()
+bool CNexusUserInterface::fCNexusMenuJackknife      (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuSTR            ()
+bool CNexusUserInterface::fCNexusMenuSTR            (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuConsens        ()
+bool CNexusUserInterface::fCNexusMenuConsens        (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuCollapse       ()
+bool CNexusUserInterface::fCNexusMenuCollapse       (string *value)
 {
     cout<<"Not implemented"<<endl;
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuReport()
+bool CNexusUserInterface::fCNexusMenuReport(string *value)
 {
     if (m_pNexusParse)
     {
@@ -608,7 +607,7 @@ bool CNexusUserInterface::fCNexusMenuReport()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuSearchType     ()
+bool CNexusUserInterface::fCNexusMenuSearchType     (string *value)
 {
     string strInput;
     mfl_search_t search_type = MFL_ST_MAX;
@@ -629,7 +628,7 @@ bool CNexusUserInterface::fCNexusMenuSearchType     ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuBranchSwapType ()
+bool CNexusUserInterface::fCNexusMenuBranchSwapType (string *value)
 {
     string strInput;
     mfl_branch_swap_t swap_type = MFL_BST_MAX;
@@ -650,7 +649,7 @@ bool CNexusUserInterface::fCNexusMenuBranchSwapType ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuAddSeqType     ()
+bool CNexusUserInterface::fCNexusMenuAddSeqType     (string *value)
 {
     string strInput;
     mfl_add_sequence_t add_seq_type = MFL_AST_MAX;
@@ -675,7 +674,7 @@ bool CNexusUserInterface::fCNexusMenuAddSeqType     ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuCollapseAt           ()
+bool CNexusUserInterface::fCNexusMenuCollapseAt           (string *value)
 {
     string strInput;
     mfl_set_collapse_at_t collapse_at = MFL_SC_MAX;
@@ -697,7 +696,7 @@ bool CNexusUserInterface::fCNexusMenuCollapseAt           ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuCollapseZero         ()
+bool CNexusUserInterface::fCNexusMenuCollapseZero         (string *value)
 {
     string strInput;
     bool collapse_zero = false;
@@ -710,7 +709,7 @@ bool CNexusUserInterface::fCNexusMenuCollapseZero         ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuNumIterations        ()
+bool CNexusUserInterface::fCNexusMenuNumIterations        (string *value)
 {
     string strInput;
     int num_iterations;
@@ -722,7 +721,7 @@ bool CNexusUserInterface::fCNexusMenuNumIterations        ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuTreeLimit        ()
+bool CNexusUserInterface::fCNexusMenuTreeLimit        (string *value)
 {
     string strInput;
     int tree_limit;
@@ -734,7 +733,7 @@ bool CNexusUserInterface::fCNexusMenuTreeLimit        ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuRatchetSearch        ()
+bool CNexusUserInterface::fCNexusMenuRatchetSearch        (string *value)
 {
     string strInput;
     bool ratchet = false;
@@ -747,7 +746,7 @@ bool CNexusUserInterface::fCNexusMenuRatchetSearch        ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuGap                  ()
+bool CNexusUserInterface::fCNexusMenuGap                  (string *value)
 {
     string strInput;
     bool gap_missing = false;
@@ -764,11 +763,12 @@ bool CNexusUserInterface::fCNexusMenuGap                  ()
     return true;
 }
 
-bool CNexusUserInterface::fCNexusMenuMainMenu       ()
+bool CNexusUserInterface::fCNexusMenuMainMenu       (string *value)
 {
     ChangeMenu(m_pMainMenu);
     return true;
 }
+
 
 int main(int argc, char *argv[])
 {

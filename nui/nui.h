@@ -20,52 +20,52 @@ public:
     void DoMenu();
     bool RunSelection(string strInput);
 
-    bool fCNexusMenuSpacer() 
+    bool fCNexusMenuSpacer(string *value = NULL) 
     {
         throw "Cannot invoke the spacer";
         return true;
     }
-    bool fCNexusMenuOpenNexusFile  ();
-    bool fCNexusMenuSaveFile       ();
-    bool fCNexusMenuCloseNexusFile (bool bVerbose = true);
+    bool fCNexusMenuOpenNexusFile  (string *value = NULL);
+    bool fCNexusMenuSaveFile       (string *value = NULL);
+    bool fCNexusMenuCloseNexusFile (string *value = NULL, bool bVerbose = true);
                
-    bool fCNexusMenuHelp           (bool bForceShowMenu = true);
-    bool fCNexusMenuQuit           ();
-    bool fCNexusMenuAbout          (bool bShowBuildTime = true);
-    bool fCNexusMenuCommandLog     ();
-    bool fCNexusMenuSave           ();
-    bool fCNexusMenuStatus         ();
-    bool fCNexusMenuChdir          ();
+    bool fCNexusMenuHelp           (string *value = NULL, bool bForceShowMenu = true);
+    bool fCNexusMenuQuit           (string *value = NULL);
+    bool fCNexusMenuAbout          (string *value = NULL, bool bShowBuildTime = true);
+    bool fCNexusMenuCommandLog     (string *value = NULL);
+    bool fCNexusMenuSave           (string *value = NULL);
+    bool fCNexusMenuStatus         (string *value = NULL);
+    bool fCNexusMenuChdir          (string *value = NULL);
                
-    bool fCNexusMenuExclude        ();
-    bool fCNexusMenuInclude        ();
-    bool fCNexusMenuOutgroup       ();
-    bool fCNexusMenuIngroup        ();
-    bool fCNexusMenuChar           ();
-    bool fCNexusMenuSet            ();
+    bool fCNexusMenuExclude        (string *value = NULL);
+    bool fCNexusMenuInclude        (string *value = NULL);
+    bool fCNexusMenuOutgroup       (string *value = NULL);
+    bool fCNexusMenuIngroup        (string *value = NULL);
+    bool fCNexusMenuChar           (string *value = NULL);
+    bool fCNexusMenuSet            (string *value = NULL);
                
-    bool fCNexusMenuHeuristicSearch();
-    bool fCNexusMenuExhaust        ();
-    bool fCNexusMenuBNB            ();
-    bool fCNexusMenuBootstrap      ();
-    bool fCNexusMenuJackknife      ();
-    bool fCNexusMenuSTR            ();
+    bool fCNexusMenuHeuristicSearch(string *value = NULL);
+    bool fCNexusMenuExhaust        (string *value = NULL);
+    bool fCNexusMenuBNB            (string *value = NULL);
+    bool fCNexusMenuBootstrap      (string *value = NULL);
+    bool fCNexusMenuJackknife      (string *value = NULL);
+    bool fCNexusMenuSTR            (string *value = NULL);
                
-    bool fCNexusMenuConsens        ();
-    bool fCNexusMenuCollapse       ();
-    bool fCNexusMenuReport         ();
+    bool fCNexusMenuConsens        (string *value = NULL);
+    bool fCNexusMenuCollapse       (string *value = NULL);
+    bool fCNexusMenuReport         (string *value = NULL);
 
-    bool fCNexusMenuSearchType     ();
-    bool fCNexusMenuBranchSwapType ();
-    bool fCNexusMenuAddSeqType     ();
-    bool fCNexusMenuCollapseAt     ();
-    bool fCNexusMenuCollapseZero   ();
-    bool fCNexusMenuNumIterations  ();
-    bool fCNexusMenuTreeLimit      ();
-    bool fCNexusMenuRatchetSearch  ();
-    bool fCNexusMenuGap            ();
+    bool fCNexusMenuSearchType     (string *value = NULL);
+    bool fCNexusMenuBranchSwapType (string *value = NULL);
+    bool fCNexusMenuAddSeqType     (string *value = NULL);
+    bool fCNexusMenuCollapseAt     (string *value = NULL);
+    bool fCNexusMenuCollapseZero   (string *value = NULL);
+    bool fCNexusMenuNumIterations  (string *value = NULL);
+    bool fCNexusMenuTreeLimit      (string *value = NULL);
+    bool fCNexusMenuRatchetSearch  (string *value = NULL);
+    bool fCNexusMenuGap            (string *value = NULL);
 
-    bool fCNexusMenuMainMenu       ();
+    bool fCNexusMenuMainMenu       (string *value = NULL);
 
 protected:
     void DestroyHandle();
@@ -80,7 +80,6 @@ protected:
 
 private:
     CNexusMenuData *m_pMainMenu;
-    CNexusMenuData *m_pSetMenu;
     CNexusMenuData *m_pMenu;
 
     CNexusParse *m_pNexusParse;

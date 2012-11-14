@@ -1,34 +1,85 @@
 #pragma once
-
+#include <iterator>
 class CNexusUserInterface;
+
+enum ENexusMenuCommandStatus
+{
+    ENXS_MCS_OK,
+    ENXS_MCS_INVALID_PARAM,
+    ENXS_MCS_COMMAND_FAIL,
+};
+
+#define COMMAND_WIDTH 12
+#define MAX_HELP_WIDTH 65
 
 class CNexusMenuBase
 {
 public:
     CNexusMenuBase(const char * strCommand, const char * strHelpText)
     {
+        InitMenu(strCommand, strHelpText);
+    }
+
+    CNexusMenuBase(const char * strCommand, const char * strHelpText, vector<string> assignments)
+    {
+        vector<string>::iterator it;
+        InitMenu(strCommand, strHelpText);
+        for (it = assignments.begin(); it < assignments.end(); it++)
+        {
+            m_strAssignments.push_back(*it);
+        }
+    }
+
+    CNexusMenuBase(const char * strCommand, const char * strHelpText, vector<int> assignments)
+    {
+        vector<int>::iterator it;
+        InitMenu(strCommand, strHelpText);
+        for (it = assignments.begin(); it < assignments.end(); it++)
+        {
+            m_intAssignments.push_back(*it);
+        }
+    }
+
+    void InitMenu(const char * strCommand, const char * strHelpText)
+    {
         if (strCommand)
         {
-            m_strCommandNormal = strCommand;
-            m_strCommand       = strCommand;
+            m_strCommand      = strCommand;
+            m_strCommandLower = strCommand;
+            transform(m_strCommandLower.begin(), m_strCommandLower.end(), m_strCommandLower.begin(), ::tolower);
         }
-        m_strHelpText = strHelpText;
-        transform(m_strCommand.begin(), m_strCommand.end(), m_strCommand.begin(), ::tolower);
+        m_strHelpText = SplitToMaxLen(strHelpText, MAX_HELP_WIDTH);
     }
     virtual ~CNexusMenuBase()
     {
     }
 
-    string GetMenuOutput()
+    void GetMenuOutput(string *output)
     {
+        ostringstream strStream;
         if (m_strCommand.length() > 0)
         {
-            return " " + m_strCommandNormal + ") " + m_strHelpText;
+            strStream<<setw(COMMAND_WIDTH)<<m_strCommand<<") ";
+            strStream<<FormatHelpText();
         }
         else
         {
-            return "\n=== " + m_strHelpText;
+            strStream<<"\n=== ";
+            strStream<<FormatHelpText();
         }
+        *output = strStream.str();
+    }
+    
+    void GetValidParams(string *params)
+    {
+        vector<string>::iterator it;
+        ostringstream strStream;
+        for (it = m_strAssignments.begin(); it < m_strAssignments.end(); it++)
+        {
+            string possible = *it;
+            strStream<<possible<<" ";
+        }
+        *params = strStream.str();
     }
 
     bool IsSelection(string strInput)
@@ -37,17 +88,113 @@ public:
         if (strInput.length() > 0)
         {
             transform(strInput.begin(), strInput.end(), strInput.begin(), ::tolower);
-            index = m_strCommand.find(strInput);
+            index = m_strCommandLower.find(strInput);
             return (index == 0);
         }
         return false;
     }
 
-    virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface) = 0;
+    ENexusMenuCommandStatus RunCommand(CNexusUserInterface *pNexusUserInterface, string value)
+    {
+        ENexusMenuCommandStatus eRet;
+        bool bStatus;
+        eRet = ValidateIntInput(value);
+
+        if (eRet == ENXS_MCS_OK)
+        {
+            eRet = ValidateStrInput(value);
+        }
+        if (eRet == ENXS_MCS_OK)
+        {
+            bStatus = MenuFunction(pNexusUserInterface, &value);
+            if (bStatus == false)
+            {
+                eRet = ENXS_MCS_COMMAND_FAIL;
+            }
+        }
+        return eRet;
+    }
+
+    virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface, string *value) = 0;
 protected:
-    string m_strCommandNormal;
+    
+    string FormatHelpText()
+    {
+        string ret;
+        vector<string>::iterator it;
+        for (it = m_strHelpText.begin(); it < m_strHelpText.end(); it++)
+        {
+            ret += *it;
+        }
+        return ret;
+    }
+
+    vector<string> SplitToMaxLen(string text, size_t max)
+    {
+        vector<string> ret;
+        vector<string> tokens;
+        istringstream iss(text);
+        copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(tokens));
+        vector<string>::iterator it;
+        ostringstream line;
+        for (it = tokens.begin(); it < tokens.end(); it++)
+        {
+            line<<*it<<" ";
+            if (line.str().size() >= max)
+            {
+                ret.push_back(line.str());
+                line.str("");
+                line<<"\n"<<setw(COMMAND_WIDTH + 2)<<" ";
+            }
+        }
+        ret.push_back(line.str());
+
+        return ret;
+    }
+
+    ENexusMenuCommandStatus ValidateStrInput(string value)
+    {
+        ENexusMenuCommandStatus eRet = ENXS_MCS_OK;
+        if (m_strAssignments.size() > 0)
+        {
+            vector<string>::iterator it;
+            eRet = ENXS_MCS_INVALID_PARAM;
+            transform(value.begin(), value.end(), value.begin(), ::tolower);
+            for (it = m_strAssignments.begin(); it < m_strAssignments.end(); it++)
+            {
+                string possible = *it;
+                transform(possible.begin(), possible.end(), possible.begin(), ::tolower);
+                if (value == possible)
+                {
+                    eRet = ENXS_MCS_OK;
+                    break;
+                }
+            }
+        }
+        return eRet;
+    }
+
+    ENexusMenuCommandStatus ValidateIntInput(string value)
+    {
+        ENexusMenuCommandStatus eRet = ENXS_MCS_OK;
+        if (m_intAssignments.size() > 0)
+        {
+            int v;
+            istringstream(value)>>v;
+            eRet = ENXS_MCS_INVALID_PARAM;
+            if ((v >= m_intAssignments[0]) && (v <= m_intAssignments[1]))
+            {
+                eRet = ENXS_MCS_OK;
+            }
+        }
+        return eRet;
+    }
+    
     string m_strCommand;
-    string m_strHelpText;
+    string m_strCommandLower;
+    vector<string> m_strHelpText;
+    vector<string> m_strAssignments;
+    vector<int> m_intAssignments;
 };
 
 class CNexusMenuData
@@ -82,15 +229,29 @@ public:
     bool RunSelection(string strInput, CNexusUserInterface *pNexusUserInterface)
     {
         vector<CNexusMenuBase*> pMenuItems;
-        
-        pMenuItems = GetMenuSelection(strInput);
+        string command;
+        string value;
+        SplitInput(strInput, &command, &value);
+        pMenuItems = GetMenuSelection(command);
         if (pMenuItems.size() == 1)
         {
             bool bRet = true;
             cout<<endl;
             try
             {
-                bRet = pMenuItems[0]->MenuFunction(pNexusUserInterface);
+                switch (pMenuItems[0]->RunCommand(pNexusUserInterface, value))
+                {
+                case ENXS_MCS_COMMAND_FAIL:
+                    bRet = false;
+                    break;
+
+                case ENXS_MCS_INVALID_PARAM:
+                    PrintError(strInput, pMenuItems);
+                    break;
+
+                default:
+                    break;
+                }
             }
             catch (const char *e)
             {
@@ -114,13 +275,15 @@ public:
         {
             vector<CNexusMenuBase*>::iterator it;
             CNexusMenuBase* pMenu;
+            string output;
            
             for (it = m_vMenu.begin(); it < m_vMenu.end(); it++)
             {
                 pMenu = *it;
                 if (pMenu)
                 {
-                    cout<<pMenu->GetMenuOutput()<<endl;
+                    pMenu->GetMenuOutput(&output);
+                    cout<<output<<endl;
                 }
             }
             cout<<endl;
@@ -136,15 +299,54 @@ public:
 
 protected:
 
+    std::string &ltrim(std::string &s) 
+    {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+        return s;
+    }
+
+    std::string &rtrim(std::string &s) 
+    {
+        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+        return s;
+    }
+
+    std::string &trim(std::string &s) 
+    {
+        return ltrim(rtrim(s));
+    }
+
+    void SplitInput(string strInput, string *command, string *value)
+    {
+        *command = strInput;
+        size_t index = strInput.find('=');
+        if (index != string::npos)
+        {
+            *command = strInput.substr(0, index);
+            *value = strInput.substr(index+1);
+            trim(*command);
+            trim(*value);
+        }
+    }
+
     void PrintError(string strInput, vector<CNexusMenuBase*> pMenuItems)
     {
         vector<CNexusMenuBase*>::iterator it;
         cout<<" Unknown command: '"<<strInput<<"'"<<endl<<endl;
         CNexusMenuBase* pMenuItem;
+        string params;
+        string output;
         for (it = pMenuItems.begin(); it < pMenuItems.end(); it++)
         {
             pMenuItem = *it;
-            cout<<"  "<<pMenuItem->GetMenuOutput()<<endl;
+            pMenuItem->GetMenuOutput(&output);
+            pMenuItem->GetValidParams(&params);
+            cout<<output<<endl;
+            if (params.length() > 0)
+            {
+                cout<<setw(COMMAND_WIDTH - 2)<<" "<<"Possible values:"<<endl;
+                cout<<setw(COMMAND_WIDTH)<<" "<<params<<endl;
+            }
         }
         cout<<endl;
     }
