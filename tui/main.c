@@ -216,6 +216,33 @@ void print_f_states(node *n, int nchar)
     printf("\n");
 }
 
+void print_prelims(node *n, int nchar)
+{
+    int j = 0;
+    node *p;
+    if (n->tempapos) {
+        for (j = 0; j < nchar; ++j) {
+            dbg_printf("%u ", n->tempapos[j]);
+        }
+        dbg_printf("\n");
+        return;
+    }
+    else {
+        p = n->next;
+        while (p != n) {
+            if (n->tempapos) {
+                for (j = 0; j < nchar; ++j) {
+                    dbg_printf("%u ", n->tempapos[j]);
+                }
+                dbg_printf("\n");
+                return;
+            }
+            p = p->next;
+        }
+    }
+
+}
+
 void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
 {
     int i, j;
@@ -224,6 +251,7 @@ void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes)
         //print_f_states(testtree->trnodes[i], nchar);
         node *q = testtree->trnodes[i];
         printf("\nnode %i  (joins: l: %i; r: %i)\n", i, q->next->edge->index, q->next->next->edge->index);
+        print_prelims(q, nchar);
         for (j = 0; j < nchar; ++j) {
             printf("%u ", q->apomorphies[j]);
         }
@@ -442,18 +470,18 @@ void test_char_optimization(void)
     //mfl_start_drawtree(testtree, ntax);
     
     char usrTipdata[] = "\
-011111111100000000000\n\
-011111111100000000002\n\
-001111111100000000002\n\
-000011111100000000000\n\
-000000111100000000001\n\
--00000001100000000002\n\
--00000000000000000110\n\
--00000000000000011110\n\
-100000000000001111111\n\
-100000000000111111111\n\
-100000000011111111112\n\
-100000000011111111110";
+211111111100000000001\n\
+211111111100000000001\n\
+201111111100000000001\n\
+-00011111100000000001\n\
+100000111100000000001\n\
+?00000001100000000000\n\
+?00000000000000000110\n\
+-00000000000000011111\n\
+000000000000001111111\n\
+000000000000111111111\n\
+000000000011111111111\n\
+000000000011111111111";
     
     //old c21 pattern: 122012001120
     
@@ -704,12 +732,12 @@ void mini_test_analysis(void)
     mfl_handle->n_chars = nchar;
     mfl_handle->input_data = usrTipdata;
     mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
-    //mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
+    mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
     mfl_handle->n_treelimit = 100000;
     mfl_handle->n_iterations = 1;
     mfl_handle->addseq_type = MFL_AST_RANDOM;
     mfl_handle->bswap_type = MFL_BST_SPR;
-    mfl_handle->bswap_type = MFL_BST_TBR;
+    //mfl_handle->bswap_type = MFL_BST_TBR;
     
     srandom(481981);
     mfl_heuristic_search(mfl_handle);
@@ -775,7 +803,7 @@ int main(void)
     //test_tree_compress();
     
     //test_tree_comparison();
-    test_char_optimization();
+    //test_char_optimization();
     
     //numnodes = mfl_calc_numnodes(ntax);
     

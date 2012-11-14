@@ -167,7 +167,13 @@ void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int ncha
     for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
         {
-            ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
+            if ((leftdesc->tempapos[i] & 1) || (rightdesc->tempapos[i] & 1)) {
+                ancestor->tempapos[i] = (leftdesc->tempapos[i] & rightdesc->tempapos[i]) | 1;
+            }
+            else {
+                ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
+            }
+            //ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
         }
         else
         {
@@ -176,7 +182,7 @@ void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int ncha
             ancestor->tempapos[i] = lft_chars | rt_chars;
 
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
+                //ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
                 if (trlength) {
                     *trlength = *trlength + 1;
                 }
@@ -191,8 +197,10 @@ int mfl_get_sttreelen(tree *testtree, charstate *tipdata, int ntax, int nchar, i
     int *treelen_p = &treelen;
     
     mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
-    mfl_subtree_postorder(testtree->root, treelen_p, nchar);
-    mfl_fitch_preorder(testtree->root, nchar, NULL);
+    //mfl_subtree_postorder(testtree->root, treelen_p, nchar);
+    mfl_count_postorder(testtree->root, treelen_p, nchar, NULL);
+    treelen = 0;
+    mfl_fitch_preorder(testtree->root, nchar, treelen_p);
     
     return *treelen_p;
 }
@@ -247,8 +255,8 @@ void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
     for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
         {
-            if (leftdesc->tempapos[i] & 1 || rightdesc->tempapos[i] & 1) {
-                ancestor->tempapos[i] = leftdesc->tempapos[i] | rightdesc->tempapos[i];
+            if ((leftdesc->tempapos[i] & 1) || (rightdesc->tempapos[i] & 1)) {
+                ancestor->tempapos[i] = (leftdesc->tempapos[i] & rightdesc->tempapos[i]) | 1;
             }
             else {
                 ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
@@ -262,7 +270,7 @@ void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
             ancestor->tempapos[i] = lft_chars | rt_chars;
 
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
+                //ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
                 *trlength = *trlength + 1;
             }
         }
@@ -283,9 +291,15 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
     for (i = 0; i < nchar; ++i) {
         
         if (ancapos[i]==1) {
-            napos[i] = ntemps[i];
+            if (ntemps[i] & 1) {
+                napos[i] = 1;
+            }
+            else {
+                napos[i] = ntemps[i];
+            }
         }
         else {
+            
             lft_chars = n->next->edge->tempapos[i];
             rt_chars = n->next->next->edge->tempapos[i];
             
@@ -294,9 +308,12 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
                 
                 napos[i] = ntemps[i] & ancapos[i];
                 assert(napos[i] != 0);
+                
                 if (!(lft_chars & rt_chars)) {
-                    if (trlength) {
-                        *trlength = *trlength + 1;
+                    if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                        if (trlength) {
+                            *trlength = *trlength + 1;
+                        }
                     }
                 }
                 
@@ -313,7 +330,12 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
                 else {
                     //IV
                     if (trlength) {
-                        *trlength = *trlength + 1;
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            if (trlength) {
+                                *trlength = *trlength + 1;
+                            }
+                        }
+                        //*trlength = *trlength + 1;
                     }
                     if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
                         napos[i] = (ntemps[i] | ancapos[i]) & IS_APPLIC;
@@ -346,8 +368,18 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
         
         i = changing[c]-1;
         
+        
         if (ldtemps[i] & rdtemps[i]) 
         {
+            
+            if ((ldtemps[i] & 1) || (rdtemps[i] & 1)) {
+                temp = (ldtemps[i] & rdtemps[i]) & 1;
+            }
+            else {
+                temp = ldtemps[i] & rdtemps[i];
+            }
+
+            
             temp = ldtemps[i] & rdtemps[i];
             assert(temp != 0);
             if (temp != antemps[i]) {
@@ -362,10 +394,10 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
             
             temp = lft_chars | rt_chars;
             assert(temp != 0);
-            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+            /*if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 temp = temp & IS_APPLIC;
                 assert(temp != 0);
-            }
+            }*/
             
             if (temp != antemps[i]) {
                 antemps[i] = temp;
@@ -395,7 +427,16 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
         i = changing[c]-1;
         
         if (ancapos[i] == 1) {
-            napos[i] = ntemps[i];
+            if (ntemps[i] & 1) {
+                temp = 1;
+            }
+            else {
+                temp = ntemps[i];
+            }
+            if (temp != napos[i]) {
+                napos[i] = temp;
+                allsame = false;
+            }
         }
         else {
             if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
@@ -416,8 +457,8 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                     temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
                     
                     /*if (temp & IS_APPLIC) {
-                        temp = temp & IS_APPLIC;
-                    }*/
+                     temp = temp & IS_APPLIC;
+                     }*/
                     
                     assert(temp != 0);
                     if (temp != napos[i]) {
@@ -443,8 +484,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                 }
             }
         }
-        }
-
+    }
         
     if (allsame) {
         n->finished = true;
@@ -821,8 +861,8 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
     for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) {
             
-            if (leftdesc->tempapos[i] & 1 || rightdesc->tempapos[i] & 1) {
-                n->apomorphies[i] = leftdesc->tempapos[i] | rightdesc->tempapos[i];
+            if (leftdesc->tempapos[i] & 1 && rightdesc->tempapos[i] & 1) {
+                n->apomorphies[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i] | 1;
             }
             else {
                 n->apomorphies[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
@@ -830,9 +870,9 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
             
         }
         else {
-            n->apomorphies[i] = (n->next->edge->tempapos[i] | n->next->next->edge->tempapos[i]);
-            if (n->next->edge->tempapos[i] & IS_APPLIC && n->next->next->edge->tempapos[i] & IS_APPLIC) {
-                n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
+            n->apomorphies[i] = (leftdesc->tempapos[i] | rightdesc->tempapos[i]);
+            if (leftdesc->tempapos[i] & IS_APPLIC && rightdesc->tempapos[i] & IS_APPLIC) {
+                //n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
                 if (trlength) {
                     *trlength = *trlength + 1;
                 }
@@ -856,7 +896,17 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
         i = changing[c]-1;
         if (ldtemps[i] & rdtemps[i]) 
         {
+            
+            if ((ldtemps[i] & 1) || (rdtemps[i] & 1)) {
+                temp = (ldtemps[i] & rdtemps[i]) & 1;
+            }
+            else {
+                temp = ldtemps[i] & rdtemps[i];
+            }
+            
+            
             temp = ldtemps[i] & rdtemps[i];
+            assert(temp != 0);
             if (temp != antemps[i]) {
                 antemps[i] = temp;
                 //allsame = false;
@@ -869,9 +919,9 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
             
             temp = lft_chars | rt_chars;
             
-            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+            /*if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 temp = temp & IS_APPLIC;
-            }
+            }*/
             
             if (temp != antemps[i]) {
                 antemps[i] = temp;
