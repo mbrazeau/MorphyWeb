@@ -18,8 +18,8 @@ This program uses the NCL by Paul O. Lewis.
 === Data
  exclude) Exclude taxa or characters
  include) Include excluded taxa or characters
- outgroup) Assign taxa to outgroup
- ingroup) Return taxa from outgroup to ingroup
+ outGroup) Assign taxa to outgroup
+ inGroup) Return taxa from outgroup to ingroup
  char) Modify a character's type
  set) Set morphy configuration parameters
 
@@ -27,9 +27,9 @@ This program uses the NCL by Paul O. Lewis.
  heuristic) Begin a heuristic search
  exhaustive) Begin an exhaustive search
  branchbound) Begin a branch-and-bound search
- bootstrap) Begin a bootstrap analysis
- jackknife) Begin a jackknife analysis
- safetaxareduction) Perform a safe taxonomic reduction
+ bootStrap) Begin a bootstrap analysis
+ jackKnife) Begin a jackknife analysis
+ safeTaxaReduction) Perform a safe taxonomic reduction
 
 === Results
  consensus) Compute consensus tree for trees in memory

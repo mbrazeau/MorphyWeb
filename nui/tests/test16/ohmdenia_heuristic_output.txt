@@ -18,8 +18,8 @@ This program uses the NCL by Paul O. Lewis.
 === Data
  exclude) Exclude taxa or characters
  include) Include excluded taxa or characters
- outgroup) Assign taxa to outgroup
- ingroup) Return taxa from outgroup to ingroup
+ outGroup) Assign taxa to outgroup
+ inGroup) Return taxa from outgroup to ingroup
  char) Modify a character's type
  set) Set morphy configuration parameters
 
@@ -27,9 +27,9 @@ This program uses the NCL by Paul O. Lewis.
  heuristic) Begin a heuristic search
  exhaustive) Begin an exhaustive search
  branchbound) Begin a branch-and-bound search
- bootstrap) Begin a bootstrap analysis
- jackknife) Begin a jackknife analysis
- safetaxareduction) Perform a safe taxonomic reduction
+ bootStrap) Begin a bootstrap analysis
+ jackKnife) Begin a jackknife analysis
+ safeTaxaReduction) Perform a safe taxonomic reduction
 
 === Results
  consensus) Compute consensus tree for trees in memory
@@ -46,13 +46,13 @@ Skipping unknown block (NOTES)...
 
 Main Menu
 Enter selection#
- searchtype) Set the search type for JK and BTS searches
- branchswap) Set branch swap type for heuristic searches
- addseq) Selects the manner in which branches are added during the generation of starting trees
- collapseat) Configure when to collapse nodes
- collapsezero) Enable collapsing of zero length branches during search
+ searchType) Set the search type for JK and BTS searches
+ branchSwap) Set branch swap type for heuristic searches
+ addSeq) Selects the manner in which branches are added during the generation of starting trees
+ collapseAt) Configure when to collapse nodes
+ collapseZero) Enable collapsing of zero length branches during search
  numite) Set the number of iterations for a heuristic search
- treelimit) Set the maximum number of trees allowed to be stored in memory
+ treeLimit) Set the maximum number of trees allowed to be stored in memory
  ratchet) Set the ratchet search parameter
  gap) Set whether gap symbol ('-') will be treated as inapplicability or as missing data
  help) Help

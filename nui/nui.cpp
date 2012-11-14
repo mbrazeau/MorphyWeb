@@ -109,8 +109,8 @@ CNexusUserInterface::CNexusUserInterface()
     m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Data"));
     m_pMainMenu->AddMenuItem(new CNexusMenuExclude         ("exclude"       , "Exclude taxa or characters"));
     m_pMainMenu->AddMenuItem(new CNexusMenuInclude         ("include"       , "Include excluded taxa or characters"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuOutgroup        ("outgroup"      , "Assign taxa to outgroup"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuIngroup         ("ingroup"       , "Return taxa from outgroup to ingroup"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuOutgroup        ("outGroup"      , "Assign taxa to outgroup"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuIngroup         ("inGroup"       , "Return taxa from outgroup to ingroup"));
     m_pMainMenu->AddMenuItem(new CNexusMenuChar            ("char"          , "Modify a character's type"));
     m_pMainMenu->AddMenuItem(new CNexusMenuSet             ("set"           , "Set morphy configuration parameters"));
 
@@ -118,9 +118,9 @@ CNexusUserInterface::CNexusUserInterface()
     m_pMainMenu->AddMenuItem(new CNexusMenuHeuristicSearch ("heuristic"     , "Begin a heuristic search"));
     m_pMainMenu->AddMenuItem(new CNexusMenuExhaust         ("exhaustive"    , "Begin an exhaustive search"));
     m_pMainMenu->AddMenuItem(new CNexusMenuBNB             ("branchbound"   , "Begin a branch-and-bound search"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuBootstrap       ("bootstrap"     , "Begin a bootstrap analysis"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuJackknife       ("jackknife"     , "Begin a jackknife analysis"));
-    m_pMainMenu->AddMenuItem(new CNexusMenuSTR             ("safetaxareduction", "Perform a safe taxonomic reduction"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuBootstrap       ("bootStrap"     , "Begin a bootstrap analysis"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuJackknife       ("jackKnife"     , "Begin a jackknife analysis"));
+    m_pMainMenu->AddMenuItem(new CNexusMenuSTR             ("safeTaxaReduction", "Perform a safe taxonomic reduction"));
 
     m_pMainMenu->AddMenuItem(new CNexusMenuSpacer      (NULL, "Results"));
     m_pMainMenu->AddMenuItem(new CNexusMenuConsens         ("consensus"     , "Compute consensus tree for trees in memory"));
@@ -132,13 +132,13 @@ CNexusUserInterface::CNexusUserInterface()
     {
         throw "Unable to allocate memory for set menu";
     }
-    m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("searchtype"    , "Set the search type for JK and BTS searches"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("branchswap"    , "Set branch swap type for heuristic searches"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("addseq"        , "Selects the manner in which branches are added during the generation of starting trees"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseAt       ("collapseat"    , "Configure when to collapse nodes"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseZero     ("collapsezero"  , "Enable collapsing of zero length branches during search"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuSearchType       ("searchType"    , "Set the search type for JK and BTS searches"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuBranchSwapType   ("branchSwap"    , "Set branch swap type for heuristic searches"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuAddSeqType       ("addSeq"        , "Selects the manner in which branches are added during the generation of starting trees"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseAt       ("collapseAt"    , "Configure when to collapse nodes"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuCollapseZero     ("collapseZero"  , "Enable collapsing of zero length branches during search"));
     m_pSetMenu->AddMenuItem(new CNexusMenuNumIterations    ("numite"        , "Set the number of iterations for a heuristic search"));
-    m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("treelimit"     , "Set the maximum number of trees allowed to be stored in memory"));
+    m_pSetMenu->AddMenuItem(new CNexusMenuTreeLimit        ("treeLimit"     , "Set the maximum number of trees allowed to be stored in memory"));
     m_pSetMenu->AddMenuItem(new CNexusMenuRatchetSearch    ("ratchet"       , "Set the ratchet search parameter"));
     m_pSetMenu->AddMenuItem(new CNexusMenuGap              ("gap"           , "Set whether gap symbol ('-') will be treated as inapplicability or as missing data"));
 

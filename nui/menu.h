@@ -9,7 +9,8 @@ public:
     {
         if (strCommand)
         {
-            m_strCommand = strCommand;
+            m_strCommandNormal = strCommand;
+            m_strCommand       = strCommand;
         }
         m_strHelpText = strHelpText;
         transform(m_strCommand.begin(), m_strCommand.end(), m_strCommand.begin(), ::tolower);
@@ -22,7 +23,7 @@ public:
     {
         if (m_strCommand.length() > 0)
         {
-            return " " + m_strCommand + ") " + m_strHelpText;
+            return " " + m_strCommandNormal + ") " + m_strHelpText;
         }
         else
         {
@@ -44,6 +45,7 @@ public:
 
     virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface) = 0;
 protected:
+    string m_strCommandNormal;
     string m_strCommand;
     string m_strHelpText;
 };
