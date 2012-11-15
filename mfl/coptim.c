@@ -96,11 +96,15 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     charstate *tgt1apos = tgt1->apomorphies;
     charstate *tgt2apos = tgt2->apomorphies;
     
-    for (i = 0; i < nchar; ++i) {
-        if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            ++cost;
-            if (cost > diff) {
-                return cost;
+    for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) {
+        if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) {
+            if (*srctemps & IS_APPLIC) {
+                if ((*tgt1apos | *tgt2apos) & IS_APPLIC) {
+                    ++cost;
+                    if (cost > diff) {
+                        return cost;
+                    }
+                }
             }
         }
     }
@@ -123,38 +127,35 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     
     for (i = 0; i < nchar; ++i) {
         if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            ++cost;
+            if (srctemps[i] & IS_APPLIC) {
+                if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
+                    ++cost;
+                }
+            }
         }
     }
     return cost;
 }
 
-void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar)
-{
-    int i;
-    charstate *lft_chars = leftdesc->apomorphies;
-    charstate *rt_chars = rightdesc->apomorphies;
-    charstate *anc_chars = ancestor->apomorphies;
-
-    
-    for (i = 0; i < nchar; ++i) {
-        
-        if (lft_chars[i] & IS_APPLIC && rt_chars[i] & IS_APPLIC) {
-            anc_chars[i] = (lft_chars[i] | rt_chars[i]) & IS_APPLIC;
-        }
-        else {
-            anc_chars[i] = lft_chars[i] | rt_chars[i];
-        }
-
-        
-    }
-}
-
 void mfl_reopt_subtr_root(node *n, int nchar)
 {
+    
+    int i;
+    charstate *lft_chars = n->next->edge->apomorphies;
+    charstate *rt_chars = n->next->next->edge->apomorphies;
+    charstate *anc_chars = n->apomorphies;
+    
     if (!n->tip) {
-        mfl_subtree_count_ii(n->next->edge, n->next->next->edge, n, nchar);
-        //mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, NULL, NULL);
+        
+        for (i = 0; i < nchar; ++i) {
+            
+            /*if (lft_chars[i] & IS_APPLIC && rt_chars[i] & IS_APPLIC) {
+                anc_chars[i] = (lft_chars[i] | rt_chars[i]) & IS_APPLIC;
+            }
+            else {*/
+                anc_chars[i] = lft_chars[i] | rt_chars[i];
+            //}
+        }
     }
 }
 
@@ -376,14 +377,12 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
         {
             
             if ((ldtemps[i] & 1) || (rdtemps[i] & 1)) {
-                temp = (ldtemps[i] & rdtemps[i]) & 1;
+                temp = (ldtemps[i] & rdtemps[i]) | 1;
             }
             else {
                 temp = ldtemps[i] & rdtemps[i];
             }
 
-            
-            temp = ldtemps[i] & rdtemps[i];
             assert(temp != 0);
             if (temp != antemps[i]) {
                 antemps[i] = temp;
@@ -804,8 +803,8 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
         for (c = 0; changing[c]; ++c) {
             i = changing[c]-1;
             
-            if (tiptemp[i] != IS_APPLIC || tiptemp[i] != 1) {
-                if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i])))) {
+            if (tiptemp[i] != IS_APPLIC) {
+                if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i]))) || tiptemp[i] != 1) {
                     if (tiptemp[i] & ancapos[i]) {
                         tipapos[i] = tiptemp[i] & ancapos[i];
                     }
@@ -825,8 +824,8 @@ void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing)
     }
     else {
         for (i = 0; i < nchar; ++i) {
-            if (tiptemp[i] != IS_APPLIC || tiptemp[i] != 1) {
-                if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i])))) {
+            if (tiptemp[i] != IS_APPLIC) {
+                if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i]))) || tiptemp[i] != 1) {
                     if (tiptemp[i] & ancapos[i]) {
                         tipapos[i] = tiptemp[i] & ancapos[i];
                     }
@@ -860,6 +859,7 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
     int i;
     node *leftdesc = n->next->edge; 
     node *rightdesc = n->next->next->edge;
+    charstate lft_chars, rt_chars;
     
     for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) {
@@ -873,8 +873,13 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
             
         }
         else {
-            n->apomorphies[i] = (leftdesc->tempapos[i] | rightdesc->tempapos[i]);
-            if (leftdesc->tempapos[i] & IS_APPLIC && rightdesc->tempapos[i] & IS_APPLIC) {
+            
+            lft_chars = leftdesc->tempapos[i];
+            rt_chars = rightdesc->tempapos[i];
+            
+            n->apomorphies[i] = lft_chars | rt_chars;
+
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 //n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
                 if (trlength) {
                     *trlength = *trlength + 1;
@@ -900,8 +905,8 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
         if (ldtemps[i] & rdtemps[i]) 
         {
             
-            if ((ldtemps[i] & 1) || (rdtemps[i] & 1)) {
-                temp = (ldtemps[i] & rdtemps[i]) & 1;
+            if ((ldtemps[i] & 1) && (rdtemps[i] & 1)) {
+                temp = (ldtemps[i] & rdtemps[i]) | 1;
             }
             else {
                 temp = ldtemps[i] & rdtemps[i];
@@ -922,9 +927,9 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
             
             temp = lft_chars | rt_chars;
             
-            /*if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                temp = temp & IS_APPLIC;
-            }*/
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                //temp = temp & IS_APPLIC;
+            }
             
             if (temp != antemps[i]) {
                 antemps[i] = temp;

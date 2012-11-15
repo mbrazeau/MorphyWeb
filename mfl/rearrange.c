@@ -304,7 +304,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
 #ifdef MFY_DEBUG
-        /*** BEGIN COMMENT OUT BEFORE COMMIT ***
+        /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
         int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
@@ -320,15 +320,29 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         
         mfl_temproot(swapingon, 0, ntax);
         mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
+        trulen = 0;
+        mfl_fitch_preorder(swapingon->root, nchar, &trulen);
         mfl_undo_temproot(ntax, swapingon);
         
         if (trulen != trlength) {
-            trlength = trulen;
-            dbg_printf("report mismatch\n");
+            dbg_printf("estimated: %i\n", trlength);
+            dbg_printf("true:      %i\n", trulen);
+            dbg_printf("diff:      %i\n", diff);
+            dbg_printf("al:        %i\n\n", al);
+            //trlength = trulen;
+            //dbg_printf("report mismatch\n");
         }
-        
+        else {
+            dbg_printf("MATCH:\n");
+            dbg_printf("estimated: %i\n", trlength);
+            dbg_printf("true:      %i\n", trulen);
+            dbg_printf("diff:      %i\n", diff);
+            dbg_printf("al:        %i\n\n", al);
+        }
+
+        trlength = trulen;
         mfl_join_nodes(n, up);
-        *** END COMMENT OUT BEFORE COMMIT ***/
+        /*** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         searchrec->niter_total = searchrec->niter_total + 1;
         

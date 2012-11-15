@@ -226,7 +226,6 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);
-void mfl_subtree_count_ii(node *leftdesc, node *rightdesc, node *ancestor, int nchar);
 void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
 void mfl_subtree_postorder(node *n, int *trlength, int nchar);
 void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
