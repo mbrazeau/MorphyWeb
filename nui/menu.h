@@ -102,7 +102,7 @@ public:
         ENexusMenuCommandStatus eRet;
         bool bStatus;
         int nMappedVal;
-        eRet = ValidateIntInput(value);
+        eRet = ValidateIntInput(value, &nMappedVal);
 
         if (eRet == ENXS_MCS_OK)
         {
@@ -176,7 +176,7 @@ protected:
         return eRet;
     }
 
-    ENexusMenuCommandStatus ValidateIntInput(string value)
+    ENexusMenuCommandStatus ValidateIntInput(string value, int *nMappedVal)
     {
         ENexusMenuCommandStatus eRet = ENXS_MCS_OK;
         if (m_intAssignments.size() > 0)
@@ -186,6 +186,7 @@ protected:
             eRet = ENXS_MCS_INVALID_PARAM;
             if ((v >= m_intAssignments[0]) && (v <= m_intAssignments[1]))
             {
+                *nMappedVal = v;
                 eRet = ENXS_MCS_OK;
             }
         }
