@@ -1,8 +1,8 @@
 open
 Ohmdenia_Matrix.nex
-set
-treelimit
-500
-q
+treelimit=-1
+treelimit=10000001
+treelimit=0
+treelimit=10000000
 stat
 q

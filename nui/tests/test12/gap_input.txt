@@ -1,13 +1,7 @@
 open
 Opistho.nex
-set
+gap=
 gap
-0
-gap
-1
-gap
-2
-gap
-3
-q
+gap=Inapplicable
+gap=Missing
 q

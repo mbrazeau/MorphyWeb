@@ -20,52 +20,52 @@ public:
     void DoMenu();
     bool RunSelection(string strInput);
 
-    bool fCNexusMenuSpacer(string *value = NULL) 
+    bool fCNexusMenuSpacer(string *value = NULL, int nMappedVal = -1) 
     {
         throw "Cannot invoke the spacer";
         return true;
     }
-    bool fCNexusMenuOpenNexusFile  (string *value = NULL);
-    bool fCNexusMenuSaveFile       (string *value = NULL);
-    bool fCNexusMenuCloseNexusFile (string *value = NULL, bool bVerbose = true);
+    bool fCNexusMenuOpenNexusFile  (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuSaveFile       (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuCloseNexusFile (string *value = NULL, int nMappedVal = -1, bool bVerbose = true);
                
-    bool fCNexusMenuHelp           (string *value = NULL, bool bForceShowMenu = true);
-    bool fCNexusMenuQuit           (string *value = NULL);
-    bool fCNexusMenuAbout          (string *value = NULL, bool bShowBuildTime = true);
-    bool fCNexusMenuCommandLog     (string *value = NULL);
-    bool fCNexusMenuSave           (string *value = NULL);
-    bool fCNexusMenuStatus         (string *value = NULL);
-    bool fCNexusMenuChdir          (string *value = NULL);
+    bool fCNexusMenuHelp           (string *value = NULL, int nMappedVal = -1, bool bForceShowMenu = true);
+    bool fCNexusMenuQuit           (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuAbout          (string *value = NULL, int nMappedVal = -1, bool bShowBuildTime = true);
+    bool fCNexusMenuCommandLog     (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuSave           (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuStatus         (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuChdir          (string *value = NULL, int nMappedVal = -1);
                
-    bool fCNexusMenuExclude        (string *value = NULL);
-    bool fCNexusMenuInclude        (string *value = NULL);
-    bool fCNexusMenuOutgroup       (string *value = NULL);
-    bool fCNexusMenuIngroup        (string *value = NULL);
-    bool fCNexusMenuChar           (string *value = NULL);
-    bool fCNexusMenuSet            (string *value = NULL);
+    bool fCNexusMenuExclude        (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuInclude        (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuOutgroup       (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuIngroup        (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuChar           (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuSet            (string *value = NULL, int nMappedVal = -1);
                
-    bool fCNexusMenuHeuristicSearch(string *value = NULL);
-    bool fCNexusMenuExhaust        (string *value = NULL);
-    bool fCNexusMenuBNB            (string *value = NULL);
-    bool fCNexusMenuBootstrap      (string *value = NULL);
-    bool fCNexusMenuJackknife      (string *value = NULL);
-    bool fCNexusMenuSTR            (string *value = NULL);
-               
-    bool fCNexusMenuConsens        (string *value = NULL);
-    bool fCNexusMenuCollapse       (string *value = NULL);
-    bool fCNexusMenuReport         (string *value = NULL);
+    bool fCNexusMenuHeuristicSearch(string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuExhaust        (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuBNB            (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuBootstrap      (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuJackknife      (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuSTR            (string *value = NULL, int nMappedVal = -1);
 
-    bool fCNexusMenuSearchType     (string *value = NULL);
-    bool fCNexusMenuBranchSwapType (string *value = NULL);
-    bool fCNexusMenuAddSeqType     (string *value = NULL);
-    bool fCNexusMenuCollapseAt     (string *value = NULL);
-    bool fCNexusMenuCollapseZero   (string *value = NULL);
-    bool fCNexusMenuNumIterations  (string *value = NULL);
-    bool fCNexusMenuTreeLimit      (string *value = NULL);
-    bool fCNexusMenuRatchetSearch  (string *value = NULL);
-    bool fCNexusMenuGap            (string *value = NULL);
+    bool fCNexusMenuConsens        (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuCollapse       (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuReport         (string *value = NULL, int nMappedVal = -1);
 
-    bool fCNexusMenuMainMenu       (string *value = NULL);
+    bool fCNexusMenuSearchType     (string *value = NULL, mfl_search_t nMappedVal = MFL_ST_MAX);
+    bool fCNexusMenuBranchSwapType (string *value = NULL, mfl_branch_swap_t nMappedVal = MFL_BST_MAX);
+    bool fCNexusMenuAddSeqType     (string *value = NULL, mfl_add_sequence_t nMappedVal = MFL_AST_MAX);
+    bool fCNexusMenuCollapseAt     (string *value = NULL, mfl_set_collapse_at_t nMappedVal = MFL_SC_MAX);
+    bool fCNexusMenuCollapseZero   (string *value = NULL, bool nMappedVal = false);
+    bool fCNexusMenuNumIterations  (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuTreeLimit      (string *value = NULL, int nMappedVal = -1);
+    bool fCNexusMenuRatchetSearch  (string *value = NULL, bool nMappedVal = false);
+    bool fCNexusMenuGap            (string *value = NULL, mfl_gap_t nMappedVal = MFL_GAP_MAX);
+
+    bool fCNexusMenuMainMenu       (string *value = NULL, int nMappedVal = -1);
 
 protected:
     void DestroyHandle();
@@ -77,6 +77,14 @@ protected:
     bool SaveNewickStrings(myofstream &fSave);
     void PrintIslandData();
     void PrintHsearchData();
+
+    void ConfigMenuSearchType();
+    void ConfigMenuBranchSwapType();
+    void ConfigMenuAddSeqType();
+    void ConfigMenuCollapseAt();
+    void ConfigMenuCollapseZero();
+    void ConfigMenuRatchetSearch();
+    void ConfigMenuGap();
 
 private:
     CNexusMenuData *m_pMainMenu;

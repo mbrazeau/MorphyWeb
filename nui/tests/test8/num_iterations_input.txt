@@ -1,10 +1,8 @@
 open
 Gnathostomes_Nov2010f2.nex
-set
-numite
-0
-numite
-10000
-q
+numite=-1
+numite=10000001
+numite=0
+numite=10000000
 stat
 q

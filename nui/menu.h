@@ -9,6 +9,14 @@ enum ENexusMenuCommandStatus
     ENXS_MCS_COMMAND_FAIL,
 };
 
+struct ltstr
+{
+    bool operator()(const char* s1, const char* s2) const
+    {
+        return strcmp(s1, s2) < 0;
+    }
+};
+
 #define COMMAND_WIDTH 12
 #define MAX_HELP_WIDTH 65
 
@@ -20,14 +28,10 @@ public:
         InitMenu(strCommand, strHelpText);
     }
 
-    CNexusMenuBase(const char * strCommand, const char * strHelpText, vector<string> assignments)
+    CNexusMenuBase(const char * strCommand, const char * strHelpText, map<const char*, int, ltstr> assignments)
     {
-        vector<string>::iterator it;
         InitMenu(strCommand, strHelpText);
-        for (it = assignments.begin(); it < assignments.end(); it++)
-        {
-            m_strAssignments.push_back(*it);
-        }
+        m_mapAssignments = assignments;
     }
 
     CNexusMenuBase(const char * strCommand, const char * strHelpText, vector<int> assignments)
@@ -72,12 +76,11 @@ public:
     
     void GetValidParams(string *params)
     {
-        vector<string>::iterator it;
+        map<const char*, int, ltstr>::iterator itm;
         ostringstream strStream;
-        for (it = m_strAssignments.begin(); it < m_strAssignments.end(); it++)
+        for (itm = m_mapAssignments.begin(); itm != m_mapAssignments.end(); ++itm)
         {
-            string possible = *it;
-            strStream<<possible<<" ";
+            strStream<<(*itm).first<<" ";
         }
         *params = strStream.str();
     }
@@ -98,15 +101,17 @@ public:
     {
         ENexusMenuCommandStatus eRet;
         bool bStatus;
+        int nMappedVal;
         eRet = ValidateIntInput(value);
 
         if (eRet == ENXS_MCS_OK)
         {
-            eRet = ValidateStrInput(value);
+            eRet = ValidateMapInput(value, &nMappedVal);
         }
+
         if (eRet == ENXS_MCS_OK)
         {
-            bStatus = MenuFunction(pNexusUserInterface, &value);
+            bStatus = MenuFunction(pNexusUserInterface, &value, nMappedVal);
             if (bStatus == false)
             {
                 eRet = ENXS_MCS_COMMAND_FAIL;
@@ -115,7 +120,7 @@ public:
         return eRet;
     }
 
-    virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface, string *value) = 0;
+    virtual bool MenuFunction(CNexusUserInterface *pNexusUserInterface, string *value, int nMappedVal) = 0;
 protected:
     
     string FormatHelpText()
@@ -151,24 +156,21 @@ protected:
 
         return ret;
     }
-
-    ENexusMenuCommandStatus ValidateStrInput(string value)
+    
+    ENexusMenuCommandStatus ValidateMapInput(string value, int *nMappedVal)
     {
         ENexusMenuCommandStatus eRet = ENXS_MCS_OK;
-        if (m_strAssignments.size() > 0)
+        if (m_mapAssignments.size() > 0)
         {
-            vector<string>::iterator it;
-            eRet = ENXS_MCS_INVALID_PARAM;
-            transform(value.begin(), value.end(), value.begin(), ::tolower);
-            for (it = m_strAssignments.begin(); it < m_strAssignments.end(); it++)
+            map<const char*, int>::const_iterator itr;
+            itr = m_mapAssignments.find(value.c_str());
+            if (itr == m_mapAssignments.end())
             {
-                string possible = *it;
-                transform(possible.begin(), possible.end(), possible.begin(), ::tolower);
-                if (value == possible)
-                {
-                    eRet = ENXS_MCS_OK;
-                    break;
-                }
+                eRet = ENXS_MCS_INVALID_PARAM;
+            }
+            else
+            {
+                *nMappedVal = (*itr).second;
             }
         }
         return eRet;
@@ -189,12 +191,11 @@ protected:
         }
         return eRet;
     }
-    
     string m_strCommand;
     string m_strCommandLower;
     vector<string> m_strHelpText;
-    vector<string> m_strAssignments;
     vector<int> m_intAssignments;
+    map<const char*, int, ltstr> m_mapAssignments;
 };
 
 class CNexusMenuData
