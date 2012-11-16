@@ -304,7 +304,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
 #ifdef MFY_DEBUG
-        /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
+        /*** BEGIN COMMENT OUT BEFORE COMMIT ***
         int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
@@ -342,7 +342,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
 
         trlength = trulen;
         mfl_join_nodes(n, up);
-        /*** END COMMENT OUT BEFORE COMMIT ***/
+        *** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         searchrec->niter_total = searchrec->niter_total + 1;
         

@@ -248,7 +248,6 @@ int *mfl_get_tgt_changing(node *n, node *crownprt, node *rootprt, int nchar);
 
 void mfl_reopt_rootstates(node *n, int nchar, int *changing);
 mfl_changing *mfl_get_changing(node *base, node *subtr, node *crownprt, node *rootprt, int nchar);
-void mfl_set_rootstates2(node *n, int nchar);
 
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing);

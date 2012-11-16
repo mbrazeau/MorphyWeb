@@ -125,10 +125,10 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     charstate *tgt1apos = tgt1->apomorphies;
     charstate *tgt2apos = tgt2->apomorphies;
     
-    for (i = 0; i < nchar; ++i) {
-        if ( !(srctemps[i] & (tgt1apos[i] | tgt2apos[i])) ) {
-            if (srctemps[i] & IS_APPLIC) {
-                if ((tgt1apos[i] | tgt2apos[i]) & IS_APPLIC) {
+    for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) {
+        if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) {
+            if (*srctemps & IS_APPLIC) {
+                if ((*tgt1apos | *tgt2apos) & IS_APPLIC) {
                     ++cost;
                 }
             }
@@ -853,39 +853,22 @@ void mfl_tip_reopt(tree *t, int ntax, int nchar)
     }
 }
 
-
 void mfl_set_rootstates(node *n, int nchar, int *trlength)
 {
-    int i;
-    node *leftdesc = n->next->edge; 
-    node *rightdesc = n->next->next->edge;
-    charstate lft_chars, rt_chars;
+    bool allocdtemps = false;
     
-    for (i = 0; i < nchar; ++i) {
-        if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) {
-            
-            if ((leftdesc->tempapos[i] & 1) && (rightdesc->tempapos[i] & 1)) {
-                n->apomorphies[i] = (leftdesc->tempapos[i] & rightdesc->tempapos[i]) | 1;
-            }
-            else {
-                n->apomorphies[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
-            }
-            
-        }
-        else {
-            
-            lft_chars = leftdesc->tempapos[i];
-            rt_chars = rightdesc->tempapos[i];
-            
-            n->apomorphies[i] = lft_chars | rt_chars;
-
-            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                //n->apomorphies[i] = n->apomorphies[i] & IS_APPLIC;
-                if (trlength) {
-                    *trlength = *trlength + 1;
-                }
-            }
-        }
+    if (!n->tempapos) {
+        n->tempapos = (charstate*)malloc(nchar * sizeof(charstate));
+        allocdtemps = true;
+        assert(n->tempapos);
+    }
+    
+    mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, trlength, NULL);
+    memcpy(n->apomorphies, n->tempapos, nchar * sizeof(charstate));
+    
+    if (allocdtemps) {
+        free(n->tempapos);
+        n->tempapos = NULL;
     }
 }
 
