@@ -303,6 +303,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
+
+        searchrec->niter_total = searchrec->niter_total + 1;
+        
 #ifdef MFY_DEBUG
         /*** BEGIN COMMENT OUT BEFORE COMMIT ***
         int trulen = 0;
@@ -325,6 +328,12 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         mfl_undo_temproot(ntax, swapingon);
         
         if (trulen != trlength) {
+            if (subtr->next->edge->tocalcroot) {
+                printNewick(subtr->next->edge);
+                dbg_printf("\n");
+                printNewick(swapingon->trnodes[0]);
+                dbg_printf("\n");
+            }
             dbg_printf("estimated: %i\n", trlength);
             dbg_printf("true:      %i\n", trulen);
             dbg_printf("diff:      %i\n", diff);
@@ -339,14 +348,14 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
             dbg_printf("diff:      %i\n", diff);
             dbg_printf("al:        %i\n\n", al);
         }
-
+        
         trlength = trulen;
         mfl_join_nodes(n, up);
         *** END COMMENT OUT BEFORE COMMIT ***/
 #endif
-        searchrec->niter_total = searchrec->niter_total + 1;
         
         if (trlength < searchrec->bestinrep) {
+        
             
             dbg_printf("length: %i\n", trlength);
 
@@ -517,6 +526,11 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 }
                 else if (src->tocalcroot) {
                     mfl_set_rootstates(src, nchar, NULL);
+                    /*if (src->next->edge->tip && src->next->next->edge->tip) {
+                        printNewick(src);
+                        dbg_printf("\n");
+                    }*/
+
                 }
                 else {
                     
@@ -570,7 +584,6 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 mfl_join_nodes(t_dn, t_dn_N);
                 
                 mfl_restore_origstates(swapingon, ntax, numnodes, nchar);
-                
             }
             assert(q == nds[i]);
             p->edge->skip = false;
