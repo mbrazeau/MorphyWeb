@@ -9,6 +9,27 @@
 
 #include "morphy.h"
 
+void mfl_preprocess_tipdata(char *txtsrc, int ntax, int nchar, int *nwithgaps, int *ncstates)
+{
+    /* Loop over all columns in the matrix, count the number of states in each,
+     * count the number with gap entries.*/
+
+    int i, j, largest = '0';
+    
+    for (i = 0; i < nchar; ++i) {
+        for (j = 0; j < ntax; ++j) {
+            if (txtsrc[i + j * nchar] == '-') {
+                nwithgaps[i] = 1;
+            }
+            else if (txtsrc[i + j * nchar] > largest) {
+                largest = txtsrc[i + j * nchar];
+            }
+        }
+        ncstates[i] = largest - '0' + 1;
+    }
+
+}
+
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing)
 {
     

@@ -223,6 +223,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 
 /*in coptim.c*/
 
+void mfl_preprocess_tipdata(char *txtsrc, int ntax, int nchar, int *nwithgaps, int *ncstates);
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);
