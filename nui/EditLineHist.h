@@ -3,7 +3,7 @@
 #include "histedit.h"
 #include "myostream.h"
 
-const char *prompt(EditLine *el)
+const static char *prompt(EditLine *el)
 {
     return " ";
 }
