@@ -44,6 +44,7 @@ protected:
     vector<string> SplitToMaxLen(string text, size_t max);
     ENexusMenuCommandStatus ValidateMapInput(string value, int *nMappedVal);
     ENexusMenuCommandStatus ValidateIntInput(string value, int *nMappedVal);
+    int FindValueInAssignmentMap(string value);
 
     string m_strCommand;
     string m_strCommandLower;

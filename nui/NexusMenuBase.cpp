@@ -140,15 +140,14 @@ ENexusMenuCommandStatus CNexusMenuBase::ValidateMapInput(string value, int *nMap
     ENexusMenuCommandStatus eRet = ENXS_MCS_OK;
     if (m_mapAssignments.size() > 0)
     {
-        map<const char*, int>::const_iterator itr;
-        itr = m_mapAssignments.find(value.c_str());
-        if (itr == m_mapAssignments.end())
+        int ret = FindValueInAssignmentMap(value);
+        if (ret >= 0)
         {
-            eRet = ENXS_MCS_INVALID_PARAM;
+            *nMappedVal = ret;
         }
         else
         {
-            *nMappedVal = (*itr).second;
+            eRet = ENXS_MCS_INVALID_PARAM;
         }
     }
     return eRet;
@@ -169,4 +168,30 @@ ENexusMenuCommandStatus CNexusMenuBase::ValidateIntInput(string value, int *nMap
         }
     }
     return eRet;
+}
+
+int CNexusMenuBase::FindValueInAssignmentMap(string value)
+{
+    int nFound = 0;
+    map<const char*, int>::const_iterator iFound;
+    map<const char*, int>::const_iterator itr;
+    string possibleValue;
+    int index;
+    transform(value.begin(), value.end(), value.begin(), ::tolower);
+    for (itr = m_mapAssignments.begin(); itr != m_mapAssignments.end(); itr++)
+    {
+        possibleValue = (*itr).first;
+        transform(possibleValue.begin(), possibleValue.end(), possibleValue.begin(), ::tolower);
+        index = possibleValue.find(value);
+        if (index == 0)
+        {
+            nFound++;
+            iFound = itr;
+        }
+    }
+    if (nFound == 1)
+    {
+        return (*iFound).second;
+    }
+    return -1;
 }
