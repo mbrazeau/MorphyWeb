@@ -223,6 +223,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 
 /*in coptim.c*/
 
+void mfl_preprocess_tipdata(char *txtsrc, int ntax, int nchar, int *nwithgaps, int *ncstates);
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);
@@ -248,7 +249,6 @@ int *mfl_get_tgt_changing(node *n, node *crownprt, node *rootprt, int nchar);
 
 void mfl_reopt_rootstates(node *n, int nchar, int *changing);
 mfl_changing *mfl_get_changing(node *base, node *subtr, node *crownprt, node *rootprt, int nchar);
-void mfl_set_rootstates2(node *n, int nchar);
 
 void mfl_wipe_states(node *n, int nchar);
 void mfl_tip_apomorphies(node *tip, node *anc, int nchar, int *changing);
