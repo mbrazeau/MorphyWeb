@@ -47,43 +47,41 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'numite=-1'
 
       numite) Set the number of iterations for a heuristic search 
 
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'numite=10000001'
 
       numite) Set the number of iterations for a heuristic search 
 
 
-Main Menu
-Enter selection#
+#
+Running: numite = 0
 
-Main Menu
-Enter selection#
+#
+Running: numite = 10000000
 
-Main Menu
-Enter selection#
+#
+Running: status
 
 Nexus file: ./Gnathostomes_Nov2010f2.nex
 Command log file: File not open
 Working directory: ./
 
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

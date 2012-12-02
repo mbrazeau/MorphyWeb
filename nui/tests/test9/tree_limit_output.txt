@@ -47,43 +47,41 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (NOTES)...
  ./Ohmdenia_Matrix.nex open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'treelimit=-1'
 
    treeLimit) Set the maximum number of trees allowed to be stored in memory 
 
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'treelimit=10000001'
 
    treeLimit) Set the maximum number of trees allowed to be stored in memory 
 
 
-Main Menu
-Enter selection#
+#
+Running: treeLimit = 0
 
-Main Menu
-Enter selection#
+#
+Running: treeLimit = 10000000
 
-Main Menu
-Enter selection#
+#
+Running: status
 
 Nexus file: ./Ohmdenia_Matrix.nex
 Command log file: File not open
 Working directory: ./
 
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

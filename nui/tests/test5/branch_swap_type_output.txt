@@ -47,16 +47,15 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'branchswap=123123'
 
   branchSwap) Set branch swap type for heuristic searches 
@@ -64,16 +63,16 @@ Enter selection#
             NearistNeighbor SubtreePruning TreeBisection 
 
 
-Main Menu
-Enter selection#
+#
+Running: branchSwap = NearistNeighbor
 
-Main Menu
-Enter selection#
+#
+Running: branchSwap = SubtreePruning
 
-Main Menu
-Enter selection#
+#
+Running: branchSwap = TreeBisection
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

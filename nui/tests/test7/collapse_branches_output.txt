@@ -47,16 +47,15 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'collapseat=dfsd'
 
   collapseAt) Configure when to collapse nodes 
@@ -64,8 +63,7 @@ Enter selection#
             Equal MaxIs0 MinIs0 
 
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'collapseat'
 
   collapseAt) Configure when to collapse nodes 
@@ -73,16 +71,16 @@ Enter selection#
             Equal MaxIs0 MinIs0 
 
 
-Main Menu
-Enter selection#
+#
+Running: collapseAt = Equal
 
-Main Menu
-Enter selection#
+#
+Running: collapseAt = MaxIs0
 
-Main Menu
-Enter selection#
+#
+Running: collapseAt = MinIs0
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

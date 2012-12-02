@@ -47,11 +47,11 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: report
 No file is currently open
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

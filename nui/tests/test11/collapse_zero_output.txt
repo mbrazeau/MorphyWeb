@@ -47,16 +47,15 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "DATA" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Ptomacanth_Edit.txt open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'collapsezero=adasd'
 
 collapseZero) Enable collapsing of zero length branches during search 
@@ -64,8 +63,7 @@ collapseZero) Enable collapsing of zero length branches during search
             Collapse NoCollapse 
 
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'collapsezero=44'
 
 collapseZero) Enable collapsing of zero length branches during search 
@@ -73,13 +71,13 @@ collapseZero) Enable collapsing of zero length branches during search
             Collapse NoCollapse 
 
 
-Main Menu
-Enter selection#
+#
+Running: collapseZero = Collapse
 
-Main Menu
-Enter selection#
+#
+Running: collapseZero = NoCollapse
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

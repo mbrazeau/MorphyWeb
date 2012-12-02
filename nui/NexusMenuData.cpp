@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
+#include <sstream>
 #include "NexusMenuData.h"
 #include "mfl.h"
 
@@ -29,6 +30,23 @@ CNexusMenuData::~CNexusMenuData()
 void CNexusMenuData::AddMenuItem(CNexusMenuBase* pMenuItem)
 {
     m_vMenu.push_back(pMenuItem);
+}
+
+bool CNexusMenuData::RunSelections(string strInput, CNexusUserInterface *pNexusUserInterface)
+{
+    bool ret = true;
+    vector<string> commands = GetCommandList(strInput);
+    vector<string>::iterator it;
+    for (it = commands.begin(); it != commands.end(); ++it)
+    {
+        ret = RunSelection(*it, pNexusUserInterface);
+        if (ret == false)
+        {
+            break;
+        }
+    }
+
+    return ret;
 }
 
 bool CNexusMenuData::RunSelection(string strInput, CNexusUserInterface *pNexusUserInterface)
@@ -118,6 +136,25 @@ string &CNexusMenuData::rtrim(string &s)
 string &CNexusMenuData::trim(string &s) 
 {
     return ltrim(rtrim(s));
+}
+
+vector<string> split(const string &s, char delim)
+{
+    vector<string> elems;
+    stringstream ss(s);
+    string item;
+    while (getline(ss, item, delim))
+    {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+vector<string> CNexusMenuData::GetCommandList(string strInput)
+{
+    vector<string> ret = split(strInput, ';');
+    
+    return ret;
 }
 
 void CNexusMenuData::SplitInput(string strInput, string *command, string *value)

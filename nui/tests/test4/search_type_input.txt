@@ -1,7 +1,7 @@
 open
 Gnathostomes_Nov2010f2.nex
 searchtype
-searchtype=BranchBound
-searchtype=Exhaustive
-searchtype=Heuristic
+searchtype=Branch
+searchtype=Exha
+se=H
 q

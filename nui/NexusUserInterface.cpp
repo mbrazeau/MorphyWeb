@@ -94,7 +94,7 @@ CNexusUserInterface::CNexusUserInterface()
     m_mflHandle = NULL;
     m_pNexusParse = NULL;
     m_strCwd = "./";
-    m_pMainMenu = new CNexusMenuData("Main Menu\nEnter selection#");
+    m_pMainMenu = new CNexusMenuData("#");
     if (!m_pMainMenu)
     {
         throw "Unable to allocate memory for main menu";
@@ -262,7 +262,7 @@ void CNexusUserInterface::DoMenu()
         {
             strInput.clear();
             m_ioCommands->GetUserInput(m_pMenu->GetPrompt(), &strInput);
-            ret = m_pMenu->RunSelection(strInput, this);
+            ret = m_pMenu->RunSelections(strInput, this);
         }
         catch (const char *e)
         {
@@ -310,11 +310,14 @@ bool CNexusUserInterface::SetMorphyOpenParams()
  */
 bool CNexusUserInterface::fCNexusMenuOpenNexusFile(string *value, int nMappedVal)
 {
-    string strFilename;
+    string strFilename = *value;
 
     if (!m_pNexusParse)
     {
-        m_ioInputFiles->GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
+        if (strFilename.length() == 0)
+        {
+            m_ioInputFiles->GetUserInput(" Enter filename: " + m_strCwd, &strFilename);
+        }
         strFilename = m_strCwd + strFilename;
         m_pNexusParse = new CNexusParse();
         if (m_pNexusParse)
@@ -396,10 +399,13 @@ bool CNexusUserInterface::SaveNewickStrings(myofstream &fSave)
 
 bool CNexusUserInterface::fCNexusMenuSaveFile(string *value, int nMappedVal)
 {
-    string strFilename;
+    string strFilename = *value;
     myofstream fSave;
 
-    m_ioLogFiles->GetUserInput(" Enter save filename: " + m_strCwd, &strFilename);
+    if (strFilename.length() == 0)
+    {
+        m_ioLogFiles->GetUserInput(" Enter save filename: " + m_strCwd, &strFilename);
+    }
     strFilename = m_strCwd + strFilename;
     fSave.open(strFilename.c_str());
     if (fSave)
@@ -477,11 +483,14 @@ bool CNexusUserInterface::fCNexusMenuAbout          (string *value, int nMappedV
 
 bool CNexusUserInterface::fCNexusMenuCommandLog     (string *value, int nMappedVal)
 {
-    string strFilename;
+    string strFilename = *value;
     
     if (!m_fCommandLog)
     {
-        m_ioLogFiles->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+        if (strFilename.length() == 0)
+        {
+            m_ioLogFiles->GetUserInput(" Enter log filename: " + m_strCwd, &strFilename);
+        }
         strFilename = m_strCwd + strFilename;
        
         m_fCommandLog.open(strFilename.c_str());
@@ -519,10 +528,13 @@ bool CNexusUserInterface::fCNexusMenuStatus         (string *value, int nMappedV
 
 bool CNexusUserInterface::fCNexusMenuChdir          (string *value, int nMappedVal)
 {
-    string strCwd;
+    string strCwd = *value;
     struct stat st;
 
-    m_ioWorkingDir->GetUserInput(" Enter new working directory: ", &strCwd);
+    if (strCwd.length() == 0)
+    {
+        m_ioWorkingDir->GetUserInput(" Enter new working directory: ", &strCwd);
+    }
     if (strCwd[strCwd.length() - 1] != '/')
     {
         strCwd += "/";

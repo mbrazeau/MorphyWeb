@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
@@ -78,20 +79,32 @@ bool CNexusMenuBase::IsSelection(string strInput)
     return false;
 }
 
+void CNexusMenuBase::PrintCurrentCommand(string fullAssignment)
+{
+    cout<<"Running: "<<m_strCommand;
+    if (fullAssignment.length() > 0)
+    {
+        cout<<" = "<<fullAssignment;
+    }
+    cout<<endl;
+}
+
 ENexusMenuCommandStatus CNexusMenuBase::RunCommand(CNexusUserInterface *pNexusUserInterface, string value)
 {
     ENexusMenuCommandStatus eRet;
     bool bStatus;
     int nMappedVal;
+    string fullAssignment = value;
     eRet = ValidateIntInput(value, &nMappedVal);
 
     if (eRet == ENXS_MCS_OK)
     {
-        eRet = ValidateMapInput(value, &nMappedVal);
+        eRet = ValidateMapInput(value, &fullAssignment, &nMappedVal);
     }
 
     if (eRet == ENXS_MCS_OK)
     {
+        PrintCurrentCommand(fullAssignment);
         bStatus = MenuFunction(pNexusUserInterface, &value, nMappedVal);
         if (bStatus == false)
         {
@@ -135,12 +148,12 @@ vector<string> CNexusMenuBase::SplitToMaxLen(string text, size_t max)
     return ret;
 }
 
-ENexusMenuCommandStatus CNexusMenuBase::ValidateMapInput(string value, int *nMappedVal)
+ENexusMenuCommandStatus CNexusMenuBase::ValidateMapInput(string value, string *fullAssignment, int *nMappedVal)
 {
     ENexusMenuCommandStatus eRet = ENXS_MCS_OK;
     if (m_mapAssignments.size() > 0)
     {
-        int ret = FindValueInAssignmentMap(value);
+        int ret = FindValueInAssignmentMap(value, fullAssignment);
         if (ret >= 0)
         {
             *nMappedVal = ret;
@@ -170,7 +183,7 @@ ENexusMenuCommandStatus CNexusMenuBase::ValidateIntInput(string value, int *nMap
     return eRet;
 }
 
-int CNexusMenuBase::FindValueInAssignmentMap(string value)
+int CNexusMenuBase::FindValueInAssignmentMap(string value, string *fullAssignment)
 {
     int nFound = 0;
     map<const char*, int>::const_iterator iFound;
@@ -191,6 +204,7 @@ int CNexusMenuBase::FindValueInAssignmentMap(string value)
     }
     if (nFound == 1)
     {
+        *fullAssignment = (*iFound).first;
         return (*iFound).second;
     }
     return -1;

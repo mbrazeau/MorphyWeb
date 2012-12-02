@@ -47,31 +47,31 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Reading "TREES" block...
 Skipping unknown block (ASSUMPTIONS)...
 Skipping unknown block (NOTES)...
  ./Opistho.nex open successfully
 
-Main Menu
-Enter selection#
+#
+Running: branchSwap = TreeBisection
 
-Main Menu
-Enter selection#
+#
+Running: addSeq = Random
 
-Main Menu
-Enter selection#
+#
+Running: numite = 1
 
-Main Menu
-Enter selection#
+#
+Running: treeLimit = 10000
 
-Main Menu
-Enter selection#
+#
+Running: gap = Missing
 
-Main Menu
-Enter selection#
+#
+Running: heuristic
 
 
 Heuristic search completed
@@ -80,11 +80,11 @@ Heuristic search completed
 
 Island    Size      Length    
 
-Main Menu
-Enter selection#
+#
+Running: save
  Enter save filename: ./ Successfully opened './test14/savefile.txt'
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

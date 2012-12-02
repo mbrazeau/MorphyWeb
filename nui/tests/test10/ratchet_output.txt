@@ -47,16 +47,15 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "DATA" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Ptomacanth_Edit.txt open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'ratchet=3123'
 
      ratchet) Set the ratchet search parameter 
@@ -64,8 +63,7 @@ Enter selection#
             Disable Enable 
 
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'ratchet=true'
 
      ratchet) Set the ratchet search parameter 
@@ -73,13 +71,13 @@ Enter selection#
             Disable Enable 
 
 
-Main Menu
-Enter selection#
+#
+Running: ratchet = Disable
 
-Main Menu
-Enter selection#
+#
+Running: ratchet = Enable
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

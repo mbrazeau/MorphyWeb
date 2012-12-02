@@ -47,16 +47,15 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Reading "TREES" block...
 Skipping unknown block (ASSUMPTIONS)...
 Skipping unknown block (NOTES)...
  ./Opistho.nex open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'gap='
 
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
@@ -65,8 +64,7 @@ Enter selection#
             Inapplicable Missing 
 
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'gap'
 
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
@@ -75,13 +73,13 @@ Enter selection#
             Inapplicable Missing 
 
 
-Main Menu
-Enter selection#
+#
+Running: gap = Inapplicable
 
-Main Menu
-Enter selection#
+#
+Running: gap = Missing
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

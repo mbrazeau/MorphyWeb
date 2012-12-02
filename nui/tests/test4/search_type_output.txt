@@ -47,16 +47,15 @@ collapseZero) Enable collapsing of zero length branches during search
          gap) Set whether gap symbol ('-') will be treated as inapplicability or 
               as missing data 
 
-Main Menu
-Enter selection#
+#
+Running: open
  Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
 Skipping unknown block (MACCLADE)...
  ./Gnathostomes_Nov2010f2.nex open successfully
 
-Main Menu
-Enter selection#
+#
  Unknown command: 'searchtype'
 
   searchType) Set the search type for JK and BTS searches 
@@ -64,16 +63,16 @@ Enter selection#
             BranchBound Exhaustive Heuristic 
 
 
-Main Menu
-Enter selection#
+#
+Running: searchType = BranchBound
 
-Main Menu
-Enter selection#
+#
+Running: searchType = Exhaustive
 
-Main Menu
-Enter selection#
+#
+Running: searchType = Heuristic
 
-Main Menu
-Enter selection#
+#
+Running: quit
 Goodbye!
 

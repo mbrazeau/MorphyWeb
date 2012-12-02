@@ -42,9 +42,10 @@ protected:
     
     string FormatHelpText();
     vector<string> SplitToMaxLen(string text, size_t max);
-    ENexusMenuCommandStatus ValidateMapInput(string value, int *nMappedVal);
+    ENexusMenuCommandStatus ValidateMapInput(string value, string *fullAssignment, int *nMappedVal);
     ENexusMenuCommandStatus ValidateIntInput(string value, int *nMappedVal);
-    int FindValueInAssignmentMap(string value);
+    int FindValueInAssignmentMap(string value, string *fullAssignment);
+    void PrintCurrentCommand(string fullAssignment);
 
     string m_strCommand;
     string m_strCommandLower;
