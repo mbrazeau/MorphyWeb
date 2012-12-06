@@ -15,6 +15,12 @@ for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) { \
         if (*srctemps & IS_APPLIC) { \
             if ((*tgt1apos | *tgt2apos) & IS_APPLIC) { 
     
+#define MFY_REINSERTION_LOOP_END \
+            } \
+        } \
+    } \
+} \
+
 
 void mfl_preprocess_tipdata(char *txtsrc, int ntax, int nchar, int *nwithgaps, int *ncstates)
 {
@@ -130,10 +136,7 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
                     if (cost > diff) {
                         return cost;
                     }
-                }
-            }
-        }
-    }
+    MFY_REINSERTION_LOOP_END
     return cost;
 }
 
@@ -153,10 +156,7 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     
     MFY_SUBTREE_REINSERTION_LOOP
                     ++cost;
-                }
-            }
-        }
-    }
+    MFY_REINSERTION_LOOP_END
     return cost;
 }
 

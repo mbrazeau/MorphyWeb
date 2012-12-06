@@ -44,8 +44,16 @@
 		E134E0D214D02F98001A1A63 /* NexusParse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusParse.h; sourceTree = "<group>"; };
 		E134E0D314D02F98001A1A63 /* NexusReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusReader.cpp; sourceTree = "<group>"; };
 		E134E0D414D02F98001A1A63 /* NexusReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusReader.h; sourceTree = "<group>"; };
-		E134E0D514D02F98001A1A63 /* nui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nui.h; sourceTree = "<group>"; };
 		E134E49D14D1E38A001A1A63 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
+		E1505B74166FE76E0075F880 /* EditLineHist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditLineHist.h; sourceTree = "<group>"; };
+		E1505B75166FE76E0075F880 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		E1505B76166FE76E0075F880 /* myostream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myostream.h; sourceTree = "<group>"; };
+		E1505B77166FE76E0075F880 /* NexusMenuBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusMenuBase.cpp; sourceTree = "<group>"; };
+		E1505B78166FE76E0075F880 /* NexusMenuBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusMenuBase.h; sourceTree = "<group>"; };
+		E1505B79166FE76E0075F880 /* NexusMenuData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusMenuData.cpp; sourceTree = "<group>"; };
+		E1505B7A166FE76E0075F880 /* NexusMenuData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusMenuData.h; sourceTree = "<group>"; };
+		E1505B7B166FE76E0075F880 /* NexusUserInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusUserInterface.cpp; sourceTree = "<group>"; };
+		E1505B7C166FE76E0075F880 /* NexusUserInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusUserInterface.h; sourceTree = "<group>"; };
 		E161E0ED14F3E23100F8589E /* drawtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = drawtree.c; sourceTree = "<group>"; };
 		E174F753164542B70074DCFD /* mfl_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl_error.h; sourceTree = "<group>"; };
 		E179D7A814F966D8001EA295 /* cdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdata.c; sourceTree = "<group>"; };
@@ -58,7 +66,6 @@
 		E1ACBC9814A8BD13005BB9D5 /* tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tree.c; sourceTree = "<group>"; };
 		E1ACBCA114A8BD34005BB9D5 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		E1C322EF14E2E4340076AE7A /* compare.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compare.c; sourceTree = "<group>"; };
-		E1D5257614C949B00079F5EC /* nui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nui.cpp; sourceTree = "<group>"; };
 		E1D5259A14C94BCE0079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E1D5259C14C94BEC0079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E1D5259E14C94C010079F5EC /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -160,12 +167,19 @@
 		E1D5257314C949B00079F5EC /* nui */ = {
 			isa = PBXGroup;
 			children = (
+				E1505B74166FE76E0075F880 /* EditLineHist.h */,
+				E1505B75166FE76E0075F880 /* main.cpp */,
+				E1505B76166FE76E0075F880 /* myostream.h */,
+				E1505B77166FE76E0075F880 /* NexusMenuBase.cpp */,
+				E1505B78166FE76E0075F880 /* NexusMenuBase.h */,
+				E1505B79166FE76E0075F880 /* NexusMenuData.cpp */,
+				E1505B7A166FE76E0075F880 /* NexusMenuData.h */,
+				E1505B7B166FE76E0075F880 /* NexusUserInterface.cpp */,
+				E1505B7C166FE76E0075F880 /* NexusUserInterface.h */,
 				E134E0D114D02F98001A1A63 /* NexusParse.cpp */,
 				E134E0D214D02F98001A1A63 /* NexusParse.h */,
 				E134E0D314D02F98001A1A63 /* NexusReader.cpp */,
 				E134E0D414D02F98001A1A63 /* NexusReader.h */,
-				E1D5257614C949B00079F5EC /* nui.cpp */,
-				E134E0D514D02F98001A1A63 /* nui.h */,
 				E1D5259C14C94BEC0079F5EC /* Makefile */,
 			);
 			path = nui;
@@ -314,7 +328,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
-					"-lpython2.6",
 					"-ledit",
 					"-lncl",
 					"-lm",
@@ -389,7 +402,6 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					"-lpython2.6",
 					"-ledit",
 					"-lncl",
 					"-lm",
