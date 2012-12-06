@@ -48,34 +48,33 @@ collapseZero) Enable collapsing of zero length branches during search
               as missing data 
 
 #
-Running: searchType = Heuristic
-MFL Error: Nexus file not open - Morphy handle is NULL
-
-
-Running: searchType = Exhaustive
-MFL Error: Nexus file not open - Morphy handle is NULL
-
-
-Running: searchType = BranchBound
-MFL Error: Nexus file not open - Morphy handle is NULL
-
-
- Unknown command: 'searchtype'
-
-  searchType) Set the search type for JK and BTS searches 
-          Possible values:
-            BranchBound Exhaustive Heuristic 
-
-
-
-Running: open = Gnathostomes_Nov2010f2.nex
-Reading "CHARACTERS" block...
+Running: open
+ Enter filename: ./Reading "CHARACTERS" block...
 Skipping unknown block (ASSUMPTIONS)...
 Reading "TREES" block...
-Skipping unknown block (MACCLADE)...
- ./Gnathostomes_Nov2010f2.nex open successfully
+Skipping unknown block (NOTES)...
+ ./../tests/Ohmdenia_Matrix.nex open successfully
 
 #
+Running: gap = Missing
+
+
+Running: numite = 1
+
+
+Running: addSeq = Random
+
+
+Running: heuristic
+
+
+Heuristic search completed
+    Number of trees saved: 126
+    Length of shortest tree: 203
+
+Island    Size      Length    
+
+
 Running: quit
 Goodbye!
 

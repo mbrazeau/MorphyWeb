@@ -1,0 +1,3 @@
+open
+../tests/Ohmdenia_Matrix.nex
+q;heuristic; addseq=random; numite=1; gap=missing

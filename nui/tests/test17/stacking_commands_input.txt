@@ -1,1 +1,2 @@
-open=Gnathostomes_Nov2010f2.nex;searchtype;searchtype=Branch;searchtype=Exha;se=H;q
+open=Gnathostomes_Nov2010f2.nex;searchtype;searchtype=Branch;searchtype=Exha;se=H
+q

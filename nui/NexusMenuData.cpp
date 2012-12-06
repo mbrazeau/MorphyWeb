@@ -36,8 +36,8 @@ bool CNexusMenuData::RunSelections(string strInput, CNexusUserInterface *pNexusU
 {
     bool ret = true;
     vector<string> commands = GetCommandList(strInput);
-    vector<string>::iterator it;
-    for (it = commands.begin(); it != commands.end(); ++it)
+    vector<string>::reverse_iterator it;
+    for (it = commands.rbegin(); it != commands.rend(); ++it)
     {
         ret = RunSelection(*it, pNexusUserInterface);
         if (ret == false)
