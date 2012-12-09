@@ -21,26 +21,77 @@ for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) { \
     } \
 } \
 
+int mfl_compare (const void * a, const void * b)
+{
+    return ( *(int*)a - *(int*)b );
+}
 
-void mfl_preprocess_tipdata(char *txtsrc, int ntax, int nchar, int *nwithgaps, int *ncstates)
+int mfl_n_unique_vals_in_array(int *array, int length)
+{
+    int i, n = 0;
+    
+    for (i = 1; i < length; ++i) {
+        if (array[i] > array[i-1]) {
+            ++n;
+        }
+    }
+    
+    return n;
+}
+
+int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *nwithgaps)
 {
     /* Loop over all columns in the matrix, count the number of states in each,
      * count the number with gap entries.*/
 
-    int i, j, largest = '0';
+    int i, j, k;
+    charstate temp;
+    
+    int *minchanges_p = NULL;
+    minchanges_p = (int*)malloc(nchar * sizeof(int));
+    if (minchanges_p == NULL) {
+        dbg_printf("Malloc failure: failed to allocate minchanges_p in coptim.c\n");
+    }
+    
+    int *matrix_colum = NULL;
+    matrix_colum = (int*)malloc(ntax * sizeof(int));
+    if (matrix_colum == NULL) {
+        dbg_printf("Malloc failure: failed to allocate matrix_column in coptim.c\n");
+
+    }
     
     for (i = 0; i < nchar; ++i) {
+        
+        k = 0;
+        memset(matrix_colum, 0, ntax * sizeof(int));
+        
         for (j = 0; j < ntax; ++j) {
-            if (txtsrc[i + j * nchar] == '-') {
-                nwithgaps[i] = 1;
+            if (matrix[i + j * (nchar)] == 1) {
+                //nwithgaps[i] = 1;
             }
-            else if (txtsrc[i + j * nchar] > largest) {
-                largest = txtsrc[i + j * nchar];
+            else {
+                temp = matrix[i + j * (nchar)];
+                if (temp != IS_APPLIC && (temp == (temp & (-(temp))))) {
+                    matrix_colum[k] = matrix[i + j * (nchar)];
+                    ++k;
+                }
             }
         }
-        ncstates[i] = largest - '0' + 1;
+        
+        matrix_colum[k] = '\0';
+        qsort(matrix_colum, k-1, sizeof(int), mfl_compare);
+        minchanges_p[i] = mfl_n_unique_vals_in_array(matrix_colum, k-1);
     }
-
+    
+    free(matrix_colum);
+    
+    dbg_printf("\nMinimum changes per character:\n");
+    for (i = 0; i < nchar; ++i) {
+        dbg_printf("%i ", minchanges_p[i]);
+    }
+    dbg_printf("\n");
+    
+    return minchanges_p;
 }
 
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing)
