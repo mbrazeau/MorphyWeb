@@ -23,12 +23,14 @@ for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) { \
 
 int mfl_compare (const void * a, const void * b)
 {
-    return ( *(int*)a - *(int*)b );
+    return ( *(charstate*)a - *(charstate*)b );
 }
 
 int mfl_n_unique_vals_in_array(int *array, int length)
 {
     int i, n = 0;
+    
+    qsort(array, length, sizeof(int), mfl_compare);
     
     for (i = 1; i < length; ++i) {
         if (array[i] > array[i-1]) {
@@ -79,7 +81,6 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
         }
         
         matrix_colum[k] = '\0';
-        qsort(matrix_colum, k-1, sizeof(int), mfl_compare);
         minchanges_p[i] = mfl_n_unique_vals_in_array(matrix_colum, k-1);
     }
     
@@ -413,15 +414,14 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
                 else {
                     //IV
                     
-                    /*if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
-                        napos[i] = (ntemps[i] | ancapos[i]) & IS_APPLIC;
-                        assert(napos[i] != 0);
-                    }
-                    else {*/
-                        napos[i] = ntemps[i] | ancapos[i];
-                        assert(napos[i] != 0);
-                    //}
+                    napos[i] = ntemps[i] | ancapos[i];
                     
+                    if (ntemps[i] & IS_APPLIC && ancapos[i] & IS_APPLIC) {
+                        napos[i] = napos[i] & IS_APPLIC;
+                    }
+                    
+                    assert(napos[i] != 0);
+
                     if (trlength) {
                         if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                             if (trlength) {
@@ -477,10 +477,6 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
             temp = lft_chars | rt_chars;
             
             assert(temp != 0);
-            /*if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                temp = temp & IS_APPLIC;
-                assert(temp != 0);
-            }*/
             
             if (temp != antemps[i]) {
                 antemps[i] = temp;
@@ -547,14 +543,14 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                 }
                 else {
                     //IV
-                    /*if ( (ancapos[i] & IS_APPLIC) && (ntemps[i] & IS_APPLIC)) {
-                        temp = (ntemps[i] | ancapos[i]) & IS_APPLIC;
-                        assert(temp != 0);
+                        
+                    temp = ntemps[i] | ancapos[i];
+                    
+                    if (ntemps[i] & IS_APPLIC && ancapos[i] & IS_APPLIC) {
+                        temp = temp & IS_APPLIC;
                     }
-                    else {*/
-                        temp = ntemps[i] | ancapos[i];
-                        assert(temp != 0);
-                    //}
+                    
+                    assert(temp != 0);
                     
                     if (temp != napos[i]) {
                         napos[i] = temp;

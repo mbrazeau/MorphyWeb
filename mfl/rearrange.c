@@ -899,12 +899,10 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     void (*branch_swapper)(node*, tree*, tree**, int, int, int, mfl_searchrec*) = NULL;
     
     tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
-    
     tree *newreptree;
-    
-    charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
-    
     mfl_searchrec *searchrec = mfl_create_searchrec();
+    charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
+    searchrec->minsteps = mfl_get_character_minchanges(tipdata, ntax, nchar, NULL);
     
     mfl_handle->resultant_data = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
     memset(mfl_handle->resultant_data, 0, sizeof(mfl_resultant_data_s));

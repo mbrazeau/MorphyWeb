@@ -137,23 +137,6 @@ typedef struct tree {
     int index;
 } tree;
 
-/*typedef struct chardata {
-    int charnum;
-    charstate *transeries;
-    int optim_type;
-    int maxvalue;
-    int minvalue;
-    bool included;
-    bool informative;
-    double cIndex;
-    double rcIndex;
-    double retIndex;
-    double hIndex;
-    int numstates;
-    int *stepmatrix[MORPHY_MAX_STATES][MORPHY_MAX_STATES];
-    void (*optimzation_algo)(node *n, int *trlength);
-} chardata;*/
-
 typedef struct {
     int **island_trees;
     long int island_size;
@@ -168,8 +151,8 @@ typedef struct {
     bool undertreelimit;
     int bestlength;         // Best tree length over all iterations
     int bestinrep;          // Best tree length in current iteration of search
-    int tipstovisit;
-    long int trbufstart;         // Position in buffer of first tree to undergo rearrangement
+    int *minsteps;          // The array of minimum steps for each character
+    long int trbufstart;    // Position in buffer of first tree to undergo rearrangement
     //int tipscoll;
     bool foundbettertr;
     bool success;
@@ -181,9 +164,8 @@ typedef struct {
     //mfl_island_data island_data;
     
     bool dbg_flag;      /* A flag used in debugging the heuristic seach. 
-                         * Generic use for stopping the search at a certain 
-                         * point based on a variable not available within a 
-                         * particular fucntion call*/
+                         * Generic use for breakpointing the search in one 
+                         * function based on something in an earlier call. */
     
 } mfl_searchrec;
 
@@ -208,8 +190,6 @@ void treelen(node *n, int *stepcount); // The traversal algorithm that calls fit
 
 /*in compare.c*/
 bool mfl_compare_trees(int *t1, int *t2, int ntax);
-int mfl_compare_ints(const void * a, const void * b);
-int mfl_compare_ints2(const void * a, const void * b);
 int mfl_count_fields(int ntax);
 bool mfl_comp_bipartition(taxbipart *bp1, taxbipart *bp2, int numfields);
 void mfl_set_bipartition(node *n, node *d);
