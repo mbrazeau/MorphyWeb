@@ -258,7 +258,7 @@ void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int ncha
             ancestor->tempapos[i] = lft_chars | rt_chars;
 
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                //ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
+                ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
                 if (trlength) {
                     *trlength = *trlength + 1;
                 }
@@ -346,7 +346,7 @@ void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
             ancestor->tempapos[i] = lft_chars | rt_chars;
 
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                //ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
+                ancestor->tempapos[i] = ancestor->tempapos[i] & IS_APPLIC;
                 if (trlength) {
                     *trlength = *trlength + 1;
                 }
@@ -370,9 +370,8 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
     
     for (i = 0; i < nchar; ++i) {
         
-        if (n->index == 46 && i == 33) {
-            //dbg_printf("wait\n");
-        }
+        lft_chars = n->next->edge->tempapos[i];
+        rt_chars = n->next->next->edge->tempapos[i];
         
         if (ancapos[i]==1) {
             if (ntemps[i] & 1) {
@@ -380,12 +379,17 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
             }
             else {
                 napos[i] = ntemps[i];
+                
+                if (trlength) {
+                    if (!(lft_chars & rt_chars)) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
             }
         }
         else {
-            
-            lft_chars = n->next->edge->tempapos[i];
-            rt_chars = n->next->next->edge->tempapos[i];
             
             if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
             {
@@ -424,9 +428,7 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
 
                     if (trlength) {
                         if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                            if (trlength) {
-                                *trlength = *trlength + 1;
-                            }
+                            *trlength = *trlength + 1;
                         }
                     }
                 }
@@ -475,6 +477,10 @@ void mfl_reopt_fitch(node *leftdesc, node *rightdesc, node *ancestor, int nchar,
             rt_chars = rdtemps[i];
             
             temp = lft_chars | rt_chars;
+            
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                temp = temp & IS_APPLIC;
+            }
             
             assert(temp != 0);
             
@@ -637,7 +643,7 @@ void mfl_reopt_rootstates(node *n, int nchar, int *changing)
             temp = lft_chars | rt_chars;
             
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                //temp = temp & IS_APPLIC;
+                temp = temp & IS_APPLIC;
             }
             
             if (temp != antemps[i]) {
