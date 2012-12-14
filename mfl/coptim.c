@@ -62,6 +62,13 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
 
     }
     
+    nwithgaps = NULL;
+    nwithgaps = (int*)malloc(nchar * sizeof(int));
+    if (nwithgaps == NULL) {
+        dbg_printf("Malloc failure: failed to allocate nwithgaps in coptim.c\n");
+    }
+    memset(nwithgaps, 0, nchar * sizeof(int));
+    
     for (i = 0; i < nchar; ++i) {
         
         k = 0;
@@ -69,7 +76,7 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
         
         for (j = 0; j < ntax; ++j) {
             if (matrix[i + j * (nchar)] == 1) {
-                //nwithgaps[i] = 1;
+                nwithgaps[i] = 1;
             }
             else {
                 temp = matrix[i + j * (nchar)];
@@ -89,6 +96,14 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
     dbg_printf("\nMinimum changes per character:\n");
     for (i = 0; i < nchar; ++i) {
         dbg_printf("%i ", minchanges_p[i]);
+    }
+    dbg_printf("\n");
+    
+    dbg_printf("\nChars with gap states:\n");
+    for (i = 0; i < nchar; ++i) {
+        if (nwithgaps[i]) {
+            dbg_printf("%i ", i+1);
+        }
     }
     dbg_printf("\n");
     
@@ -185,9 +200,9 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     
     MFY_SUBTREE_REINSERTION_LOOP
                     ++cost;
-                    if (cost > diff) {
+                    /*if (cost > diff) {
                         return cost;
-                    }
+                    }*/
     MFY_REINSERTION_LOOP_END
     return cost;
 }
@@ -321,7 +336,7 @@ int mfl_wagner_count(charstate lchar, charstate rchar)
  *
  */
 
-void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
+void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
 {
     int i;
     charstate lft_chars, rt_chars;
@@ -524,6 +539,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
             }
         }
         else {
+            
             if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
             {
                 temp = ntemps[i] & ancapos[i];
@@ -590,7 +606,7 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
         assert(n->tempapos);
     }
     
-    mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, trlength, NULL);
+    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, NULL);
     memcpy(n->apomorphies, n->tempapos, nchar * sizeof(charstate));
     
     /*int i;
@@ -769,7 +785,7 @@ void mfl_count_postorder(node *n, int *trlength, int nchar, int *besttreelen)
         p = p->next;
     }
 
-    mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
+    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
     n->nodelen = *trlength;
 }
 
@@ -891,7 +907,7 @@ void mfl_postorder_allviews(node *n, int *trlength, int nchar, int *besttreelen)
         memset(n->tempapos, 0, nchar * sizeof(charstate));
     }
 
-    mfl_fitch_count(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
+    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, besttreelen);
     n->vweight = weight;
 }
 

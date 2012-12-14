@@ -18,6 +18,267 @@ void mini_test_analysis(void);
 //#define MAXSTATES 5
 /**/
 
+void tui_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar)
+{
+    int i;
+    charstate lft_chars, rt_chars;
+    
+    assert(!ancestor->tip);
+    
+    for (i = 0; i < nchar; ++i) {
+        if (leftdesc->tuitemps[i] & rightdesc->tuitemps[i]) 
+        {
+            if ((leftdesc->tuitemps[i] & 1) && (rightdesc->tuitemps[i] & 1)) {
+                ancestor->tuitemps[i] = (leftdesc->tuitemps[i] & rightdesc->tuitemps[i]) | 1;
+            }
+            else {
+                ancestor->tuitemps[i] = leftdesc->tuitemps[i] & rightdesc->tuitemps[i];
+            }
+        }
+        else
+        {            
+            lft_chars = leftdesc->tuitemps[i];
+            rt_chars = rightdesc->tuitemps[i];
+            
+            ancestor->tuitemps[i] = lft_chars | rt_chars;
+            
+            if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                ancestor->tuitemps[i] = ancestor->tuitemps[i] & IS_APPLIC;
+            }
+        }
+    }
+}
+
+void tui_fitch_final(node *n, node *anc, int nchar, int *trlength)
+{
+    
+    assert(!n->tip);
+    
+    int i;
+    charstate *ntemps = n->tuitemps;
+    charstate *napos = n->tuiapos;
+    charstate *ancapos = anc->tuiapos;
+    charstate lft_chars, rt_chars, temp;
+    
+    
+    
+    for (i = 0; i < nchar; ++i) {
+        
+        lft_chars = n->next->edge->tuitemps[i];
+        rt_chars = n->next->next->edge->tuitemps[i];
+        
+        if (ancapos[i]==1) {
+            if (ntemps[i] & 1) {
+                napos[i] = 1;
+            }
+            else {
+                napos[i] = ntemps[i];
+                
+                if (trlength) {
+                    if (!(lft_chars & rt_chars)) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            
+            if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
+            {
+                
+                napos[i] = ntemps[i] & ancapos[i];
+                assert(napos[i] != 0);
+                
+                if (!(lft_chars & rt_chars)) {
+                    if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                        if (trlength) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+                
+            }
+            else {
+                
+                if ( lft_chars & rt_chars ) { //III
+                    //V
+                    temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                    napos[i] = temp;
+                    
+                    assert(napos[i] != 0);
+                }
+                else {
+                    //IV
+                    
+                    napos[i] = ntemps[i] | ancapos[i];
+                    
+                    if (ntemps[i] & IS_APPLIC && ancapos[i] & IS_APPLIC) {
+                        napos[i] = napos[i] & IS_APPLIC;
+                    }
+                    
+                    assert(napos[i] != 0);
+                    
+                    if (trlength) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+                
+            }
+            
+        }
+        
+    }
+}
+
+void tui_join_apos(node *n)
+{
+    
+    /* Makes it so the all tuiapos pointers of each node in an internal ring 
+     * node point to the same memory. */
+    
+    node *p;
+    p = n->next;
+    while (p != n) {
+        p->tuiapos = n->tuiapos;
+        p = p->next;
+    }
+}
+
+void tui_count_postorder(node *n, int *trlength, int nchar)
+{
+    node *p;
+    
+    if (!n->tuiapos) {
+        n->tuiapos = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->tuiapos, 0, nchar * sizeof(charstate));
+        if (n->next) {
+            tui_join_apos(n);
+        }
+    }
+    if (!n->tuitemps) {
+        n->tuitemps = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->tuitemps, 0, nchar * sizeof(charstate));
+    }
+    
+    if (n->tip) {
+        n->tuitemps = (charstate*)malloc(nchar * sizeof(charstate));
+        memset(n->tuitemps, 0, nchar * sizeof(charstate));
+        memcpy(n->tuitemps, n->tempapos, nchar * sizeof(charstate));
+        return;
+    }
+    
+    p = n->next;
+    while (p != n) {
+        tui_count_postorder(p->edge, trlength, nchar);
+        p = p->next;
+    }
+    
+    tui_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar);
+    //n->nodelen = *trlength;
+}
+
+void tui_set_rootstates(node *n, int nchar, int *trlength)
+{
+    bool allocdtemps = false;
+    
+    if (!n->tuitemps) {
+        n->tuitemps = (charstate*)malloc(nchar * sizeof(charstate));
+        allocdtemps = true;
+        assert(n->tempapos);
+    }
+    
+    tui_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar);
+    memcpy(n->tuiapos, n->tuitemps, nchar * sizeof(charstate));
+    
+    if (allocdtemps) {
+        free(n->tuitemps);
+        n->tuitemps = NULL;
+    }
+}
+
+void tui_tip_apomorphies(node *tip, node *anc, int nchar)
+{
+    /* Reconstructs the tip set if it is polymorphic */
+    
+    int i;
+    charstate *tiptemp = tip->tuitemps;
+    charstate *tipapos = tip->tuiapos;
+    charstate *ancapos = anc->tuiapos;
+    
+    for (i = 0; i < nchar; ++i) {
+        if (tiptemp[i] != IS_APPLIC) {
+            if (tiptemp[i] != (tiptemp[i] & (-(tiptemp[i]))) || tiptemp[i] != 1) {
+                if (tiptemp[i] & ancapos[i]) {
+                    tipapos[i] = tiptemp[i] & ancapos[i];
+                }
+                else {
+                    tipapos[i] = tiptemp[i];
+                }
+            }
+            else {
+                tipapos[i] = tiptemp[i];
+            }
+        }
+        else {
+            tipapos[i] = ancapos[i];
+        }
+    }
+    
+}
+
+void tui_fitch_preorder(node *n, int nchar, int *trlength)
+{
+    node *p, *dl, *dr;
+    
+    if (n->tip) {
+        return;
+    }
+    
+    if (!n->edge || n->isroot) {
+        //memcpy(n->tuiapos, n->tuitemps, nchar * sizeof(charstate));
+        tui_set_rootstates(n, nchar, trlength);
+    }
+    
+    dl = n->next->edge;
+    dr = n->next->next->edge;
+    
+    if (!dl->tip) {
+        tui_fitch_final(dl, n, nchar, trlength);
+    }
+    else {
+        tui_tip_apomorphies(dl, n, nchar);
+    }
+    
+    if (!dr->tip) {
+        tui_fitch_final(dr, n, nchar, trlength);
+    }
+    else {
+        tui_tip_apomorphies(dr, n, nchar);
+    }
+    
+    p = n->next;
+    while (p != n) {
+        tui_fitch_preorder(p->edge, nchar, trlength);
+        p = p->next;
+    }
+}
+
+
+int tui_get_treelen(node *treeroot, int nchar, int numnodes)
+{
+    int trlength = 0;
+    tui_count_postorder(treeroot, NULL, nchar);
+    tui_fitch_preorder(treeroot, nchar, &trlength);
+    
+    /* Clear out the temporary character holders */
+    
+    return trlength;
+}
+
 void call_index(node *n)
 {
     node *p;
@@ -812,13 +1073,13 @@ int main(void)
     //test_tree_compress();
     
     //test_tree_comparison();
-    test_char_optimization();
+    //test_char_optimization();
     
     //numnodes = mfl_calc_numnodes(ntax);
     
     //pauseit();
     
-    //mini_test_analysis();
+    mini_test_analysis();
     
     return 0;
 }

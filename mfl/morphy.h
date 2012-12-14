@@ -115,6 +115,10 @@ typedef struct node {
     charstate *origtemps; // Temporary storage for the original set
     charstate *tempapos;
     charstate *apomorphies;
+#ifdef MFY_DEBUG
+    charstate *tuitemps;
+    charstate *tuiapos;
+#endif;
 } node;
 
 typedef node **nodearray;
@@ -187,6 +191,7 @@ void print_charstates(node *n, int nchar);
 void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
+int tui_get_treelen(node *treeroot, int nchar, int numnodes);
 
 /*in compare.c*/
 bool mfl_compare_trees(int *t1, int *t2, int ntax);
@@ -210,7 +215,7 @@ void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int ncha
 void mfl_reopt_subtr_root(node *n, int nchar);
 void mfl_subtree_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
 void mfl_subtree_postorder(node *n, int *trlength, int nchar);
-void mfl_fitch_count(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
+void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen);
 int mfl_get_treelen(tree *testtree, int ntax, int nchar, int *bestreelen);
 int mfl_get_subtreelen(node *n, int ntax, int nchar, int *besttreelen);
 void mfl_count_postorder(node *n, int *trlength, int nchar, int *besttreelen);

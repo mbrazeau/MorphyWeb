@@ -304,10 +304,10 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
 
-        searchrec->niter_total = searchrec->niter_total + 1;
+        searchrec->niter_total = searchrec->niter_total;
         
 #ifdef MFY_DEBUG
-        /*** BEGIN COMMENT OUT BEFORE COMMIT ***
+        /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
         int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
@@ -322,18 +322,19 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         mfl_join_nodes(down, n);
         
         mfl_temproot(swapingon, 0, ntax);
-        mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
+        /*mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
         trulen = 0;
-        mfl_fitch_preorder(swapingon->root, nchar, &trulen);
+        mfl_fitch_preorder(swapingon->root, nchar, &trulen);*/
+        trulen = tui_get_treelen(swapingon->root, nchar, numnodes);
         mfl_undo_temproot(ntax, swapingon);
         
         if (trulen != trlength) {
-            if (subtr->next->edge->tocalcroot) {
+            /*if (subtr->next->edge->tocalcroot) {
                 printNewick(subtr->next->edge);
                 dbg_printf("\n");
                 printNewick(swapingon->trnodes[0]);
                 dbg_printf("\n");
-            }
+            }*/
             dbg_printf("estimated: %i\n", trlength);
             dbg_printf("true:      %i\n", trulen);
             dbg_printf("diff:      %i\n", diff);
@@ -351,7 +352,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         
         trlength = trulen;
         mfl_join_nodes(n, up);
-        *** END COMMENT OUT BEFORE COMMIT ***/
+        /*** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         
         if (trlength < searchrec->bestinrep) {
@@ -523,19 +524,18 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                 if (src->tip) {
                     memcpy(src->apomorphies, src->tempapos, 
                            nchar * sizeof(charstate));
+                    //dbg_printf("src is tip: %i\n", src->index);
                 }
                 else if (src->tocalcroot) {
                     mfl_set_rootstates(src, nchar, NULL);
-                    /*if (src->next->edge->tip && src->next->next->edge->tip) {
-                        printNewick(src);
-                        dbg_printf("\n");
-                    }*/
-
+                    /*printNewick(src);
+                    dbg_printf("\n");*/
                 }
                 else {
-                    
                     if (src->next->edge->tip && src->next->next->edge->tip) {
                         mfl_set_rootstates(src, nchar, NULL);
+                        /*dbg_printf("(%i,%i)", src->next->edge->tip, src->next->next->edge->tip);
+                        dbg_printf("\n");*/
                     }
                     else {
                         mfl_set_updown(src, &s_up, &s_dn);
@@ -550,8 +550,23 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                         mfl_join_nodes(s_dn_N, s_dn);
                         mfl_reopt_subtr_root(src, nchar);
                         free(srcchanging);
+                        /*swapingon->trnodes[0]->start=false;
+                        printNewick(src);
+                        swapingon->trnodes[0]->start=true;
+                        dbg_printf("\n");*/
                     }
                 }
+                
+                /*int mdb, array[] = {3, 24, 25, 26, 28, 34, 36, 37, 38, 44, 45, 46, 47, 48, 54, 56, 57, 59, 60, 62, 64, 65, 76, 77, 80, 88, 91, 92, 93, 0};
+                for (mdb = 0; array[mdb]; ++mdb) {
+                    if ((src->apomorphies[array[mdb]-1] & IS_APPLIC) == IS_APPLIC) {
+                        dbg_printf("? ");
+                    }
+                    else {
+                        dbg_printf("%i ", src->apomorphies[array[mdb]-1]);
+                    }
+                }
+                dbg_printf("\n\n");*/
                 
                 diff = mfl_subtr_reinsertion(src, t_up, t_dn, nchar);
                 // Perform all reinsertions of SRC on TGT
@@ -932,6 +947,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
             /* The particular addition sequence will have to be selected by the user */
             savedtrees[0] = newreptree;
             savedtrees[0]->compressedtr = mfl_compress_tree(savedtrees[0], ntax, numnodes);
+            searchrec->nextinbuffer = 1;
             searchrec->bestinrep = mfl_all_views(savedtrees[0], ntax, nchar, &searchrec->bestinrep);
             searchrec->bestlength = searchrec->bestinrep;
             j = 0;
@@ -968,18 +984,12 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
                                   ntax, nchar, numnodes, searchrec);
             
             if (searchrec->foundbettertr) {
-                if (i > 0) {
-                    //dbg_printf("trbuf start %li\n", searchrec->trbufstart);
-                }
                 j = searchrec->trbufstart;
             }
             else {
                 savedtrees[j]->swapped = true;
-                //if (savedtrees[j]->trnodes) {
-                    savedtrees[j]->newick_tree = mfl_newick_cstring(savedtrees[j], ntax);
-                    //dbg_printf("%s\n",savedtrees[j]->newick_tree);
-                    mfl_free_trnodes(savedtrees[j], numnodes);
-                //}
+                savedtrees[j]->newick_tree = mfl_newick_cstring(savedtrees[j], ntax);
+                mfl_free_trnodes(savedtrees[j], numnodes);
                 if (searchrec->success) {
                     mfl_freetree(savedtrees[j], numnodes);
                 }
@@ -1031,7 +1041,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
         //mfl_root_tree(savedtrees[j], 0, ntax);
         //printNewick(savedtrees[j]->root);
         //cout << "TREE str_" << j+1 << " = [&U] ";// << mfl_handle->resultant_data->newicktrees[i] << endl;
-        //dbg_printf("%s\n", savedtrees[j]->newick_tree);
+        dbg_printf("%s\n", savedtrees[0]->newick_tree);
     //}
     //dbg_printf("\n");
     
