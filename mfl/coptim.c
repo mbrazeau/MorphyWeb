@@ -239,12 +239,12 @@ void mfl_reopt_subtr_root(node *n, int nchar)
         
         for (i = 0; i < nchar; ++i) {
             
-            if (lft_chars[i] & IS_APPLIC && rt_chars[i] & IS_APPLIC) {
+            /*if (lft_chars[i] & IS_APPLIC && rt_chars[i] & IS_APPLIC) {
                 anc_chars[i] = (lft_chars[i] | rt_chars[i]) & IS_APPLIC;
             }
-            else {
+            else {*/
                 anc_chars[i] = lft_chars[i] | rt_chars[i];
-            }
+            //}
         }
     }
 }

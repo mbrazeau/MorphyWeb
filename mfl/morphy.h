@@ -191,7 +191,14 @@ void print_charstates(node *n, int nchar);
 void print_final_allviews(tree *testtree, int ntax, int nchar, int numnodes);
 void printNewick(node *n);
 void treelen(node *n, int *stepcount); // The traversal algorithm that calls fitchdown
-int tui_get_treelen(node *treeroot, int nchar, int numnodes);
+void tui_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength);
+void tui_fitch_final(node *n, node *anc, int nchar, int *trlength);
+void tui_join_apos(node *n);
+void tui_count_postorder(node *n, int *trlength, int nchar);
+void tui_set_rootstates(node *n, int nchar, int *trlength);
+void tui_tip_apomorphies(node *tip, node *anc, int nchar);
+void tui_fitch_preorder(node *n, int nchar, int *trlength);
+int tui_get_treelen(node *treeroot, int nchar, int numnodes, int ntax, nodearray tn);
 
 /*in compare.c*/
 bool mfl_compare_trees(int *t1, int *t2, int ntax);

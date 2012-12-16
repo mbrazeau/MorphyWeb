@@ -18,7 +18,7 @@ void mini_test_analysis(void);
 //#define MAXSTATES 5
 /**/
 
-void tui_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar)
+void tui_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength)
 {
     int i;
     charstate lft_chars, rt_chars;
@@ -44,6 +44,9 @@ void tui_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar
             
             if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
                 ancestor->tuitemps[i] = ancestor->tuitemps[i] & IS_APPLIC;
+                if (trlength) {
+                    *trlength = *trlength + 1;
+                }
             }
         }
     }
@@ -165,9 +168,7 @@ void tui_count_postorder(node *n, int *trlength, int nchar)
     }
     
     if (n->tip) {
-        n->tuitemps = (charstate*)malloc(nchar * sizeof(charstate));
-        memset(n->tuitemps, 0, nchar * sizeof(charstate));
-        memcpy(n->tuitemps, n->tempapos, nchar * sizeof(charstate));
+        memcpy(n->tuitemps, n->origtemps, nchar * sizeof(charstate));
         return;
     }
     
@@ -177,7 +178,7 @@ void tui_count_postorder(node *n, int *trlength, int nchar)
         p = p->next;
     }
     
-    tui_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar);
+    tui_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, NULL);
     //n->nodelen = *trlength;
 }
 
@@ -191,7 +192,7 @@ void tui_set_rootstates(node *n, int nchar, int *trlength)
         assert(n->tempapos);
     }
     
-    tui_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar);
+    tui_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength);
     memcpy(n->tuiapos, n->tuitemps, nchar * sizeof(charstate));
     
     if (allocdtemps) {
@@ -250,14 +251,14 @@ void tui_fitch_preorder(node *n, int nchar, int *trlength)
         tui_fitch_final(dl, n, nchar, trlength);
     }
     else {
-        tui_tip_apomorphies(dl, n, nchar);
+        //tui_tip_apomorphies(dl, n, nchar);
     }
     
     if (!dr->tip) {
         tui_fitch_final(dr, n, nchar, trlength);
     }
     else {
-        tui_tip_apomorphies(dr, n, nchar);
+        //tui_tip_apomorphies(dr, n, nchar);
     }
     
     p = n->next;
@@ -265,12 +266,15 @@ void tui_fitch_preorder(node *n, int nchar, int *trlength)
         tui_fitch_preorder(p->edge, nchar, trlength);
         p = p->next;
     }
+    //memset(n->tuiapos, 0, nchar * sizeof(charstate));
+    //memset(n->tuitemps, 0, nchar * sizeof(charstate));
 }
 
 
-int tui_get_treelen(node *treeroot, int nchar, int numnodes)
+int tui_get_treelen(node *treeroot, int nchar, int numnodes, int ntax, nodearray tn)
 {
     int trlength = 0;
+
     tui_count_postorder(treeroot, NULL, nchar);
     tui_fitch_preorder(treeroot, nchar, &trlength);
     

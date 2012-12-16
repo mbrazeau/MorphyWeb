@@ -322,33 +322,23 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         mfl_join_nodes(down, n);
         
         mfl_temproot(swapingon, 0, ntax);
-        /*mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
-        trulen = 0;
-        mfl_fitch_preorder(swapingon->root, nchar, &trulen);*/
-        trulen = tui_get_treelen(swapingon->root, nchar, numnodes);
+        //mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
+        //trulen = 0;
+        //mfl_fitch_preorder(swapingon->root, nchar, &trulen);
+        trulen = tui_get_treelen(swapingon->root, nchar, numnodes, ntax, swapingon->trnodes);
         mfl_undo_temproot(ntax, swapingon);
-        
-        if (trulen != trlength) {
-            /*if (subtr->next->edge->tocalcroot) {
-                printNewick(subtr->next->edge);
-                dbg_printf("\n");
-                printNewick(swapingon->trnodes[0]);
-                dbg_printf("\n");
-            }*/
-            dbg_printf("estimated: %i\n", trlength);
-            dbg_printf("true:      %i\n", trulen);
-            dbg_printf("diff:      %i\n", diff);
-            dbg_printf("al:        %i\n\n", al);
-            //trlength = trulen;
-            //dbg_printf("report mismatch\n");
+
+        if (trulen == trlength) {
+            dbg_printf("MATCH:\n");
         }
         else {
-            dbg_printf("MATCH:\n");
-            dbg_printf("estimated: %i\n", trlength);
-            dbg_printf("true:      %i\n", trulen);
-            dbg_printf("diff:      %i\n", diff);
-            dbg_printf("al:        %i\n\n", al);
+            dbg_printf("up: %i; dn %i\n", up->index, n->index);
         }
+
+        dbg_printf("estimated: %i\n", trlength);
+        dbg_printf("true:      %i\n", trulen);
+        dbg_printf("diff:      %i\n", diff);
+        dbg_printf("al:        %i\n\n", al);
         
         trlength = trulen;
         mfl_join_nodes(n, up);
