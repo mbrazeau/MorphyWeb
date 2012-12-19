@@ -331,9 +331,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         if (trulen == trlength) {
             dbg_printf("MATCH:\n");
         }
-        else {
+        //else {
             dbg_printf("up: %i; dn %i\n", up->index, n->index);
-        }
+        //}
 
         dbg_printf("estimated: %i\n", trlength);
         dbg_printf("true:      %i\n", trulen);
