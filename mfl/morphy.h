@@ -118,7 +118,7 @@ typedef struct node {
 #ifdef MFY_DEBUG
     charstate *tuitemps;
     charstate *tuiapos;
-#endif;
+#endif
 } node;
 
 typedef node **nodearray;
