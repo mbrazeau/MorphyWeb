@@ -56,7 +56,8 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
     }
     
     int *matrix_colum = NULL;
-    matrix_colum = (int*)malloc(ntax * sizeof(int));
+    /* plus 1 for null terminator */
+    matrix_colum = (int*)malloc((ntax + 1) * sizeof(int));
     if (matrix_colum == NULL) {
         dbg_printf("Malloc failure: failed to allocate matrix_column in coptim.c\n");
 
