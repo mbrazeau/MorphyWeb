@@ -201,9 +201,9 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     
     MFY_SUBTREE_REINSERTION_LOOP
                     ++cost;
-                    /*if (cost > diff) {
+                    if (cost > diff) {
                         return cost;
-                    }*/
+                    }
     MFY_REINSERTION_LOOP_END
     return cost;
 }
