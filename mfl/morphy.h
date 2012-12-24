@@ -165,6 +165,7 @@ typedef struct {
     long int currentreplicate;
     int island_number;
     int island_length;
+    int *applicables;       // The pointer of applicable characters
     //mfl_island_data island_data;
     
     bool dbg_flag;      /* A flag used in debugging the heuristic seach. 
@@ -217,6 +218,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 int mfl_compare (const void * a, const void * b);
 int mfl_n_unique_vals_in_array(int *array, int length);
 int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *nwithgaps);
+int *mfl_set_applicable_array(int *nwithgaps, int nchar);
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);

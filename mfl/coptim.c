@@ -41,6 +41,102 @@ int mfl_n_unique_vals_in_array(int *array, int length)
     return n;
 }
 
+charstate *mfl_reorder_matrix(charstate *matrix, int ntax, int nchar, int *fitch, int *fitch_na, int *wagner, int *wagner_na)
+{
+    /* Reorders the characters in the matrix according to their optimization type
+     * First, if any characters are of Fitch type, add them, starting with the 
+     * applicables, then the non-applicables. Then on to Wagner (ordered) characters*/
+    
+    int i, j;
+    int fa = 0, fn = 0, wa = 0, wn = 0; // The start points for each set of characters in the reordered matrix.
+    int fae = 0, fne = 0, wae = 0, wne = 0; // The end positions of each.
+    int nfitch = 0;
+    int nwagner = 0;
+    charstate *reordered_matrix = NULL;
+    
+    /*Count the number of each type of character */
+    i = 0;
+    if (fitch) {
+        while (fitch[i]) {
+            ++nfitch;
+            ++i;
+        }
+    }
+    
+    fae = nfitch;
+    fn = i;
+    
+    i = 0;
+    if (fitch_na) {
+        while (fitch_na[i]) {
+            ++nfitch;
+            ++i;
+        }
+    }
+    
+    
+    i = 0;
+    if (wagner) {
+        while (wagner[i]) {
+            ++nwagner;
+            ++i;
+        }
+    }
+    i = 0;
+    if (wagner_na) {
+        while (wagner[i]) {
+            ++nwagner;
+            ++i;
+        }
+    }
+    i = 0;
+    
+    reordered_matrix = (charstate*)malloc(ntax * nchar * sizeof(charstate));
+    if (reordered_matrix == NULL) {
+        dbg_printf("Malloc error: failed to allocate memory for reordered_matrix in comptim.c\n");
+    }
+    
+    j = 0;
+    for (i = 0; i < nchar; ++i) {
+        // Fill in the applicable Fitch characters (if any).
+        if (fitch) {
+            for (i = fitch[0]-1; fitch[i]; ++i) {
+                // Put the characters of that column in the original matrix into the new one.
+            }
+        }
+    }
+    
+    return reordered_matrix;
+}
+
+int *mfl_set_applicable_array(int *nwithgaps, int nchar)
+{
+    int i, j=0;
+    int *applicables;
+    
+    for (i = 0; i < nchar; ++i) {
+        if (nwithgaps[i] == 0) {
+            ++j;
+        }
+    }
+    
+    applicables = (int*)malloc((j + 1) * sizeof(int));
+    if (applicables == NULL) {
+        dbg_printf("Malloc failure: failed to allocate applicables array in coptim.c\n");
+    }
+    memset(applicables, 0, ((j + 1) * sizeof(int)));
+    j = 0;
+    for (i = 0; i < nchar; ++i) {
+        if (nwithgaps[i] == 0) {
+            applicables[j] = i+1;
+            ++j;
+        }
+    }
+    
+    applicables[j] = 0;
+    return applicables;
+}
+
 int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *nwithgaps)
 {
     /* Loop over all columns in the matrix, count the number of states in each,
@@ -63,11 +159,11 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
 
     }
     
-    nwithgaps = NULL;
+    /*nwithgaps = NULL;
     nwithgaps = (int*)malloc(nchar * sizeof(int));
     if (nwithgaps == NULL) {
         dbg_printf("Malloc failure: failed to allocate nwithgaps in coptim.c\n");
-    }
+    }*/
     memset(nwithgaps, 0, nchar * sizeof(int));
     
     for (i = 0; i < nchar; ++i) {
@@ -77,7 +173,9 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
         
         for (j = 0; j < ntax; ++j) {
             if (matrix[i + j * (nchar)] == 1) {
-                nwithgaps[i] = 1;
+                if (nwithgaps) {
+                    nwithgaps[i] = 1;
+                }
             }
             else {
                 temp = matrix[i + j * (nchar)];
@@ -97,14 +195,6 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
     dbg_printf("\nMinimum changes per character:\n");
     for (i = 0; i < nchar; ++i) {
         dbg_printf("%i ", minchanges_p[i]);
-    }
-    dbg_printf("\n");
-    
-    dbg_printf("\nChars with gap states:\n");
-    for (i = 0; i < nchar; ++i) {
-        if (nwithgaps[i]) {
-            dbg_printf("%i ", i+1);
-        }
     }
     dbg_printf("\n");
     
@@ -201,9 +291,11 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     
     MFY_SUBTREE_REINSERTION_LOOP
                     ++cost;
+#ifndef MFY_DEBUG
                     if (cost > diff) {
                         return cost;
                     }
+#endif
     MFY_REINSERTION_LOOP_END
     return cost;
 }
