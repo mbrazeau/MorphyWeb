@@ -306,7 +306,9 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
-
+        dbg_printf("al: %i\n", al);
+        dbg_printf("df: %i\n", diff);
+        
         searchrec->niter_total = searchrec->niter_total;
         
 #ifdef MFY_DEBUG
@@ -330,11 +332,21 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         //mfl_fitch_preorder(swapingon->root, nchar, &trulen);
         trulen = tui_get_treelen(swapingon->root, nchar, numnodes, ntax, swapingon->trnodes);
         mfl_undo_temproot(ntax, swapingon);
-
+        
+        int m=0, ct=0;
+        for (m = 0; m < nchar; ++m) {
+            if (!(subtr->tuiapos[m] & n->tuiapos[m])) {
+                ++ct;
+            }
+        }
+        dbg_printf("ct: %i\n", ct);
+        
         if (trulen == trlength) {
             dbg_printf("MATCH:\n");
         }
-        //else {
+        else {
+            dbg_printf("FAIL:\n");
+        }
             dbg_printf("up: %i; dn %i\n", up->index, n->index);
         //}
 
