@@ -41,6 +41,28 @@ int mfl_n_unique_vals_in_array(int *array, int length)
     return n;
 }
 
+void mfl_shift_character_columns_left(charstate *matrix, int first_column, int nchar, int ntax)
+{
+    int i, j, n;
+    
+    for (i = first_column; i < nchar - 1; ++i) {
+        n = i + 1;
+        for (j = 0; j < ntax; ++j) {
+            *(matrix + (i + j * nchar)) = *(matrix + ((i + 1) + j * nchar)); // Copy the next column over into the current column defiened by i
+        }
+    }
+}
+
+void mfl_write_column_to_last_position(charstate *matrix, charstate *column, int nchar, int ntax)
+{
+    int i;
+    
+    for (i = 0; i < ntax; ++i) {
+        *(matrix + ((nchar - 1) + i * nchar)) = *(column + i);
+    }
+    
+}
+
 int *mfl_set_applicable_array(int *nwithgaps, int nchar)
 {
     int i, j=0;
@@ -68,6 +90,7 @@ int *mfl_set_applicable_array(int *nwithgaps, int nchar)
     applicables[j] = 0;
     return applicables;
 }
+
 
 int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *nwithgaps)
 {
@@ -221,17 +244,14 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     charstate *tgt1apos = tgt1->apomorphies;
     charstate *tgt2apos = tgt2->apomorphies;
     
-    dbg_printf("new pos: ");
     MFY_SUBTREE_REINSERTION_LOOP
                     ++cost;
-    dbg_printf("%i ", i);
 #ifndef MFY_DEBUG
                     if (cost > diff) {
                         return cost;
                     }
 #endif
     MFY_REINSERTION_LOOP_END
-    dbg_printf("\n");
     return cost;
 }
 
@@ -248,13 +268,10 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     charstate *srctemps = src->apomorphies;
     charstate *tgt1apos = tgt1->apomorphies;
     charstate *tgt2apos = tgt2->apomorphies;
-    
-    dbg_printf("old pos: ");
+
     MFY_SUBTREE_REINSERTION_LOOP
                     ++cost;
-    dbg_printf("%i ", i);
     MFY_REINSERTION_LOOP_END
-    dbg_printf("\n");
     return cost;
 }
 
