@@ -48,7 +48,7 @@ void mfl_shift_character_columns_left(charstate *matrix, int first_column, int n
     for (i = first_column; i < nchar - 1; ++i) {
         n = i + 1;
         for (j = 0; j < ntax; ++j) {
-            *(matrix + (i + j * nchar)) = *(matrix + ((i + 1) + j * nchar)); // Copy the next column over into the current column defiened by i
+            *(matrix + (i + j * nchar)) = *(matrix + ((i + 1) + j * nchar)); // Copy the next column over into the current column defined by i
         }
     }
 }
@@ -62,6 +62,42 @@ void mfl_write_column_to_last_position(charstate *matrix, charstate *column, int
     }
     
 }
+
+bool mfl_column_has_gap(charstate *topofcolumn, int nchar, int ntax)
+{
+    int i;
+    for (i = 0; i < ntax; ++i) {
+        if (*(topofcolumn + i * nchar) & 1) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void mfl_write_column_to_pointer(charstate *topofcolumn, int start, int nchar, int ntax)
+{
+}
+
+void mfl_move_all_cols_with_gaps_to_end(charstate *matrix, int nchar, int ntax, int *nwithgaps)
+{
+    if (nwithgaps == NULL /*|| nwithgaps[0] == 0*/) {
+        return;
+    }
+    
+    int i, j;
+    charstate *column;
+    
+    column = (charstate*)malloc(ntax * sizeof(charstate));
+    if (column == NULL) {
+        dbg_printf("Malloc error: failed to allocate memory for *column in mfl_move_all_cols_with_gaps_to_end()\n");
+    }
+    
+    
+    
+    free(column);
+}
+
 
 int *mfl_set_applicable_array(int *nwithgaps, int nchar)
 {
