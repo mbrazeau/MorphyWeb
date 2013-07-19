@@ -179,6 +179,13 @@ typedef struct {
     int *tgtchanging;
 } mfl_changing;
 
+typedef struct {
+    int cd_n_nogaps;
+    int cd_n_wgaps;
+    charstate *cd_nogaps;
+    charstate *cd_wgaps;
+} chardata;
+
 /*Function prototypes*/
 
 /*in main.c*/
@@ -201,6 +208,11 @@ void tui_tip_apomorphies(node *tip, node *anc, int nchar);
 void tui_fitch_preorder(node *n, int nchar, int *trlength);
 int tui_get_treelen(node *treeroot, int nchar, int numnodes, int ntax, nodearray tn);
 
+/*in cdata.c*/
+chardata *mfl_new_chardata(void);
+void mfl_clear_chardata(chardata *cd);
+void mfl_delete_chardata(chardata *cd);
+
 /*in compare.c*/
 bool mfl_compare_trees(int *t1, int *t2, int ntax);
 int mfl_count_fields(int ntax);
@@ -217,8 +229,7 @@ int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 /*in coptim.c*/
 int mfl_compare (const void * a, const void * b);
 int mfl_n_unique_vals_in_array(int *array, int length);
-int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *nwithgaps);
-int *mfl_set_applicable_array(int *nwithgaps, int nchar);
+int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar);
 charstate * mfl_convert_tipdata(char *txtsrc, int ntax, int nchar, bool na_as_missing);
 void mfl_apply_tipdata(tree *currenttree, charstate *tipdata, int ntax, int nchar);
 void mfl_reopt_subtr_root(node *n, int nchar);

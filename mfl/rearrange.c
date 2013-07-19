@@ -74,7 +74,7 @@ void mfl_part_reset_searchrec(mfl_searchrec *searchrec)
 void mfl_destroy_searchrec(mfl_searchrec *searchrec)
 {
     if (searchrec->applicables) {
-        free(searchrec->applicables);
+        //free(searchrec->applicables);
     }
     free(searchrec);
 }
@@ -917,7 +917,6 @@ void (*mfl_swap_controller(mfl_handle_s *mfl_handle)) (node*, tree*, tree**, int
 bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
 {
     int ntax = mfl_handle->n_taxa, nchar = mfl_handle->n_chars;
-    int *inapplicables = NULL;
     int numnodes = mfl_calc_numnodes(ntax);
     long int i = 0, j = 0;
     long int nreps = mfl_handle->n_iterations;
@@ -932,27 +931,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_searchrec *searchrec = mfl_create_searchrec();
     charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
     
-    inapplicables = (int*)malloc(nchar * sizeof(int));
-    if (inapplicables == NULL) {
-        dbg_printf("Malloc failure: failed to allocate nwithgaps in coptim.c\n");
-    }
-    
-    searchrec->minsteps = mfl_get_character_minchanges(tipdata, ntax, nchar, inapplicables);
-    
-    if (mfl_handle->gap_as_missing == MFL_GAP_INAPPLICABLE) {
-        searchrec->applicables = mfl_set_applicable_array(inapplicables, nchar);
-    }
-    else {
-        searchrec->applicables = NULL;
-    }
-    
-    dbg_printf("\nChars with gap states:\n");
-    for (i = 0; i < nchar; ++i) {
-        if (inapplicables[i]) {
-            dbg_printf("%li ", i+1);
-        }
-    }
-    dbg_printf("\n");
+    searchrec->minsteps = mfl_get_character_minchanges(tipdata, ntax, nchar);
     
     mfl_handle->resultant_data = (mfl_resultant_data_s*) malloc(sizeof(mfl_resultant_data_s));
     memset(mfl_handle->resultant_data, 0, sizeof(mfl_resultant_data_s));
@@ -1085,9 +1064,6 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     mfl_clear_treebuffer(savedtrees, &searchrec->nextinbuffer, numnodes);
     free(savedtrees);
     free(tipdata);
-    if (inapplicables) {
-        free(inapplicables);
-    }
     mfl_destroy_searchrec(searchrec);
     
     return true;

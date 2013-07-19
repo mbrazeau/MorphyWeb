@@ -41,94 +41,71 @@ int mfl_n_unique_vals_in_array(int *array, int length)
     return n;
 }
 
-void mfl_shift_character_columns_left(charstate *matrix, int first_column, int nchar, int ntax)
+void mfl_insert_matrix_column(int src_width, int tgt_width, charstate *src_column, 
+                              charstate *tgt_column, int ntax)
 {
-    int i, j, n;
+    int i;
     
-    for (i = first_column; i < nchar - 1; ++i) {
-        n = i + 1;
+    for (i = 0; i < ntax; ++i) {
+        *(tgt_column + i * tgt_width) = *(src_column + i * src_width);
+    }
+    
+}
+
+void mfl_split_matrix(chardata *cd, charstate *matrix, int ntax, int nchar)
+{
+    int i=0, j=0;
+    int pos_no_na = 0, pos_w_na=0;
+    bool has_na = false;
+    
+    for (i = 0; i < nchar; ++i) {
+        has_na = false;
         for (j = 0; j < ntax; ++j) {
-            *(matrix + (i + j * nchar)) = *(matrix + ((i + 1) + j * nchar)); // Copy the next column over into the current column defined by i
+            if (matrix[i + nchar *j] == 1) {
+                has_na = true;
+                break;
+            }
+        }
+        if (has_na) {
+            mfl_insert_matrix_column(nchar, cd->cd_n_wgaps, matrix + i, cd->cd_wgaps, ntax);
+            ++pos_w_na;
+        }
+        else {
+            mfl_insert_matrix_column(nchar, cd->cd_n_nogaps, matrix + i, cd->cd_nogaps, ntax);
+            ++pos_no_na;
         }
     }
 }
 
-void mfl_write_column_to_last_position(charstate *matrix, charstate *column, int nchar, int ntax)
+chardata *mfl_chardata_for_search(charstate *matrix, int ntax, int nchar)
 {
-    int i;
+    int i=0, j=0;
+    int no_na =0, w_na=0; // Counters for number of characters with applicable/inapplicable values
     
-    for (i = 0; i < ntax; ++i) {
-        *(matrix + ((nchar - 1) + i * nchar)) = *(column + i);
-    }
+    chardata *cd = mfl_new_chardata();
     
-}
-
-bool mfl_column_has_gap(charstate *topofcolumn, int nchar, int ntax)
-{
-    int i;
-    for (i = 0; i < ntax; ++i) {
-        if (*(topofcolumn + i * nchar) & 1) {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-void mfl_write_column_to_pointer(charstate *topofcolumn, int start, int nchar, int ntax)
-{
-}
-
-void mfl_move_all_cols_with_gaps_to_end(charstate *matrix, int nchar, int ntax, int *nwithgaps)
-{
-    if (nwithgaps == NULL /*|| nwithgaps[0] == 0*/) {
-        return;
-    }
-    
-    int i, j;
-    charstate *column;
-    
-    column = (charstate*)malloc(ntax * sizeof(charstate));
-    if (column == NULL) {
-        dbg_printf("Malloc error: failed to allocate memory for *column in mfl_move_all_cols_with_gaps_to_end()\n");
-    }
-    
-    
-    
-    free(column);
-}
-
-
-int *mfl_set_applicable_array(int *nwithgaps, int nchar)
-{
-    int i, j=0;
-    int *applicables;
-    
+    // Count inapplicables;
     for (i = 0; i < nchar; ++i) {
-        if (nwithgaps[i] == 0) {
-            ++j;
+        for (j = 0; j < ntax; ++j) {
+            if (matrix[i + nchar *j] == 1) {
+                ++w_na;
+            }
         }
     }
     
-    applicables = (int*)malloc((j + 1) * sizeof(int));
-    if (applicables == NULL) {
-        dbg_printf("Malloc failure: failed to allocate applicables array in coptim.c\n");
-    }
-    memset(applicables, 0, ((j + 1) * sizeof(int)));
-    j = 0;
-    for (i = 0; i < nchar; ++i) {
-        if (nwithgaps[i] == 0) {
-            applicables[j] = i+1;
-            ++j;
-        }
-    }
+    no_na = nchar - w_na;
     
-    applicables[j] = 0;
-    return applicables;
+    cd->cd_n_nogaps = no_na;
+    cd->cd_n_wgaps = w_na;
+    cd->cd_nogaps = (charstate*)malloc(ntax * no_na * sizeof(charstate));
+    cd->cd_wgaps = (charstate*)malloc(ntax * w_na * sizeof(charstate));
+    
+    mfl_split_matrix(cd, matrix, ntax, nchar);
+    
+    return cd;
 }
 
-
-int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *nwithgaps)
+int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar/*, int *nwithgaps*/)
 {
     /* Loop over all columns in the matrix, count the number of states in each,
      * count the number with gap entries.*/
@@ -150,12 +127,7 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
 
     }
     
-    /*nwithgaps = NULL;
-    nwithgaps = (int*)malloc(nchar * sizeof(int));
-    if (nwithgaps == NULL) {
-        dbg_printf("Malloc failure: failed to allocate nwithgaps in coptim.c\n");
-    }*/
-    memset(nwithgaps, 0, nchar * sizeof(int));
+    //memset(nwithgaps, 0, nchar * sizeof(int));
     
     for (i = 0; i < nchar; ++i) {
         
@@ -163,12 +135,12 @@ int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar, int *n
         memset(matrix_colum, 0, ntax * sizeof(int));
         
         for (j = 0; j < ntax; ++j) {
-            if (matrix[i + j * (nchar)] == 1) {
-                if (nwithgaps) {
+            if (matrix[i + j * (nchar)] != 1) {
+                /*if (nwithgaps) {
                     nwithgaps[i] = 1;
                 }
             }
-            else {
+            else {*/
                 temp = matrix[i + j * (nchar)];
                 if (temp != IS_APPLIC && (temp == (temp & (-(temp))))) {
                     matrix_colum[k] = matrix[i + j * (nchar)];

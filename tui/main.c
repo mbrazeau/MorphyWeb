@@ -751,7 +751,7 @@ void test_char_optimization(void)
     //old c21 pattern: 122012001120
     
     tipdata = mfl_convert_tipdata(usrTipdata, ntax, nchar, false);
-    int *minchanges = mfl_get_character_minchanges(tipdata, ntax, nchar, NULL);
+    int *minchanges = mfl_get_character_minchanges(tipdata, ntax, nchar);
     mfl_apply_tipdata(testtree, tipdata, ntax, nchar);
     free(minchanges);
     
@@ -833,7 +833,7 @@ void mini_test_analysis(void)
      * shortest tree. The analysis should converge towards a tree like the one
      * in the Newick string below. */
     
-    int i;
+    int i, j;
     int ntax;
     int nchar; // These values would be supplied by the datafile
 
@@ -1003,14 +1003,11 @@ void mini_test_analysis(void)
         
         
     
-    //printf("User tip data:\n");
-    //for (i = 0; usrTipdata[i]; ++i) {
-        //printf("%c", usrTipdata[i]);
-        /*for (j = 0; j < nchar; ++j) {
-            printf("%c", usrTipdata[j + i * nchar]);
-        }
-        printf("\n");*/
-    //}
+    printf("User tip data:\n");
+    for (i = 0; usrTipdata[i]; ++i) 
+    {
+        printf("%c", usrTipdata[i]);
+    }
     printf("\n");
     
     //tree **savedtrees = (tree**) malloc(TREELIMIT * sizeof(tree*));
@@ -1031,12 +1028,12 @@ void mini_test_analysis(void)
     srandom(481981);
     mfl_heuristic_search(mfl_handle);
     
-    srandom(10615111);
+    //srandom(10615111);
     //mfl_heuristic_search(mfl_handle);
     
-    mfl_handle->bswap_type = MFL_BST_TBR;
+    //mfl_handle->bswap_type = MFL_BST_TBR;
     
-    srandom(481981);
+    //srandom(481981);
     //mfl_heuristic_search(mfl_handle);
     
     //srandom(10615111);
