@@ -35,6 +35,46 @@
     }
 }*/
 
+char tui_convert_charstate_to_char(charstate src)
+{
+    int i = 0;
+    
+    if (src == 1) {
+        return '-';
+    }
+    else if (src == IS_APPLIC)
+    {
+        return '?';
+    } 
+    else {
+        while (!(src & 1) && src) {
+            src = src >> 1;
+            ++i;
+        };
+    }
+    
+    --i;
+    
+    return ('0' + i);
+    
+}
+
+void tui_print_converted_data_simple(charstate *matrix, int nchar, int ntax)
+{
+    int i, j;
+    char c;
+    for (i = 0; i < ntax; ++i) {
+        for (j = 0; j < nchar; ++j) {
+            // convert the value
+            c = tui_convert_charstate_to_char(matrix[j + nchar * i]);
+            // print converted value
+            dbg_printf("%c", c);
+        }
+        dbg_printf("\n");
+    }
+    dbg_printf("\n");
+}
+
 mfl_searchrec * mfl_create_searchrec(void)
 {
     mfl_searchrec *newsearchrec;
@@ -930,6 +970,17 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     tree *newreptree;
     mfl_searchrec *searchrec = mfl_create_searchrec();
     charstate *tipdata = mfl_convert_tipdata(mfl_handle->input_data, mfl_handle->n_taxa, mfl_handle->n_chars, mfl_handle->gap_as_missing);
+    
+    dbg_printf("\n");
+    tui_print_converted_data_simple(tipdata, nchar, ntax);
+    dbg_printf("\n");
+    
+    dbg_printf("\nsplitting matrix...\n\n");
+    chardata *cd = mfl_chardata_for_search(tipdata, ntax, nchar );
+    dbg_printf("no gaps:\n");
+    tui_print_converted_data_simple(cd->cd_nogaps, cd->cd_n_nogaps, ntax);
+    dbg_printf("\nwith gaps:\n");
+    tui_print_converted_data_simple(cd->cd_wgaps, cd->cd_n_wgaps, ntax);
     
     searchrec->minsteps = mfl_get_character_minchanges(tipdata, ntax, nchar);
     

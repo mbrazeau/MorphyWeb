@@ -227,6 +227,10 @@ void test_tree_comparison(void);
 int *mfl_compress_tree(tree *t, int ntax, int numnodes);
 
 /*in coptim.c*/
+void mfl_split_matrix(chardata *cd, charstate *matrix, int ntax, int nchar);
+void mfl_insert_matrix_column(int src_width, int tgt_width, charstate *src_column, 
+                              charstate *tgt_column, int ntax);
+chardata *mfl_chardata_for_search(charstate *matrix, int ntax, int nchar);
 int mfl_compare (const void * a, const void * b);
 int mfl_n_unique_vals_in_array(int *array, int length);
 int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar);

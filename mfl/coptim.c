@@ -87,8 +87,9 @@ chardata *mfl_chardata_for_search(charstate *matrix, int ntax, int nchar)
     // Count inapplicables;
     for (i = 0; i < nchar; ++i) {
         for (j = 0; j < ntax; ++j) {
-            if (matrix[i + nchar *j] == 1) {
+            if (matrix[i + nchar * j] == 1) {
                 ++w_na;
+                break;
             }
         }
     }
@@ -98,7 +99,13 @@ chardata *mfl_chardata_for_search(charstate *matrix, int ntax, int nchar)
     cd->cd_n_nogaps = no_na;
     cd->cd_n_wgaps = w_na;
     cd->cd_nogaps = (charstate*)malloc(ntax * no_na * sizeof(charstate));
+    if (cd->cd_nogaps == NULL) {
+        dbg_printf("Malloc failure for cd_nogaps in mfl_chardata_for_search\n");
+    }
     cd->cd_wgaps = (charstate*)malloc(ntax * w_na * sizeof(charstate));
+    if (cd->cd_wgaps == NULL) {
+        dbg_printf("Malloc failure for cd_wgaps in mfl_chardata_for_search\n");
+    }
     
     mfl_split_matrix(cd, matrix, ntax, nchar);
     
