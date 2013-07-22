@@ -56,22 +56,27 @@ void mfl_split_matrix(chardata *cd, charstate *matrix, int ntax, int nchar)
 {
     int i=0, j=0;
     int pos_no_na = 0, pos_w_na=0;
+    charstate *column_top;
     bool has_na = false;
     
     for (i = 0; i < nchar; ++i) {
         has_na = false;
+        
         for (j = 0; j < ntax; ++j) {
             if (matrix[i + nchar *j] == 1) {
                 has_na = true;
                 break;
             }
         }
+        
         if (has_na) {
-            mfl_insert_matrix_column(nchar, cd->cd_n_wgaps, matrix + i, cd->cd_wgaps, ntax);
+            column_top = cd->cd_wgaps + pos_w_na;
+            mfl_insert_matrix_column(nchar, cd->cd_n_wgaps, matrix + i, column_top, ntax);
             ++pos_w_na;
         }
         else {
-            mfl_insert_matrix_column(nchar, cd->cd_n_nogaps, matrix + i, cd->cd_nogaps, ntax);
+            column_top = cd->cd_nogaps + pos_no_na;
+            mfl_insert_matrix_column(nchar, cd->cd_n_nogaps, matrix + i, column_top, ntax);
             ++pos_no_na;
         }
     }

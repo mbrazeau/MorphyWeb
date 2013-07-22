@@ -411,3 +411,8 @@ mfl_handle_t mfl_s2t(mfl_handle_s *mfl_handle);
 mfl_handle_s *mfl_t2s(mfl_handle_t mfl_handle);
 
 /*End function prototypes*/
+
+#ifdef MFY_DEBUG
+char tui_convert_charstate_to_char(charstate src);
+void tui_print_converted_data_simple(charstate *matrix, int nchar, int ntax);
+#endif

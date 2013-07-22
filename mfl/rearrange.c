@@ -976,11 +976,7 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
     dbg_printf("\n");
     
     dbg_printf("\nsplitting matrix...\n\n");
-    chardata *cd = mfl_chardata_for_search(tipdata, ntax, nchar );
-    dbg_printf("no gaps:\n");
-    tui_print_converted_data_simple(cd->cd_nogaps, cd->cd_n_nogaps, ntax);
-    dbg_printf("\nwith gaps:\n");
-    tui_print_converted_data_simple(cd->cd_wgaps, cd->cd_n_wgaps, ntax);
+    chardata *cd = mfl_chardata_for_search(tipdata, ntax, nchar);
     
     searchrec->minsteps = mfl_get_character_minchanges(tipdata, ntax, nchar);
     
