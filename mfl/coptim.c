@@ -408,27 +408,6 @@ void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar
     assert(!ancestor->tip);
     
     for (i = 0; i < nchar; ++i) {
-        if (leftdesc->tempapos[i] & rightdesc->tempapos[i])
-        {
-            ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
-        }
-        else
-        {
-            lft_chars = leftdesc->tempapos[i];
-            rt_chars = rightdesc->tempapos[i];
-            
-            ancestor->tempapos[i] = lft_chars | rt_chars;
-            if (trlength) {
-                *trlength = *trlength + 1;
-            }
-        }
-    }
-    /*int i;
-    charstate lft_chars, rt_chars;
-    
-    assert(!ancestor->tip);
-    
-    for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
         {
             if ((leftdesc->tempapos[i] & 1) && (rightdesc->tempapos[i] & 1)) {
@@ -452,7 +431,7 @@ void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar
                 }
             }
         }
-    }*/
+    }
 }
 
 void mfl_fitch_prelim_applicables(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
@@ -473,9 +452,7 @@ void mfl_fitch_prelim_applicables(node *leftdesc, node *rightdesc, node *ancesto
             rt_chars = rightdesc->tempapos[i];
             
             ancestor->tempapos[i] = lft_chars | rt_chars;
-            if (trlength) {
-                *trlength = *trlength + 1;
-            }
+            *trlength = *trlength + 1;
         }
     }
 }
@@ -501,30 +478,84 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
         lft_chars = *(lft_c_ptr + i);
         rt_chars = *(rt_c_ptr + i);
         
-        if ((ntemps[i] & ancapos[i]) == ancapos[i])
-        {
-            
-            napos[i] = ntemps[i] & ancapos[i];
-            assert(napos[i] != 0);
-            
+        if (ancapos[i]==1) {
+            if (ntemps[i] & 1) {
+                napos[i] = 1;
+            }
+            else {
+                napos[i] = ntemps[i];
+                
+                if (trlength) {
+                    if (!(lft_chars & rt_chars)) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+            }
         }
         else {
             
-            if ( lft_chars & rt_chars ) { //III
-                //V
-                temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
-                napos[i] = temp;
+            if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
+            {
                 
+                napos[i] = ntemps[i] & ancapos[i];
                 assert(napos[i] != 0);
+                
+                if (!(lft_chars & rt_chars)) {
+                    if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                        if (trlength) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+                
             }
             else {
-                //IV
-                napos[i] = ntemps[i] | ancapos[i];
-                assert(napos[i] != 0);
+                
+                if ( lft_chars & rt_chars ) { //III
+                    //V
+                    
+                    if ((ancapos[i] & IS_APPLIC) && ((lft_chars | rt_chars) & IS_APPLIC ) && ((lft_chars | rt_chars) & 1)) {
+                        temp = ntemps[i] | (ancapos[i] & ((lft_chars & IS_APPLIC) | (rt_chars & IS_APPLIC)));
+                        
+                        /* This is potentially dangerous as it could cause doubling of counts*/
+                        if (!(ancapos[i] & (lft_chars & rt_chars))) {
+                            if (trlength) {
+                                *trlength = *trlength + 1;
+                            }
+                        }
+                    }
+                    else {
+                        temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                    }
+                    napos[i] = temp;
+                    
+                    
+                    assert(napos[i] != 0);
+                }
+                else {
+                    //IV
+                    
+                    napos[i] = ntemps[i] | ancapos[i];
+                    
+                    if (ntemps[i] & IS_APPLIC && ancapos[i] & IS_APPLIC) {
+                        napos[i] = napos[i] & IS_APPLIC;
+                    }
+                    
+                    assert(napos[i] != 0);
+
+                    if (trlength) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+                
             }
             
         }
-        
+
     }
 }
 
@@ -734,7 +765,7 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
         assert(n->tempapos);
     }
     
-    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, trlength);
+    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, NULL);
     memcpy(n->apomorphies, n->tempapos, nchar * sizeof(charstate));
     
     /*int i;
@@ -1178,8 +1209,8 @@ int mfl_get_treelen(tree *t, int ntax, int nchar, int *besttreelen)
     }
     else {
         mfl_count_postorder(t->root, treelen_p, nchar, besttreelen);
-        //*treelen_p = 0;
-        mfl_fitch_preorder(t->root, nchar, NULL);
+        *treelen_p = 0;
+        mfl_fitch_preorder(t->root, nchar, treelen_p);
     }
 
     return *treelen_p;
