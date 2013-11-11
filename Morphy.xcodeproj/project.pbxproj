@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -17,7 +17,6 @@
 		E1DCB7A01629A09F00C50BF3 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */; };
 		E1DCB7A21629A0A900C50BF3 /* coptim.c in Sources */ = {isa = PBXBuildFile; fileRef = E1A6576114EC32DF00A348E2 /* coptim.c */; };
 		E1DCB7A31629A0AB00C50BF3 /* compare.c in Sources */ = {isa = PBXBuildFile; fileRef = E1C322EF14E2E4340076AE7A /* compare.c */; };
-		E1DCB7B61629A11D00C50BF3 /* drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = E161E0ED14F3E23100F8589E /* drawtree.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,8 +54,6 @@
 		E1505B7A166FE76E0075F880 /* NexusMenuData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusMenuData.h; sourceTree = "<group>"; };
 		E1505B7B166FE76E0075F880 /* NexusUserInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusUserInterface.cpp; sourceTree = "<group>"; };
 		E1505B7C166FE76E0075F880 /* NexusUserInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusUserInterface.h; sourceTree = "<group>"; };
-		E161E0ED14F3E23100F8589E /* drawtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = drawtree.c; sourceTree = "<group>"; };
-		E174F753164542B70074DCFD /* mfl_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl_error.h; sourceTree = "<group>"; };
 		E179D7A814F966D8001EA295 /* cdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdata.c; sourceTree = "<group>"; };
 		E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
 		E1A6576114EC32DF00A348E2 /* coptim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coptim.c; sourceTree = "<group>"; };
@@ -139,13 +136,11 @@
 			children = (
 				E1D5259A14C94BCE0079F5EC /* Makefile */,
 				E134E49D14D1E38A001A1A63 /* mfl.h */,
-				E174F753164542B70074DCFD /* mfl_error.h */,
 				E1ACBC9514A8BD13005BB9D5 /* morphy.h */,
 				E17FF8FF14FF7F8C003A4202 /* mfyinterface.c */,
 				E179D7A814F966D8001EA295 /* cdata.c */,
 				E1C322EF14E2E4340076AE7A /* compare.c */,
 				E1A6576114EC32DF00A348E2 /* coptim.c */,
-				E161E0ED14F3E23100F8589E /* drawtree.c */,
 				E1ACBC9314A8BD13005BB9D5 /* exhaustive.c */,
 				E100BD2D1500E077008A987F /* randtree.c */,
 				E1250B5814C09D1D008C350B /* readnewick.c */,
@@ -212,8 +207,11 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Morphy" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -243,7 +241,6 @@
 				E1DCB7A01629A09F00C50BF3 /* mfyinterface.c in Sources */,
 				E1DCB7A21629A0A900C50BF3 /* coptim.c in Sources */,
 				E1DCB7A31629A0AB00C50BF3 /* compare.c in Sources */,
-				E1DCB7B61629A11D00C50BF3 /* drawtree.c in Sources */,
 				E117201F1631602A0021AAA7 /* main.c in Sources */,
 				E15C0A8F1799152C0018C138 /* cdata.c in Sources */,
 			);
@@ -258,9 +255,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = Morphy;
 			};
@@ -335,8 +332,7 @@
 					"-lm",
 					"-lgsl",
 				);
-				PREBINDING = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = "-Wall";
@@ -409,8 +405,7 @@
 					"-lm",
 					"-lgsl",
 				);
-				PREBINDING = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = "-Wall";
 				WARNING_LDFLAGS = "";
@@ -423,9 +418,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = Morphy;
 			};

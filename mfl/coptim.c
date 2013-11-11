@@ -12,12 +12,8 @@
 #define MFY_SUBTREE_REINSERTION_LOOP \
 for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) { \
     if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) { \
-        if (*srctemps & IS_APPLIC) { \
-            if ((*tgt1apos | *tgt2apos) & IS_APPLIC) { 
     
 #define MFY_REINSERTION_LOOP_END \
-            } \
-        } \
     } \
 } \
 
@@ -52,7 +48,7 @@ void mfl_insert_matrix_column(int src_width, int tgt_width, charstate *src_colum
     
 }
 
-void mfl_split_matrix(chardata *cd, charstate *matrix, int ntax, int nchar)
+void mfl_split_matrix(chardata *cdata, charstate *matrix, int ntax, int nchar)
 {
     int i=0, j=0;
     int pos_no_na = 0, pos_w_na=0;
@@ -70,13 +66,13 @@ void mfl_split_matrix(chardata *cd, charstate *matrix, int ntax, int nchar)
         }
         
         if (has_na) {
-            column_top = cd->cd_wgaps + pos_w_na;
-            mfl_insert_matrix_column(nchar, cd->cd_n_wgaps, matrix + i, column_top, ntax);
+            column_top = cdata->cd_wgaps + pos_w_na;
+            mfl_insert_matrix_column(nchar, cdata->cd_n_wgaps, matrix + i, column_top, ntax);
             ++pos_w_na;
         }
         else {
-            column_top = cd->cd_nogaps + pos_no_na;
-            mfl_insert_matrix_column(nchar, cd->cd_n_nogaps, matrix + i, column_top, ntax);
+            column_top = cdata->cd_nogaps + pos_no_na;
+            mfl_insert_matrix_column(nchar, cdata->cd_n_nogaps, matrix + i, column_top, ntax);
             ++pos_no_na;
         }
     }
@@ -87,7 +83,7 @@ chardata *mfl_chardata_for_search(charstate *matrix, int ntax, int nchar)
     int i=0, j=0;
     int no_na =0, w_na=0; // Counters for number of characters with applicable/inapplicable values
     
-    chardata *cd = mfl_new_chardata();
+    chardata *cdata = mfl_new_chardata();
     
     // Count inapplicables;
     for (i = 0; i < nchar; ++i) {
@@ -101,20 +97,20 @@ chardata *mfl_chardata_for_search(charstate *matrix, int ntax, int nchar)
     
     no_na = nchar - w_na;
     
-    cd->cd_n_nogaps = no_na;
-    cd->cd_n_wgaps = w_na;
-    cd->cd_nogaps = (charstate*)malloc(ntax * no_na * sizeof(charstate));
-    if (cd->cd_nogaps == NULL) {
+    cdata->cd_n_nogaps = no_na;
+    cdata->cd_n_wgaps = w_na;
+    cdata->cd_nogaps = (charstate*)malloc(ntax * no_na * sizeof(charstate));
+    if (cdata->cd_nogaps == NULL) {
         dbg_printf("Malloc failure for cd_nogaps in mfl_chardata_for_search\n");
     }
-    cd->cd_wgaps = (charstate*)malloc(ntax * w_na * sizeof(charstate));
-    if (cd->cd_wgaps == NULL) {
+    cdata->cd_wgaps = (charstate*)malloc(ntax * w_na * sizeof(charstate));
+    if (cdata->cd_wgaps == NULL) {
         dbg_printf("Malloc failure for cd_wgaps in mfl_chardata_for_search\n");
     }
     
-    mfl_split_matrix(cd, matrix, ntax, nchar);
+    mfl_split_matrix(cdata, matrix, ntax, nchar);
     
-    return cd;
+    return cdata;
 }
 
 int *mfl_get_character_minchanges(charstate *matrix, int ntax, int nchar/*, int *nwithgaps*/)
@@ -412,6 +408,27 @@ void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar
     assert(!ancestor->tip);
     
     for (i = 0; i < nchar; ++i) {
+        if (leftdesc->tempapos[i] & rightdesc->tempapos[i])
+        {
+            ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
+        }
+        else
+        {
+            lft_chars = leftdesc->tempapos[i];
+            rt_chars = rightdesc->tempapos[i];
+            
+            ancestor->tempapos[i] = lft_chars | rt_chars;
+            if (trlength) {
+                *trlength = *trlength + 1;
+            }
+        }
+    }
+    /*int i;
+    charstate lft_chars, rt_chars;
+    
+    assert(!ancestor->tip);
+    
+    for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
         {
             if ((leftdesc->tempapos[i] & 1) && (rightdesc->tempapos[i] & 1)) {
@@ -435,6 +452,31 @@ void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar
                 }
             }
         }
+    }*/
+}
+
+void mfl_fitch_prelim_applicables(node *leftdesc, node *rightdesc, node *ancestor, int nchar, int *trlength, int *besttreelen)
+{
+    int i;
+    charstate lft_chars, rt_chars;
+    
+    assert(!ancestor->tip);
+    
+    for (i = 0; i < nchar; ++i) {
+        if (leftdesc->tempapos[i] & rightdesc->tempapos[i])
+        {
+            ancestor->tempapos[i] = leftdesc->tempapos[i] & rightdesc->tempapos[i];
+        }
+        else
+        {
+            lft_chars = leftdesc->tempapos[i];
+            rt_chars = rightdesc->tempapos[i];
+            
+            ancestor->tempapos[i] = lft_chars | rt_chars;
+            if (trlength) {
+                *trlength = *trlength + 1;
+            }
+        }
     }
 }
 
@@ -448,78 +490,89 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
     charstate *napos = n->apomorphies;
     charstate *ancapos = anc->apomorphies;
     charstate lft_chars, rt_chars, temp;
+    charstate *lft_c_ptr, *rt_c_ptr;
     
     
+    lft_c_ptr = n->next->edge->tempapos;
+    rt_c_ptr = n->next->next->edge->tempapos;
     
     for (i = 0; i < nchar; ++i) {
         
-        lft_chars = n->next->edge->tempapos[i];
-        rt_chars = n->next->next->edge->tempapos[i];
+        lft_chars = *(lft_c_ptr + i);
+        rt_chars = *(rt_c_ptr + i);
         
-        if (ancapos[i]==1) {
-            if (ntemps[i] & 1) {
-                napos[i] = 1;
-            }
-            else {
-                napos[i] = ntemps[i];
-                
-                if (trlength) {
-                    if (!(lft_chars & rt_chars)) {
-                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                            *trlength = *trlength + 1;
-                        }
-                    }
-                }
-            }
+        if ((ntemps[i] & ancapos[i]) == ancapos[i])
+        {
+            
+            napos[i] = ntemps[i] & ancapos[i];
+            assert(napos[i] != 0);
+            
         }
         else {
             
-            if ((ntemps[i] & ancapos[i]) == ancapos[i]) 
-            {
+            if ( lft_chars & rt_chars ) { //III
+                //V
+                temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                napos[i] = temp;
                 
-                napos[i] = ntemps[i] & ancapos[i];
                 assert(napos[i] != 0);
-                
-                if (!(lft_chars & rt_chars)) {
-                    if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                        if (trlength) {
-                            *trlength = *trlength + 1;
-                        }
-                    }
-                }
-                
             }
             else {
-                
-                if ( lft_chars & rt_chars ) { //III
-                    //V
-                    temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
-                    napos[i] = temp;
-                    
-                    assert(napos[i] != 0);
-                }
-                else {
-                    //IV
-                    
-                    napos[i] = ntemps[i] | ancapos[i];
-                    
-                    if (ntemps[i] & IS_APPLIC && ancapos[i] & IS_APPLIC) {
-                        napos[i] = napos[i] & IS_APPLIC;
-                    }
-                    
-                    assert(napos[i] != 0);
-
-                    if (trlength) {
-                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
-                            *trlength = *trlength + 1;
-                        }
-                    }
-                }
-                
+                //IV
+                napos[i] = ntemps[i] | ancapos[i];
+                assert(napos[i] != 0);
             }
             
         }
+        
+    }
+}
 
+void mfl_fitch_final_applicables(node *n, node *anc, int nchar, int *trlength)
+{
+    
+    assert(!n->tip);
+    
+    int i;
+    charstate *ntemps = n->tempapos;
+    charstate *napos = n->apomorphies;
+    charstate *ancapos = anc->apomorphies;
+    charstate lft_chars, rt_chars, temp;
+    charstate *lft_c_ptr, *rt_c_ptr;
+    
+    
+    lft_c_ptr = n->next->edge->tempapos;
+    rt_c_ptr = n->next->next->edge->tempapos;
+    
+    for (i = 0; i < nchar; ++i) {
+        
+        lft_chars = *(lft_c_ptr + i);
+        rt_chars = *(rt_c_ptr + i);
+        
+        if ((ntemps[i] & ancapos[i]) == ancapos[i])
+        {
+            
+            napos[i] = ntemps[i] & ancapos[i];
+            assert(napos[i] != 0);
+            
+        }
+        else {
+            
+            if ( lft_chars & rt_chars ) { //III
+                //V
+                temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                napos[i] = temp;
+                
+                assert(napos[i] != 0);
+            }
+            else {
+                //IV
+                napos[i] = ntemps[i] | ancapos[i];
+                assert(napos[i] != 0);
+            }
+            
+        }
+        
     }
 }
 
@@ -623,7 +676,14 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                 
                 if ( lft_chars & rt_chars ) { //III
                     //V
-                    temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
+                    //temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
+                    
+                    if ((ancapos[i] & IS_APPLIC) && ((lft_chars | rt_chars) & IS_APPLIC ) && ((lft_chars | rt_chars) & 1)) {
+                        temp = ntemps[i] | (ancapos[i] & ((lft_chars & IS_APPLIC) | (rt_chars & IS_APPLIC)));
+                    }
+                    else {
+                        temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                    }
                     
                     assert(temp != 0);
                     if (temp != napos[i]) {
@@ -674,7 +734,7 @@ void mfl_set_rootstates(node *n, int nchar, int *trlength)
         assert(n->tempapos);
     }
     
-    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, NULL);
+    mfl_fitch_prelim(n->next->edge, n->next->next->edge, n, nchar, trlength, trlength);
     memcpy(n->apomorphies, n->tempapos, nchar * sizeof(charstate));
     
     /*int i;
@@ -1118,6 +1178,7 @@ int mfl_get_treelen(tree *t, int ntax, int nchar, int *besttreelen)
     }
     else {
         mfl_count_postorder(t->root, treelen_p, nchar, besttreelen);
+        //*treelen_p = 0;
         mfl_fitch_preorder(t->root, nchar, NULL);
     }
 

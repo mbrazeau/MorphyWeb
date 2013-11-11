@@ -714,7 +714,9 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
 
 void test_char_optimization(void)
 {
-    char trstring[] = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";//"((7,(8,(9,10))),(((((1,2),3),(4,(11,12))),5),6));";
+    char trstring[] = "(((((1,2),3),4),5),(6,7));";
+    //"((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
+    //"((7,(8,(9,10))),(((((1,2),3),(4,(11,12))),5),6));";
     tree *testtree = readNWK(trstring, 1);
     
     
@@ -722,8 +724,8 @@ void test_char_optimization(void)
     printNewick(testtree->root);
     printf("\n");
     
-    int ntax = 12;
-    int nchar = 21;
+    int ntax = 7;//12;
+    int nchar = 2;//21;
     int trl = 0;
     int *trlength = &trl;
     int numnodes = mfl_calc_numnodes(ntax);
@@ -735,6 +737,16 @@ void test_char_optimization(void)
     //mfl_start_drawtree(testtree, ntax);
     
     char usrTipdata[] = "\
+11\n\
+11\n\
+0-\n\
+0-\n\
+1?\n\
+10\n\
+10";
+    
+    
+/*"\
 111111111110000000000\n\
 111111111110000000000\n\
 010111111110000000000\n\
@@ -746,7 +758,7 @@ void test_char_optimization(void)
 -00000000000000111111\n\
 110000000000011111111\n\
 -00000000001111111111\n\
-010000000001111111111";
+010000000001111111111";*/
     
     //old c21 pattern: 122012001120
     
@@ -757,8 +769,8 @@ void test_char_optimization(void)
     
     //mvnode = mv_onetwo_to_twelve(testtree, ntax, numnodes);
     //mfl_undo_temproot(ntax, testtree);
-    testtree->root = testtree->trnodes[ntax];
-    trl = mfl_all_views(testtree, ntax, nchar, trlength);
+    //testtree->root = testtree->trnodes[ntax];
+    trl = mfl_get_treelen(testtree, ntax, nchar, trlength);//mfl_all_views(testtree, ntax, nchar, trlength);
     //mfl_root_tree(testtree, 0, ntax);
     //mfl_temproot(testtree, 5, ntax);
     printf("The altered tree (if move made):\n");
@@ -1018,7 +1030,7 @@ void mini_test_analysis(void)
     mfl_handle->n_chars = nchar;
     mfl_handle->input_data = usrTipdata;
     mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
-    mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
+    //mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
     mfl_handle->n_treelimit = 100000;
     mfl_handle->n_iterations = 1;
     mfl_handle->addseq_type = MFL_AST_RANDOM;
@@ -1074,7 +1086,7 @@ int main(void)
     //test_tree_compress();
     
     //test_tree_comparison();
-    //test_char_optimization();
+    test_char_optimization();
     
     //numnodes = mfl_calc_numnodes(ntax);
     

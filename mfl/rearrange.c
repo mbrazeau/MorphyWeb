@@ -346,14 +346,14 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
         trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
-        dbg_printf("al: %i\n", al);
-        dbg_printf("df: %i\n", diff);
+        //dbg_printf("al: %i\n", al);
+        //dbg_printf("df: %i\n", diff);
         
         searchrec->niter_total = searchrec->niter_total;
         
 #ifdef MFY_DEBUG
         /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
-        int trulen = 0;
+        /*int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
             top = subtr->next->next;
@@ -396,14 +396,14 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         dbg_printf("al:        %i\n\n", al);
         
         trlength = trulen;
-        mfl_join_nodes(n, up);
+        mfl_join_nodes(n, up);*/
         /*** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         
         if (trlength < searchrec->bestinrep) {
         
             
-            dbg_printf("length: %i\n", trlength);
+            //dbg_printf("length: %i\n", trlength);
 
             mfl_join_nodes(subtr->next->next, up);
             mfl_join_nodes(subtr, n);
@@ -570,22 +570,22 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                     memcpy(src->apomorphies, src->tempapos, 
                            nchar * sizeof(charstate));
 #ifdef MFY_DEBUG
-                    dbg_printf("src is tip: %i\n", src->index);
+                    //dbg_printf("src is tip: %i\n", src->index);
 #endif
                 }
                 else if (src->tocalcroot) {
                     mfl_set_rootstates(src, nchar, NULL);
 #ifdef MFY_DEBUG
-                    printNewick(src);
-                    dbg_printf("\n");
+                    //printNewick(src);
+                    //dbg_printf("\n");
 #endif
                 }
                 else {
                     if (src->next->edge->tip && src->next->next->edge->tip) {
                         mfl_set_rootstates(src, nchar, NULL);
 #ifdef MFY_DEBUG
-                        dbg_printf("(%i,%i)", src->next->edge->tip, src->next->next->edge->tip);
-                        dbg_printf("\n");
+                        //dbg_printf("(%i,%i)", src->next->edge->tip, src->next->next->edge->tip);
+                        //dbg_printf("\n");
 #endif
                     }
                     else {
@@ -602,10 +602,10 @@ void mfl_subtree_pruning(node *n, tree *swapingon, tree **savedtrees, int ntax,
                         mfl_reopt_subtr_root(src, nchar);
                         free(srcchanging);
 #ifdef MFY_DEBUG
-                        swapingon->trnodes[0]->start=false;
-                        printNewick(src);
-                        swapingon->trnodes[0]->start=true;
-                        dbg_printf("\n");
+                        //swapingon->trnodes[0]->start=false;
+                        //printNewick(src);
+                        //swapingon->trnodes[0]->start=true;
+                        //dbg_printf("\n");
 #endif
                     }
                 }

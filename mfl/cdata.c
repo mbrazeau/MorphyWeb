@@ -11,11 +11,16 @@
 
 chardata *mfl_new_chardata(void)
 {
-    return (chardata*)malloc(sizeof(chardata));
+    chardata* cdata = (chardata*)malloc(sizeof(chardata));
+    cdata->cd_n_nogaps = 0;
+    cdata->cd_n_wgaps = 0;
+    return cdata;
 }
 
 void mfl_clear_chardata(chardata *cd)
 {
+    cd->cd_n_nogaps = 0;
+    cd->cd_n_wgaps = 0;
     if (cd->cd_nogaps) {
         free(cd->cd_nogaps);
     }
