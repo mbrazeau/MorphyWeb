@@ -353,7 +353,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         
 #ifdef MFY_DEBUG
         /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
-        /*int trulen = 0;
+        int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
             top = subtr->next->next;
@@ -396,7 +396,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         dbg_printf("al:        %i\n\n", al);
         
         trlength = trulen;
-        mfl_join_nodes(n, up);*/
+        mfl_join_nodes(n, up);
         /*** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         

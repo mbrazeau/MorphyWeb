@@ -260,14 +260,16 @@ int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
     charstate *tgt1apos = tgt1->apomorphies;
     charstate *tgt2apos = tgt2->apomorphies;
     
-    MFY_SUBTREE_REINSERTION_LOOP
-                    ++cost;
-#ifndef MFY_DEBUG
-                    if (cost > diff) {
-                        return cost;
-                    }
-#endif
-    MFY_REINSERTION_LOOP_END
+    
+    for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) {
+        if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) {
+            ++cost;
+            if (cost > diff) {
+                return cost;
+            }
+        }
+    }
+    
     return cost;
 }
 
@@ -285,11 +287,40 @@ int mfl_subtr_reinsertion(node *src, node *tgt1, node *tgt2, int nchar)
     charstate *tgt1apos = tgt1->apomorphies;
     charstate *tgt2apos = tgt2->apomorphies;
 
-    MFY_SUBTREE_REINSERTION_LOOP
-                    ++cost;
-    MFY_REINSERTION_LOOP_END
+    for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) {
+        if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) {
+            ++cost;
+        }
+    }
+
     return cost;
 }
+
+int mfl_locreopt_cost_inapplicables(node *src, node *tgt1, node *tgt2, int nchar, int diff)
+{
+    /* Returns cost of inserting subtree src between tgt1 and tgt2 following
+     * the algorithms described by Ronquist (1998. Cladistics) and Goloboff
+     * (1993, 1996. Cladistics).*/
+    
+    int i;
+    int cost = 0;
+    charstate *srctemps = src->apomorphies;
+    charstate *tgt1apos = tgt1->apomorphies;
+    charstate *tgt2apos = tgt2->apomorphies;
+    
+    
+    for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) {
+        if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) {
+            ++cost;
+            if (cost > diff) {
+                return cost;
+            }
+        }
+    }
+    
+    return cost;
+}
+
 
 void mfl_reopt_subtr_root(node *n, int nchar)
 {

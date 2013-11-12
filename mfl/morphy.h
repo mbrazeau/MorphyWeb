@@ -19,7 +19,7 @@
 #include <time.h>
 #include <assert.h>
 #include "mfl.h"
-#include <gsl/gsl_rng.h>
+//#include <gsl/gsl_rng.h>
 
 
 #include <iostream>

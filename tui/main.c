@@ -714,7 +714,7 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
 
 void test_char_optimization(void)
 {
-    char trstring[] = "(((((1,2),3),4),5),(6,7));";
+    char trstring[] = "(1,(2,(3,(4,(5,(6,(7,(8,(9,(10,(11,12)))))))))));";
     //"((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     //"((7,(8,(9,10))),(((((1,2),3),(4,(11,12))),5),6));";
     tree *testtree = readNWK(trstring, 1);
@@ -724,7 +724,7 @@ void test_char_optimization(void)
     printNewick(testtree->root);
     printf("\n");
     
-    int ntax = 7;//12;
+    int ntax = 12;//12;
     int nchar = 2;//21;
     int trl = 0;
     int *trlength = &trl;
@@ -741,7 +741,12 @@ void test_char_optimization(void)
 11\n\
 0-\n\
 0-\n\
-1?\n\
+0-\n\
+0-\n\
+0-\n\
+0-\n\
+0-\n\
+0-\n\
 10\n\
 10";
     
@@ -1030,7 +1035,7 @@ void mini_test_analysis(void)
     mfl_handle->n_chars = nchar;
     mfl_handle->input_data = usrTipdata;
     mfl_handle->gap_as_missing = MFL_GAP_MISSING_DATA;
-    mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
+    //mfl_handle->gap_as_missing = MFL_GAP_INAPPLICABLE;
     mfl_handle->n_treelimit = 100000;
     mfl_handle->n_iterations = 1;
     mfl_handle->addseq_type = MFL_AST_RANDOM;
@@ -1092,7 +1097,7 @@ int main(void)
     
     //pauseit();
     
-    mini_test_analysis();
+    //mini_test_analysis();
     
     return 0;
 }
