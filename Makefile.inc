@@ -3,7 +3,7 @@ AR          = ar
 ODIR        = obj
 OBJECTS     = $(patsubst %,$(ODIR)/%,$(OBJS))
 LIBRARIES  += $(patsubst %,-l%,$(LIBS)) $(patsubst %,-L%,$(LIBDIRS))
-CFLAGS     += $(patsubst %,-I%,$(INCLUDEDIRS)) -Wall -g
+CFLAGS     += $(patsubst %,-I%,$(INCLUDEDIRS)) -Wall -g -I/usr/local/include
 MFLLIB      = $(ODIR)/libmfl.a
 DEPS        = $(patsubst %,$(ODIR)/%,$(OBJS:.o=.d))
 MAKEDEPEND  = $(SILENT)$(CC) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.d=.o)" "$<" $(CFLAGS) 
