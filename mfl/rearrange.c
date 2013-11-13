@@ -379,21 +379,21 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                 ++ct;
             }
         }
-        dbg_printf("ct: %i\n", ct);
+        //dbg_printf("ct: %i\n", ct);
         
         if (trulen == trlength) {
-            dbg_printf("MATCH:\n");
+            //dbg_printf("MATCH:\n");
         }
         else {
-            dbg_printf("FAIL:\n");
+            //dbg_printf("FAIL:\n");
         }
-            dbg_printf("up: %i; dn %i\n", up->index, n->index);
+            //dbg_printf("up: %i; dn %i\n", up->index, n->index);
         //}
 
-        dbg_printf("estimated: %i\n", trlength);
-        dbg_printf("true:      %i\n", trulen);
-        dbg_printf("diff:      %i\n", diff);
-        dbg_printf("al:        %i\n\n", al);
+        //dbg_printf("estimated: %i\n", trlength);
+        //dbg_printf("true:      %i\n", trulen);
+        //dbg_printf("diff:      %i\n", diff);
+        //dbg_printf("al:        %i\n\n", al);
         
         trlength = trulen;
         mfl_join_nodes(n, up);
@@ -1088,9 +1088,9 @@ bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
      * search procedure. Eventually, all this stuff will be written to a struct
      * and handed over to the interface for outputting to screen. */
     
-    /*for (j = 0; mfl_handle->resultant_data->newicktrees[j]; ++j) {
-        dbg_printf("%s\n", mfl_handle->resultant_data->newicktrees[j]);
-    }*/
+    for (j = 0; mfl_handle->resultant_data->newicktrees[j]; ++j) {
+        dbg_printf("TREE Morphy_%i = %s\n", j+1, mfl_handle->resultant_data->newicktrees[j]);
+    }
     
     dbg_printf("Total search time: %g\n", timeout - timein);
     

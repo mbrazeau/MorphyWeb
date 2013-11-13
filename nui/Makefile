@@ -1,5 +1,5 @@
 OUTEXE=$(ODIR)/nui
-INCLUDEDIRS =. ../mfl /usr/local/include/
+INCLUDEDIRS =. ../mfl /usr/local/include/ 
 LIBDIRS=
 LIBS=termcap
 SRCS = $(wildcard *.cpp)

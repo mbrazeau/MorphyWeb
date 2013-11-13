@@ -547,7 +547,7 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
                 if ( lft_chars & rt_chars ) { //III
                     //V
                     
-                    if ((ancapos[i] & IS_APPLIC) && ((lft_chars | rt_chars) & IS_APPLIC ) && ((lft_chars | rt_chars) & 1)) {
+                    if ((ancapos[i] & IS_APPLIC) && (((lft_chars | rt_chars) & IS_APPLIC) & 1)) {
                         temp = ntemps[i] | (ancapos[i] & ((lft_chars & IS_APPLIC) | (rt_chars & IS_APPLIC)));
                         
                         /* This is potentially dangerous as it could cause doubling of counts*/
@@ -740,7 +740,7 @@ void mfl_reopt_fitch_final(node *n, node *anc, int nchar, int *changing)
                     //V
                     //temp = ( ntemps[i] | ( ancapos[i] & (lft_chars | rt_chars)));
                     
-                    if ((ancapos[i] & IS_APPLIC) && ((lft_chars | rt_chars) & IS_APPLIC ) && ((lft_chars | rt_chars) & 1)) {
+                    if ((ancapos[i] & IS_APPLIC) && (((lft_chars | rt_chars) & IS_APPLIC) & 1)) {
                         temp = ntemps[i] | (ancapos[i] & ((lft_chars & IS_APPLIC) | (rt_chars & IS_APPLIC)));
                     }
                     else {
