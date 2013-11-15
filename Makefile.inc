@@ -38,6 +38,6 @@
 $(TESTDIRS): 
 	$(eval TMP_IN := $(wildcard $@/*input.txt))
 	$(eval TMP_OUT := $(wildcard $@/*output.txt))
-	$(SILENT)./runtest.pl --test=$@ --input="$(TMP_IN)" --expected="$(TMP_OUT)" --update="$(UPDATE)" --quick="$(QUICKTEST)"
+	@./runtest.pl --test=$@ --input="$(TMP_IN)" --expected="$(TMP_OUT)" --update="$(UPDATE)" --quick="$(QUICKTEST)"
 
 
