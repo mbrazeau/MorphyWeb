@@ -370,15 +370,16 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         //mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
         //trulen = 0;
         //mfl_fitch_preorder(swapingon->root, nchar, &trulen);
-        trulen = tui_get_treelen(swapingon->root, nchar, numnodes, ntax, swapingon->trnodes);
+        trulen = mfl_get_treelen(swapingon, ntax, nchar, &searchrec->bestinrep);
+        //tui_get_treelen(swapingon->root, nchar, numnodes, ntax, swapingon->trnodes);
         mfl_undo_temproot(ntax, swapingon);
         
-        int m=0, ct=0;
+        /*int m=0, ct=0;
         for (m = 0; m < nchar; ++m) {
             if (!(subtr->tuiapos[m] & n->tuiapos[m])) {
                 ++ct;
             }
-        }
+        }*/
         //dbg_printf("ct: %i\n", ct);
         
         if (trulen == trlength) {
