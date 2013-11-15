@@ -1,35 +1,40 @@
-SUBDIRS = mfl nui
-ALLFILES = $(addsuffix /*.c, $(SUBDIRS)) $(addsuffix /*.cpp, $(SUBDIRS))
+SUBDIRS = Debug Release
+SRCDIRS = mfl nui
 CSCOPEFILE = cscope.out
 ifndef VERBOSE
 SILENT=@
-NICECSCOUTPUT=@echo " CScope for $(SUBDIRS)"
+NICECSCOUTPUT=@echo " CScope for $(SRCDIRS)"
 endif
 
 all: $(SUBDIRS)
+	$(NICECSCOUTPUT)
+	$(SILENT)cscope -b -u $(patsubst %,-s %,$(SRCDIRS)) -s ../ncl
 
-.PHONY: $(SUBDIRS) clean cscope test
+.PHONY: $(SUBDIRS) clean realclean test
 
 MFLAGS += --no-print-directory
 
 $(SUBDIRS):
 	@echo "Building $@..."
-	@cd $@; $(MAKE) $(MFLAGS)
+	-@mkdir $@
+	@cd $@; cmake -DCMAKE_BUILD_TYPE=$@ ..
+	@$(MAKE) $(MFLAGS) -C $@
 
-cscope: $(CSCOPEFILE)
-
-$(CSCOPEFILE): $(wildcard $(ALLFILES))
-	$(NICECSCOUTPUT)
-	$(SILENT)cscope -b -u $(patsubst %,-s %,$(SUBDIRS)) -s ../ncl-2.1.17/ncl
-    
-clean:
+cleancscope:
 	$(SILENT)rm -f $(CSCOPEFILE)
+
+clean: cleancscope
 	@for i in $(SUBDIRS); do \
 	echo "Cleaning $$i..."; \
 	(cd $$i; $(MAKE) $(MFLAGS) clean); done
 
-test test%: all
+realclean: cleancscope
 	@for i in $(SUBDIRS); do \
+	echo "Deleting $$i..."; \
+	rm -rf $$i; done
+
+test test%: 
+	@for i in $(SRCDIRS); do \
 	echo "Testing $$i..."; \
 	(cd $$i/tests; $(MAKE) $(MFLAGS) $@); done
 
