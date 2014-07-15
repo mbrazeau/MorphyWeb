@@ -726,7 +726,7 @@ node *mv_onetwo_to_twelve(tree *t, int ntax, int numnodes)
 
 void test_char_optimization(void)
 {
-    char trstring[] = "(1,((23,(3,2)),((32,(33,34)),(((9,((18,6),12)),(13,((8,(28,29)),(4,5)))),(11,((31,(16,(30,26))),((22,((25,((15,14),((7,(10,27)),(17,19)))),24)),(21,20))))))));";
+    char trstring[] = "(((((33,(((30,(((27,28),29),((26,((24,25),((22,23),((20,((18,(17,(16,((13,14),15)))),19)),21)))),((10,11),12)))),31),32)),(9,(7,8))),(6,((3,4),5))),34),(1,2));";
     //"((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     //"((7,(8,(9,10))),(((((1,2),3),(4,(11,12))),5),6));";
     tree *testtree = readNWK(trstring, 1);
@@ -1157,13 +1157,13 @@ int main(void)
     //test_tree_compress();
     
     //test_tree_comparison();
-    test_char_optimization();
+    //test_char_optimization();
     
     //numnodes = mfl_calc_numnodes(ntax);
     
     //pauseit();
     
-    //mini_test_analysis();
+    mini_test_analysis();
     
     return 0;
 }

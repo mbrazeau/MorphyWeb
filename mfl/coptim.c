@@ -441,7 +441,8 @@ void mfl_fitch_prelim(node *leftdesc, node *rightdesc, node *ancestor, int nchar
     for (i = 0; i < nchar; ++i) {
         if (leftdesc->tempapos[i] & rightdesc->tempapos[i]) 
         {
-            if ((leftdesc->tempapos[i] & 1) && (rightdesc->tempapos[i] & 1)) {
+            // **ERROR: This bit requires some considerable work!**
+            if ((leftdesc->tempapos[i] & 1) || (rightdesc->tempapos[i] & 1)) {
                 ancestor->tempapos[i] = (leftdesc->tempapos[i] & rightdesc->tempapos[i]) | 1;
             }
             else {
@@ -587,6 +588,108 @@ void mfl_fitch_final(node *n, node *anc, int nchar, int *trlength)
             
         }
 
+    }
+}
+
+void mfl_fitch_final_na(node *n, node *anc, int nchar, int *trlength)
+{
+    
+    assert(!n->tip);
+    
+    int i;
+    charstate *ntemps = n->tempapos;
+    charstate *napos = n->apomorphies;
+    charstate *ancapos = anc->apomorphies;
+    charstate lft_chars, rt_chars, temp;
+    charstate *lft_c_ptr, *rt_c_ptr;
+    
+    
+    lft_c_ptr = n->next->edge->tempapos;
+    rt_c_ptr = n->next->next->edge->tempapos;
+    
+    for (i = 0; i < nchar; ++i) {
+        
+        lft_chars = *(lft_c_ptr + i);
+        rt_chars = *(rt_c_ptr + i);
+        
+        if (ancapos[i]==1) {
+            if (ntemps[i] & 1) {
+                napos[i] = 1;
+            }
+            else {
+                napos[i] = ntemps[i];
+                
+                if (trlength) {
+                    if (!(lft_chars & rt_chars)) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            
+            if ((ntemps[i] & ancapos[i]) == ancapos[i])
+            {
+                
+                napos[i] = ntemps[i] & ancapos[i];
+                assert(napos[i] != 0);
+                
+                if (!(lft_chars & rt_chars)) {
+                    if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                        if (trlength) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+                
+            }
+            else {
+                
+                if ( lft_chars & rt_chars ) { //III
+                    //V
+                    
+                    if ((ancapos[i] & IS_APPLIC) && (((lft_chars | rt_chars) & IS_APPLIC) && (lft_chars | rt_chars) & 1)) {
+                        temp = ntemps[i] | (ancapos[i] & ((lft_chars & IS_APPLIC) | (rt_chars & IS_APPLIC)));
+                        
+                        /* This is potentially dangerous as it could cause doubling of counts*/
+                        if (!(ancapos[i] & (lft_chars & rt_chars))) {
+                            if (trlength) {
+                                *trlength = *trlength + 1;
+                            }
+                        }
+                    }
+                    else {
+                        temp = (ntemps[i] | (ancapos[i] & (lft_chars | rt_chars)));
+                    }
+                    napos[i] = temp;
+                    
+                    
+                    assert(napos[i] != 0);
+                }
+                else {
+                    //IV
+                    
+                    napos[i] = ntemps[i] | ancapos[i];
+                    
+                    if (ntemps[i] & IS_APPLIC && ancapos[i] & IS_APPLIC) {
+                        napos[i] = napos[i] & IS_APPLIC;
+                    }
+                    
+                    assert(napos[i] != 0);
+                    
+                    if (trlength) {
+                        if (lft_chars & IS_APPLIC && rt_chars & IS_APPLIC) {
+                            *trlength = *trlength + 1;
+                        }
+                    }
+                }
+                
+            }
+            
+        }
+        
     }
 }
 

@@ -353,7 +353,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         
 #ifdef MFY_DEBUG
         /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
-        int trulen = 0;
+        /*int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
             top = subtr->next->next;
@@ -366,13 +366,13 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         mfl_join_nodes(top, up);
         mfl_join_nodes(down, n);
         
-        mfl_temproot(swapingon, 0, ntax);
+        mfl_temproot(swapingon, 0, ntax);*/
         //mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
         //trulen = 0;
         //mfl_fitch_preorder(swapingon->root, nchar, &trulen);
-        trulen = mfl_get_treelen(swapingon, ntax, nchar, &searchrec->bestinrep);
+        //trulen = mfl_get_treelen(swapingon, ntax, nchar, &searchrec->bestinrep);
         //tui_get_treelen(swapingon->root, nchar, numnodes, ntax, swapingon->trnodes);
-        mfl_undo_temproot(ntax, swapingon);
+        //mfl_undo_temproot(ntax, swapingon);
         
         /*int m=0, ct=0;
         for (m = 0; m < nchar; ++m) {
@@ -382,12 +382,12 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         }*/
         //dbg_printf("ct: %i\n", ct);
         
-        if (trulen == trlength) {
+        /*if (trulen == trlength) {
             //dbg_printf("MATCH:\n");
         }
         else {
             //dbg_printf("FAIL:\n");
-        }
+        }*/
             //dbg_printf("up: %i; dn %i\n", up->index, n->index);
         //}
 
@@ -396,8 +396,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         //dbg_printf("diff:      %i\n", diff);
         //dbg_printf("al:        %i\n\n", al);
         
-        trlength = trulen;
-        mfl_join_nodes(n, up);
+        //trlength = trulen;
+        //mfl_join_nodes(n, up);
         /*** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         
