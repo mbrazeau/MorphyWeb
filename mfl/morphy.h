@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <assert.h>
+#include "mfl.h"
 
 #ifdef MFY_DEBUG
 #include <stdio.h>
@@ -15,6 +17,15 @@
 #else
 #define dbg_printf(...)
 #endif
+
+
+/* 
+ *
+ * Definitions of some default values
+ *
+ */
+
+#define MORPHY_DEFAULT_TREE_LIMIT 200
 
 /*
  *
@@ -25,6 +36,40 @@
 
 typedef uint64_t charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
+typedef struct {
+    long int n_rearrangements; // Number of tree topologies visited
+    int n_savetrees;    // Number of trees found and/or saved
+    int bestlength;     // Length of the best tree
+    time_t searcht;     // Time in search
+    char** newicktrees; // Vector of trees in newick format
+    string **texttrees;   // Array of trees drawn as text
+    int num_islands;    // Number of parsimony islands hit
+    int *island_lengths;       // Lengths of each island
+    int *island_sizes;
+    int *times_hit_islands;      // List of times each island was hit
+#ifdef VERSION_1_5
+    double consist_ind; // Consistency index
+    double ret_ind;     // Retention index
+    double resc_ci;     // Rescaled consistency index
+#endif
+} mfl_resultant_data_s;
+
+
+typedef struct {
+    int                     n_taxa;
+    int                     n_chars;
+    mfl_search_t            search_type;
+    int                     n_iterations;
+    int                     n_treelimit;
+    mfl_branch_swap_t       bswap_type;
+    bool                    is_ratchet;
+    char                    *input_data;
+    mfl_add_sequence_t      addseq_type;
+    bool                    collapse_nolen;
+    mfl_set_collapse_at_t   collapse_at;
+    mfl_gap_t               gap_as_missing;
+    mfl_resultant_data_s    *resultant_data;
+} mfl_handle_s;
 
 typedef struct mfl_node_t {
 	struct mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
@@ -133,3 +178,24 @@ void            mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_no
 /* In mfl_newick.c */
 int     mfl_check_invalid_newick(char *newick_input);
 bool    mfl_newick_string_is_rooted(char *newick_string);
+
+/* In mfl_brwap.c */
+bool mfl_heuristic_search(mfl_handle_s *mfl_handle);
+
+/* in mfyinterface.c*/
+bool mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_nchar(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_searchtype(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_treelimit(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_branchswap_t(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_ratchet_status(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_attach_inputdata(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_addseq_t(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_collapse(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_collapse_value(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_gapormissing(mfl_handle_s *mfl_struct, void *param_data);
+bool mfl_set_parameter(mfl_handle_t *mfl_handle, mfl_param_t param_type, void *param_data);
+mfl_resultant_data_s *mfl_morphy_controller(mfl_handle_s *mfl_handle);
+mfl_handle_t mfl_s2t(mfl_handle_s *mfl_handle);
+mfl_handle_s *mfl_t2s(mfl_handle_t mfl_handle);
