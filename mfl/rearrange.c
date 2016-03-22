@@ -323,7 +323,7 @@ long int mfl_spr_leftotry(int ntax)
     return rleft;
 }
 
-void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon, 
+void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
                               tree **savedtrees, int ntax, int nchar, int numnodes, mfl_searchrec *searchrec, int diff)
 {
     /* Called from within any subtree pruning algorithm used in either SPR or
@@ -344,7 +344,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         up = n->edge;
         
         al = mfl_locreopt_cost(subtr->next->edge, n, up, nchar, diff);
-        trlength = searchrec->bestinrep - diff + al;
+        //trlength = searchrec->bestinrep - diff + al;
         assert(trlength >= 0);
         //dbg_printf("al: %i\n", al);
         //dbg_printf("df: %i\n", diff);
@@ -353,7 +353,7 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         
 #ifdef MFY_DEBUG
         /*** BEGIN COMMENT OUT BEFORE COMMIT ***/
-        /*int trulen = 0;
+        int trulen = 0;
         if (subtr->tocalcroot) {
             down = subtr;
             top = subtr->next->next;
@@ -366,13 +366,13 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         mfl_join_nodes(top, up);
         mfl_join_nodes(down, n);
         
-        mfl_temproot(swapingon, 0, ntax);*/
-        //mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
-        //trulen = 0;
-        //mfl_fitch_preorder(swapingon->root, nchar, &trulen);
-        //trulen = mfl_get_treelen(swapingon, ntax, nchar, &searchrec->bestinrep);
+        mfl_temproot(swapingon, 0, ntax);
+        mfl_count_postorder(swapingon->root, &trulen, nchar, NULL);
+        trulen = 0;
+        mfl_fitch_preorder(swapingon->root, nchar, &trulen);
+        trulen = mfl_get_treelen(swapingon, ntax, nchar, &searchrec->bestinrep);
         //tui_get_treelen(swapingon->root, nchar, numnodes, ntax, swapingon->trnodes);
-        //mfl_undo_temproot(ntax, swapingon);
+        mfl_undo_temproot(ntax, swapingon);
         
         /*int m=0, ct=0;
         for (m = 0; m < nchar; ++m) {
@@ -396,8 +396,8 @@ void mfl_regrafting_traversal(node *n, node *subtr, tree *swapingon,
         //dbg_printf("diff:      %i\n", diff);
         //dbg_printf("al:        %i\n\n", al);
         
-        //trlength = trulen;
-        //mfl_join_nodes(n, up);
+        trlength = trulen;
+        mfl_join_nodes(n, up);
         /*** END COMMENT OUT BEFORE COMMIT ***/
 #endif
         
