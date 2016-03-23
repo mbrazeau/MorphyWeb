@@ -180,7 +180,7 @@ int     mfl_check_invalid_newick(char *newick_input);
 bool    mfl_newick_string_is_rooted(char *newick_string);
 
 /* In mfl_brwap.c */
-bool mfl_heuristic_search(mfl_handle_s *mfl_handle);
+bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);
 
 /* in mfyinterface.c*/
 bool                    mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data);
