@@ -7,15 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5159B80E1CA11D6100498FD0 /* mfl_characters.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8061CA11D6100498FD0 /* mfl_characters.c */; settings = {ASSET_TAGS = (); }; };
-		5159B80F1CA11D6100498FD0 /* mfl_error.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8071CA11D6100498FD0 /* mfl_error.c */; settings = {ASSET_TAGS = (); }; };
-		5159B8101CA11D6100498FD0 /* mfl_evaluate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8081CA11D6100498FD0 /* mfl_evaluate.c */; settings = {ASSET_TAGS = (); }; };
-		5159B8111CA11D6100498FD0 /* mfl_initialise.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8091CA11D6100498FD0 /* mfl_initialise.c */; settings = {ASSET_TAGS = (); }; };
-		5159B8121CA11D6100498FD0 /* mfl_newick.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B80A1CA11D6100498FD0 /* mfl_newick.c */; settings = {ASSET_TAGS = (); }; };
-		5159B8131CA11D6100498FD0 /* mfl_starttree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B80B1CA11D6100498FD0 /* mfl_starttree.c */; settings = {ASSET_TAGS = (); }; };
-		5159B8141CA11D6100498FD0 /* mfl_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B80C1CA11D6100498FD0 /* mfl_tree.c */; settings = {ASSET_TAGS = (); }; };
 		5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8161CA1915100498FD0 /* mfyinterface.c */; settings = {ASSET_TAGS = (); }; };
 		51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F991CA19995009EEDF2 /* mfl_brswap.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA31CA27DFA009EEDF2 /* mfl_initialise.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA41CA27DFA009EEDF2 /* mfl_newick.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA61CA27DFA009EEDF2 /* mfl_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */; settings = {ASSET_TAGS = (); }; };
 		8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* Morphy.1 */; };
 		E117201F1631602A0021AAA7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 /* End PBXBuildFile section */
@@ -34,22 +33,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5159B8061CA11D6100498FD0 /* mfl_characters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_characters.c; path = ../../Morphy_2/Morphy/mfl_characters.c; sourceTree = "<group>"; };
-		5159B8071CA11D6100498FD0 /* mfl_error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_error.c; path = ../../Morphy_2/Morphy/mfl_error.c; sourceTree = "<group>"; };
-		5159B8081CA11D6100498FD0 /* mfl_evaluate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_evaluate.c; path = ../../Morphy_2/Morphy/mfl_evaluate.c; sourceTree = "<group>"; };
-		5159B8091CA11D6100498FD0 /* mfl_initialise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_initialise.c; path = ../../Morphy_2/Morphy/mfl_initialise.c; sourceTree = "<group>"; };
-		5159B80A1CA11D6100498FD0 /* mfl_newick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_newick.c; path = ../../Morphy_2/Morphy/mfl_newick.c; sourceTree = "<group>"; };
-		5159B80B1CA11D6100498FD0 /* mfl_starttree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_starttree.c; path = ../../Morphy_2/Morphy/mfl_starttree.c; sourceTree = "<group>"; };
-		5159B80C1CA11D6100498FD0 /* mfl_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfl_tree.c; path = ../../Morphy_2/Morphy/mfl_tree.c; sourceTree = "<group>"; };
 		5159B8151CA1915100498FD0 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
 		5159B8161CA1915100498FD0 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
 		51D40F981CA19892009EEDF2 /* morphy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = morphy.h; sourceTree = "<group>"; };
 		51D40F991CA19995009EEDF2 /* mfl_brswap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_brswap.c; sourceTree = "<group>"; };
+		51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_characters.c; sourceTree = "<group>"; };
+		51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_evaluate.c; sourceTree = "<group>"; };
+		51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_initialise.c; sourceTree = "<group>"; };
+		51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_newick.c; sourceTree = "<group>"; };
+		51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_starttree.c; sourceTree = "<group>"; };
+		51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_tree.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* Morphy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Morphy; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6A0FF2C0290799A04C91782 /* Morphy.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Morphy.1; sourceTree = "<group>"; };
-		E114C9DF1628C5BB0024F43D /* MorphyPyUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MorphyPyUI.cpp; sourceTree = "<group>"; };
-		E114C9E01628C5BB0024F43D /* MorphyPyUIcmds.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MorphyPyUIcmds.cpp; sourceTree = "<group>"; };
-		E114C9E21628C5BB0024F43D /* morphyui.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = morphyui.py; sourceTree = "<group>"; };
 		E134E0D114D02F98001A1A63 /* NexusParse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusParse.cpp; sourceTree = "<group>"; };
 		E134E0D214D02F98001A1A63 /* NexusParse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NexusParse.h; sourceTree = "<group>"; };
 		E134E0D314D02F98001A1A63 /* NexusReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusReader.cpp; sourceTree = "<group>"; };
@@ -86,7 +81,6 @@
 			isa = PBXGroup;
 			children = (
 				08FB7795FE84155DC02AAC07 /* Source */,
-				E114C9D71628C5BB0024F43D /* pyUI */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
@@ -121,30 +115,19 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
-		E114C9D71628C5BB0024F43D /* pyUI */ = {
-			isa = PBXGroup;
-			children = (
-				E114C9DF1628C5BB0024F43D /* MorphyPyUI.cpp */,
-				E114C9E01628C5BB0024F43D /* MorphyPyUIcmds.cpp */,
-				E114C9E21628C5BB0024F43D /* morphyui.py */,
-			);
-			path = pyUI;
-			sourceTree = "<group>";
-		};
 		E1ACBC9214A8BD13005BB9D5 /* mfl */ = {
 			isa = PBXGroup;
 			children = (
 				5159B8151CA1915100498FD0 /* mfl.h */,
 				51D40F981CA19892009EEDF2 /* morphy.h */,
+				51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */,
+				51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */,
+				51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */,
+				51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */,
+				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
+				51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */,
 				5159B8161CA1915100498FD0 /* mfyinterface.c */,
 				51D40F991CA19995009EEDF2 /* mfl_brswap.c */,
-				5159B8061CA11D6100498FD0 /* mfl_characters.c */,
-				5159B8071CA11D6100498FD0 /* mfl_error.c */,
-				5159B8081CA11D6100498FD0 /* mfl_evaluate.c */,
-				5159B8091CA11D6100498FD0 /* mfl_initialise.c */,
-				5159B80A1CA11D6100498FD0 /* mfl_newick.c */,
-				5159B80B1CA11D6100498FD0 /* mfl_starttree.c */,
-				5159B80C1CA11D6100498FD0 /* mfl_tree.c */,
 				E1D5259A14C94BCE0079F5EC /* Makefile */,
 			);
 			path = mfl;
@@ -233,16 +216,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5159B8121CA11D6100498FD0 /* mfl_newick.c in Sources */,
-				5159B8141CA11D6100498FD0 /* mfl_tree.c in Sources */,
-				5159B8101CA11D6100498FD0 /* mfl_evaluate.c in Sources */,
-				5159B8111CA11D6100498FD0 /* mfl_initialise.c in Sources */,
+				51D40FA31CA27DFA009EEDF2 /* mfl_initialise.c in Sources */,
 				E117201F1631602A0021AAA7 /* main.c in Sources */,
-				5159B8131CA11D6100498FD0 /* mfl_starttree.c in Sources */,
 				51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */,
 				5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */,
-				5159B80E1CA11D6100498FD0 /* mfl_characters.c in Sources */,
-				5159B80F1CA11D6100498FD0 /* mfl_error.c in Sources */,
+				51D40FA61CA27DFA009EEDF2 /* mfl_tree.c in Sources */,
+				51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */,
+				51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */,
+				51D40FA41CA27DFA009EEDF2 /* mfl_newick.c in Sources */,
+				51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

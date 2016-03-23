@@ -27,7 +27,7 @@ void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
 {
     mfl_node_t *p = NULL;
     
-    if (parent->nodet_tip_num) {
+    if (parent->nodet_tip) {
         return;
     }
     

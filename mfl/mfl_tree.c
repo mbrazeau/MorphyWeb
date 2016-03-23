@@ -230,6 +230,20 @@ void mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int n
     
 }
 
+void mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
+{
+    int i = 0;
+    
+    for (i = 0; nodearray[i]; ++i) {
+        nodearray[i]->nodet_index = i;
+        if (i < num_taxa) {
+            nodearray[i]->nodet_tip = i + 1;
+        }
+        else {
+            nodearray[i]->nodet_tip = 0;
+        }
+    }
+}
 
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes)
 {

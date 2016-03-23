@@ -71,11 +71,13 @@ typedef struct {
     mfl_resultant_data_s    *resultant_data;
 } mfl_handle_s;
 
+
 typedef struct mfl_node_t {
 	struct mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
 	char *nodet_tipname;                        // Name of the tip from the dataset.
-	int *nodet_tip_num;                         // 1-based identifier of terminal. Assigned 0 if node is internal.
+	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array.
+    int nodet_ring_id;                          // All members of the same ring should have the same id number.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
 	int nodet_uppass_visited;                   // Indicates successful visit from an uppass traversal.
@@ -183,6 +185,7 @@ bool    mfl_newick_string_is_rooted(char *newick_string);
 bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);
 
 /* in mfyinterface.c*/
+void                    mfl_free_input_data(mfl_handle_s *mfl_struct);
 bool                    mfl_set_ntax(mfl_handle_s *mfl_struct, void *param_data);
 bool                    mfl_set_nchar(mfl_handle_s *mfl_struct, void *param_data);
 bool                    mfl_set_searchtype(mfl_handle_s *mfl_struct, void *param_data);
