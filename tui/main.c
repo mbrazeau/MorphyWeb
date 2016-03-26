@@ -18,6 +18,9 @@ int main (void)
     
     newtree = mfl_alloctree_with_nodes(num_taxa);
     
+    /* Setting up a binary fork to start testing some of the new functions. Currently hard-coded*/
+    //mfl_create_binary_fork(newtree->treet_treenodes[num_taxa], newtree->treet_treenodes[0], newtree->treet_treenodes[1]);
+    
     dbg_printf("Free the tree\n\n");
     
     mfl_free_tree(newtree, num_taxa, num_nodes);

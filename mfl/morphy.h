@@ -148,6 +148,8 @@ typedef struct mfl_searchrec_t {
 /* In mfl_starttree.c */
 
 /* In mfl_tree.c */
+void            mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa);
+void            mfl_initialise_ring_node(mfl_node_t *bottom_node);
 mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches);
 void            mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2);
 void            mfl_destroy_n_nary_ring(mfl_node_t *bottom_node);
