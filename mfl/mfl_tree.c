@@ -11,7 +11,7 @@ int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
     
     int num_nodes = 0;
     
-    num_nodes = num_nodes + num_taxa;
+    num_nodes = 2 * num_taxa - 1;
     
     return num_nodes;
 }
