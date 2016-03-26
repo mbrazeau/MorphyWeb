@@ -162,7 +162,6 @@ void mfl_set_internal_nodes_to_rings(mfl_nodearray_t nodearray, int num_taxa, in
 
 }
 
-
 mfl_node_t * mfl_alloc_node(void)
 {
     mfl_node_t *newnode = NULL;
@@ -333,21 +332,42 @@ bool mfl_check_is_in_ring(mfl_node_t *start)
     return is_ring;
 }
 
-mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_nodearray_t nodearray, mfl_node_t *bottom_node, int num_branches, int num_nodes)
+void mfl_initialise_ring_node(mfl_node_t *bottom_node)
+{
+    mfl_node_t *p = NULL;
+    
+    if (!bottom_node->nodet_isbottom) {
+        dbg_printf("Error in function calling mfl_initialise_ring_node(): node passed is not a bottom node.\n");
+        return;
+    }
+    
+    do {
+        p = bottom_node->nodet_next;
+        p->nodet_isbottom = 0;
+        p->nodet_index = bottom_node->nodet_index;
+        
+        /* Dependeing on how we manage character data at internal node rings, we may choose to point all the charstate
+         * arrays to a single piece of data, rather than each node having its own character memory */
+        
+    } while (p != bottom_node);
+    
+}
+
+mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches)
 {
     int i = 0;
     mfl_node_t *new_node = NULL;
     mfl_node_t *node_p = NULL;
     
     if (!mfl_node_is_available(bottom_node)) {
-        dbg_printf("Warning in function calling mfl_make_new_n_ary_ring_node: selected node is unavailable. Return is NULL pointer.\n");
+        dbg_printf("Warning in function calling mfl_make_new_n_ary_ring_node(): selected node is unavailable. Return is NULL pointer.\n");
         return NULL;
     }
     
     node_p = bottom_node;
     
     for (i = 0; i < num_branches; ++i) {
-        new_node = mfl_get_next_available_node(nodearray, num_nodes);
+        new_node = mfl_alloc_node();
         node_p->nodet_next = new_node;
         node_p = new_node;
     }
@@ -364,6 +384,39 @@ mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_nodearray_t nodearray, mfl_node_t *
     return bottom_node;
 }
 
+
+void mfl_destroy_n_nary_ring(mfl_node_t *bottom_node)
+{
+    mfl_node_t *p = NULL;
+    mfl_node_t *garbage_node = NULL;
+    
+    p = bottom_node->nodet_next;
+    
+    do {
+        garbage_node = p;
+        p = p->nodet_next;
+        free(garbage_node);
+        
+        /* Other free() calls may go here when destroying whole trees after analysis*/
+        
+    } while (p != bottom_node);
+    
+    bottom_node->nodet_next = NULL;
+    
+}
+
+void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2)
+{
+    if (!parent->nodet_next) {
+        mfl_make_new_n_ary_ring_node(parent, 2);
+    }
+    else {
+        dbg_printf("Warning in mfl_create_binary_fork(): parent node might be unavailable\n");
+    }
+    
+    mfl_join_node_edges(parent->nodet_next, child1);
+    mfl_join_node_edges(parent->nodet_next->nodet_next, child2);
+}
 
 mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 {

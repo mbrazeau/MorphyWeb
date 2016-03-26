@@ -76,8 +76,7 @@ typedef struct mfl_node_t {
 	struct mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
-	int nodet_index;                            // 0-based index of node in the node-array.
-    int nodet_ring_id;                          // All members of the same ring should have the same id number.
+	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
 	int nodet_uppass_visited;                   // Indicates successful visit from an uppass traversal.
@@ -149,7 +148,9 @@ typedef struct mfl_searchrec_t {
 /* In mfl_starttree.c */
 
 /* In mfl_tree.c */
-mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_nodearray_t nodearray, mfl_node_t *bottom_node, int num_branches, int num_nodes);
+mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches);
+void            mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2);
+void            mfl_destroy_n_nary_ring(mfl_node_t *bottom_node);
 bool            mfl_check_is_in_ring(mfl_node_t *start);
 mfl_node_t *    mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node);
 mfl_node_t *    mfl_get_next_available_node(mfl_nodearray_t nodearray, int num_nodes);
