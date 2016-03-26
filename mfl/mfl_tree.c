@@ -11,11 +11,6 @@ int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
     
     int num_nodes = 0;
     
-    // There are num_nodes - 1 internal nodes in a bifurcating rooted tree
-    // Internal nodes in each tree are composed of a 'ring' of three nodes
-    
-    num_nodes = 3 * (num_taxa - 1);
-    
     num_nodes = num_nodes + num_taxa;
     
     return num_nodes;
