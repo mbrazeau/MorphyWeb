@@ -34,6 +34,7 @@ void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     p = parent;
     do {
         p = parent->nodet_next;
+        mfl_postorder_traversal(p->nodet_edge, search_rec);
     } while (p != parent);
     
     // Some function activity here
@@ -42,6 +43,26 @@ void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     // and type of argument, which probably wouldn't be too difficult to do.
     // Function pointers are less efficient than a direct function call and
     // even less efficient than an inline function call. 
+    
+    return;
+}
+
+void mfl_preorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
+{
+    mfl_node_t *p = NULL;
+    
+    if (parent->nodet_tip) {
+        return;
+    }
+    
+    // Some function activity here
+    // Possibly follow same procedure as in mfl_postorder_traversal().
+    
+    p = parent;
+    do {
+        p = parent->nodet_next;
+        mfl_preorder_traversal(p->nodet_edge, search_rec);
+    } while (p != parent);
     
     return;
 }

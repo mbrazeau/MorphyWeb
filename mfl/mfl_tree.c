@@ -47,8 +47,8 @@ bool mfl_node_is_available(mfl_node_t *node)
 {
     bool is_available = false;
     
-    if (node->nodet_edge == NULL) {
-        if (node->nodet_next == NULL) {
+    if (node->nodet_next == NULL) {
+        if (node->nodet_edge == NULL) {
             is_available = true;
         }
     }
@@ -144,24 +144,6 @@ void mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *r
 }
 
 
-void mfl_set_internal_nodes_to_rings(mfl_nodearray_t nodearray, int num_taxa, int num_nodes)
-{
-    int i = 0;
-    int last_node = 0;
-    
-    last_node = num_nodes - 3; // Only need to increment to third-last node.
-    
-    //nodearray = nodearray + num_taxa;
-    
-    for (i = num_taxa; i <= last_node; i=i+3) {
-        mfl_make_ring(nodearray[i], nodearray[i + 1], nodearray[i + 2]);
-#ifdef MFY_DEBUG
-        //
-#endif
-    }
-
-}
-
 mfl_node_t * mfl_alloc_node(void)
 {
     mfl_node_t *newnode = NULL;
@@ -228,6 +210,7 @@ void mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int n
     
 }
 
+
 void mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
 {
     int i = 0;
@@ -242,6 +225,7 @@ void mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
         }
     }
 }
+
 
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes)
 {
@@ -336,6 +320,7 @@ bool mfl_check_is_in_ring(mfl_node_t *start)
     return is_ring;
 }
 
+
 void mfl_initialise_ring_node(mfl_node_t *bottom_node)
 {
     mfl_node_t *p = NULL;
@@ -356,6 +341,7 @@ void mfl_initialise_ring_node(mfl_node_t *bottom_node)
     } while (p != bottom_node);
     
 }
+
 
 mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches)
 {
@@ -409,6 +395,7 @@ void mfl_destroy_n_nary_ring(mfl_node_t *bottom_node)
     
 }
 
+
 void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2)
 {
     if (!parent->nodet_next) {
@@ -422,6 +409,20 @@ void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *
     mfl_join_node_edges(parent->nodet_next->nodet_next, child2);
 }
 
+
+void mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes)
+{
+    int i = 0;
+    
+    for (i = 0; i < num_nodes; ++i) {
+        nodearray[i]->nodet_index = i;
+        if (i < num_taxa) {
+            nodearray[i]->nodet_tip = i + 1;
+        }
+    }
+}
+
+
 mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 {
     int num_nodes = 0;
@@ -434,6 +435,7 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
     memset(newtree, 0, sizeof(mfl_tree_t));
     
     newtree->treet_treenodes = mfl_allocate_nodearray(num_taxa, num_nodes);
+    mfl_initialise_nodearray(newtree->treet_treenodes, num_taxa, num_nodes);
     
     return newtree;
 }
@@ -450,11 +452,10 @@ void mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_nodes)
             num_nodes = mfl_calculate_number_of_nodes_to_allocate(num_taxa);
         }
     }
-    // Free the nodes in the array
-    mfl_free_treenodes(tree_to_free->treet_treenodes, num_nodes);
     
-    // Free the node array
+    mfl_free_treenodes(tree_to_free->treet_treenodes, num_nodes);
     mfl_free_nodearray(tree_to_free->treet_treenodes);
+    
     
     /*
      * Any other allocated memory in a tree should be freed here

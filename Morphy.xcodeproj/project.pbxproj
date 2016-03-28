@@ -126,8 +126,8 @@
 				51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */,
 				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
 				51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */,
-				5159B8161CA1915100498FD0 /* mfyinterface.c */,
 				51D40F991CA19995009EEDF2 /* mfl_brswap.c */,
+				5159B8161CA1915100498FD0 /* mfyinterface.c */,
 				E1D5259A14C94BCE0079F5EC /* Makefile */,
 			);
 			path = mfl;

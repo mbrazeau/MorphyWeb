@@ -166,12 +166,12 @@ void            mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_f
 void            mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node);
 int             mfl_calculate_number_of_nodes_to_allocate(int num_taxa);
 int             mfl_node_is_in_binary_ring(mfl_node_t *test_node);
-void            mfl_set_internal_nodes_to_rings(mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
 mfl_node_t*     mfl_alloc_node(void);
 void            mfl_free_node(mfl_node_t *node);
 void            mfl_free_treenodes(mfl_nodearray_t treenodes, int num_nodes);
 void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int num_taxa);
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes);
+void            mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
 void            mfl_free_nodearray(mfl_nodearray_t nodearray);
 struct          mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_nodes);
