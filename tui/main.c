@@ -10,7 +10,7 @@ int main (void)
     
     dbg_printf("Generate a new tree\n\n");
     
-    mfl_test_newick_stuff();
+    //mfl_test_newick_stuff();
     
     mfl_tree_t *newtree;
     int num_taxa = 5;
