@@ -279,6 +279,15 @@ mfl_node_t *mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node
     
     last_in_ring = ring_start;
     
+    /* This conditional statement allows the use of this function to create a ring by 
+     * inserting the nodes one at a time. It checks that both the next pointer in the 
+     * starting node is available and that new_node is not, in fact, NULL. Otheriwise
+     * it would create a node to point its next pointer to itself and we would like 
+     * to avoid that. */
+    if (!ring_start->nodet_next && new_node) {
+        ring_start->nodet_next = ring_start;
+    }
+    
     do {
         last_in_ring=last_in_ring->nodet_next;
     } while (last_in_ring->nodet_next != ring_start);
@@ -422,6 +431,49 @@ void mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_n
     }
 }
 
+
+bool mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
+{
+    mfl_node_t *node_ptr = NULL;
+    int num_branching = 0;
+    bool is_n_ary = false;
+    
+    
+    if (!querynode->nodet_next) {
+        dbg_printf("WARNING in mfl_node_is_n_ary(): query node has no valid nodet_next pointer\n");
+        return false;
+    }
+    
+    node_ptr = querynode;
+    do {
+        node_ptr = node_ptr->nodet_next;
+        ++num_branching;
+    } while (node_ptr != querynode);
+    
+    if (num_branching == test_n_branches) {
+        return true;
+    }
+    else {
+        return false;
+    }
+    
+}
+
+
+void mfl_unroot_tree(mfl_tree_t *tree)
+{
+    mfl_node_t *root = NULL;
+    
+    if (!tree->treet_root) {
+        dbg_printf("WARNING in mfl_unroot_tree(): attempt to deroot tree with no valid pointer to root\n");
+        return;
+    }
+    
+    // If the root is binary:
+    
+    
+    // If the root is non-binary
+}
 
 mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 {

@@ -181,7 +181,7 @@ void            mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_no
 /* In mfl_starttree.c */
 
 /* In mfl_newick.c */
-int     mfl_check_invalid_newick(char *newick_input);
+int     mfl_is_valid_newick(char *newick_input);
 bool    mfl_newick_string_is_rooted(char *newick_string);
 
 /* In mfl_brwap.c */
