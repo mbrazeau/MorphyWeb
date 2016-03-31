@@ -173,6 +173,7 @@ void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_n
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes);
 void            mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
 void            mfl_free_nodearray(mfl_nodearray_t nodearray);
+void            mfl_unroot_tree(mfl_tree_t *tree);
 struct          mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_nodes);
 

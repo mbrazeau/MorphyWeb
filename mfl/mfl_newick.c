@@ -232,7 +232,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     
     if (!num_taxa) {
         /* Ideally, Newick trees will never be supplied without an NTAX value. 
-         * However, if that fails, the safest operation is to find the largest 
+         * However, if that fails, the safest operation is to find the largest
          * tip number in the string and allocate at least that many nodes. Then 
          * the tip array will always be large enough to accommodate at least
          * many terminals. */
@@ -252,9 +252,6 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     newick_position = &newick_tree;
     tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, tree_from_newick->treet_treenodes, num_taxa_local, num_nodes);
     
-    mfl_node_t *theroot = tree_from_newick->treet_root;
-    //mfl_test_newick_setup(tree_from_newick->treet_root);
-    
     return tree_from_newick;
 }
 
@@ -272,7 +269,6 @@ void mfl_test_newick_stuff()
     int num_taxa = 0;
     int num_nodes = 0;
     
-    mfl_node_t *root_of_tree_from_newick = NULL;
     mfl_tree_t *tree_from_newick = NULL;
     
     int largest = 0;

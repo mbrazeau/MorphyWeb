@@ -436,7 +436,6 @@ bool mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 {
     mfl_node_t *node_ptr = NULL;
     int num_branching = 0;
-    bool is_n_ary = false;
     
     
     if (!querynode->nodet_next) {
