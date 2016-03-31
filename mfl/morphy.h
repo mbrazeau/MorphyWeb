@@ -154,8 +154,8 @@ mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_br
 void            mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2);
 void            mfl_destroy_n_nary_ring(mfl_node_t *bottom_node);
 bool            mfl_check_is_in_ring(mfl_node_t *start);
-mfl_node_t *    mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node);
-mfl_node_t *    mfl_get_next_available_node(mfl_nodearray_t nodearray, int num_nodes);
+mfl_node_t*     mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node);
+mfl_node_t*     mfl_get_next_available_node(mfl_nodearray_t nodearray, int num_nodes);
 bool            mfl_node_is_available(mfl_node_t *node);
 void            mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2);
 void            mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2);
@@ -181,8 +181,14 @@ void            mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_no
 /* In mfl_starttree.c */
 
 /* In mfl_newick.c */
-int     mfl_is_valid_newick(char *newick_input);
-bool    mfl_newick_string_is_rooted(char *newick_string);
+int         mfl_is_valid_newick(char *newick_input);
+int         mfl_count_internal_nodes_in_newick(char *newick_string);
+bool        mfl_newick_string_is_rooted(char *newick_string);
+int         mfl_read_newick_int(char **newick_position);
+char*       mfl_find_next_opening_bracket_in_newick(char *newick_tree);
+int         mfl_seek_largest_tip_number_newick(char *newick_string);
+mfl_node_t* mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
+mfl_tree_t* mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa);
 
 /* In mfl_brwap.c */
 bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);
