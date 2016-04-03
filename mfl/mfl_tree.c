@@ -177,7 +177,7 @@ void mfl_free_treenodes(mfl_nodearray_t treenodes, int num_nodes)
 {
     int i = 0;
     
-    for (i = 0; i < num_nodes; ++i) {
+    for (i = 0; *treenodes; ++i) {
         if ((*treenodes)->nodet_next) {
             mfl_destroy_n_nary_ring(*treenodes);
         }
