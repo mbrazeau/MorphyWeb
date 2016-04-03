@@ -98,6 +98,7 @@ typedef mfl_node_t ** mfl_nodearray_t;  // A pointer of pointers to nodes used i
 typedef struct mfl_tree_t {
 	mfl_nodearray_t treet_treenodes;        // The nodes of the tree. Never point these to another instance of mfl_tree.
 	mfl_node_t *treet_root;                 // Pointer to the root of the tree.
+    mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
 	int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony
     int treet_island_id;                    // An identification number for the parent start tree.
@@ -120,11 +121,19 @@ typedef enum mfl_optimisation_t {
 typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
+/* I've proposed the use of these datablocks to organise character data. In the old version of Morphy, 
+ * we just passed a list of all the characters to the evaluation routines and they did their job by
+ * looping over all positions in the list until NCHAR. This is fine if you only have one type of 
+ * character. However, we'll ultimately have different types of character and the need to subdivide 
+ * them based on whether they are characters with inapplicability. The idea here is to pass the 
+ * evaluation functions a list of pointers to all the datablocks, processing each one at each node.
+ * This possibly isn't the only or best solution. Just an idea for now. MDB.
+ */
 typedef struct mfl_datablock_t {
     int db_n_characters;                        // The number of characters within the datablock.
     int db_n_taxa;                              // The number of taxa the datablock applies to.
     mfl_optimisation_t db_optimisation_method;  // The optimisation method applied to all characters in this datablock.
-    bool db_inapplicables;                      // 0 indicates no inapplicables; 1 means block has inapplicables.
+    bool db_inapplicables;                      // false: no inapplicables; true: has inapplicables.
     mfl_costs_t *db_costmatrix;                 // Cost matrix associated with these characters.
     charstate *db_characters;                   // The characters to which the datablock applies.
 } mfl_datablock_t;
@@ -184,7 +193,7 @@ void            mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_no
 /* In mfl_newick.c */
 int         mfl_is_valid_newick(char *newick_input);
 int         mfl_count_internal_nodes_in_newick(char *newick_string);
-bool        mfl_newick_string_is_rooted(char *newick_string);
+bool        mfl_newick_tree_is_rooted(char *newick_string);
 int         mfl_read_newick_int(char **newick_position);
 char*       mfl_find_next_opening_bracket_in_newick(char *newick_tree);
 int         mfl_seek_largest_tip_number_newick(char *newick_string);
