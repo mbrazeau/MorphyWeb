@@ -36,7 +36,7 @@ void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     
     p = parent;
     do {
-        p = parent->nodet_next;
+        p = p->nodet_next;
         mfl_postorder_traversal(p->nodet_edge, search_rec);
     } while (p != parent);
     
@@ -63,7 +63,7 @@ void mfl_preorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     
     p = parent;
     do {
-        p = parent->nodet_next;
+        p = p->nodet_next;
         mfl_preorder_traversal(p->nodet_edge, search_rec);
     } while (p != parent);
     
