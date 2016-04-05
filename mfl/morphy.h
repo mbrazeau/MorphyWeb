@@ -121,15 +121,15 @@ typedef enum mfl_optimisation_t {
 typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
-/* I've proposed the use of these datablocks to organise character data. In the old version of Morphy, 
- * we just passed a list of all the characters to the evaluation routines and they did their job by
- * looping over all positions in the list until NCHAR. This is fine if you only have one type of 
- * character. However, we'll ultimately have different types of character and the need to subdivide 
- * them based on whether they are characters with inapplicability. The idea here is to pass the 
- * evaluation functions a list of pointers to all the datablocks, processing each one at each node.
- * This possibly isn't the only or best solution. Just an idea for now. MDB.
- */
 typedef struct mfl_datablock_t {
+    /* I've proposed the use of these datablocks to organise character data. In the old version of Morphy,
+     * we just passed a list of all the characters to the evaluation routines and they did their job by
+     * looping over all positions in the list until NCHAR. This is fine if you only have one type of
+     * character. However, we'll ultimately have different types of character and the need to subdivide
+     * them based on whether they are characters with inapplicability. The idea here is to pass the
+     * evaluation functions a list of pointers to all the datablocks, processing each one at each node.
+     * This possibly isn't the only or best solution. Just an idea for now. MDB.
+     */
     int db_n_characters;                        // The number of characters within the datablock.
     int db_n_taxa;                              // The number of taxa the datablock applies to.
     mfl_optimisation_t db_optimisation_method;  // The optimisation method applied to all characters in this datablock.
@@ -145,6 +145,13 @@ typedef struct mfl_searchrec_t {
     long int sr_num_reps;
     long int sr_best_length;
 } mfl_searchrec_t;
+
+typedef struct mfl_island_data_t {
+    int isd_index;              // Each new, unique starting tree gets a new number.
+    int isd_length;             // Length of tree(s) that define the island.
+    int isd_size;               // Number of trees in the island.
+    mfl_tree_t **isd_members;   // The list of tree members stored as mfl_tree_t's.
+} mfl_island_data_t;
 
 /*
  *
