@@ -170,7 +170,7 @@ int mfl_seek_largest_tip_number_newick(char *newick_string)
 }
 
 
-mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, mfl_node_t** next, int num_taxa)
+mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa)
 {
     
     mfl_node_t *new_parent = NULL;  // A new parent node that will be returned from this function
@@ -189,19 +189,19 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     
     ++(*newick_position);
     
-    new_parent = mfl_get_next_node_from_array(next);
-    //new_parent->nodet_next = new_parent;
+    new_parent = mfl_get_next_available_node(nodearray);
+    new_parent->nodet_next = new_parent;
     
     do {
         if (**newick_position == '(') {
-            node_ptr = mfl_get_next_node_from_array(next);
+            node_ptr = mfl_get_next_available_node(nodearray);//mfl_get_next_node_from_array(next);
             mfl_insert_node_in_ring(new_parent, node_ptr);
-            new_child = mfl_traverse_newick_recursively(newick_position, nodearray, next, num_taxa);
+            new_child = mfl_traverse_newick_recursively(newick_position, nodearray, num_taxa);
             mfl_join_node_edges(node_ptr, new_child);
             
         }
         if (isdigit(**newick_position)) {
-            node_ptr = mfl_get_next_node_from_array(next);//mfl_get_next_available_node(&nodearray[num_taxa]);
+            node_ptr = mfl_get_next_available_node(&nodearray[num_taxa]);
             tip_number = mfl_read_newick_int(newick_position);
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = nodearray[tip_number-1];
@@ -258,7 +258,6 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
 {
     int num_taxa_local = 0; // If the number of taxa is not supplied by the user, it is easy to calculate it from the Newick string.
     mfl_tree_t* tree_from_newick = NULL;
-    mfl_node_t* first_internal_ptr = NULL;
     char *newicktr_copy = NULL;
     char **newick_position = NULL; // A pointer to the Newick string that can be incremented during the recursion on the string.
     
@@ -291,9 +290,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     
     tree_from_newick = mfl_alloctree_with_nodes(num_taxa_local);
     
-    first_internal_ptr = tree_from_newick->treet_treenodes[num_taxa_local];
-    
-    tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, tree_from_newick->treet_treenodes, &first_internal_ptr, num_taxa_local);
+    tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, tree_from_newick->treet_treenodes, num_taxa_local);
     
     dbg_printf("The newick string processed: %s\n", newick_tree);
     

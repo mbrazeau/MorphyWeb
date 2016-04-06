@@ -206,7 +206,7 @@ bool        mfl_newick_tree_is_rooted(char *newick_string);
 int         mfl_read_newick_int(char **newick_position);
 char*       mfl_find_next_opening_bracket_in_newick(char *newick_tree);
 int         mfl_seek_largest_tip_number_newick(char *newick_string);
-mfl_node_t* mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, mfl_node_t** next, int num_taxa);
+mfl_node_t* mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa);
 mfl_tree_t* mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa);
 
 /* In mfl_brwap.c */
