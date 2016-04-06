@@ -189,18 +189,20 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     
     ++(*newick_position);
     
-    new_parent = mfl_get_next_available_node(&nodearray[num_taxa], num_nodes);
+    new_parent = mfl_get_next_node_from_array(nodearray);
+    ++nodearray;
     
     do {
         if (**newick_position == '(') {
-            node_ptr = mfl_alloc_node();
+            node_ptr = mfl_get_next_node_from_array(nodearray);
+            ++nodearray;
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = mfl_traverse_newick_recursively(newick_position, nodearray, num_taxa, num_nodes);
             mfl_join_node_edges(node_ptr, new_child);
             
         }
         if (isdigit(**newick_position)) {
-            node_ptr = mfl_alloc_node();
+            node_ptr = mfl_get_next_node_from_array(nodearray);
             tip_number = mfl_read_newick_int(newick_position);
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = nodearray[tip_number-1];
@@ -226,6 +228,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     int num_taxa_local = 0; // If the number of taxa is not supplied by the user, it is easy to calculate it from the Newick string.
     int num_nodes = 0;
     mfl_tree_t *tree_from_newick = NULL;
+    mfl_nodearray_t node_ptrs = NULL;
     char *newicktr_copy = NULL;
     char **newick_position = NULL; // A pointer to the Newick string that can be incremented during the recursion on the string.
     
@@ -259,8 +262,9 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     newick_position = &newicktr_copy;
     
     tree_from_newick = mfl_alloctree_with_nodes(num_taxa_local);
+    node_ptrs = &tree_from_newick->treet_treenodes[num_taxa_local];
     
-    tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, tree_from_newick->treet_treenodes, num_taxa_local, num_nodes);
+    tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, node_ptrs, num_taxa_local, num_nodes);
     
     /* Process the rooting options*/
     dbg_printf("The newick string processed: %s\n", newick_tree);

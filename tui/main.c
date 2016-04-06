@@ -51,10 +51,10 @@ int main (void)
     newtree = mfl_alloctree_with_nodes(num_taxa);
     
     /* Setting up a binary fork to start testing some of the new functions. Currently hard-coded*/
-    mfl_create_binary_fork(newtree->treet_treenodes[num_taxa], newtree->treet_treenodes[0], newtree->treet_treenodes[1]);
+    mfl_create_binary_fork(newtree->treet_treenodes[num_taxa], newtree->treet_treenodes[0], newtree->treet_treenodes[1], newtree->treet_treenodes);
     
     /* Adding a hard-coded branch to the tree */
-    mfl_make_new_n_ary_ring_node(newtree->treet_treenodes[num_taxa+1], 2);
+    mfl_make_new_n_ary_ring_node(newtree->treet_treenodes[num_taxa+1], 2, newtree->treet_treenodes);
     mfl_join_node_edges(newtree->treet_treenodes[2], newtree->treet_treenodes[num_taxa + 1]->nodet_next);
     mfl_insert_branch(newtree->treet_treenodes[num_taxa + 1], newtree->treet_treenodes[num_taxa + 1]->nodet_next->nodet_next, newtree->treet_treenodes[1]);
     

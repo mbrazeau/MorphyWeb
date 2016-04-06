@@ -1,4 +1,4 @@
-/* mfl_treemaker.c
+/* mfl_tree.c
  * Allocates memory for trees, plus functions for assembling them */
 
 #include "morphy.h"
@@ -10,8 +10,7 @@ int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
      */
     
     int num_nodes = 0;
-    
-    num_nodes = 2 * num_taxa - 1;
+    num_nodes = num_taxa + 3 * (num_taxa - 1);
     
     return num_nodes;
 }
@@ -28,6 +27,16 @@ bool mfl_check_node_is_bottom(mfl_node_t *querynode)
     return is_bottom;
 }
 
+void mfl_safe_reset_node_params(mfl_node_t* node)
+{
+    /* If a node is made available, reset safe values here */
+    node->nodet_isbottom         = NULL;
+    node->nodet_isroot           = NULL;
+    node->nodet_maxsteps         = NULL;
+    node->nodet_minsteps         = NULL;
+    node->nodet_downpass_visited = NULL;
+    node->nodet_uppass_visited   = NULL;
+}
 
 void mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2)
 {
@@ -40,6 +49,14 @@ void mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2)
 {
     node1->nodet_edge = NULL;
     node2->nodet_edge = NULL;
+}
+
+
+void mfl_make_node_available(mfl_node_t *node)
+{
+    node->nodet_next = NULL;
+    node->nodet_edge = NULL;
+    mfl_safe_reset_node_params(node);
 }
 
 
@@ -57,13 +74,13 @@ bool mfl_node_is_available(mfl_node_t *node)
 }
 
 
-mfl_node_t *mfl_get_next_available_node(mfl_nodearray_t nodearray, int num_nodes)
+mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 {
     int i = 0;
     bool success = false;
     mfl_node_t *available_node = NULL;
     
-    for (i = 0; i < num_nodes; ++i) {
+    for (i = 0; nodearray; ++i) {
         if (mfl_node_is_available(*nodearray)) {
             available_node = *nodearray;
             success = true;
@@ -82,6 +99,22 @@ mfl_node_t *mfl_get_next_available_node(mfl_nodearray_t nodearray, int num_nodes
 #endif
     
     return available_node;
+}
+
+
+mfl_node_t * mfl_get_next_node_from_array(mfl_nodearray_t nodearray)
+{
+    mfl_node_t *newnode = NULL;
+    
+    if (mfl_node_is_available(*nodearray)) {
+        newnode = *nodearray;
+    }
+    else {
+        newnode = mfl_get_next_available_node(nodearray);
+    }
+    
+    
+    return newnode;
 }
 
 
@@ -173,15 +206,14 @@ void mfl_free_node(mfl_node_t *node)
 }
 
 
-void mfl_free_treenodes(mfl_nodearray_t treenodes, int num_nodes)
+void mfl_free_treenodes(mfl_nodearray_t treenodes)
 {
     int i = 0;
     
     for (i = 0; *treenodes; ++i) {
-        if ((*treenodes)->nodet_next) {
-            mfl_destroy_n_nary_ring(*treenodes);
+        if (*treenodes) {
+            mfl_free_node(*treenodes);
         }
-        mfl_free_node(*treenodes);
         ++treenodes;
     }
 }
@@ -352,7 +384,7 @@ void mfl_initialise_ring_node(mfl_node_t *bottom_node)
 }
 
 
-mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches)
+mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches, mfl_nodearray_t nodes)
 {
     int i = 0;
     mfl_node_t *new_node = NULL;
@@ -366,7 +398,7 @@ mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branch
     node_p = bottom_node;
     
     for (i = 0; i < num_branches; ++i) {
-        new_node = mfl_alloc_node();
+        new_node = mfl_get_next_available_node(nodes);
         node_p->nodet_next = new_node;
         node_p = new_node;
     }
@@ -405,10 +437,10 @@ void mfl_destroy_n_nary_ring(mfl_node_t *bottom_node)
 }
 
 
-void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2)
+void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2, mfl_nodearray_t nodes)
 {
     if (!parent->nodet_next) {
-        mfl_make_new_n_ary_ring_node(parent, 2);
+        mfl_make_new_n_ary_ring_node(parent, 2, nodes);
     }
     else {
         dbg_printf("Warning in mfl_create_binary_fork(): parent node might be unavailable\n");
@@ -504,9 +536,8 @@ void mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_nodes)
         }
     }
     
-    mfl_free_treenodes(tree_to_free->treet_treenodes, num_nodes);
+    mfl_free_treenodes(tree_to_free->treet_treenodes);
     mfl_free_nodearray(tree_to_free->treet_treenodes);
-    
     
     /*
      * Any other allocated memory in a tree should be freed here
