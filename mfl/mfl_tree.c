@@ -102,23 +102,6 @@ mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 }
 
 
-mfl_node_t * mfl_get_next_node_from_array(mfl_node_t **node)
-{
-    mfl_node_t *newnode = NULL;
-    
-    if (mfl_node_is_available(*node)) {
-        newnode = *node;
-        ++(*node);
-    }
-    else {
-        dbg_printf("ERROR in mfl_get_next_node_from_array(): selected node is unavailable; could not return node\n");
-        newnode = NULL;
-    }
-    
-    return newnode;
-}
-
-
 mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top)
 {
     mfl_node_t * source_branch_upper = NULL;
