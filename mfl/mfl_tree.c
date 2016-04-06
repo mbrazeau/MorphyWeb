@@ -93,7 +93,7 @@ mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
     
 #ifdef MFY_DEBUG
     if (!success) {
-        dbg_printf("Error in mfl_get_next_available_node(): unable to find unused node\n");
+        dbg_printf("ERROR in mfl_get_next_available_node(): unable to find unused node\n");
         dbg_printf("All nodes either used or pointing to garbage\n\b");
     }
 #endif
@@ -102,17 +102,18 @@ mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 }
 
 
-mfl_node_t * mfl_get_next_node_from_array(mfl_nodearray_t nodearray)
+mfl_node_t * mfl_get_next_node_from_array(mfl_node_t **node)
 {
     mfl_node_t *newnode = NULL;
     
-    if (mfl_node_is_available(*nodearray)) {
-        newnode = *nodearray;
+    if (mfl_node_is_available(*node)) {
+        newnode = *node;
+        ++(*node);
     }
     else {
-        newnode = mfl_get_next_available_node(nodearray);
+        dbg_printf("ERROR in mfl_get_next_node_from_array(): selected node is unavailable; could not return node\n");
+        newnode = NULL;
     }
-    
     
     return newnode;
 }
@@ -208,14 +209,16 @@ void mfl_free_node(mfl_node_t *node)
 
 void mfl_free_treenodes(mfl_nodearray_t treenodes)
 {
-    int i = 0;
+    int counter = 0;
     
-    for (i = 0; *treenodes; ++i) {
+    do {
+        ++counter;
         if (*treenodes) {
             mfl_free_node(*treenodes);
         }
         ++treenodes;
-    }
+    } while (*treenodes);
+    
 }
 
 
@@ -305,7 +308,7 @@ mfl_node_t *mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node
          that the nodet_next pointer will always point to either another node or NULL.
          It is not that this is necessarily bad, but this operation would seem to be 
          unlikely. This rule will help avoid unexpected behaviour by other functions */
-        dbg_printf("Warning in function calling mfl_put_node_in_ring(): cannot point nodet_next of one node to itself\n");
+        dbg_printf("Warning in function calling mfl_insert_node_in_ring(): cannot point nodet_next of one node to itself\n");
         return NULL;
     }
     
@@ -524,17 +527,8 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 }
 
 
-void mfl_free_tree(mfl_tree_t *tree_to_free, int num_taxa, int num_nodes)
+void mfl_free_tree(mfl_tree_t *tree_to_free)
 {
-    
-    if (!num_nodes) {
-        if (!num_taxa) {
-            dbg_printf("Error in mfl_allocate_node_array: insufficient data for sizing node array\n");
-        }
-        else {
-            num_nodes = mfl_calculate_number_of_nodes_to_allocate(num_taxa);
-        }
-    }
     
     mfl_free_treenodes(tree_to_free->treet_treenodes);
     mfl_free_nodearray(tree_to_free->treet_treenodes);

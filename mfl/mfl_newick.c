@@ -170,7 +170,7 @@ int mfl_seek_largest_tip_number_newick(char *newick_string)
 }
 
 
-mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa, int num_nodes)
+mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, mfl_node_t** next, int num_taxa)
 {
     
     mfl_node_t *new_parent = NULL;  // A new parent node that will be returned from this function
@@ -189,20 +189,19 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     
     ++(*newick_position);
     
-    new_parent = mfl_get_next_node_from_array(nodearray);
-    ++nodearray;
+    new_parent = mfl_get_next_node_from_array(next);
+    //new_parent->nodet_next = new_parent;
     
     do {
         if (**newick_position == '(') {
-            node_ptr = mfl_get_next_node_from_array(nodearray);
-            ++nodearray;
+            node_ptr = mfl_get_next_node_from_array(next);
             mfl_insert_node_in_ring(new_parent, node_ptr);
-            new_child = mfl_traverse_newick_recursively(newick_position, nodearray, num_taxa, num_nodes);
+            new_child = mfl_traverse_newick_recursively(newick_position, nodearray, next, num_taxa);
             mfl_join_node_edges(node_ptr, new_child);
             
         }
         if (isdigit(**newick_position)) {
-            node_ptr = mfl_get_next_node_from_array(nodearray);
+            node_ptr = mfl_get_next_node_from_array(next);//mfl_get_next_available_node(&nodearray[num_taxa]);
             tip_number = mfl_read_newick_int(newick_position);
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = nodearray[tip_number-1];
@@ -223,12 +222,43 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
 }
 
 
+void mfl_test_newick_setup(mfl_node_t *node)
+{
+    mfl_node_t *p = NULL;
+    int i = 0;
+    
+    if (node->nodet_tip) {
+        dbg_printf("tip: %i\n", node->nodet_tip);
+        return;
+    }
+    
+    p = node->nodet_next;
+    
+    
+    do {
+        mfl_test_newick_setup(p->nodet_edge);
+        p = p->nodet_next;
+    } while (p != node);
+    
+    dbg_printf("Node %i: ", node->nodet_index);
+    
+    p = node->nodet_next;
+    
+    do {
+        ++i;
+        dbg_printf("child %i: %i ", i, p->nodet_edge->nodet_index);
+        p = p->nodet_next;
+    } while (p != node);
+    dbg_printf("\n");
+    
+    return;
+}
+
 mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
 {
     int num_taxa_local = 0; // If the number of taxa is not supplied by the user, it is easy to calculate it from the Newick string.
-    int num_nodes = 0;
-    mfl_tree_t *tree_from_newick = NULL;
-    mfl_nodearray_t node_ptrs = NULL;
+    mfl_tree_t* tree_from_newick = NULL;
+    mfl_node_t* first_internal_ptr = NULL;
     char *newicktr_copy = NULL;
     char **newick_position = NULL; // A pointer to the Newick string that can be incremented during the recursion on the string.
     
@@ -257,23 +287,26 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
         num_taxa_local = num_taxa;
     }
     
-    num_nodes = mfl_calculate_number_of_nodes_to_allocate(num_taxa_local);
-    
     newick_position = &newicktr_copy;
     
     tree_from_newick = mfl_alloctree_with_nodes(num_taxa_local);
-    node_ptrs = &tree_from_newick->treet_treenodes[num_taxa_local];
     
-    tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, node_ptrs, num_taxa_local, num_nodes);
+    first_internal_ptr = tree_from_newick->treet_treenodes[num_taxa_local];
+    
+    tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, tree_from_newick->treet_treenodes, &first_internal_ptr, num_taxa_local);
+    
+    dbg_printf("The newick string processed: %s\n", newick_tree);
+    
+    mfl_test_newick_setup(tree_from_newick->treet_root);
     
     /* Process the rooting options*/
-    dbg_printf("The newick string processed: %s\n", newick_tree);
     if (!mfl_newick_tree_is_rooted(newick_tree)) {
         /* FINISH: Unroot the tree. */
     }
     
     return tree_from_newick;
 }
+
 
 void mfl_test_newick_stuff()
 {
@@ -284,7 +317,7 @@ void mfl_test_newick_stuff()
     char temp_example_newick_for_writing3[] = "temp_examp3=[&R] (2,(6,((3,4),5),1));";
     char temp_example_newick_for_writing4[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));"; // Polytomy and multi-digit tip number not in sequence
     char temp_example_newick_for_writing5[] = "temp_examp5=[&R] (((((1,4),5),3),2),6);";
-    char temp_example_newick_for_writing6[] = "temp_examp5=[&R] (((((1,4),5),3),2),6,(7,8));";
+    char temp_example_newick_for_writing6[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
     
     char *sample_newick = NULL;
     
@@ -307,6 +340,6 @@ void mfl_test_newick_stuff()
     
     tree_from_newick = mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
     
-    mfl_free_tree(tree_from_newick, 5, (2*5-1));
+    mfl_free_tree(tree_from_newick);
     
 }

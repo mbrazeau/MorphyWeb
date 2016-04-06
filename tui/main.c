@@ -2,37 +2,7 @@
 
 void mfl_test_newick_stuff();
 
-void mfl_test_newick_setup(mfl_node_t *node)
-{
-    mfl_node_t *p = NULL;
-    int i = 0;
-    
-    if (node->nodet_tip) {
-        dbg_printf("tip: %i\n", node->nodet_tip);
-        return;
-    }
-    
-    p = node->nodet_next;
-    
-    
-    do {
-        mfl_test_newick_setup(p->nodet_edge);
-        p = p->nodet_next;
-    } while (p != node);
-    
-    dbg_printf("Node %i: ", node->nodet_index);
-    
-    p = node->nodet_next;
-    
-    do {
-        ++i;
-        dbg_printf("child %i: %i ", i, p->nodet_edge->nodet_index);
-        p = p->nodet_next;
-    } while (p != node);
-    dbg_printf("\n");
-    
-    return;
-}
+
 
 int main (void)
 {
@@ -60,7 +30,7 @@ int main (void)
     
     dbg_printf("Free the tree\n\n");
     
-    mfl_free_tree(newtree, num_taxa, num_nodes);
+    mfl_free_tree(newtree);
     
     dbg_printf("Exit the program\n\n");
     
