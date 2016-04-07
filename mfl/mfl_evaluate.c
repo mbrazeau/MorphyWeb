@@ -26,6 +26,22 @@ long double mfl_get_transformation_cost(mfl_costs_t weights, int from_state, int
     return return_weight;
 }
 
+int mfl_evaluate_downpass(mfl_node_t *node)
+{
+    int steps = 0;
+    mfl_node_t *leftchild = NULL;
+    mfl_node_t *rightchild = NULL;
+    
+    leftchild = node->nodet_next->nodet_edge;
+    rightchild = node->nodet_next->nodet_next->nodet_edge;
+    
+    // For each data partition at the node
+        // Reconstruct the downpass set according to the correct method
+        // Update the number of steps as needed
+    
+    return steps;
+}
+
 void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
 {
     mfl_node_t *p = NULL;

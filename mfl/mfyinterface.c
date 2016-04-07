@@ -9,7 +9,7 @@
 #include "morphy.h"
 #include <sstream>
 
-bool mfl_heuristic           (mfl_handle_t mfl_handle)
+bool mfl_heuristic(mfl_handle_t mfl_handle)
 {
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
 

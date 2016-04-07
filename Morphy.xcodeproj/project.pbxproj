@@ -120,6 +120,7 @@
 			children = (
 				5159B8151CA1915100498FD0 /* mfl.h */,
 				51D40F981CA19892009EEDF2 /* morphy.h */,
+				5159B8161CA1915100498FD0 /* mfyinterface.c */,
 				51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */,
 				51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */,
 				51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */,
@@ -127,7 +128,6 @@
 				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
 				51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */,
 				51D40F991CA19995009EEDF2 /* mfl_brswap.c */,
-				5159B8161CA1915100498FD0 /* mfyinterface.c */,
 				E1D5259A14C94BCE0079F5EC /* Makefile */,
 			);
 			path = mfl;

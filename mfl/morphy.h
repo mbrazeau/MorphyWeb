@@ -25,7 +25,7 @@
  *
  */
 
-#define MORPHY_DEFAULT_TREE_LIMIT 200
+#define MORPHY_DEFAULT_TREE_LIMIT 500
 
 /*
  *
@@ -37,16 +37,16 @@
 typedef uint64_t charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
 typedef struct {
-    long int n_rearrangements; // Number of tree topologies visited
-    int n_savetrees;    // Number of trees found and/or saved
-    int bestlength;     // Length of the best tree
-    time_t searcht;     // Time in search
-    char** newicktrees; // Vector of trees in newick format
-    string **texttrees;   // Array of trees drawn as text
-    int num_islands;    // Number of parsimony islands hit
-    int *island_lengths;       // Lengths of each island
-    int *island_sizes;
-    int *times_hit_islands;      // List of times each island was hit
+    long int n_rearrangements;  // Number of tree topologies visited
+    int n_savetrees;            // Number of trees found and/or saved
+    int bestlength;             // Length of the best tree
+    time_t searcht;             // Time in search
+    char** newicktrees;         // Vector of trees in newick format
+    string **texttrees;         // Array of trees drawn as text
+    int num_islands;            // Number of parsimony islands hit
+    int *island_lengths;        // Lengths of each island
+    int *island_sizes;          // Number of trees in an island
+    int *times_hit_islands;     // List of times each island was hit
 #ifdef VERSION_1_5
     double consist_ind; // Consistency index
     double ret_ind;     // Retention index
@@ -61,6 +61,11 @@ typedef struct {
     mfl_search_t            search_type;
     int                     n_iterations;
     int                     n_treelimit;
+    int*                    fitch_list;
+    int*                    wagner_list;
+    int*                    dollo_list;
+    int*                    irreversible_list;
+    int*                    usertype_list;
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
     char                    *input_data;
@@ -71,9 +76,38 @@ typedef struct {
     mfl_resultant_data_s    *resultant_data;
 } mfl_handle_s;
 
+//typedef mfl_node_t mfl_node_t;
+
+typedef long double *mfl_costs_t;       // A matrix of transition costs.
+
+typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent); // Prototype for a function that performs parsimony calculations at a node.
+
+typedef struct mfl_datapart_t {
+    /* I've proposed the use of these data partitions to organise character data. In the old version of
+     * Morphy, we just passed a list of all the characters to the evaluation routines and they did their
+     * job by looping over all positions in the list until NCHAR. This is fine if you only have one type
+     * of character. However, we'll ultimately have different types of character and the need to subdivide
+     * them based on whether they are characters with inapplicability. The idea here is to pass the
+     * evaluation functions a list of pointers to all the datablocks, processing each one at each node.
+     * This possibly isn't the only or best solution. Just an idea for now. MDB.
+     */
+    int dp_n_characters;                        // The number of characters within the datablock.
+    int dp_n_taxa;                              // The number of taxa the datablock applies to.
+    mfl_optimisation_t dp_optimisation_method;  // The optimisation method applied to all characters in this datablock.
+    bool dp_inapplicables;                      // false: no inapplicables; true: has inapplicables.
+    mfl_costs_t *dp_costmatrix;                 // Cost matrix associated with these characters.
+    
+    mfl_parsim_fn dp_downpass;                  // The downpass parsimony function
+    mfl_parsim_fn dp_uppass;                    // The uppass parsimony function
+    
+    charstate *dp_downpass_set;                 // The characters to which the datablock applies.
+    charstate *dp_uppass_set;
+    charstate *dp_subtree_downpass_set;
+    charstate *dp_subtree_uppass_set;
+} mfl_datapart_t;
 
 typedef struct mfl_node_t {
-	struct mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
+	mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
@@ -85,10 +119,8 @@ typedef struct mfl_node_t {
     double nodet_mean_branchlen;                // Mean branch length.
     int nodet_isroot;                           // Set non-zero if this node is the root.
     long long int nodet_tree_index;             // Identity of the tree to which this node belongs.
-    charstate *nodet_original_firstpass;        // The downpass optimisations of the starting tree.
-    charstate *nodet_original_secondpass;       // The uppass optimisations of the starting tree.
-    charstate *nodet_subtree_firstpass_set;     // The downpass optimisations after the tree is broken.
-	charstate *nodet_subtree_secondpass_set;    // The uppass optimisations after the tree is broken.
+    int nodet_num_partitions;
+    mfl_datapart_t **nodet_dataparts;
 } mfl_node_t;
 
 
@@ -100,7 +132,7 @@ typedef struct mfl_tree_t {
 	mfl_node_t *treet_root;                 // Pointer to the root of the tree.
     mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
-	int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony
+	int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
     int treet_island_id;                    // An identification number for the parent start tree.
     int *treet_compressed_tree;             // The integer encoding of the tree for tree comparisons and saving memory
 	int *treet_comptree_holder;             // Holder for comparisons.
@@ -109,41 +141,11 @@ typedef struct mfl_tree_t {
 } mfl_tree_t;
 
 
-typedef enum mfl_optimisation_t {
-    MFL_IS_FITCH,
-    MFL_IS_WAGNER,
-    MFL_IS_DOLLO,
-    MFL_IS_IRREVERSIBLE,
-    MFL_IS_COST_MATRIX,
-} mfl_optimisation_t;
-
-
-typedef long double *mfl_costs_t;       // A matrix of transition costs.
-
-
-typedef struct mfl_datablock_t {
-    /* I've proposed the use of these datablocks to organise character data. In the old version of Morphy,
-     * we just passed a list of all the characters to the evaluation routines and they did their job by
-     * looping over all positions in the list until NCHAR. This is fine if you only have one type of
-     * character. However, we'll ultimately have different types of character and the need to subdivide
-     * them based on whether they are characters with inapplicability. The idea here is to pass the
-     * evaluation functions a list of pointers to all the datablocks, processing each one at each node.
-     * This possibly isn't the only or best solution. Just an idea for now. MDB.
-     */
-    int db_n_characters;                        // The number of characters within the datablock.
-    int db_n_taxa;                              // The number of taxa the datablock applies to.
-    mfl_optimisation_t db_optimisation_method;  // The optimisation method applied to all characters in this datablock.
-    bool db_inapplicables;                      // false: no inapplicables; true: has inapplicables.
-    mfl_costs_t *db_costmatrix;                 // Cost matrix associated with these characters.
-    charstate *db_characters;                   // The characters to which the datablock applies.
-} mfl_datablock_t;
-
-
-typedef mfl_datablock_t *mfl_chardata_t;    // Pointer to a set of different datablocks.
-
 typedef struct mfl_searchrec_t {
     long int sr_num_reps;
     long int sr_best_length;
+    int      sr_num_partitions;
+    
 } mfl_searchrec_t;
 
 typedef struct mfl_island_data_t {
@@ -152,6 +154,9 @@ typedef struct mfl_island_data_t {
     int isd_size;               // Number of trees in the island.
     mfl_tree_t **isd_members;   // The list of tree members stored as mfl_tree_t's.
 } mfl_island_data_t;
+
+
+
 
 /*
  *

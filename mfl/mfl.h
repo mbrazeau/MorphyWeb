@@ -13,6 +13,8 @@
 #include <vector>
 #include <stdexcept>
 
+#define NUM_CHARDATA_TYPES 5    // Fitch, Wagner, Dollo, Irreversible, User (stepmatrix)
+
 using namespace std;
 
 typedef enum
@@ -172,6 +174,14 @@ typedef enum
 
     MFL_GAP_MAX
 } mfl_gap_t;
+
+typedef enum mfl_optimisation_t {
+    MFL_IS_FITCH,
+    MFL_IS_WAGNER,
+    MFL_IS_DOLLO,
+    MFL_IS_IRREVERSIBLE,
+    MFL_IS_COST_MATRIX,
+} mfl_optimisation_t;
 
 typedef void* mfl_handle_t;
 
