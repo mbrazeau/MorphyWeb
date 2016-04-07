@@ -26,24 +26,138 @@ long double mfl_get_transformation_cost(mfl_costs_t weights, int from_state, int
     return return_weight;
 }
 
-int mfl_evaluate_downpass(mfl_node_t *node)
+void mfl_fitch_downpass_binary_node(mfl_node_t *node)
 {
-    int steps = 0;
-    mfl_node_t *leftchild = NULL;
-    mfl_node_t *rightchild = NULL;
+    int i = 0;
+    mfl_node_t* lchild = NULL;
+    mfl_node_t* rchild = NULL;
+    lchild = node->nodet_next->nodet_edge;
+    rchild = node->nodet_next->nodet_next->nodet_edge;
+    mfl_charstate temp = NULL;
+    mfl_charstate* parentchars = node->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    int num_chars = node->nodet_dataparts[MFL_IS_FITCH]->dp_n_characters;
     
-    leftchild = node->nodet_next->nodet_edge;
-    rightchild = node->nodet_next->nodet_next->nodet_edge;
+    for (i = 0; i < num_chars; ++i) {
+        if ((temp = leftchars[i] & rightchars[i])) {
+            parentchars[i] = temp;
+        }
+        else {
+            parentchars[i] = leftchars[i] | rightchars[i];
+            /* Increment the length of the tree, and maxsteps*/
+        }
+    }
+}
+
+void mfl_fitch_uppass_binary_node(mfl_node_t *node)
+{
+    int i = 0;
+    mfl_node_t* lchild   = NULL;
+    mfl_node_t* rchild   = NULL;
+    mfl_node_t* ancestor = NULL;
+    lchild = node->nodet_next->nodet_edge;
+    rchild = node->nodet_next->nodet_next->nodet_edge;
+    mfl_charstate temp   = NULL;
+    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_IS_FITCH]->dp_uppass_set;
+    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_IS_FITCH]->dp_uppass_set;
+    int num_chars = node->nodet_dataparts[MFL_IS_FITCH]->dp_n_characters;
     
-    // For each data partition at the node
-        // Reconstruct the downpass set according to the correct method
-        // Update the number of steps as needed
+    for (i = 0; i < num_chars; ++i) {
+        // Uppass business logic.
+    }
+}
+
+mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_optimisation_t parsim_type)
+{
+    mfl_parsim_fn ret = NULL;
     
-    return steps;
+    switch (parsim_type)
+    {
+        case MFL_IS_FITCH:
+            ret = mfl_fitch_downpass_binary_node;
+            break;
+        
+        /*case MFL_IS_WAGNER:
+            ret = mfl_wagner_downpass_binary_node;
+            break;
+        
+        case MFL_IS_DOLLO:
+            ret = mfl_dollo_downpass_binary_node;
+            break;
+        
+        case MFL_IS_IRREVERSIBLE:
+            ret = mfl_irreversible_downpass_binary_node;
+            break;
+            
+        case MFL_IS_COST_MATRIX:
+            ret = mfl_costmatrix_downpass_binary_node;
+            break;*/
+            
+        default:
+            break;
+    }
+    
+    return  ret;
+}
+
+mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_optimisation_t parsim_type)
+{
+    mfl_parsim_fn ret = NULL;
+    
+    switch (parsim_type)
+    {
+        /*case MFL_IS_FITCH:
+        ret = mfl_fitch_uppass_binary_node;
+        break;*/
+            
+        /*case MFL_IS_WAGNER:
+        ret = mfl_wagner_downpass_binary_node;
+        break;*/
+             
+        /*case MFL_IS_DOLLO:
+        ret = mfl_dollo_downpass_binary_node;
+        break;*/
+             
+        /*case MFL_IS_IRREVERSIBLE:
+        ret = mfl_irreversible_downpass_binary_node;
+        break;*/
+             
+        /*case MFL_IS_COST_MATRIX:
+        ret = mfl_costmatrix_downpass_binary_node;
+        break;*/
+            
+        default:
+            break;
+    }
+    
+    return  ret;
+}
+
+
+void mfl_evaluate_downpass(mfl_node_t *node)
+{
+    int i = 0;
+    int num_dataparts;
+    mfl_parsim_fn evaluator;
+    
+    num_dataparts = node->nodet_num_partitions;
+    
+    // For each data partition at the node, set the correct type and evaluation
+    for (i = 0; i < num_dataparts; ++i) {
+        evaluator = mfl_fetch_downpass_parsimony_fxn(node->nodet_dataparts[i]->dp_optimisation_method);
+        evaluator(node);
+    }
+    
+    return;
 }
 
 void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
 {
+    
     mfl_node_t *p = NULL;
     
     if (parent->nodet_tip) {
@@ -56,12 +170,7 @@ void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
         mfl_postorder_traversal(p->nodet_edge, search_rec);
     } while (p != parent);
     
-    // Some function activity here
-    // We could put a function pointer here for ancestral state reconstructions
-    // The reconstruction algorithms would all have to take the same number and
-    // and type of argument, which probably wouldn't be too difficult to do.
-    // Function pointers are less efficient than a direct function call and
-    // even less efficient than an inline function call. 
+    mfl_evaluate_downpass(parent);
     
     return;
 }
@@ -71,6 +180,7 @@ void mfl_preorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     mfl_node_t *p = NULL;
     
     if (parent->nodet_tip) {
+        // Set uppass set for the tips
         return;
     }
     

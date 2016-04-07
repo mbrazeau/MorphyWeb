@@ -34,7 +34,7 @@
  */
 
 
-typedef uint64_t charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
+typedef uint64_t mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
@@ -98,10 +98,10 @@ typedef struct mfl_datapart_t {
     mfl_costs_t *dp_costmatrix;                 // Cost matrix associated with these characters.
     mfl_parsim_fn dp_downpass;                  // The downpass parsimony function
     mfl_parsim_fn dp_uppass;                    // The uppass parsimony function
-    charstate *dp_downpass_set;                 // The characters to which the datablock applies.
-    charstate *dp_uppass_set;
-    charstate *dp_subtree_downpass_set;
-    charstate *dp_subtree_uppass_set;
+    mfl_charstate *dp_downpass_set;             // The characters to which the datablock applies.
+    mfl_charstate *dp_uppass_set;
+    mfl_charstate *dp_subtree_downpass_set;
+    mfl_charstate *dp_subtree_uppass_set;
 } mfl_datapart_t;
 
 typedef struct mfl_node_t {
@@ -138,12 +138,18 @@ typedef struct mfl_tree_t {
 	int treet_index;                        // Identifier for the tree in the saved trees array.
 } mfl_tree_t;
 
+typedef struct mfl_treelist_t {
+    int tl_maxtrees;
+    int tl_maxlength;
+    int tl_bestlength;
+    int tl_num_islands;
+    mfl_tree_t** tl_savedtrees;
+} mfl_treelist_t;
 
 typedef struct mfl_searchrec_t {
     long int sr_num_reps;
     long int sr_best_length;
     int      sr_num_partitions;
-    
 } mfl_searchrec_t;
 
 typedef struct mfl_island_data_t {
