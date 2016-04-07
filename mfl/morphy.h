@@ -27,14 +27,15 @@
 
 #define MORPHY_DEFAULT_TREE_LIMIT 500
 
+
 /*
  *
  * Data type definitions
  *
  */
 
-
 typedef uint64_t mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
+
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
@@ -76,21 +77,14 @@ typedef struct {
     mfl_resultant_data_s    *resultant_data;
 } mfl_handle_s;
 
-//typedef mfl_node_t mfl_node_t;
 
 typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
+
 typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent); // Prototype for a function that performs parsimony calculations at a node.
 
-typedef struct mfl_datapart_t {
-    /* I've proposed the use of these data partitions to organise character data. In the old version of
-     * Morphy, we just passed a list of all the characters to the evaluation routines and they did their
-     * job by looping over all positions in the list until NCHAR. This is fine if you only have one type
-     * of character. However, we'll ultimately have different types of character and the need to subdivide
-     * them based on whether they are characters with inapplicability. The idea here is to pass the
-     * evaluation functions a list of pointers to all the datablocks, processing each one at each node.
-     * This possibly isn't the only or best solution. Just an idea for now. MDB.
-     */
+
+typedef struct mfl_nodedata_t {
     int dp_n_characters;                        // The number of characters within the datablock.
     int dp_n_taxa;                              // The number of taxa the datablock applies to.
     mfl_optimisation_t dp_optimisation_method;  // The optimisation method applied to all characters in this datablock.
@@ -98,11 +92,12 @@ typedef struct mfl_datapart_t {
     mfl_costs_t *dp_costmatrix;                 // Cost matrix associated with these characters.
     mfl_parsim_fn dp_downpass;                  // The downpass parsimony function
     mfl_parsim_fn dp_uppass;                    // The uppass parsimony function
-    mfl_charstate *dp_downpass_set;             // The characters to which the datablock applies.
-    mfl_charstate *dp_uppass_set;
-    mfl_charstate *dp_subtree_downpass_set;
-    mfl_charstate *dp_subtree_uppass_set;
-} mfl_datapart_t;
+    mfl_charstate *dp_prelim_set;               // The characters to which the datablock applies.
+    mfl_charstate *dp_final_set;
+    mfl_charstate *dp_subtree_prelim_set;
+    mfl_charstate *dp_subtree_final_set;
+} mfl_nodedata_t;
+
 
 typedef struct mfl_node_t {
 	mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
@@ -118,7 +113,7 @@ typedef struct mfl_node_t {
     int nodet_isroot;                           // Set non-zero if this node is the root.
     long long int nodet_tree_index;             // Identity of the tree to which this node belongs.
     int nodet_num_partitions;
-    mfl_datapart_t **nodet_dataparts;
+    mfl_nodedata_t **nodet_dataparts;
 } mfl_node_t;
 
 
@@ -138,6 +133,7 @@ typedef struct mfl_tree_t {
 	int treet_index;                        // Identifier for the tree in the saved trees array.
 } mfl_tree_t;
 
+
 typedef struct mfl_treelist_t {
     int tl_maxtrees;
     int tl_maxlength;
@@ -146,11 +142,13 @@ typedef struct mfl_treelist_t {
     mfl_tree_t** tl_savedtrees;
 } mfl_treelist_t;
 
+
 typedef struct mfl_searchrec_t {
     long int sr_num_reps;
     long int sr_best_length;
     int      sr_num_partitions;
 } mfl_searchrec_t;
+
 
 typedef struct mfl_island_data_t {
     int isd_index;              // Each new, unique starting tree gets a new number.

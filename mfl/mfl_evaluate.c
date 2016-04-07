@@ -34,9 +34,9 @@ void mfl_fitch_downpass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp = NULL;
-    mfl_charstate* parentchars = node->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
-    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
-    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
+    mfl_charstate* parentchars = node->nodet_dataparts[MFL_IS_FITCH]->dp_prelim_set;
+    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_IS_FITCH]->dp_prelim_set;
+    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_IS_FITCH]->dp_prelim_set;
     int num_chars = node->nodet_dataparts[MFL_IS_FITCH]->dp_n_characters;
     
     for (i = 0; i < num_chars; ++i) {
@@ -59,11 +59,11 @@ void mfl_fitch_uppass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp   = NULL;
-    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
-    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_IS_FITCH]->dp_uppass_set;
-    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
-    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_IS_FITCH]->dp_downpass_set;
-    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_IS_FITCH]->dp_uppass_set;
+    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_IS_FITCH]->dp_prelim_set;
+    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_IS_FITCH]->dp_final_set;
+    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_IS_FITCH]->dp_prelim_set;
+    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_IS_FITCH]->dp_prelim_set;
+    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_IS_FITCH]->dp_final_set;
     int num_chars = node->nodet_dataparts[MFL_IS_FITCH]->dp_n_characters;
     
     for (i = 0; i < num_chars; ++i) {
