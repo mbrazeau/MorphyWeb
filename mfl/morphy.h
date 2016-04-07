@@ -48,9 +48,9 @@ typedef struct {
     int *island_sizes;          // Number of trees in an island
     int *times_hit_islands;     // List of times each island was hit
 #ifdef VERSION_1_5
-    double consist_ind; // Consistency index
-    double ret_ind;     // Retention index
-    double resc_ci;     // Rescaled consistency index
+    double consist_ind;         // Consistency index
+    double ret_ind;             // Retention index
+    double resc_ci;             // Rescaled consistency index
 #endif
 } mfl_resultant_data_s;
 
@@ -96,10 +96,8 @@ typedef struct mfl_datapart_t {
     mfl_optimisation_t dp_optimisation_method;  // The optimisation method applied to all characters in this datablock.
     bool dp_inapplicables;                      // false: no inapplicables; true: has inapplicables.
     mfl_costs_t *dp_costmatrix;                 // Cost matrix associated with these characters.
-    
     mfl_parsim_fn dp_downpass;                  // The downpass parsimony function
     mfl_parsim_fn dp_uppass;                    // The uppass parsimony function
-    
     charstate *dp_downpass_set;                 // The characters to which the datablock applies.
     charstate *dp_uppass_set;
     charstate *dp_subtree_downpass_set;
