@@ -84,18 +84,26 @@ typedef long double *mfl_costs_t;       // A matrix of transition costs.
 typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent); // Prototype for a function that performs parsimony calculations at a node.
 
 
+typedef struct mfl_datapartition_t {
+    int part_n_characters;
+    mfl_optimisation_t part_optimisation_method;
+    bool part_hasinapplic;
+    mfl_costs_t *part_costmatrix;
+    mfl_charstate *part_matrix;
+} mfl_datapartition_t;
+
+
 typedef struct mfl_nodedata_t {
-    int dp_n_characters;                        // The number of characters within the datablock.
-    int dp_n_taxa;                              // The number of taxa the datablock applies to.
-    mfl_optimisation_t dp_optimisation_method;  // The optimisation method applied to all characters in this datablock.
-    bool dp_inapplicables;                      // false: no inapplicables; true: has inapplicables.
-    mfl_costs_t *dp_costmatrix;                 // Cost matrix associated with these characters.
-    mfl_parsim_fn dp_downpass;                  // The downpass parsimony function
-    mfl_parsim_fn dp_uppass;                    // The uppass parsimony function
-    mfl_charstate *dp_prelim_set;               // The characters to which the datablock applies.
-    mfl_charstate *dp_final_set;
-    mfl_charstate *dp_subtree_prelim_set;
-    mfl_charstate *dp_subtree_final_set;
+    int nd_n_characters;                        // The number of characters within the datablock.
+    mfl_optimisation_t nd_optimisation_method;  // The optimisation method applied to all characters in this datablock.
+    bool nd_inapplicables;                      // false: no inapplicables; true: has inapplicables.
+    mfl_costs_t *nd_costmatrix;                 // Cost matrix associated with these characters.
+    mfl_parsim_fn nd_downpass;                  // The downpass parsimony function
+    mfl_parsim_fn nd_uppass;                    // The uppass parsimony function
+    mfl_charstate *nd_prelim_set;               // The characters to which the datablock applies.
+    mfl_charstate *nd_final_set;
+    mfl_charstate *nd_subtree_prelim_set;
+    mfl_charstate *nd_subtree_final_set;
 } mfl_nodedata_t;
 
 
@@ -132,6 +140,12 @@ typedef struct mfl_tree_t {
 	char *treet_newick_format;              // The tree stored as a Newick format string.
 	int treet_index;                        // Identifier for the tree in the saved trees array.
 } mfl_tree_t;
+
+
+typedef struct mfl_taxon_partition_t {
+    int tp_num_taxa;
+    mfl_nodearray_t tp_taxon_list;
+} mfl_taxon_partition_t;
 
 
 typedef struct mfl_treelist_t {
