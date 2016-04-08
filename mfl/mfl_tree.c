@@ -1,12 +1,26 @@
-/* mfl_tree.c
- * Allocates memory for trees, plus functions for assembling them */
+/* 
+ * mfl_tree.c
+ *
+ * About this file:
+ * Functions for making, destroying, and performing basic operations on trees. 
+ * In this file you will find functions that allocate trees, allocate nodes for 
+ * trees. Additionally, tools for basic operations like connecting nodes, 
+ * separating nodes, inserting new branches, removing branches etc. are found 
+ * here. Functions for freeing all memory used by mfl_tree_t's and mfl_node_t's 
+ * are found in here. No functions for assembling trees are contained in this 
+ * file. Such operations are handled in separate files depending on whether the 
+ * tree is assembled according to a user-specified input (e.g. a Newick or 
+ * PhyloXML input, as those become supported) or a criterion-based tree 
+ * assembler, such as stepwise addition.
+ * 
+ */
 
 #include "morphy.h"
 
 int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
 {
-    /* This function allows us to size the node array in the tree and correctly allocate
-     * sufficient memory
+    /* This function allows us to size the node array in the tree and correctly 
+     * allocate sufficient memory for a tree.
      */
     
     int num_nodes = 0;
@@ -183,7 +197,8 @@ mfl_node_t * mfl_alloc_node(void)
 void mfl_free_node(mfl_node_t *node)
 {
     /*
-     * If any other memory allocation made in nodes, then calls to free that memory should be placed here.
+     * If any other memory allocation made in nodes, then calls to free that 
+     * memory should be placed here.
      */
     
     free(node);
@@ -222,8 +237,9 @@ void mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int n
         *(nodearray + i) = mfl_alloc_node();
     }
     
-    // The last spot in the array is a NULL pointer. This just provides a bit of extra safety
-    // in case of an attempt to read past the allocated nodes.
+    /* The last spot in the array is a NULL pointer. This just provides a bit of
+     * extra safety in case of an attempt to read past the allocated nodes.
+     */
     *(nodearray + num_nodes) = NULL;
     
 }
@@ -287,21 +303,23 @@ mfl_node_t *mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node
     mfl_node_t *last_in_ring = NULL;
     
     if (ring_start == new_node) {
-        /* This prevents setting a node's nodet_next pointer to itself, thus ensuring 
-         that the nodet_next pointer will always point to either another node or NULL.
-         It is not that this is necessarily bad, but this operation would seem to be 
-         unlikely. This rule will help avoid unexpected behaviour by other functions */
+        /* This prevents setting a node's nodet_next pointer to itself, thus 
+         * ensuring that the nodet_next pointer will always point to either 
+         * another node or NULL. It is not that this is necessarily bad, but 
+         * this operation would seem to be unlikely. This rule will help avoid 
+         * unexpected behaviour by other functions */
         dbg_printf("Warning in function calling mfl_insert_node_in_ring(): cannot point nodet_next of one node to itself\n");
         return NULL;
     }
     
     last_in_ring = ring_start;
     
-    /* This conditional statement allows the use of this function to create a ring by 
-     * inserting the nodes one at a time. It checks that both the next pointer in the 
-     * starting node is available and that new_node is not, in fact, NULL. Otheriwise
-     * it would create a node to point its next pointer to itself and we would like 
-     * to avoid that. */
+    /* This conditional statement allows the use of this function to create a 
+     * ring by inserting the nodes one at a time. It checks that both the next 
+     * pointer in the starting node is available and that new_node is not, in 
+     * fact, NULL. Otheriwise it would create a node to point its next pointer 
+     * to itself and we would like to avoid that. */
+    
     if (!ring_start->nodet_next && new_node) {
         ring_start->nodet_next = ring_start;
     }
@@ -362,8 +380,9 @@ void mfl_initialise_ring_node(mfl_node_t *bottom_node)
         p->nodet_isbottom = 0;
         p->nodet_index = bottom_node->nodet_index;
         
-        /* Dependeing on how we manage character data at internal node rings, we may choose to point all the charstate
-         * arrays to a single piece of data, rather than each node having its own character memory */
+        /* Dependeing on how we manage character data at internal node rings, we
+         * might choose to point all the charstate arrays to a single piece of 
+         * data, rather than each node having its own character memory */
         
     } while (p != bottom_node);
     
@@ -414,7 +433,8 @@ void mfl_destroy_n_nary_ring(mfl_node_t *bottom_node)
         p = p->nodet_next;
         free(garbage_node);
         
-        /* Other free() calls may go here when destroying whole trees after analysis*/
+        /* Other free() calls may go here when destroying whole trees after 
+         * analysis*/
         
     } while (p != bottom_node);
     
@@ -479,7 +499,7 @@ bool mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 
 void mfl_unroot_tree(mfl_tree_t *tree)
 {
-    mfl_node_t *root = NULL;
+    //mfl_node_t *root = NULL;
     
     if (!tree->treet_root) {
         dbg_printf("WARNING in mfl_unroot_tree(): attempt to deroot tree with no valid pointer to root\n");
