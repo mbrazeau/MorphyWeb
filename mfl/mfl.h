@@ -191,13 +191,24 @@ typedef enum
     MFL_GAP_MAX
 } mfl_gap_t;
 
-typedef enum mfl_optimisation_t {
-    MFL_IS_FITCH,
-    MFL_IS_WAGNER,
-    MFL_IS_DOLLO,
-    MFL_IS_IRREVERSIBLE,
-    MFL_IS_COST_MATRIX,
+typedef enum
+{
+    MFL_OPT_FITCH,
+    MFL_OPT_WAGNER,
+    MFL_OPT_DOLLO,
+    MFL_OPT_IRREVERSIBLE,
+    MFL_OPT_COST_MATRIX,
+    
+    MFL_OPT_MAX
 } mfl_optimisation_t;
+
+typedef enum
+{
+    MFL_MULTISTATE_POLYMORPHISM,
+    MFL_MULTSTATE_UNCERTAINTY,
+    
+    MFL_MULTISTATE_MAX
+} mfl_multicell_t ;
 
 typedef void* mfl_handle_t;
 
