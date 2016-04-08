@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <ctype.h>
 #include "mfl.h"
 
 #ifdef MFY_DEBUG
@@ -25,6 +26,11 @@
  *
  */
 
+#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
+#define MORPHY_MAX_STATE_NUMBER (63 - MORPHY_SPECIAL_STATE_PAD) /* The reason this isn't 64 is because the
+                                      the first bit position is reserved for 
+                                      gap as a state or as logical impossibility
+                                                                              */
 #define MORPHY_DEFAULT_TREE_LIMIT 1000
 #define MORPHY_TREEBUFFER_AUTOINCREASE_DEFAULT 500
 
@@ -71,7 +77,8 @@ typedef struct {
     int*                    usertype_list;
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
-    char                    *input_data;
+    char*                   format_symbols;
+    char*                   input_data;
     mfl_add_sequence_t      addseq_type;
     bool                    collapse_nolen;
     mfl_set_collapse_at_t   collapse_at;
@@ -85,7 +92,6 @@ typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent); // Prototype for a function that performs parsimony calculations at a node.
 
-
 typedef struct mfl_datapartition_t {
     int part_n_characters;
     mfl_optimisation_t part_optimisation_method;
@@ -96,6 +102,13 @@ typedef struct mfl_datapartition_t {
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 
+typedef struct mfl_character_vector_t {
+    int cv_num_colums;
+    mfl_multicell_t cv_multistate_method;
+    bool cv_has_gaps;
+    char** cv_character_cells;
+    mfl_charstate* cv_chardata;
+} mfl_character_vector_t;
 
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
@@ -117,6 +130,7 @@ typedef struct mfl_node_t {
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
+    bool nodet_isingroup;                       // Indicates if node is within the ingroup or not.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
 	int nodet_uppass_visited;                   // Indicates successful visit from an uppass traversal.
@@ -202,6 +216,7 @@ bool            mfl_node_is_available(mfl_node_t *node);
 void            mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2);
 void            mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2);
 void            mfl_make_node_available(mfl_node_t *node);
+void            mfl_safe_reset_node_params(mfl_node_t* node);
 bool            mfl_check_node_is_bottom(mfl_node_t *querynode);
 void            mfl_join_nodes(mfl_node_t *node1, mfl_node_t *node2);
 mfl_node_t*     mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top);
@@ -216,6 +231,7 @@ void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_n
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes);
 void            mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
 void            mfl_free_nodearray(mfl_nodearray_t nodearray);
+bool            mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches);
 void            mfl_unroot_tree(mfl_tree_t *tree);
 mfl_tree_t*     mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_tree(mfl_tree_t *tree_to_free);
