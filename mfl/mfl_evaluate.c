@@ -34,10 +34,10 @@ void mfl_fitch_downpass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp = NULL;
-    mfl_charstate* parentchars = node->nodet_dataparts[MFL_IS_FITCH]->nd_prelim_set;
-    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_IS_FITCH]->nd_prelim_set;
-    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_IS_FITCH]->nd_prelim_set;
-    int num_chars = node->nodet_dataparts[MFL_IS_FITCH]->nd_n_characters;
+    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
     
     for (i = 0; i < num_chars; ++i) {
         if ((temp = leftchars[i] & rightchars[i])) {
@@ -59,12 +59,12 @@ void mfl_fitch_uppass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp   = NULL;
-    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_IS_FITCH]->nd_prelim_set;
-    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_IS_FITCH]->nd_final_set;
-    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_IS_FITCH]->nd_prelim_set;
-    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_IS_FITCH]->nd_prelim_set;
-    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_IS_FITCH]->nd_final_set;
-    int num_chars = node->nodet_dataparts[MFL_IS_FITCH]->nd_n_characters;
+    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_OPT_FITCH]->nd_final_set;
+    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_OPT_FITCH]->nd_final_set;
+    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
     
     for (i = 0; i < num_chars; ++i) {
         // Uppass business logic.
@@ -77,23 +77,23 @@ mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_optimisation_t parsim_type)
     
     switch (parsim_type)
     {
-        case MFL_IS_FITCH:
+        case MFL_OPT_FITCH:
             ret = mfl_fitch_downpass_binary_node;
             break;
         
-        /*case MFL_IS_WAGNER:
+        /*case MFL_OPT_WAGNER:
             ret = mfl_wagner_downpass_binary_node;
             break;
         
-        case MFL_IS_DOLLO:
+        case MFL_OPT_DOLLO:
             ret = mfl_dollo_downpass_binary_node;
             break;
         
-        case MFL_IS_IRREVERSIBLE:
+        case MFL_OPT_IRREVERSIBLE:
             ret = mfl_irreversible_downpass_binary_node;
             break;
             
-        case MFL_IS_COST_MATRIX:
+        case MFL_OPT_COST_MATRIX:
             ret = mfl_costmatrix_downpass_binary_node;
             break;*/
             
@@ -110,23 +110,23 @@ mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_optimisation_t parsim_type)
     
     switch (parsim_type)
     {
-        /*case MFL_IS_FITCH:
+        /*case MFL_OPT_FITCH:
         ret = mfl_fitch_uppass_binary_node;
         break;*/
             
-        /*case MFL_IS_WAGNER:
+        /*case MFL_OPT_WAGNER:
         ret = mfl_wagner_downpass_binary_node;
         break;*/
              
-        /*case MFL_IS_DOLLO:
+        /*case MFL_OPT_DOLLO:
         ret = mfl_dollo_downpass_binary_node;
         break;*/
              
-        /*case MFL_IS_IRREVERSIBLE:
+        /*case MFL_OPT_IRREVERSIBLE:
         ret = mfl_irreversible_downpass_binary_node;
         break;*/
              
-        /*case MFL_IS_COST_MATRIX:
+        /*case MFL_OPT_COST_MATRIX:
         ret = mfl_costmatrix_downpass_binary_node;
         break;*/
             
