@@ -69,3 +69,12 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
     
     return newcharset;
 }
+
+// Processing the input datamatrix which is received as a char*
+    // Need NTAX and NCHAR from the associated Nexus file. These should live in the handle.
+
+/* void mfl_process_input_file(mfl_handle_t mfl_handle)
+ {
+    
+ }
+ */

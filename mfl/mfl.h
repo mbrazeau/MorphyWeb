@@ -102,6 +102,7 @@ typedef enum
     
 } mfl_param_t;
 
+
 typedef enum
 {
     MFL_RT_NUM_REARRANGMENTS, // (long, or long long) number of swaps made in heuristic search
@@ -112,6 +113,20 @@ typedef enum
     MFL_RT_ISLAND_SIZE,       // (int) island size
     MFL_RT_ISLAND_LENGTH,     // (int) island length
 } mfl_resultant_data_t;
+
+/*
+ * mfl_inputformat_t - if input types other than Nexus are passed to Morphy this
+ * will set the appropriate parser for the input matrix.
+ */
+typedef enum
+{
+    MFL_IFRMT_NEXUS,
+    MFL_IFRMT_PHYLOXML,
+    MFL_IFRMT_TNT,
+    // Other input types to be handled
+    
+    MFL_IFRMT_MAX
+} mfl_inputformat_t;
 
 /* 
  * mfl_search_t - used as a parameter when the MFL_PT_SEARCH_TYPE is being set
@@ -171,6 +186,7 @@ typedef enum
 {
     MFL_GAP_INAPPLICABLE,
     MFL_GAP_MISSING_DATA,
+    MFL_GAP_NEWSTATE,
 
     MFL_GAP_MAX
 } mfl_gap_t;

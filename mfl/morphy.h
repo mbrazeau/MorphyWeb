@@ -25,7 +25,8 @@
  *
  */
 
-#define MORPHY_DEFAULT_TREE_LIMIT 500
+#define MORPHY_DEFAULT_TREE_LIMIT 1000
+#define MORPHY_TREEBUFFER_AUTOINCREASE_DEFAULT 500
 
 
 /*
@@ -59,6 +60,7 @@ typedef struct {
 typedef struct {
     int                     n_taxa;
     int                     n_chars;
+    mfl_inputformat_t       input_format;
     mfl_search_t            search_type;
     int                     n_iterations;
     int                     n_treelimit;
@@ -73,7 +75,7 @@ typedef struct {
     mfl_add_sequence_t      addseq_type;
     bool                    collapse_nolen;
     mfl_set_collapse_at_t   collapse_at;
-    mfl_gap_t               gap_as_missing;
+    mfl_gap_t               gap_method;
     mfl_resultant_data_s    *resultant_data;
 } mfl_handle_s;
 
@@ -87,7 +89,9 @@ typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent); // Prototype for a fun
 typedef struct mfl_datapartition_t {
     int part_n_characters;
     mfl_optimisation_t part_optimisation_method;
-    bool part_hasinapplic;
+    bool part_has_inapplicables;
+    bool part_char_is_directed;
+    int part_weight;
     mfl_costs_t *part_costmatrix;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
@@ -96,14 +100,15 @@ typedef struct mfl_datapartition_t {
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
     mfl_optimisation_t nd_optimisation_method;  // The optimisation method applied to all characters in this datablock.
-    bool nd_inapplicables;                      // false: no inapplicables; true: has inapplicables.
+    bool nd_has_inapplicables;                  // false: no inapplicables; true: has inapplicables.
+    bool nd_char_is_directed;                   // Character depends on tree rooting or not.
     mfl_costs_t *nd_costmatrix;                 // Cost matrix associated with these characters.
-    mfl_parsim_fn nd_downpass;                  // The downpass parsimony function
-    mfl_parsim_fn nd_uppass;                    // The uppass parsimony function
-    mfl_charstate *nd_prelim_set;               // The characters to which the datablock applies.
-    mfl_charstate *nd_final_set;
-    mfl_charstate *nd_subtree_prelim_set;
-    mfl_charstate *nd_subtree_final_set;
+    mfl_parsim_fn nd_downpass;                  // The downpass parsimony function.
+    mfl_parsim_fn nd_uppass;                    // The uppass parsimony function.
+    mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
+    mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
+    mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
+    mfl_charstate *nd_subtree_final_set;        // The final uppass set of the subtree when the tree is broken.
 } mfl_nodedata_t;
 
 
@@ -142,7 +147,7 @@ typedef struct mfl_tree_t {
 } mfl_tree_t;
 
 
-typedef struct mfl_taxon_partition_t {
+typedef struct mfl_taxon_partition_t {      // For outgroups or other clade constraints.
     int tp_num_taxa;
     mfl_nodearray_t tp_taxon_list;
 } mfl_taxon_partition_t;

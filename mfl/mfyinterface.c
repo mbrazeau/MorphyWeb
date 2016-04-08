@@ -118,7 +118,7 @@ bool mfl_set_collapse_value(mfl_handle_s *mfl_struct, void *param_data)
 
 bool mfl_set_gapormissing(mfl_handle_s *mfl_struct, void *param_data)
 {
-    mfl_struct->gap_as_missing = (mfl_gap_t)(long int)(param_data);
+    mfl_struct->gap_method = (mfl_gap_t)(long int)(param_data);
     return true;
 }
 
@@ -371,7 +371,7 @@ const char * mfl_exception::what() const throw()
         ss<<endl<<"addseq_type:     "<<mfl_struct->addseq_type;
         ss<<endl<<"collapse_nolen:  "<<mfl_struct->collapse_nolen;
         ss<<endl<<"collapse_at:     "<<mfl_struct->collapse_at;
-        ss<<endl<<"gap_as_missing:  "<<mfl_struct->gap_as_missing;
+        ss<<endl<<"gap_as_missing:  "<<mfl_struct->gap_method;
         ss<<endl;
         ret.append(ss.str());
 #endif
