@@ -305,7 +305,14 @@ void mfl_skip_spaces(char **current)
 
 int mfl_read_nexus_type_int(char **current)
 {
+    /* Read digit chars as an int until Nexus-type stop value is found. Return
+     * the corresponding integer. */
+    
     int nexus_int = 0;
+    
+    if (!isdigit(**current)) {
+        mfl_move_current_to_digit(current);
+    }
     
     // Read char until whitespace, a dash '-', semicolon, or end of string
     do {
@@ -338,6 +345,9 @@ void mfl_set_include_value(int vectornum, bool includeval, bool* includes)
 
 void mfl_set_include_range(int first, int last, bool includeval, bool* includes)
 {
+    /* Set all boolean values in includes to the true/false value indicated in
+     * by includeval */
+    
     int i = 0;
     
     for (i = first; i <= last; ++i) {
@@ -348,6 +358,8 @@ void mfl_set_include_range(int first, int last, bool includeval, bool* includes)
 
 void mfl_move_current_to_digit(char** current)
 {
+    /* Increment the pointer to a digit character */
+    
     if (!isdigit(**current)) {
         do {
             ++(*current);
@@ -358,6 +370,13 @@ void mfl_move_current_to_digit(char** current)
 
 void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand)
 {
+    /* Reads the given subcommand, setting the positing in includes to the 
+     * true/false value specified by includeval. Converts the numeric tokens to
+     * integers (1-based) which are used to index the include array (0-based). 
+     * If a range of values is specified by the '-' character, then all 
+     * positions in that range are set to includeval. Attempts to index out of 
+     * list maximum are disallowed; ranges out of list maximum are truncated. */
+    
     int first = 0;
     int last = 0; // first and last for identifier ranges (e.g. taxa 1-4 or characters 11-17)
     char *current = NULL;
@@ -388,7 +407,7 @@ void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *
                 if (last > listmax) {
                     last = listmax;
                     
-                    dbg_printf("WARNING in mfl_set_inclusion_list(): Proposed range is outside of list maximum. Proposed range will be truncated\n");
+                    dbg_printf("WARNING in mfl_set_inclusion_list(): Proposed range is outside of list maximum. Proposed range will be truncated at maximum: %i\n", listmax);
                 }
                 mfl_set_include_range(first, last, includeval, includes);
                 
