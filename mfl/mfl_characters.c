@@ -10,10 +10,7 @@
 
 #include "morphy.h"
 
-void mfl_move_in_nexus_multistate(char **col);
-mfl_charstate* mfl_allocate_nodal_character_set(int num_characters);
-void mfl_free_nodedata(mfl_nodedata_t *olddata);
-mfl_nodedata_t* mfl_alloc_datapart(void);
+
 
 mfl_nodedata_t* mfl_alloc_datapart(void)
 {
@@ -295,6 +292,7 @@ bool mfl_is_nexus_stop_position(char a)
     
     return is_stop;
 }
+
 
 void mfl_skip_spaces(char **current)
 {

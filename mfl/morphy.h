@@ -201,6 +201,21 @@ typedef struct mfl_island_data_t {
  */
 
 /* In mfl_characters.c */
+void            mfl_move_in_nexus_multistate(char **col);
+mfl_charstate*  mfl_allocate_nodal_character_set(int num_characters);
+void            mfl_free_nodedata(mfl_nodedata_t *olddata);
+mfl_nodedata_t* mfl_alloc_datapart(void);
+bool*           mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS);
+void            mfl_free_inclusion_list(bool *inclist);
+bool*           mfl_alloc_character_inclusion_list(int num_chars);
+void            mfl_set_inclusion_list(bool* includes, bool includeval, char *subcommand);
+void            mfl_move_current_to_digit(char** current);
+void            mfl_set_include_range(int first, int last, bool includeval, bool* includes);
+void            mfl_set_include_value(int vectornum, bool includeval, bool* includes);
+int             mfl_read_nexus_type_int(char **current);
+void            mfl_skip_spaces(char **current);
+bool            mfl_is_nexus_stop_position(char a);
+mfl_charstate   mfl_convert_nexus_multistate(char *xstates, char *datype_converter);
 
 /* In mfl_starttree.c */
 
