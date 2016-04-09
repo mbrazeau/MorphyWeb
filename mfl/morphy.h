@@ -98,6 +98,7 @@ typedef struct mfl_datapartition_t {
     mfl_optimisation_t part_optimisation_method;
     bool part_has_inapplicables;
     bool part_char_is_directed;
+    int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
     int part_weight;
     mfl_costs_t *part_costmatrix;
     mfl_charstate *part_matrix;

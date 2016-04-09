@@ -72,6 +72,67 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
 }
 
 
+int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
+{
+    int i = 0;
+    
+    do {
+        if (in == datype_converter[i]) {
+            break;
+        }
+        ++i;
+    }
+    while (datype_converter[i]);
+    
+    return i + MORPHY_SPECIAL_STATE_PAD;
+}
+
+
+int mfl_convert_alphanum_to_shift_value(char in)
+{
+    /* Takes an alphanumeric value on the scale 0-9ABC...xyz and returns an int
+     * representing the number of shifts needed for setting its corresponding
+     * bit in an mfl_charstate. This function is used if there is no pre-
+     * specified list of state symbols. In effect, Morphy will convert them to a
+     * character state corresponding to their order as a default. Will not work
+     * well with more than 62 states since it only uses letters and numbers. */
+    
+    if (isdigit(in)) {
+        return in - '0' + MORPHY_SPECIAL_STATE_PAD;
+    }
+    else if (isalpha(in))
+    {
+        if (isupper(in)) {
+            return in - 'A' + 11 + MORPHY_SPECIAL_STATE_PAD;
+        }
+        else {
+            return in - 'a' + 11 + 26 + MORPHY_SPECIAL_STATE_PAD;
+        }
+    }
+    else {
+        dbg_printf("ERROR in mfl_convert_alphanum_to_shift_value(): input is not alphanumeric\n");
+        return 0;
+    }
+}
+
+
+mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
+{
+    u_int64_t inbit = 0;
+    int shift_val;
+    mfl_charstate xstate_bits = 0;
+    
+    do {
+        inbit = 1;
+        shift_val = mfl_convert_nexus_symbol_to_shift_value(*xstates, datype_converter);
+        inbit = inbit << shift_val;
+        ++xstates;
+    } while (xstates && *xstates != ')' && *xstates != '}');
+    
+    return xstate_bits;
+}
+
+
 /*mfl_charstate mfl_convert_single_symbol_categorical(char symbol)
 {
     int shift_value;
@@ -89,12 +150,34 @@ mfl_charstate mfl_convert_state_symbol_DNA(char state_symbol)
 }
 
 
+mfl_charstate mfl_convert_state_symbol_amino_acid(char state_symbol)
+{
+ 
+}
+ 
+ 
 mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
 {
     
     
 }*/
 
+// NEXT:
+
+// Read through matrix string; populate the cells in the cv_character_cells.
+
+// Go through each cv_character_cell and convert its entry to the corresponding matrix cell.
+
+// Find and list the columns that have gaps in them (can be done simultaneously), setting the vector's cv_has_gaps flag
+//      This now gives the data needed to set a list of characters with gaps (the first partitioning)
+
+// Get the number of character types: unord, ord, dollo, irreversible, usertypes/sankoff
+
+// Set up the correct number of partitions
+
+// Copy the data into the partitions
+
+// Apply the data to the tips of the tree.
 
 void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars)
 {
@@ -153,6 +236,7 @@ mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
     return newmatrix;
 }
 
+
 void mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa)
 {
     int i = 0;
@@ -177,14 +261,10 @@ void mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_tax
     free(oldmatrix);
 }
 
-// Processing the input datamatrix which is received as a char*
-    // Need NTAX and NCHAR from the associated Nexus file. These should live in the handle.
-    // Need to determine the number of partitions to create
-        // This depends on:
-            // How gap characters are treated
-            // How many optimisation method types are used
 
-/* Processing input */
+/* Secondary input processing input */
+/* Data and higher-level instructions might be passed to Morphy requiring further
+ * processing. */
 
 char *mfl_move_past_eq_sign(char *input)
 {
@@ -298,81 +378,6 @@ int mfl_check_state_number_support(char *datatype_list)
 }
 
 
-mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
-{
-    if (opt_method == MFL_GAP_INAPPLICABLE || opt_method == MFL_GAP_NEWSTATE) {
-        //
-        return 1;
-    }
-    else {
-        return ~0;
-    }
-}
-
-
-void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
-{
-    /* Sets an new char array to be a space-less vector of symbols use as 
-     * character states in a Nexus-derived "Format Symbols" command. A lookup
-     * into this will return the required shift value. */
-    int i = 0;
-    char *dtype_ptr = NULL;
-    
-    dtype_ptr = datatype_list;
-    
-    while (dtype_ptr) {
-        if (!isspace(*dtype_ptr)) {
-            datype_converter[i] = *dtype_ptr;
-            ++i;
-        }
-    }
-}
-
-
-int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
-{
-    int i = 0;
-    
-    do {
-        if (in == datype_converter[i]) {
-            break;
-        }
-        ++i;
-    }
-    while (datype_converter[i]);
-    
-    return i + MORPHY_SPECIAL_STATE_PAD;
-}
-
-
-int mfl_convert_alphanum_to_shift_value(char in)
-{
-    /* Takes an alphanumeric value on the scale 0-9ABC...xyz and returns an int
-     * representing the number of shifts needed for setting its corresponding
-     * bit in an mfl_charstate. This function is used if there is no pre-
-     * specified list of state symbols. In effect, Morphy will convert them to a
-     * character state corresponding to their order as a default. Will not work
-     * well with more than 62 states since it only uses letters and numbers. */
-    
-    if (isdigit(in)) {
-        return in - '0' + MORPHY_SPECIAL_STATE_PAD;
-    }
-    else if (isalpha(in))
-    {
-        if (isupper(in)) {
-            return in - 'A' + 11 + MORPHY_SPECIAL_STATE_PAD;
-        }
-        else {
-            return in - 'a' + 11 + 26 + MORPHY_SPECIAL_STATE_PAD;
-        }
-    }
-    else {
-        dbg_printf("ERROR in mfl_convert_alphanum_to_shift_value(): input is not alphanumeric\n");
-        return 0;
-    }
-}
-
-
 void mfl_move_in_nexus_multistate(char **col)
 {
     if (**col != '(' && **col != '{') {
@@ -393,21 +398,36 @@ void mfl_move_in_nexus_multistate(char **col)
 }
 
 
-mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
+mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
 {
-    u_int64_t inbit = 0;
-    int shift_val;
-    mfl_charstate xstate_bits = 0;
-    
-    do {
-        inbit = 1;
-        shift_val = mfl_convert_nexus_symbol_to_shift_value(*xstates, datype_converter);
-        inbit = inbit << shift_val;
-        ++xstates;
-    } while (xstates && *xstates != ')' && *xstates != '}');
-    
-    return xstate_bits;
+    if (opt_method == MFL_GAP_INAPPLICABLE || opt_method == MFL_GAP_NEWSTATE) {
+        //
+        return 1;
+    }
+    else {
+        return ~0;
+    }
 }
+
+
+void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
+{
+    /* Sets an new char array to be a space-less vector of symbols use as
+     * character states in a Nexus-derived "Format Symbols" command. A lookup
+     * into this will return the required shift value. */
+    int i = 0;
+    char *dtype_ptr = NULL;
+    
+    dtype_ptr = datatype_list;
+    
+    while (dtype_ptr) {
+        if (!isspace(*dtype_ptr)) {
+            datype_converter[i] = *dtype_ptr;
+            ++i;
+        }
+    }
+}
+
 
 int mfl_get_numstates_from_matrix(char *matrix)
 {
@@ -444,6 +464,7 @@ void mfl_skip_spaces(char **current)
         } while (isspace(**current));
     }
 }
+
 
 int mfl_read_nexus_type_int(char **current)
 {
