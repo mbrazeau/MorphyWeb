@@ -149,6 +149,10 @@ bool mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, i
         dimensionsOK = false;
         dbg_printf("ERROR in mfl_check_nexus_matrix_dimensions(): matrix dimensions exceed expected value based on NTAX and NCHAR input\n");
     }
+    else if (matrix_size < expected_size) {
+        dimensionsOK = false;
+        dbg_printf("ERROR in mfl_check_nexus_matrix_dimensions(): matrix dimensions less than expected value based on NTAX and NCHAR input\n");
+    }
     
     return dimensionsOK;
 }
@@ -534,7 +538,9 @@ void tui_test_character_including()
     char *matrix = "000111{1234}1011AB27\n"
                    "1(01234)11111(12)1111111;";
     
-    mfl_check_nexus_matrix_dimensions(matrix, 2, 15);
+    mfl_check_nexus_matrix_dimensions(matrix, 3, 15);
+    
+    //system("/usr/bin/open -a \"/Applications/Google Chrome.app\" \'https://www.youtube.com/watch?v=dQw4w9WgXcQ\'");
     
     /*char *subcmd = NULL;
     subcmd = subcmd4;
