@@ -208,7 +208,7 @@ mfl_nodedata_t* mfl_alloc_datapart(void);
 bool*           mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS);
 void            mfl_free_inclusion_list(bool *inclist);
 bool*           mfl_alloc_character_inclusion_list(int num_chars);
-void            mfl_set_inclusion_list(bool* includes, bool includeval, char *subcommand);
+void            mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand);
 void            mfl_move_current_to_digit(char** current);
 void            mfl_set_include_range(int first, int last, bool includeval, bool* includes);
 void            mfl_set_include_value(int vectornum, bool includeval, bool* includes);

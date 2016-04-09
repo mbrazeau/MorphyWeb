@@ -326,6 +326,7 @@ void mfl_set_include_value(int vectornum, bool includeval, bool* includes)
     /* In any set of bool include array, this sets the entry's value to the
      * desired true/false value */
     
+    
     if (includeval) {
         includes[vectornum-1] = true;
     }
@@ -355,7 +356,7 @@ void mfl_move_current_to_digit(char** current)
 }
 
 
-void mfl_set_inclusion_list(bool* includes, bool includeval, char *subcommand)
+void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand)
 {
     int first = 0;
     int last = 0; // first and last for identifier ranges (e.g. taxa 1-4 or characters 11-17)
@@ -384,10 +385,21 @@ void mfl_set_inclusion_list(bool* includes, bool includeval, char *subcommand)
         
         if (first) {
             if (last) {
+                if (last > listmax) {
+                    last = listmax;
+                    
+                    dbg_printf("WARNING in mfl_set_inclusion_list(): Proposed range is outside of list maximum. Proposed range will be truncated\n");
+                }
                 mfl_set_include_range(first, last, includeval, includes);
+                
             }
             else {
-                mfl_set_include_value(first, includeval, includes);
+                if (first <= listmax) {
+                    mfl_set_include_value(first, includeval, includes);
+                }
+                else {
+                    dbg_printf("WARNING in mfl_set_inclusion_list(): value will attempt to index outside of range. Ignorning proposed index\n");
+                }
             }
         }
     } while (*current && *current != ';');
@@ -422,7 +434,7 @@ bool* mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
     
     includelist = mfl_alloc_character_inclusion_list(Nexus_NCHARS);
     subcommand = mfl_move_past_eq_sign(subcommand);
-    mfl_set_inclusion_list(includelist, false, subcommand);
+    mfl_set_inclusion_list(includelist, false, Nexus_NCHARS, subcommand);
     
     return includelist;
 }
@@ -440,7 +452,7 @@ void tui_test_character_including()
     int num_chars = 20;
     char subcmd1[] = "ExSet * Exclude= 1-5 8 17;";
     char subcmd2[] = "Exclude = 1-5, 8 17;";
-    char subcmd3[] = "7-8";
+    char subcmd3[] = "18-51 100";
     char subcmd4[] = "10-15 2-6";
     
     char *subcmd = NULL;
