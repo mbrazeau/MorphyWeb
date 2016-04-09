@@ -81,7 +81,77 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
 
 /* Processing input */
 
-// Initialisation function
+char *mfl_move_past_eq_sign(char *input)
+{
+    /* Move through a line and return the position of the first character after
+     * an '=' sign; return original input position if no such symbol found. */
+    char *eq_ptr = NULL;
+    eq_ptr = input;
+    
+    do {
+        if (*eq_ptr == '=') {
+            ++eq_ptr;
+            return eq_ptr;
+        }
+        ++eq_ptr;
+    } while (*eq_ptr);
+    
+    return input;
+}
+
+
+void mfl_move_past_symbol(char** c, char symbol)
+{
+    
+    do {
+        if (**c == symbol) {
+            break;
+        }
+        ++(*c);
+    } while (**c);
+}
+
+
+bool mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, int input_num_chars)
+{
+    /* An input matrix should not have inline taxon names. This function 
+     * scans each row of the input matrix to determine whether or not the 
+     * number of places in the row corresponds to input number of 
+     * of characters. If the number exceeds the expected number of data
+     * columns (num_input_chars), then it is inferred that taxon names or
+     * other extraneous info are included in the matrix. */
+    
+    char* current = NULL;
+    int matrix_size = 0;
+    int expected_size = 0;
+    bool dimensionsOK = true;
+    
+    expected_size = input_num_chars * input_num_taxa;
+    
+    current = input_matrix;
+    
+    do {
+        if (isalnum(*current)) {
+            ++matrix_size;
+        }
+        else if (*current == '(' || *current == '{') {
+            mfl_move_in_nexus_multistate(&current);
+            ++matrix_size;
+        }
+        
+        if (*current == '\n') {
+            mfl_move_past_symbol(&current, '\n');
+        }
+        ++current;
+    } while (*current != ';');
+    
+    if (matrix_size > expected_size) {
+        dimensionsOK = false;
+        dbg_printf("ERROR in mfl_check_nexus_matrix_dimensions(): matrix dimensions exceed expected value based on NTAX and NCHAR input\n");
+    }
+    
+    return dimensionsOK;
+}
 
 mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
 {
@@ -94,23 +164,6 @@ mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
     }
 }
 
-
-char *mfl_move_past_eq_sign(char *input)
-{
-    /* Move through a line and return the position of the first character after
-     * an '=' sign; return original input position if no such symbol found. */
-    char *eq_ptr = NULL;
-    eq_ptr = input;
-    do {
-        if (*eq_ptr == '=') {
-            ++eq_ptr;
-            return eq_ptr;
-        }
-        ++eq_ptr;
-    } while (*eq_ptr);
-    
-    return input;
-}
 
 int mfl_check_state_number_support(char *datatype_list)
 {
@@ -378,7 +431,8 @@ void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *
      * list maximum are disallowed; ranges out of list maximum are truncated. */
     
     int first = 0;
-    int last = 0; // first and last for identifier ranges (e.g. taxa 1-4 or characters 11-17)
+    int last = 0; // first and last for identifier ranges (e.g. taxa 1-4 or
+                  //characters 11-17)
     char *current = NULL;
     current = subcommand;
     
@@ -407,7 +461,8 @@ void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *
                 if (last > listmax) {
                     last = listmax;
                     
-                    dbg_printf("WARNING in mfl_set_inclusion_list(): Proposed range is outside of list maximum. Proposed range will be truncated at maximum: %i\n", listmax);
+                    dbg_printf("WARNING in mfl_set_inclusion_list(): Proposed range is\
+                               outside of list maximum. Proposed range will be truncated at maximum: %i\n", listmax);
                 }
                 mfl_set_include_range(first, last, includeval, includes);
                 
@@ -474,8 +529,15 @@ void tui_test_character_including()
     char subcmd3[] = "18-51 100";
     char subcmd4[] = "10-15 2-6";
     
-    char *subcmd = NULL;
-    subcmd = subcmd3;
+    //                       12345678902
+    //              12345678901234567890
+    char *matrix = "000111{1234}1011AB27\n"
+                   "1(01234)11111(12)1111111;";
+    
+    mfl_check_nexus_matrix_dimensions(matrix, 2, 15);
+    
+    /*char *subcmd = NULL;
+    subcmd = subcmd4;
     dbg_printf("Processing the following subcommand: %s\n\n", subcmd);
     
     bool* includelist = mfl_read_nexus_exset_subcmd(subcmd, num_chars);
@@ -496,5 +558,5 @@ void tui_test_character_including()
     }
     dbg_printf("\n");
     
-    mfl_free_inclusion_list(includelist);
+    mfl_free_inclusion_list(includelist);*/
 }

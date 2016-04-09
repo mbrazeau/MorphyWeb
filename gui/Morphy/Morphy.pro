@@ -6,6 +6,7 @@
 
 QT       += core gui
 
+
 TARGET = Morphy
 TEMPLATE = app
 
@@ -15,16 +16,16 @@ SOURCES += main.cpp\
     heuristicsearchdialog.cpp \
     taxadialog.cpp \
     charactersdialog.cpp \
-    treeviewer.cpp
+    #treeviewer.cpp
 
 HEADERS  += mainwindow.h \
     heuristicsearchdialog.h \
     taxadialog.h \
     charactersdialog.h \
-    treeviewer.h
+    #treeviewer.h
 
 FORMS    += mainwindow.ui \
     heuristicsearchdialog.ui \
     taxadialog.ui \
     charactersdialog.ui \
-    treeviewer.ui
+    #treeviewer.ui
