@@ -72,6 +72,111 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
 }
 
 
+/*mfl_charstate mfl_convert_single_symbol_categorical(char symbol)
+{
+    int shift_value;
+    u_int64_t bit_setter;
+    mfl_charstate charstate;
+    
+    
+    
+}
+
+
+mfl_charstate mfl_convert_state_symbol_DNA(char state_symbol)
+{
+    
+}
+
+
+mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
+{
+    
+    
+}*/
+
+
+void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars)
+{
+    int i = 0;
+    int j = 0;
+    int charcells_size = (num_states + 1) * num_taxa; // +1 for newline character
+    
+    for (i = 0; i < num_chars; ++i) {
+        
+        // Setup the char-type transformation series vectors
+        newmatrix->mat_matrix[i]->cv_character_cells = (char**)malloc(num_taxa * sizeof(char*));
+        if (!newmatrix->mat_matrix[i]->cv_character_cells) {
+            dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for cv_character_cells\n");
+        }
+        else {
+            memset(newmatrix->mat_matrix[i]->cv_character_cells, 0, charcells_size * sizeof(char));
+        }
+        
+        for (j = 0; j < num_taxa; ++j) {
+            newmatrix->mat_matrix[i]->cv_character_cells[j] = (char*)malloc((num_states + 1) * sizeof(char));
+            if (!newmatrix->mat_matrix[i]->cv_character_cells[j]) {
+                dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for a character cell\n");
+            }
+        }
+        
+        // Set up the vector of bitwise state representations.
+        newmatrix->mat_matrix[i]->cv_chardata = (mfl_charstate*)malloc(num_taxa * sizeof(sizeof(mfl_charstate)));
+        if (!newmatrix->mat_matrix[i]->cv_chardata) {
+            dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for cv_chardata\n");
+        }
+        else {
+            memset(newmatrix->mat_matrix[i]->cv_chardata, 0, num_taxa * sizeof(mfl_charstate));
+        }
+    }
+}
+
+
+mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
+{
+    mfl_matrix_t *newmatrix = NULL;
+    
+    newmatrix = (mfl_matrix_t*)malloc(sizeof(mfl_matrix_t));
+    if (!newmatrix) {
+        dbg_printf("ERROR in mfl_create_mfl_matrix(): unable to allocate memory for new matrix\n");
+        return NULL;
+    }
+    else {
+        memset(newmatrix, 0, sizeof(mfl_matrix_t));
+    }
+    
+    newmatrix->mat_num_taxa = num_taxa;
+    newmatrix->mat_num_characters = num_chars;
+    
+    newmatrix->mat_matrix = (mfl_character_vector_t**)malloc(num_chars * sizeof(mfl_character_vector_t*));
+    
+    return newmatrix;
+}
+
+void mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa)
+{
+    int i = 0;
+    
+    for (i = 0; i < num_taxa; ++i) {
+        free(char_cells[i]);
+    }
+}
+
+
+void mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_taxa, int num_chars)
+{
+    int i = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        mfl_destroy_character_cells(oldmatrix->mat_matrix[i]->cv_character_cells, num_states, num_taxa);
+        free(oldmatrix->mat_matrix[i]->cv_character_cells);
+        free(oldmatrix->mat_matrix[i]->cv_chardata);
+    }
+    
+    free(oldmatrix->mat_matrix);
+    free(oldmatrix);
+}
+
 // Processing the input datamatrix which is received as a char*
     // Need NTAX and NCHAR from the associated Nexus file. These should live in the handle.
     // Need to determine the number of partitions to create
@@ -157,17 +262,6 @@ bool mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, i
     return dimensionsOK;
 }
 
-mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
-{
-    if (opt_method == MFL_GAP_INAPPLICABLE || opt_method == MFL_GAP_NEWSTATE) {
-        //
-        return 1;
-    }
-    else {
-        return ~0;
-    }
-}
-
 
 int mfl_check_state_number_support(char *datatype_list)
 {
@@ -203,6 +297,19 @@ int mfl_check_state_number_support(char *datatype_list)
     
 }
 
+
+mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
+{
+    if (opt_method == MFL_GAP_INAPPLICABLE || opt_method == MFL_GAP_NEWSTATE) {
+        //
+        return 1;
+    }
+    else {
+        return ~0;
+    }
+}
+
+
 void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
 {
     /* Sets an new char array to be a space-less vector of symbols use as 
@@ -221,6 +328,7 @@ void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatyp
     }
 }
 
+
 int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
 {
     int i = 0;
@@ -235,6 +343,7 @@ int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
     
     return i + MORPHY_SPECIAL_STATE_PAD;
 }
+
 
 int mfl_convert_alphanum_to_shift_value(char in)
 {
@@ -263,6 +372,7 @@ int mfl_convert_alphanum_to_shift_value(char in)
     }
 }
 
+
 void mfl_move_in_nexus_multistate(char **col)
 {
     if (**col != '(' && **col != '{') {
@@ -281,6 +391,7 @@ void mfl_move_in_nexus_multistate(char **col)
         } while (**col != '}');
     }
 }
+
 
 mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
 {
@@ -303,34 +414,8 @@ int mfl_get_numstates_from_matrix(char *matrix)
     /* When no state symbols are specified and default reading is in effect, 
      * the number of unique symbols used can be counted directly from the matrix
      * */
-}
-
-mfl_charstate mfl_convert_single_symbol_categorical(char symbol)
-{
-    int shift_value;
-    u_int64_t bit_setter;
-    mfl_charstate charstate;
-
     
-
-}
-
-
-mfl_charstate mfl_convert_state_symbol_DNA(char state_symbol)
-{
-    
-}
-
-
-mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
-{
-    
-    int *list_of_fitch_characters = NULL;
-    int *list_of_wagner_characters = NULL;
-    int *list_of_dollo_characters = NULL;
-    int *list_of_irreversible_characters = NULL;
-    
-    
+    //FINISH THIS FUNCTION
 }
 
 
@@ -518,7 +603,7 @@ bool* mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
 }
 
 
-int mfl_calculate_data_partitions_required(mfl_handle_t)
+int mfl_calculate_data_partitions_required(mfl_handle_t mfl_handle)
 {
     
 }

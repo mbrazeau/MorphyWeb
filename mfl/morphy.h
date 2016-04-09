@@ -111,6 +111,12 @@ typedef struct mfl_character_vector_t {
     mfl_charstate* cv_chardata;
 } mfl_character_vector_t;
 
+typedef struct mfl_matrix_t {
+    int mat_num_taxa;
+    int mat_num_characters;
+    mfl_character_vector_t** mat_matrix;
+};
+
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
     mfl_optimisation_t nd_optimisation_method;  // The optimisation method applied to all characters in this datablock.
@@ -203,6 +209,10 @@ typedef struct mfl_island_data_t {
 /* In mfl_characters.c */
 void            mfl_move_in_nexus_multistate(char **col);
 mfl_charstate*  mfl_allocate_nodal_character_set(int num_characters);
+void            mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa);
+void            mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_taxa, int num_chars);
+mfl_matrix_t*   mfl_create_mfl_matrix(int num_taxa, int num_chars);
+void            mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars);
 void            mfl_free_nodedata(mfl_nodedata_t *olddata);
 mfl_nodedata_t* mfl_alloc_datapart(void);
 bool*           mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS);
