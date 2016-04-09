@@ -97,6 +97,7 @@ mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
     }
 }
 
+
 char *mfl_move_past_eq_sign(char *input)
 {
     /* Move through a line and return the position of the first character after
@@ -260,15 +261,12 @@ mfl_charstate mfl_convert_single_symbol_categorical(char symbol)
 
 }
 
+
 mfl_charstate mfl_convert_state_symbol_DNA(char state_symbol)
 {
     
 }
 
-int mfl_calculate_data_partitions_required(mfl_handle_t)
-{
-    
-}
 
 mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
 {
@@ -279,4 +277,195 @@ mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_hand
     int *list_of_irreversible_characters = NULL;
     
     
+}
+
+
+bool mfl_is_nexus_stop_position(char a)
+{
+    bool is_stop = false;
+    
+    if (a) {
+        if (isspace(a) || a == '-' || a == ';' || a == ',') {
+            is_stop = true;
+        }
+    }
+    else {
+        is_stop = true;
+    }
+    
+    return is_stop;
+}
+
+void mfl_skip_spaces(char **current)
+{
+    if (**current == ' ') {
+        do {
+            ++(*current);
+        } while (isspace(**current));
+    }
+}
+
+int mfl_read_nexus_type_int(char **current)
+{
+    int nexus_int = 0;
+    
+    // Read char until whitespace, a dash '-', semicolon, or end of string
+    do {
+        nexus_int = 10 * nexus_int;
+        nexus_int = nexus_int + (**(current) - '0');
+        ++(*current);
+    } while (!mfl_is_nexus_stop_position(**current));
+    
+    mfl_skip_spaces(current);
+    dbg_printf("Returning int %i from a Nexus sub-command\n", nexus_int);
+    
+    return nexus_int;
+}
+
+
+void mfl_set_include_value(int vectornum, bool includeval, bool* includes)
+{
+    /* In any set of bool include array, this sets the entry's value to the
+     * desired true/false value */
+    
+    if (includeval) {
+        includes[vectornum-1] = true;
+    }
+    else {
+        includes[vectornum-1] = false;
+    }
+}
+
+
+void mfl_set_include_range(int first, int last, bool includeval, bool* includes)
+{
+    int i = 0;
+    
+    for (i = first; i <= last; ++i) {
+        mfl_set_include_value(i, includeval, includes);
+    }
+}
+
+
+void mfl_move_current_to_digit(char** current)
+{
+    if (!isdigit(**current)) {
+        do {
+            ++(*current);
+        } while (!isdigit(**current));
+    }
+}
+
+
+void mfl_set_inclusion_list(bool* includes, bool includeval, char *subcommand)
+{
+    int first = 0;
+    int last = 0; // first and last for identifier ranges (e.g. taxa 1-4 or characters 11-17)
+    char *current = NULL;
+    current = subcommand;
+    
+    if (!isdigit(*current)) {
+        mfl_move_current_to_digit(&current);
+    }
+    
+    do {
+        first = 0;
+        last = 0;
+        if (isdigit(*current)) {
+            // Read token as either a number or value range.
+            first = mfl_read_nexus_type_int(&current);
+        }
+        else {
+            ++current;
+        }
+        
+        if (*current == '-') {
+            mfl_move_current_to_digit(&current);
+            last = mfl_read_nexus_type_int(&current);
+        }
+        
+        if (first) {
+            if (last) {
+                mfl_set_include_range(first, last, includeval, includes);
+            }
+            else {
+                mfl_set_include_value(first, includeval, includes);
+            }
+        }
+    } while (*current && *current != ';');
+}
+
+
+bool* mfl_alloc_character_inclusion_list(int num_chars)
+{
+    bool *new_inclusion_list = NULL;
+    
+    new_inclusion_list = (bool*)malloc(num_chars *sizeof(bool));
+    if (!new_inclusion_list) {
+        dbg_printf("ERROR in mfl_alloc_character_inclusion_list(): unable to allocate memory\n");
+    }
+    else {
+        memset(new_inclusion_list, MORPHY_DEFAULT_CHARACTER_INCLUDE, num_chars * sizeof(bool));
+    }
+    
+    return new_inclusion_list;
+}
+
+
+void mfl_free_inclusion_list(bool *inclist)
+{
+    free(inclist);
+}
+
+
+bool* mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
+{
+    bool* includelist = NULL;
+    
+    includelist = mfl_alloc_character_inclusion_list(Nexus_NCHARS);
+    subcommand = mfl_move_past_eq_sign(subcommand);
+    mfl_set_inclusion_list(includelist, false, subcommand);
+    
+    return includelist;
+}
+
+
+int mfl_calculate_data_partitions_required(mfl_handle_t)
+{
+    
+}
+
+
+void tui_test_character_including()
+{
+    int i = 0;
+    int num_chars = 20;
+    char subcmd1[] = "ExSet * Exclude= 1-5 8 17;";
+    char subcmd2[] = "Exclude = 1-5, 8 17;";
+    char subcmd3[] = "7-8";
+    char subcmd4[] = "10-15 2-6";
+    
+    char *subcmd = NULL;
+    subcmd = subcmd3;
+    dbg_printf("Processing the following subcommand: %s\n\n", subcmd);
+    
+    bool* includelist = mfl_read_nexus_exset_subcmd(subcmd, num_chars);
+    
+    dbg_printf("\nIncluding characters:\n");
+    for (i = 0; i < num_chars; ++i) {
+        if (includelist[i]) {
+            dbg_printf("%i ", i + 1);
+        }
+    }
+    dbg_printf("\n");
+    
+    dbg_printf("\nExcluding characters:\n");
+    for (i = 0; i < num_chars; ++i) {
+        if (!includelist[i]) {
+            dbg_printf("%i ", i + 1);
+        }
+    }
+    dbg_printf("\n");
+    
+    mfl_free_inclusion_list(includelist);
 }

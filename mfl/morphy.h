@@ -33,6 +33,7 @@
                                                                               */
 #define MORPHY_DEFAULT_TREE_LIMIT 1000
 #define MORPHY_TREEBUFFER_AUTOINCREASE_DEFAULT 500
+#define MORPHY_DEFAULT_CHARACTER_INCLUDE true
 
 
 /*
