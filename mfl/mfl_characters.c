@@ -199,7 +199,15 @@ mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_hand
 
 // Read through matrix string; populate the cells in the cv_character_cells.
 
+void mfl_populate_chartype_character_vector(mfl_matrix_t matrix, char *input_data_matrix, int num_chars, int num_taxa)
+{
+    int i = 0;
+    
+    
+}
+
 // Go through each cv_character_cell and convert its entry to the corresponding matrix cell.
+//      This is where 
 
 // Find and list the columns that have gaps in them (can be done simultaneously), setting the vector's cv_has_gaps flag
 //      This now gives the data needed to set a list of characters with gaps (the first partitioning)
