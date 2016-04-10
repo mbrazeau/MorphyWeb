@@ -35,7 +35,7 @@
  
  
  
- 
+/*
  * In this file:
  * Functions for making, destroying, and performing basic operations on trees. 
  * In this file you will find functions that allocate trees, allocate nodes for 
