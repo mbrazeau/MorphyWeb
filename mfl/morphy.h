@@ -1,6 +1,34 @@
 /*
+ *  morphy.h
  *
- * THE MORPHY FUNCTION LIBRARY (MFL)
+ *  THE MORPHY FUNCTION LIBRARY
+ *  A library for phylogenetic analysis with emphasis on parsimony and
+ *  morphology (but someday other methods)
+ *
+ *  Copyright (C) 2016  by Martin D. Brazeau, Thomas Guillerme,
+ *  and Chris Desjardins
+ *
+ *  Some data structs, routines and ideas derived from:
+ *      - The PHYLIP package by Joe Felsenstein
+ *          <http://evolution.genetics.washington.edu/phylip.html>
+ *      - MrBayes by John Huelsenbeck and Fredrik Ronquist
+ *          <http://mrbayes.sourceforge.net/>
+ *
+ *  Any bugs, errors, inefficiences and general amateurish handling are our own
+ *  and most likely the responsibility of MDB. We make no guarantees.
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -116,7 +144,7 @@ typedef struct mfl_matrix_t {
     int mat_num_taxa;
     int mat_num_characters;
     mfl_character_vector_t** mat_matrix;
-};
+} mfl_matrix_t;
 
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
