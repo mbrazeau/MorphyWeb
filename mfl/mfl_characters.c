@@ -307,7 +307,7 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
     
     int i = 0;
     int j = 0;
-    int charcells_size = (num_states+1) * num_taxa; // +1 for endline character;
+    int charcells_size = num_states+1; // +1 for endline character;
     
     if (!num_states) {
         dbg_printf("ERROR in mfl_setup_new_empty_matrix(): cannot setup matrix without number of states\n");
@@ -333,13 +333,16 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
             dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for cv_character_cells\n");
         }
         else {
-            memset(newmatrix->mat_matrix[i]->cv_character_cells, 0, charcells_size * sizeof(char));
+            memset(newmatrix->mat_matrix[i]->cv_character_cells, 0, num_taxa * sizeof(char));
         }
         
         for (j = 0; j < num_taxa; ++j) {
-            newmatrix->mat_matrix[i]->cv_character_cells[j] = (char*)malloc((num_states+1) * sizeof(char));
+            newmatrix->mat_matrix[i]->cv_character_cells[j] = (char*)malloc(charcells_size * sizeof(char));
             if (!newmatrix->mat_matrix[i]->cv_character_cells[j]) {
                 dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for a character cell\n");
+            }
+            else {
+                memset(newmatrix->mat_matrix[i]->cv_character_cells[j], 0, charcells_size * sizeof(char));
             }
         }
         
