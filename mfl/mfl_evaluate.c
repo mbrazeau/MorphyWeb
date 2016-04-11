@@ -98,6 +98,69 @@ void mfl_fitch_uppass_binary_node(mfl_node_t *node)
     }
 }
 
+inline int mfl_wagner_stepcount(mfl_charstate leftchar, mfl_charstate rightchar, mfl_charstate* parentchar, int weight)
+{
+    /* Calculates the number of steps between non-overlapping state sets from two 
+     * descendant branches at a binary node. There might be a better way to do this
+     * and it might have unpredictable behaviour if the user supplies strange terminal
+     * state sets like D1 = 0100010 and D2 = 0000101. For now, this should do for most
+     * normal cases. */
+    
+    int length_increment = 0;
+    mfl_charstate newset = 0;
+    mfl_charstate big = 0;
+    mfl_charstate small = 0;
+    
+    
+    if (leftchar > rightchar) {
+        leftchar = big;
+        rightchar = small;
+    }
+    else {
+        leftchar = small;
+        rightchar = big;
+    }
+    
+    do {
+        ++length_increment;
+        newset = (big & (small << length_increment));
+    } while (!newset);
+    
+    // Close the set between descendant sets
+    do {
+        newset = newset | (newset << 1);
+    } while (!(big & newset));
+    
+    // Assign this new set to the parent set
+    *parentchar = newset;
+    
+    return length_increment * weight;
+}
+
+void mfl_wagner_downpass_binary_node(mfl_node_t *node)
+{
+    int i = 0;
+    mfl_node_t* lchild = NULL;
+    mfl_node_t* rchild = NULL;
+    lchild = node->nodet_next->nodet_edge;
+    rchild = node->nodet_next->nodet_next->nodet_edge;
+    mfl_charstate temp = NULL;
+    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
+    
+    for (i = 0; i < num_chars; ++i) {
+        if ((temp = leftchars[i] & rightchars[i])) {
+            
+        }
+        else {
+            //parentchars[i] = leftchars[i] | rightchars[i];
+            /*Lenght increase = */ mfl_wagner_stepcount(leftchars[i], rightchars[i], &parentchars[i],  NULL/* WEIGHT goes here*/);
+        }
+    }
+}
+
 mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_optimisation_t parsim_type)
 {
     mfl_parsim_fn ret = NULL;

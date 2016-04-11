@@ -43,7 +43,21 @@
 
 #include "morphy.h"
 
-
+bool mfl_is_valid_morphy_ctype(char c)
+{
+    if (isalnum(c)) {
+        return true;
+    }
+    else if (c == '?') {
+        return true;
+    }
+    else if (c == '-') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 mfl_nodedata_t* mfl_alloc_datapart(void)
 {
@@ -199,18 +213,82 @@ mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_hand
 
 // Read through matrix string; populate the cells in the cv_character_cells.
 
-void mfl_populate_chartype_character_vector(mfl_matrix_t matrix, char *input_data_matrix, int num_chars, int num_taxa)
+void mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring)
 {
-    int i = 0;
-    
-    
+    *substring = singleton;
+    substring[1] = '\0';
 }
 
-// Go through each cv_character_cell and convert its entry to the corresponding matrix cell.
-//      This is where 
+void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring)
+{
+    int i = 0;
+    if (**xstatetoken == '{' || **xstatetoken == '(') {
+        ++(*xstatetoken);
+    }
+    
+    do {
+        if (isalnum(**xstatetoken)) {   // Morphy ignores '?' and '-' in multistate taxa
+            substring[i] = **xstatetoken;
+            ++(*xstatetoken);
+            ++i;
+        }
+        else if (**xstatetoken == '?' || **xstatetoken == '-') {
+            ++(*xstatetoken);
+        }
+    } while (**xstatetoken != ')' && **xstatetoken != '}');
+    ++i;
+    substring[i] = '\0';
+}
+
+
+void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa)
+{
+    int column = 0;
+    int row = 0;
+    char *current = NULL;
+    char *substring = NULL;
+    
+    current = input_data_matrix;
+    
+    substring = (char*)malloc((matrix->max_states + 1) * sizeof(char));
+    if (!substring) {
+        dbg_printf("ERROR in mfl_populate_chartype_character_vector(): unable to allocate memory for character substring\n");
+        return;
+    }
+    else {
+        memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
+    }
+    
+    do {
+        // Collect the input matrix substring
+        column = 0;
+        do {
+            if (mfl_is_valid_morphy_ctype(*current)) {
+                mfl_copy_singleton_subtoken_to_substring(*current, substring);
+                strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
+                memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
+                ++column;
+            }
+            else if (*current == '(' || *current == '{') {
+                mfl_copy_multistate_subtoken_to_substring(&current, substring);
+                strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
+                memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
+                ++column;
+            }
+            ++current;
+        } while (column < num_chars && *current != '\n');
+        //++current;
+        ++row;
+    } while (row < num_taxa);
+    
+    free(substring);
+}
 
 // Find and list the columns that have gaps in them (can be done simultaneously), setting the vector's cv_has_gaps flag
 //      This now gives the data needed to set a list of characters with gaps (the first partitioning)
+
+// Go through each cv_character_cell and convert its entry to the corresponding matrix cell.
+//      This is where the conversion rule needs to be defined.
 
 // Get the number of character types: unord, ord, dollo, irreversible, usertypes/sankoff
 
@@ -222,14 +300,35 @@ void mfl_populate_chartype_character_vector(mfl_matrix_t matrix, char *input_dat
 
 void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars)
 {
+    /*  Allocates all the memory required to store character data (pre- and post-conversion
+     *  in the appropriate vectors. Does not populate the vectors with data--only creates
+     *  the empty matrix, ready for populating with data.
+     */
+    
     int i = 0;
     int j = 0;
-    int charcells_size = (num_states + 1) * num_taxa; // +1 for newline character
+    int charcells_size = (num_states+1) * num_taxa; // +1 for endline character;
+    
+    if (!num_states) {
+        dbg_printf("ERROR in mfl_setup_new_empty_matrix(): cannot setup matrix without number of states\n");
+        return;
+    }
     
     for (i = 0; i < num_chars; ++i) {
         
-        // Setup the char-type transformation series vectors
+        // Allocate memory for the vectors
+        newmatrix->mat_matrix[i] = (mfl_character_vector_t*)malloc(sizeof(mfl_character_vector_t));
+        if (!newmatrix->mat_matrix[i]) {
+            dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for mfl_character_vector_t's\n");
+        }
+        else {
+            memset(newmatrix->mat_matrix[i], 0, sizeof(mfl_character_vector_t));
+        }
+        
+        
+        // Allocate and set up the char-type transformation series vectors
         newmatrix->mat_matrix[i]->cv_character_cells = (char**)malloc(num_taxa * sizeof(char*));
+        
         if (!newmatrix->mat_matrix[i]->cv_character_cells) {
             dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for cv_character_cells\n");
         }
@@ -238,13 +337,14 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
         }
         
         for (j = 0; j < num_taxa; ++j) {
-            newmatrix->mat_matrix[i]->cv_character_cells[j] = (char*)malloc((num_states + 1) * sizeof(char));
+            newmatrix->mat_matrix[i]->cv_character_cells[j] = (char*)malloc((num_states+1) * sizeof(char));
             if (!newmatrix->mat_matrix[i]->cv_character_cells[j]) {
                 dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for a character cell\n");
             }
         }
         
-        // Set up the vector of bitwise state representations.
+        
+        // Allocate the vector of bitwise state representations.
         newmatrix->mat_matrix[i]->cv_chardata = (mfl_charstate*)malloc(num_taxa * sizeof(sizeof(mfl_charstate)));
         if (!newmatrix->mat_matrix[i]->cv_chardata) {
             dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for cv_chardata\n");
@@ -253,11 +353,19 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
             memset(newmatrix->mat_matrix[i]->cv_chardata, 0, num_taxa * sizeof(mfl_charstate));
         }
     }
+    
+    newmatrix->max_states = num_states;
 }
 
 
 mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
 {
+    /*  Allocates memory for a new matrix and allocates memory for the list of
+     *  character vectors pointed to by the mat_matrix variable. The returned matrix
+     *  has no storage for the content of the vectors, just a list for pointers to
+     *  that eventual data. Further setups are handled by mfl_setup_new_empty_matrix()
+     */
+    
     mfl_matrix_t *newmatrix = NULL;
     
     newmatrix = (mfl_matrix_t*)malloc(sizeof(mfl_matrix_t));
@@ -272,7 +380,17 @@ mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
     newmatrix->mat_num_taxa = num_taxa;
     newmatrix->mat_num_characters = num_chars;
     
+    
     newmatrix->mat_matrix = (mfl_character_vector_t**)malloc(num_chars * sizeof(mfl_character_vector_t*));
+    if (!newmatrix->mat_matrix) {
+        dbg_printf("ERROR in mfl_create_mfl_matrix(): unable to allocate memory for new matrix\n");
+        free(newmatrix);
+        return NULL;
+    }
+    else {
+        memset(newmatrix->mat_matrix, 0, num_chars * sizeof(mfl_character_vector_t*));
+    }
+    
     
     return newmatrix;
 }
@@ -296,6 +414,7 @@ void mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_tax
         mfl_destroy_character_cells(oldmatrix->mat_matrix[i]->cv_character_cells, num_states, num_taxa);
         free(oldmatrix->mat_matrix[i]->cv_character_cells);
         free(oldmatrix->mat_matrix[i]->cv_chardata);
+        free(oldmatrix->mat_matrix[i]);
     }
     
     free(oldmatrix->mat_matrix);
@@ -357,7 +476,7 @@ bool mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, i
     current = input_matrix;
     
     do {
-        if (isalnum(*current)) {
+        if (mfl_is_valid_morphy_ctype(*current)) {
             ++matrix_size;
         }
         else if (*current == '(' || *current == '{') {
@@ -469,14 +588,35 @@ void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatyp
     }
 }
 
+int mfl_is_equal(const void* elem1, const void* elem2)
+{
+    return (*(int*)elem1 - *(int*)elem2);
+}
 
-int mfl_get_numstates_from_matrix(char *matrix)
+int mfl_get_numstates_from_matrix(char *inputmatrix)
 {
     /* When no state symbols are specified and default reading is in effect, 
      * the number of unique symbols used can be counted directly from the matrix
      * */
     
-    //FINISH THIS FUNCTION
+    size_t count = 0;
+    char *current = NULL;
+    char statesymbols[1];
+    
+    current = inputmatrix;
+    
+    do {
+        if (*current != '?' && mfl_is_valid_morphy_ctype(*current)) {
+            if (!lsearch(current, statesymbols, &count, sizeof(char), mfl_is_equal)) {
+                statesymbols[count] = *current;
+            }
+        }
+        ++current;
+    } while (*current);
+    
+    dbg_printf("The number of states in this array excluding '-' is: %i\n", (int)count);
+    
+    return (int)count;
 }
 
 
@@ -574,7 +714,12 @@ void mfl_move_current_to_digit(char** current)
 
 void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand)
 {
-    /* Reads the given subcommand, setting the positing in includes to the 
+    /* A generic function for setting a list of boolean values that is used
+     * for including or excluding items from a list supplied by the user.
+     * The list needs to be formatted in the Nexus style and must have 
+     * numerical values.
+     *
+     * Reads the given subcommand, setting the positing in includes to the
      * true/false value specified by includeval. Converts the numeric tokens to
      * integers (1-based) which are used to index the include array (0-based). 
      * If a range of values is specified by the '-' character, then all 
@@ -671,23 +816,63 @@ int mfl_calculate_data_partitions_required(mfl_handle_t mfl_handle)
 }
 
 
-void tui_test_character_including()
+void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_chars)
 {
     int i = 0;
-    int num_chars = 20;
+    int j = 0;
+    
+    dbg_printf("Printing this obfuscated matrix:\n");
+    
+    for (i = 0; i < num_taxa; ++i) {
+        for (j = 0; j < num_chars; ++j) {
+            dbg_printf("%s ", matrix->mat_matrix[j]->cv_character_cells[i]);
+        }
+        dbg_printf("\n");
+    }
+}
+
+void tui_test_character_stuff()
+{
+    int i = 0;
+    int num_taxa = 0;
+    int num_chars = 0;
     char subcmd1[] = "ExSet * Exclude= 1-5 8 17;";
     char subcmd2[] = "Exclude = 1-5, 8 17;";
     char subcmd3[] = "18-51 100";
     char subcmd4[] = "10-15 2-6";
     
-    //                       12345678902
-    //              12345678901234567890
-    char *matrix = "000111{1234}1011AB27\n"
-                   "1(01234)11111(12)1111111;";
+    //                        1111111
+    //               1234567890123456
+    char *matrix =  "000{12}000-000??001"
+                    "3001110001101120"
+                    "00(12?3)0001110010030"
+                    "{123}0(123)0001110010030;";
     
-    mfl_check_nexus_matrix_dimensions(matrix, 3, 15);
+    num_chars = 16;
+    num_taxa = 4;
+    int num_states = 0;
     
-    //system("/usr/bin/open -a \"/Applications/Google Chrome.app\" \'https://www.youtube.com/watch?v=dQw4w9WgXcQ\'");
+    dbg_printf("Doing matrixy stuff...\n ");
+    dbg_printf("This is the matrix to convert:\n");
+    dbg_printf("%s\n", matrix);
+    
+    num_states = mfl_get_numstates_from_matrix(matrix);
+    
+    mfl_check_nexus_matrix_dimensions(matrix, 3, 16);
+    
+    mfl_matrix_t *testmatrix = NULL;
+    
+    testmatrix = mfl_create_mfl_matrix(num_taxa, num_chars);
+    
+    mfl_setup_new_empty_matrix(testmatrix, num_states, num_taxa, num_chars);
+    mfl_populate_chartype_character_vector(testmatrix, matrix, num_chars, num_taxa);
+    
+    tui_print_out_converted_matrix(testmatrix, num_taxa, num_chars);
+    
+    /* Need to calculate num_states!*/
+    
+    mfl_destroy_mfl_matrix(testmatrix, num_states, num_taxa, num_chars);
+    
     
     /*char *subcmd = NULL;
     subcmd = subcmd4;

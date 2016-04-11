@@ -1,7 +1,8 @@
+#include "ncl/ncl.h"
 #include "morphy.h"
 
 void mfl_test_newick_stuff();
-void tui_test_character_including();
+void tui_test_character_stuff();
 
 
 int main (void)
@@ -11,7 +12,7 @@ int main (void)
     dbg_printf("\t****************************************\n\n\n");
     
     dbg_printf("Testing include set values:\n");
-    tui_test_character_including();
+    tui_test_character_stuff();
     dbg_printf("\n\n");
     
     dbg_printf("Generate a new tree\n\n");

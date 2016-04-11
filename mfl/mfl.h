@@ -225,6 +225,7 @@ typedef enum
     MFL_OPT_WAGNER,
     MFL_OPT_DOLLO,
     MFL_OPT_IRREVERSIBLE,
+    // New or custom optimisation types are added in this position
     MFL_OPT_COST_MATRIX,
     
     MFL_OPT_MAX
@@ -232,8 +233,9 @@ typedef enum
 
 typedef enum
 {
-    MFL_MULTISTATE_POLYMORPHISM,
     MFL_MULTSTATE_UNCERTAINTY,
+    MFL_MULTISTATE_POLYMORPHISM,
+    MFL_MULTISTATE_VARIABLE,
     
     MFL_MULTISTATE_MAX
 } mfl_multicell_t ;

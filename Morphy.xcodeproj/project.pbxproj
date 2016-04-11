@@ -81,7 +81,6 @@
 			isa = PBXGroup;
 			children = (
 				08FB7795FE84155DC02AAC07 /* Source */,
-				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
 			name = Morphy;
@@ -113,6 +112,7 @@
 				C6A0FF2C0290799A04C91782 /* Morphy.1 */,
 			);
 			name = Documentation;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		E1ACBC9214A8BD13005BB9D5 /* mfl */ = {
@@ -128,6 +128,7 @@
 				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
 				51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */,
 				51D40F991CA19995009EEDF2 /* mfl_brswap.c */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
 				E1D5259A14C94BCE0079F5EC /* Makefile */,
 			);
 			path = mfl;
@@ -264,7 +265,7 @@
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_UNROLL_LOOPS = NO;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
@@ -306,7 +307,7 @@
 					/usr/local/lib/ncl,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -342,7 +343,7 @@
 				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_UNROLL_LOOPS = NO;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
@@ -381,7 +382,7 @@
 					/usr/local/lib/ncl,
 					/usr/local/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-ledit",

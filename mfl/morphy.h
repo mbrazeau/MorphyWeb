@@ -38,6 +38,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <ctype.h>
+#include <search.h>
 #include "mfl.h"
 
 #ifdef MFY_DEBUG
@@ -47,6 +48,7 @@
 #define dbg_printf(...)
 #endif
 
+using namespace std;
 
 /* 
  *
@@ -55,13 +57,20 @@
  */
 
 #define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
-#define MORPHY_MAX_STATE_NUMBER (63 - MORPHY_SPECIAL_STATE_PAD) /* The reason this isn't 64 is because the
+#define MORPHY_MAX_STATE_NUMBER (64 - MORPHY_SPECIAL_STATE_PAD) /* The reason this isn't 64 is because the
                                       the first bit position is reserved for 
                                       gap as a state or as logical impossibility
                                                                               */
+
+//Defaults
+#define MORPHY_DEFAULT_WEIGHT 1.0
 #define MORPHY_DEFAULT_TREE_LIMIT 1000
-#define MORPHY_TREEBUFFER_AUTOINCREASE_DEFAULT 500
+#define MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_DEFAULT 500
+#define MORPHY_DEFAULT_STEPWISE_HOLD 1
+#define MORPHY_DEFAULT_ADDITION_SEQUENCE_REPS 10
 #define MORPHY_DEFAULT_CHARACTER_INCLUDE true
+#define MORPHY_DEFAULT_MULTISTATE_HANDLE MFL_MULTSTATE_UNCERTAINTY
+
 
 
 /*
@@ -116,10 +125,20 @@ typedef struct {
 } mfl_handle_s;
 
 
+typedef enum {
+    MFL_MST_UNCERTAIN,
+    MFL_MST_POLYMORPH,
+    MFL_MST_VARIABLE,
+    
+    MFL_MST_MAX
+} mfl_multistate_t;
+
 typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
-typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent); // Prototype for a function that performs parsimony calculations at a node.
+typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a function that performs parsimony calculations at a node.
+typedef mfl_charstate (*mfl_char2bit_fn)(char *states);    // Pointer to conversion functions following conversion rules for a particular character type
+
 
 typedef struct mfl_datapartition_t {
     int part_n_characters;
@@ -132,19 +151,24 @@ typedef struct mfl_datapartition_t {
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 
+
 typedef struct mfl_character_vector_t {
     int cv_num_colums;
-    mfl_multicell_t cv_multistate_method;
     bool cv_has_gaps;
+    mfl_multicell_t cv_multistate_method;
+    mfl_char2bit_fn cv_conversion_rule;
     char** cv_character_cells;
     mfl_charstate* cv_chardata;
 } mfl_character_vector_t;
 
+
 typedef struct mfl_matrix_t {
     int mat_num_taxa;
     int mat_num_characters;
+    int max_states;
     mfl_character_vector_t** mat_matrix;
 } mfl_matrix_t;
+
 
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
@@ -236,6 +260,9 @@ typedef struct mfl_island_data_t {
  */
 
 /* In mfl_characters.c */
+void            mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa);
+void            mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring);
+void            mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring);
 void            mfl_move_in_nexus_multistate(char **col);
 mfl_charstate*  mfl_allocate_nodal_character_set(int num_characters);
 void            mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa);
