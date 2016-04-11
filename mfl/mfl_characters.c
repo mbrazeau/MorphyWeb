@@ -236,7 +236,6 @@ void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substri
             ++(*xstatetoken);
         }
     } while (**xstatetoken != ')' && **xstatetoken != '}');
-    ++i;
     substring[i] = '\0';
 }
 
@@ -266,13 +265,13 @@ void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_da
             if (mfl_is_valid_morphy_ctype(*current)) {
                 mfl_copy_singleton_subtoken_to_substring(*current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
-                memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
+                //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
             }
             else if (*current == '(' || *current == '{') {
                 mfl_copy_multistate_subtoken_to_substring(&current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
-                memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
+                //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
             }
             ++current;
