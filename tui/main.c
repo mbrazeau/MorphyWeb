@@ -62,6 +62,10 @@ int main (void)
     dbg_printf("\t  Welcome to the Morphy Test Interface\n\n");
     dbg_printf("\t****************************************\n\n\n");
     
+    dbg_printf("\n\n");
+    dbg_eprintf("not really an error");
+    dbg_printf("\n\n");
+    
     dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
     tui_getting_numstates_test();
