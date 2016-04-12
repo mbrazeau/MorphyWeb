@@ -333,6 +333,67 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     return tree_from_newick;
 }
 
+// Finding the number of digits in an integer
+int mfl_number_of_digits_in_integer(int n)
+{
+    //Variables
+    int count=0;
+
+    //Counting the digits
+    while(n!=0)
+    {
+        n/=10;
+        ++count;
+    }
+  return(count);
+}
+
+// Getting the power of an integer (equivalent to pow from math but does not output a double!)
+int mfl_power(int base, unsigned int exp) {
+
+    //Variables
+    int i, result = 1;
+
+    //Calculating the power as an integer
+    for (i = 0; i < exp; i++)
+        result *= base;
+    return result;
+}
+
+//Getting the total number of digit in a sequence from 1 to n
+int mfl_number_of_digits_in_sequence(int n)
+{
+    //Variables
+    int digits_in_n, digits_in_sequence;
+
+    // Get the number of digits in n
+    digits_in_n = mfl_number_of_digits_in_integer(n);
+
+    // Get the total number of digits in the sequence from 1 to n conditional on n
+    /* TG: For n being an integer and x being the number of digit in n, the
+    * number of digits in the sequence from 1 to n is equal to:
+    * "x*n - ( 10^(x-1) + 10^(x-2), ..., + 10^(x-x) - (x-1) )"
+    * or, more conveniently:
+    * "x*n - ( ((10^x) - 1)/(10 - 1) - x )"" */
+
+    digits_in_sequence = digits_in_n * n - ( (mfl_power(10,digits_in_n) - 1)/(10 - 1) - digits_in_n); 
+
+    return(digits_in_sequence);
+}
+
+//Getting the maximum number of characters in newick string
+int mfl_number_of_characters_in_newick(int num_taxa)
+{
+    //Variables
+    int num_brackets = 2*(num_taxa - 1), num_commas = num_taxa - 1, newick_size;
+
+    //Get the newick string size
+    newick_size = mfl_number_of_digits_in_sequence(num_taxa) + num_brackets + num_commas + 6; // The final +6 includes the closing semi-colon (1), the root header (4) and a space between the root header and the start of the newick string (1)
+
+    return newick_size;
+}
+
+
 
 void mfl_test_newick_stuff()
 {
@@ -369,3 +430,4 @@ void mfl_test_newick_stuff()
     mfl_free_tree(tree_from_newick);
     
 }
+
