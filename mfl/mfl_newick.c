@@ -393,6 +393,75 @@ int mfl_number_of_characters_in_newick(int num_taxa)
     return newick_size;
 }
 
+//Getting number of taxa from a mfl_tree_t
+int mfl_tree_t_number_of_taxa(mfl_tree_t *input_tree)
+{
+    int num_taxa_active = 0, count = 0;
+    
+    while(input_tree->treet_treenodes[count] != '\0') {
+        
+        //Count the number of nodet_tip
+        if(input_tree->treet_treenodes[count]->nodet_tip != 0) {
+            ++num_taxa_active;
+        }
+        
+        ++count;
+    }
+    
+    return num_taxa_active;
+}
+
+
+// Write newick string from tree_t structure
+char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active)
+{
+    //Variables
+    char* newick_tree_out = NULL;
+    char root_header[5]; // The root header can be "[&R]" or "[&U]" + a space
+    int newick_string_length = 0;
+
+    //Inferring number of taxa?
+    if(num_taxa_active == 0) {
+        //Infer number of taxa from mfl_tree_t
+        num_taxa_active = mfl_tree_t_number_of_taxa(input_tree);
+    }
+
+    //Get the newick string length
+    newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active) + 2;  // the + 2 is for the terminal '\0'
+
+    //Allocating memory to the newick
+    newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
+        if (!newick_tree_out) {
+        dbg_printf("ERROR in mfl_write_newick_string_tree(): unable to allocate memory for Newick string\n");
+        return NULL;
+    }
+    else {
+        memset(newick_tree_out, 0, newick_string_length * sizeof(char));
+    }
+    
+    dbg_printf("That worked! Number of taxa is %i\n", num_taxa_active);
+    dbg_printf("Newick will be of length: %i\n", newick_string_length);
+
+//    //Getting the root of the tree
+//    if(mfl_node_t->treet_root == 0) {
+//        //Set root header to unrooted
+//        //root_header = "[&U] ";
+//        dbg_printf("No root found on the tree.\n");
+//        //Arbitrarily root the tree (remember to remove the root at the end.)
+//
+//    }
+//    else {
+//        //Set root header to rooted
+//        //root_header = "[&R] ";
+//        dbg_printf("Root was found on the tree.\n");
+//    }
+
+    // Recurse in pre/postorder over the tree.
+    // Do the printing at appropriate points
+
+    return newick_tree_out;
+
+}
 
 
 void mfl_test_newick_stuff()
@@ -405,6 +474,7 @@ void mfl_test_newick_stuff()
     char temp_example_newick_for_writing4[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));"; // Polytomy and multi-digit tip number not in sequence
     char temp_example_newick_for_writing5[] = "temp_examp5=[&R] (((((1,4),5),3),2),6);";
     char temp_example_newick_for_writing6[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
+    char temp_example_newick_for_writing7[] = "temp_examp7=[&R] (1,(2,(3,4)));";
     
     char *sample_newick = NULL;
     
@@ -420,14 +490,25 @@ void mfl_test_newick_stuff()
     largest = mfl_seek_largest_tip_number_newick(temp_example_newick_for_writing4);
     dbg_printf("Largest in example 4: %i\n", largest);
     
-    
     sample_newick = mfl_find_next_opening_bracket_in_newick(temp_example_newick_for_writing4);
     dbg_printf("The string after finding the opening bracket:\n");
     dbg_printf("%s\n", sample_newick);
+
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
     
-    tree_from_newick = mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
+    dbg_printf("Imported tree is: %s\n", temp_example_newick_for_writing7);
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing7, 0);
+
+    dbg_printf("\n\n\nTesting convert to newick\n");
     
-    mfl_free_tree(tree_from_newick);
+    int n_taxa_active = 4;
+    mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
+    
+    
+    dbg_printf("\n\n\n");
+    
+    
+    
+    // mfl_free_tree(tree_from_newick); // Some bug here
     
 }
-
