@@ -4,6 +4,35 @@
 void mfl_test_newick_stuff();
 void tui_test_character_stuff();
 
+
+/* 
+ 
+ POTENTIAL UNIT TESTS
+ 
+ 
+ == mfl_characters
+ ..
+ 
+ == mfl_evaluate
+ ..
+ 
+ == mfl_newick
+ ..
+ 
+ == mfl_starttree
+ ..
+ 
+ == mfl_tree
+ ..
+ 
+ == mfl_brswap
+ ..
+ 
+ 
+ */
+
+
+
 int tui_getting_numstates_test()
 {
     int num_taxa = 5;

@@ -45,6 +45,10 @@
 
 bool mfl_is_valid_morphy_ctype(char c)
 {
+    /* MDB: It would be nice to have some way of centralising the 
+     * database of valid non-alphanumeric characters. For now, its
+     * this function. But it could be accomplished with some sort of
+     * clever preprocessor macro. */
     if (isalnum(c)) {
         return true;
     }
@@ -85,6 +89,7 @@ mfl_nodedata_t* mfl_alloc_datapart(void)
 
 void mfl_free_nodedata(mfl_nodedata_t *olddata)
 {
+    
     if (olddata->nd_prelim_set) {
         free(olddata->nd_prelim_set);
         olddata->nd_prelim_set = NULL;

@@ -78,6 +78,8 @@ using namespace std;
 #define MORPHY_DEFAULT_CHARACTER_INCLUDE true
 #define MORPHY_DEFAULT_MULTISTATE_HANDLE MFL_MULTSTATE_UNCERTAINTY
 
+#define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
+#define MORPHY_NUM_VALID_NONALPHA  4
 
 
 /*
@@ -87,7 +89,6 @@ using namespace std;
  */
 
 typedef uint64_t mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
-
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
