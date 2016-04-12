@@ -396,6 +396,14 @@ int mfl_number_of_characters_in_newick(int num_taxa)
 //Getting number of taxa from a mfl_tree_t
 int mfl_tree_t_number_of_taxa(mfl_tree_t *input_tree)
 {
+    /* MDB says: This function doesn't really return the number 
+     * num_taxa_active, but a total num_taxa at time of tree allocation.
+     * The number num_taxa_active should be determined by a traversal
+     * on the tree, since it should refer exclusively to the number of
+     * taxa active in the assembled tree, rather than in the allocated tree
+     * 
+     */
+    
     int num_taxa_active = 0, count = 0;
     
     while(input_tree->treet_treenodes[count] != '\0') {
@@ -418,6 +426,28 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     //Variables
     char* newick_tree_out = NULL;
     char root_header[5]; // The root header can be "[&R]" or "[&U]" + a space
+    /* MDB: I see a magic number here (plus a bug because I don't see where you allocate
+     * memory for the root header (really called the rooting command). Granted, it's 
+     * not one likely to be influenced by user input, but I think we can avoid this with 
+     * something like: (Note: I've made this variable-heavy to maximise readability)
+     
+     char *unrooted_command = "[&U] ";
+     char *rooted_command = "[&R] ";
+     int lrootcommand = 0;
+     
+     if (input_tree->treet_isrooted) {
+     lrootcommand = strlen(rooted_command);
+     }
+     else {
+     lrootcommand = strlen(unrooted_command);
+     }
+     
+     int predictedlengthofnwk = mfl_number_of_characters_in_newick(num_taxa) + lrootedcommand;
+     
+     newick_tree_out = (char*)malloc(predictedlengthofnwk + 1); // Plus 1 because strlen() leaves out the terminal NULL character
+     
+     */
+    
     int newick_string_length = 0;
 
     //Inferring number of taxa?
@@ -431,7 +461,7 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
 
     //Allocating memory to the newick
     newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
-        if (!newick_tree_out) {
+    if (!newick_tree_out) {
         dbg_printf("ERROR in mfl_write_newick_string_tree(): unable to allocate memory for Newick string\n");
         return NULL;
     }
