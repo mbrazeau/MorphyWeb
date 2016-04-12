@@ -54,6 +54,12 @@ bool mfl_is_valid_morphy_ctype(char c)
     else if (c == '-') {
         return true;
     }
+    else if (c == '+') {
+        return true;
+    }
+    else if (c == '@') {
+        return true;
+    }
     else {
         return false;
     }
@@ -591,7 +597,7 @@ void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatyp
 }
 
 
-char* mfl_search_in_chartypes_array(char* key, char* list, int *listend, int listmax)
+char* mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, int listmax)
 {
     int i = 0;
     char *ptr = NULL;
@@ -603,15 +609,18 @@ char* mfl_search_in_chartypes_array(char* key, char* list, int *listend, int lis
         }
     }
     
+    
     if (!ptr) {
-        if (*(listend+1) <= listmax) {
+        if (*listend < listmax) {
             list[*listend] = *key;
             ++(*listend);
             list[*listend] = '\0';
         }
         else {
             dbg_printf("ERROR in mfl_search_in_chartypes_array(): %s: line: %i\n", __FILE__, __LINE__);
-            dbg_printf("\t Insufficient space in array for new member. Returning NULL\n\n");
+            dbg_printf("\t Insufficient space in array for %i member \'%c\'. Exceeding max states: %i.\n", *listend, *key, MORPHY_MAX_STATE_NUMBER);
+            dbg_printf("Returning NULL\n\n");
+            ++(*listend); // Exceed list max for error reporting.
             return NULL;
         }
     }
@@ -629,7 +638,7 @@ int mfl_get_numstates_from_matrix(char *inputmatrix)
     
     int count = 0;
     char *current = NULL;
-    int listmax = MORPHY_MAX_STATE_NUMBER+MORPHY_SPECIAL_STATE_PAD+1; // +1 for terminal null.
+    int listmax = MORPHY_MAX_STATE_NUMBER+MORPHY_SPECIAL_STATE_PAD; // +1 for terminal null.
     char statesymbols[listmax];
     int dbg_loopcount = 0;
     
@@ -638,13 +647,18 @@ int mfl_get_numstates_from_matrix(char *inputmatrix)
     
     do {
         if (*current != '?' && mfl_is_valid_morphy_ctype(*current)) {
-            mfl_search_in_chartypes_array(current, statesymbols, &count, listmax);
+            mfl_search_char_in_chartypes_array(current, statesymbols, &count, listmax);
         }
         ++current;
         ++dbg_loopcount;
     } while (*current);
     
     //CHECK FOR ERROR HERE
+    if (count > listmax) {
+        dbg_printf("ERROR in %s, %s, line: %i\n", __FUNCTION__, __FILE__, __LINE__);
+        dbg_printf("\t State symbols outnumber MORPHY_MAX_STATE_NUMBER. Returning NULL\n\n");
+        return NULL;
+    }
     
     return count-1;
 }

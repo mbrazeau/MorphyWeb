@@ -6,15 +6,15 @@ void tui_test_character_stuff();
 
 int tui_getting_numstates_test()
 {
-    int num_taxa = 0;
-    int num_chars = 0;
+    int num_taxa = 5;
+    int num_chars = 16;
     int num_states = 0;
     
     /*Too many states test. */
     
     //                                        1111111
     //                               1234567890123456
-    char *too_many_states_matrix =  "1234567890-AABCD"
+    char too_many_states_matrix[] = "1234567890-AABCD"
                                     "EFGHIJKLMNOPQRST"
                                     "UVWXYZabcdefghij"
                                     "klmnopqrstuvwxyz"
@@ -24,12 +24,36 @@ int tui_getting_numstates_test()
     num_states = mfl_get_numstates_from_matrix(too_many_states_matrix);
     
     if (num_states != 0) {
-        dbg_printf("ERROR in mfl_get_numstates_from_matrix() %s, %i", __FILE__, __LINE__);
+        dbg_printf("ERROR in call to mfl_get_numstates_from_matrix() by %s, line: %i", __FILE__, __LINE__);
+        dbg_printf("\t Failed to recognize state proposal overload\n");
         return 1;
     }
     else {
-        dbg_printf("== %s, %i: PASSED too many states check\n", __FILE__, __LINE__);
+        dbg_printf("== PASSED == %s, line: %i too many states check\n", __FILE__, __LINE__);
     }
+    
+    char just_enough_states_matrix[] =  "1234567890-AABCD"
+                                        "EFGHIJKLMNOPQRST"
+                                        "UVWXYZabcdefghij"
+                                        "klmnopqrstuvwxyz"
+                                        "0001203--1234@0A;";
+    
+    
+    num_states = mfl_get_numstates_from_matrix(just_enough_states_matrix);
+    
+    if (num_states == 0) {
+        dbg_printf("ERROR in call to mfl_get_numstates_from_matrix() by %s, line: %i", __FILE__, __LINE__);
+        return 1;
+    }
+    else if (num_states != MORPHY_MAX_STATE_NUMBER){
+        dbg_printf("ERROR in call to mfl_get_numstates_from_matrix():by %s, line: %i", __FILE__, __LINE__);
+        dbg_printf("\t Input states does not match max states or function failed to count correct number of states\n");
+    }
+    else {
+        dbg_printf("== PASSED == %s, line: %i just enough states check\n", __FILE__, __LINE__);
+    }
+
+    
 }
 
 int main (void)
@@ -40,6 +64,7 @@ int main (void)
     
     dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
+    tui_getting_numstates_test();
     dbg_printf("\n\n");
     
     dbg_printf("Generate a new tree\n\n");
