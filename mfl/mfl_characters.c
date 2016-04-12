@@ -653,12 +653,14 @@ int mfl_get_numstates_from_matrix(char *inputmatrix)
         ++dbg_loopcount;
     } while (*current);
     
+    
     //CHECK FOR ERROR HERE
     if (count > listmax) {
         dbg_printf("ERROR in %s, %s, line: %i\n", __FUNCTION__, __FILE__, __LINE__);
         dbg_printf("\t State symbols outnumber MORPHY_MAX_STATE_NUMBER. Returning NULL\n\n");
         return NULL;
     }
+    
     
     return count-1;
 }
@@ -871,7 +873,7 @@ void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_
         for (j = 0; j < num_chars; ++j) {
             dbg_printf("%s ", matrix->mat_matrix[j]->cv_character_cells[i]);
         }
-        dbg_printf("\n");
+        dbg_printf("\n\n");
     }
 }
 
@@ -896,13 +898,13 @@ void tui_test_character_stuff()
     num_taxa = 4;
     int num_states = 0;
     
-    dbg_printf("Doing matrixy stuff...\n ");
-    dbg_printf("This is the matrix to convert:\n");
-    dbg_printf("%s\n", matrix);
+    dbg_printf("Doing matrixy stuff...\n\n");
+    dbg_printf("This is the matrix to convert (without linebreaks):\n");
+    dbg_printf("%s\n\n", matrix);
     
     num_states = mfl_get_numstates_from_matrix(matrix);
     
-    mfl_check_nexus_matrix_dimensions(matrix, 3, 16);
+    mfl_check_nexus_matrix_dimensions(matrix, num_taxa, num_chars);
     
     mfl_matrix_t *testmatrix = NULL;
     
