@@ -43,8 +43,16 @@
 #ifdef MFY_DEBUG
 #include <stdio.h>
 #define dbg_printf(...) printf(__VA_ARGS__)
+#define dbg_eprintf(...) printf("ERROR in %s(), %s\n\n", __FUNCTION__, __VA_ARGS__)
+#define dbg_linerr(...) printf("ERROR at line: %i in %s. %s\n\n", __LINE__, __FILE__, __VA_ARGS__)
+#define dbg_pfail(...) printf("== FAIL == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
+#define dbg_ppass(...) printf("== PASS == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
 #else
 #define dbg_printf(...)
+#define dbg_eprintf(...)
+#define dbg_linerr(...)
+#define dbg_pfail(...)
+#define dbg_ppass(...)
 #endif
 
 using namespace std;
