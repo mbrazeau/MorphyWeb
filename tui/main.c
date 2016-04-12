@@ -4,6 +4,33 @@
 void mfl_test_newick_stuff();
 void tui_test_character_stuff();
 
+int tui_getting_numstates_test()
+{
+    int num_taxa = 0;
+    int num_chars = 0;
+    int num_states = 0;
+    
+    /*Too many states test. */
+    
+    //                                        1111111
+    //                               1234567890123456
+    char *too_many_states_matrix =  "1234567890-AABCD"
+                                    "EFGHIJKLMNOPQRST"
+                                    "UVWXYZabcdefghij"
+                                    "klmnopqrstuvwxyz"
+                                    "+0001203--1234@0;";
+    
+    
+    num_states = mfl_get_numstates_from_matrix(too_many_states_matrix);
+    
+    if (num_states != 0) {
+        dbg_printf("ERROR in mfl_get_numstates_from_matrix() %s, %i", __FILE__, __LINE__);
+        return 1;
+    }
+    else {
+        dbg_printf("== %s, %i: PASSED too many states check\n", __FILE__, __LINE__);
+    }
+}
 
 int main (void)
 {

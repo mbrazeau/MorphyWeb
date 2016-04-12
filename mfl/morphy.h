@@ -38,7 +38,6 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <ctype.h>
-#include <search.h>
 #include "mfl.h"
 
 #ifdef MFY_DEBUG
@@ -278,6 +277,7 @@ void            mfl_set_inclusion_list(bool* includes, bool includeval, int list
 void            mfl_move_current_to_digit(char** current);
 void            mfl_set_include_range(int first, int last, bool includeval, bool* includes);
 void            mfl_set_include_value(int vectornum, bool includeval, bool* includes);
+int             mfl_get_numstates_from_matrix(char *inputmatrix);
 int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);
 bool            mfl_is_nexus_stop_position(char a);

@@ -590,35 +590,63 @@ void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatyp
     }
 }
 
-int mfl_is_equal(const void* elem1, const void* elem2)
+
+char* mfl_search_in_chartypes_array(char* key, char* list, int *listend, int listmax)
 {
-    return (*(int*)elem1 - *(int*)elem2);
+    int i = 0;
+    char *ptr = NULL;
+    
+    for (i = 0; i < *listend; ++i) {
+        if (*key == *(list + i)) {
+            ptr = (list + i);
+            break;
+        }
+    }
+    
+    if (!ptr) {
+        if (*(listend+1) <= listmax) {
+            list[*listend] = *key;
+            ++(*listend);
+            list[*listend] = '\0';
+        }
+        else {
+            dbg_printf("ERROR in mfl_search_in_chartypes_array(): %s: line: %i\n", __FILE__, __LINE__);
+            dbg_printf("\t Insufficient space in array for new member. Returning NULL\n\n");
+            return NULL;
+        }
+    }
+    
+    return ptr;
 }
+
 
 int mfl_get_numstates_from_matrix(char *inputmatrix)
 {
     /* When no state symbols are specified and default reading is in effect, 
-     * the number of unique symbols used can be counted directly from the matrix
+     * the number of unique symbols used can, with some assumptions, be
+     * counted directly from the matrix.
      * */
     
-    size_t count = 0;
+    int count = 0;
     char *current = NULL;
-    char statesymbols[1];
+    int listmax = MORPHY_MAX_STATE_NUMBER+MORPHY_SPECIAL_STATE_PAD+1; // +1 for terminal null.
+    char statesymbols[listmax];
+    int dbg_loopcount = 0;
     
+    statesymbols[0] = NULL;
     current = inputmatrix;
     
     do {
         if (*current != '?' && mfl_is_valid_morphy_ctype(*current)) {
-            if (!lsearch(current, statesymbols, &count, sizeof(char), mfl_is_equal)) {
-                statesymbols[count] = *current;
-            }
+            mfl_search_in_chartypes_array(current, statesymbols, &count, listmax);
         }
         ++current;
+        ++dbg_loopcount;
     } while (*current);
     
-    dbg_printf("The number of states in this array excluding '-' is: %i\n", (int)count);
+    //CHECK FOR ERROR HERE
     
-    return (int)count;
+    return count-1;
 }
 
 
@@ -845,7 +873,7 @@ void tui_test_character_stuff()
     
     //                        1111111
     //               1234567890123456
-    char *matrix =  "000{12}000-000??001"
+    char *matrix =  "120{12}000-000??001"
                     "3001110001101120"
                     "00(12?3)0001110010030"
                     "{123}0(123)0001110010030;";
