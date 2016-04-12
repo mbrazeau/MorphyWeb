@@ -331,6 +331,12 @@ char*       mfl_find_next_opening_bracket_in_newick(char *newick_tree);
 int         mfl_seek_largest_tip_number_newick(char *newick_string);
 mfl_node_t* mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa);
 mfl_tree_t* mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa);
+int         mfl_number_of_digits_in_integer(int n);
+int         mfl_power(int base, unsigned int exp);
+int         mfl_number_of_digits_in_sequence(int n);
+int         mfl_number_of_characters_in_newick(int num_taxa);
+int         mfl_tree_t_number_of_taxa(mfl_tree_t *input_tree);
+char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *root_start);
 
 /* In mfl_brwap.c */
 bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);
