@@ -505,15 +505,17 @@ void mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_n
 }
 
 
-bool mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
+int mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 {
+    /* Returns 0 if the node is binary, -1 if not defined (no branching)
+     * and otherwise returns the number of branchings detected. */
     mfl_node_t *node_ptr = NULL;
     int num_branching = 0;
     
     
     if (!querynode->nodet_next) {
         dbg_printf("WARNING in mfl_node_is_n_ary(): query node has no valid nodet_next pointer\n");
-        return false;
+        return -1;
     }
     
     node_ptr = querynode;
@@ -523,10 +525,10 @@ bool mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
     } while (node_ptr != querynode);
     
     if (num_branching == test_n_branches) {
-        return true;
+        return num_branching;
     }
     else {
-        return false;
+        return 0;
     }
     
 }

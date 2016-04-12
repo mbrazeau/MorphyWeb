@@ -47,12 +47,15 @@
 #define dbg_linerr(...) printf("ERROR at line: %i in %s. %s\n\n", __LINE__, __FILE__, __VA_ARGS__)
 #define dbg_pfail(...) printf("== FAIL == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
 #define dbg_ppass(...) printf("== PASS == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
+#define dbg_pcall(...) printf("\t\tCalled by %s()\n\n", __VA_ARGS__)
+#define __FXN_NAME__ (const char*)__FUNCTION__
 #else
 #define dbg_printf(...)
 #define dbg_eprintf(...)
 #define dbg_linerr(...)
 #define dbg_pfail(...)
 #define dbg_ppass(...)
+#define dbg_pcall(...)
 #endif
 
 using namespace std;
@@ -314,7 +317,6 @@ mfl_node_t*     mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free
 void            mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_free_desendant_edge, mfl_node_t *tgt_branch_bottom);
 void            mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node);
 int             mfl_calculate_number_of_nodes_to_allocate(int num_taxa);
-int             mfl_node_is_in_binary_ring(mfl_node_t *test_node);
 mfl_node_t*     mfl_alloc_node(void);
 void            mfl_free_node(mfl_node_t *node);
 void            mfl_free_treenodes(mfl_nodearray_t treenodes);
@@ -322,7 +324,7 @@ void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_n
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes);
 void            mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
 void            mfl_free_nodearray(mfl_nodearray_t nodearray);
-bool            mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches);
+int             mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches);
 void            mfl_unroot_tree(mfl_tree_t *tree);
 mfl_tree_t*     mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_tree(mfl_tree_t *tree_to_free);

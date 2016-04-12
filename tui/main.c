@@ -6,31 +6,48 @@ void tui_test_character_stuff();
 
 
 /* 
- 
- POTENTIAL UNIT TESTS
- 
- 
- == mfl_characters
- ..
- 
- == mfl_evaluate
- ..
- 
- == mfl_newick
- ..
- 
- == mfl_starttree
- ..
- 
- == mfl_tree
- ..
- 
- == mfl_brswap
- ..
- 
- 
+ *
+ *   MORPHY UNIT TESTS
+ *
  */
+ 
+// == mfl_characters
 
+ 
+// == mfl_evaluate
+
+ 
+// == mfl_newick
+
+ 
+// == mfl_starttree
+
+ 
+// == mfl_tree
+//---------------------------
+
+ 
+// == mfl_brswap
+//-----------------------------
+
+// == funtion interactions
+
+int tui_build_destroy_tree_from_binary_newick(mfl_handle_t *mfl_handle, char *input_newick)
+{
+    int num_taxa = 0;
+    
+    if (!mfl_handle && !input_newick) {
+        
+        input_newick = "((( (1,4) ( (5,) (2,6), 3))));";
+        
+    }
+}
+ 
+/*
+ *
+ *   END MORPHY UNIT TESTS
+ *
+ */
 
 
 int tui_getting_numstates_test()
