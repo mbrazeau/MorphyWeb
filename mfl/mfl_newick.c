@@ -435,27 +435,25 @@ void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, int cou
     // Set the node to start
     mfl_node_t *node = start;
     
-    // Start the newick string (open brackets)
-    
-    // If node is a tip...
     if (node->nodet_tip != 0) {
-        // ... print the tip number
         dbg_printf("Saved tip: %i\n", node->nodet_tip);
         
         return;
+        
+    } else {
+        dbg_printf("No tip in this traverse.\n");
     }
     
+    // Move to the next node
+    node = node->nodet_next;
+
     do {
         
         // This should go through the next nodes and print the next tip
-        mfl_traverse_tree_to_print_newick_char_recursive(node->nodet_next, count);
-        // Move to the next node
-        node = node->nodet_edge;
+        mfl_traverse_tree_to_print_newick_char_recursive(node->nodet_edge, count);
     
     // Stop once reached back the start tree
     } while (node != start);
-    
-    // Stop the newick string (close brackets and ;)
     
     return;
 }
