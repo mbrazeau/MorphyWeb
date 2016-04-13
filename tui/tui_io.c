@@ -60,6 +60,7 @@ int tui_check_simple_table_formatted(const char* input_table)
     return 0;
 }
 
+
 int tui_check_simple_table_dimensions(const char* table, int rows, int cols)
 {
     int expected = rows * cols;
@@ -84,11 +85,20 @@ int tui_check_simple_table_dimensions(const char* table, int rows, int cols)
     }
 }
 
+
 void tui_get_simple_table_dimensions(const char*table, int* rows, int* cols)
 {
+    char *c = (char*)table;
+    
     tui_check_simple_table_formatted(table);
     
+    mfl_move_current_to_digit(&c);
+    *rows = mfl_read_nexus_type_int(&c);
+    dbg_printf("\nRows: %i; ", *rows);
     
+    mfl_move_current_to_digit(&c);
+    *cols = mfl_read_nexus_type_int(&c);
+    dbg_printf("\nColumns: %i; ", *cols);
 }
 
 char* tui_get_simple_table()
@@ -102,12 +112,12 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle)
      *  but without all the extra Nexus overhead. The basic format will be:
      *
      *  r c;
-     *  eeeeee...ee(e1_c)
-     *  eeeeee...ee(e2_c)
+     *  eeeeee...ee(e_1_c)
+     *  eeeeee...ee(e_2_c)
      *  .
      *  .
      *  .
-     *  eeeeee...ee(er_c); [<- terminal semicolon]
+     *  eeeeee...ee(e_r_c); [<- terminal semicolon]
      *
      *  Square brackets will be ignored.
      *
@@ -119,8 +129,12 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle)
                         "0012300001"
                         "0012300001;";
     
-    tui_check_simple_table_formatted(inputtable);
-    tui_check_simple_table_dimensions(inputtable, 21, 10);
+    int num_rows = 0;
+    int num_cols = 0;
     
+    tui_check_simple_table_formatted(inputtable);
+    tui_get_simple_table_dimensions(inputtable, &num_rows, &num_cols);
+    tui_check_simple_table_dimensions(inputtable, num_rows, num_cols);
     
 }
+

@@ -717,7 +717,6 @@ int mfl_read_nexus_type_int(char **current)
     } while (!mfl_is_nexus_stop_position(**current));
     
     mfl_skip_spaces(current);
-    dbg_printf("Returning int %i from a Nexus sub-command\n", nexus_int);
     
     return nexus_int;
 }
