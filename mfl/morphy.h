@@ -271,6 +271,12 @@ typedef struct mfl_island_data_t {
  */
 
 /* In mfl_characters.c */
+
+//prob move these two to another file
+void mfl_move_past_symbol(char** c, char symbol);
+char *mfl_move_past_eq_sign(char *input);
+
+bool            mfl_is_valid_morphy_ctype(char c);
 void            mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa);
 void            mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring);
 void            mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring);

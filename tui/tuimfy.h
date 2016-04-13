@@ -22,5 +22,10 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
 int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* calling_fxn);
 int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose);
 
+/*  tui_io.c
+ */
+int tui_check_simple_table_formatted(const char* input_table);
+void tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle);
+
 #endif /* tuimfy_h */
 

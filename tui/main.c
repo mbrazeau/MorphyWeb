@@ -141,5 +141,10 @@ int main (void)
     
     dbg_printf("Exit the program\n\n");
     
+    dbg_printf("Testing simple table parser:\n");
+    tui_simple_table_parser(NULL, NULL);
+    dbg_printf("\n\n");
+    dbg_printf("\n\n");
+    
 	return 0;
 }
