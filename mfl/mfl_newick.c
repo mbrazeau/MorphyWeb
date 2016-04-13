@@ -394,7 +394,7 @@ int mfl_number_of_characters_in_newick(int num_taxa)
 }
 
 //Getting number of taxa from a mfl_tree_t
-int mfl_tree_t_number_of_taxa(mfl_tree_t *input_tree)
+int mfl_tree_t_max_number_of_taxa(mfl_tree_t *input_tree)
 {
     /* MDB says: This function doesn't really return the number 
      * num_taxa_active, but a total num_taxa at time of tree allocation.
@@ -419,75 +419,114 @@ int mfl_tree_t_number_of_taxa(mfl_tree_t *input_tree)
     return num_taxa_active;
 }
 
+// Traversing the tree to spit out the newich characters
+void mfl_traverse_tree_to_print_newick_char(mfl_node_t *pointer)
+{
+    // Set the node to start
+    mfl_node_t *node = pointer;
+    
+    // Start the newick string (open brackets)
+    dbg_printf("(");
+    
+    // If node is a tip...
+    if (node->nodet_tip != 0) {
+        // ... print the tip number
+        dbg_printf("%i", node->nodet_tip);
+        
+        return;
+    }
+    
+    do {
+        
+        // This should go through the next nodes and print the next tip
+        mfl_traverse_tree_to_print_newick_char(node->nodet_next);
+        // Move to the next node
+        node = node->nodet_next;
+    
+    // Stop once reached back the start tree
+    } while (node != pointer);
+    
+    // Stop the newick string (close brackets and ;)
+    dbg_printf(");");
+    
+    return;
+}
+
+//
+//tree_traversal(node *p) {
+//    
+//    if p is tip
+//        return;
+//    
+//    tree_traversal(p->left_descendant);
+//    tree_traversal(p->right_descendant);
+//    
+//    return;
+//    
+//}
+
+
 
 // Write newick string from tree_t structure
 char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active)
 {
     //Variables
-    char* newick_tree_out = NULL;
-    char root_header[5]; // The root header can be "[&R]" or "[&U]" + a space
+    char *newick_tree_out = NULL;
+    char *root_command;
+    char *unrooted_command = "[&U] ";
+    char *rooted_command = "[&R] ";
+    int newick_string_length = 0;
+    
     /* MDB: I see a magic number here (plus a bug because I don't see where you allocate
      * memory for the root header (really called the rooting command). Granted, it's 
      * not one likely to be influenced by user input, but I think we can avoid this with 
      * something like: (Note: I've made this variable-heavy to maximise readability)
-     
-     char *unrooted_command = "[&U] ";
-     char *rooted_command = "[&R] ";
-     int lrootcommand = 0;
-     
-     if (input_tree->treet_isrooted) {
-     lrootcommand = strlen(rooted_command);
-     }
-     else {
-     lrootcommand = strlen(unrooted_command);
-     }
-     
-     int predictedlengthofnwk = mfl_number_of_characters_in_newick(num_taxa) + lrootedcommand;
-     
-     newick_tree_out = (char*)malloc(predictedlengthofnwk + 1); // Plus 1 because strlen() leaves out the terminal NULL character
-     
+     *
+     * TG: Agree on the magic number. I've fixed. However, the length of lroocommand does
+     * not depend on root/unroot (since it's 5 each time). No magic number anymore though!
      */
     
-    int newick_string_length = 0;
-
+    
     //Inferring number of taxa?
+    /* TG: as pointed out by MDB in mfl_tree_t_max_number_of_taxa(), this infers the max
+     * number of taxa in mfl_tree_t not the active number of taxa.
+     */
     if(num_taxa_active == 0) {
         //Infer number of taxa from mfl_tree_t
-        num_taxa_active = mfl_tree_t_number_of_taxa(input_tree);
+        num_taxa_active = mfl_tree_t_max_number_of_taxa(input_tree);
     }
 
     //Get the newick string length
     newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active) + 2;  // the + 2 is for the terminal '\0'
-
+    
     //Allocating memory to the newick
     newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
     if (!newick_tree_out) {
-        dbg_printf("ERROR in mfl_write_newick_string_tree(): unable to allocate memory for Newick string\n");
+        dbg_printf("ERROR in mfl_convert_mfl_tree_t_to_newick(): unable to allocate memory for Newick string\n");
         return NULL;
     }
     else {
         memset(newick_tree_out, 0, newick_string_length * sizeof(char));
     }
     
-    dbg_printf("That worked! Number of taxa is %i\n", num_taxa_active);
-    dbg_printf("Newick will be of length: %i\n", newick_string_length);
-
-//    //Getting the root of the tree
-//    if(mfl_node_t->treet_root == 0) {
-//        //Set root header to unrooted
-//        //root_header = "[&U] ";
-//        dbg_printf("No root found on the tree.\n");
-//        //Arbitrarily root the tree (remember to remove the root at the end.)
-//
+    
+    //Tree traversal and printing characters as a newick string
+    //Check if tree is rooted
+//    if (input_tree->treet_root->nodet_isroot != 0) {
+        //If rooted, print the rooted command firts
+        //root_command = rooted_command;
+        dbg_printf("%s",rooted_command);
+        //Then proceed through the tree from the root
+        mfl_traverse_tree_to_print_newick_char(input_tree->treet_root);
 //    }
 //    else {
-//        //Set root header to rooted
-//        //root_header = "[&R] ";
-//        dbg_printf("Root was found on the tree.\n");
+//        //Set an arbitrary root
+//        dbg_printf("%s",unrooted_command);
+//    //Then proceed through the tree from the root
+//    mfl_traverse_tree_to_print_newick_char(input_tree->treet_root);
 //    }
+    
 
-    // Recurse in pre/postorder over the tree.
-    // Do the printing at appropriate points
 
     return newick_tree_out;
 
