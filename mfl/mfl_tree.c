@@ -115,7 +115,9 @@ bool mfl_node_is_available(mfl_node_t *node)
     
     if (node->nodet_next == NULL) {
         if (node->nodet_edge == NULL) {
-            is_available = true;
+            if (!node->nodet_tip) {
+                is_available = true;
+            }
         }
     }
     

@@ -221,16 +221,20 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     new_parent = mfl_get_next_available_node(nodearray);
     new_parent->nodet_next = new_parent;
     
+    if (new_parent->nodet_index == 7) {
+        dbg_printf("Just wait\n");
+    }
+    
     do {
         if (**newick_position == '(') {
-            node_ptr = mfl_get_next_available_node(nodearray);//mfl_get_next_node_from_array(next);
+            node_ptr = mfl_get_next_available_node(nodearray);
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = mfl_traverse_newick_recursively(newick_position, nodearray, num_taxa);
             mfl_join_node_edges(node_ptr, new_child);
             
         }
         if (isdigit(**newick_position)) {
-            node_ptr = mfl_get_next_available_node(&nodearray[num_taxa]);
+            node_ptr = mfl_get_next_available_node(nodearray);
             tip_number = mfl_read_newick_int(newick_position);
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = nodearray[tip_number-1];
@@ -253,6 +257,7 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
 
 void mfl_test_newick_setup(mfl_node_t *node)
 {
+    /* RENAME AND MOVE TO TUI ALONG WITH OTHER TESTS */
     mfl_node_t *p = NULL;
     int i = 0;
     
@@ -262,7 +267,6 @@ void mfl_test_newick_setup(mfl_node_t *node)
     }
     
     p = node->nodet_next;
-    
     
     do {
         mfl_test_newick_setup(p->nodet_edge);
@@ -563,7 +567,7 @@ void mfl_test_newick_stuff()
     dbg_printf("The string after finding the opening bracket:\n");
     dbg_printf("%s\n", sample_newick);
 
-    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
+    //tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
     
     dbg_printf("Imported tree is: %s\n", temp_example_newick_for_writing7);
     tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing7, 0);
@@ -578,6 +582,6 @@ void mfl_test_newick_stuff()
     
     
     
-    // mfl_free_tree(tree_from_newick); // Some bug here
+    mfl_free_tree(tree_from_newick); // Some bug here
     
 }
