@@ -426,11 +426,8 @@ int mfl_tree_t_max_number_of_taxa(mfl_tree_t *input_tree)
 
 
 // Traversing the tree to spit out the newich characters
-void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, int count)
+void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start)
 {
-    
-    ++count;
-    dbg_printf("Count: %i\n", count);
     
     // Set the node to start
     mfl_node_t *node = start;
@@ -450,7 +447,10 @@ void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, int cou
     do {
         
         // This should go through the next nodes and print the next tip
-        mfl_traverse_tree_to_print_newick_char_recursive(node->nodet_edge, count);
+        mfl_traverse_tree_to_print_newick_char_recursive(node->nodet_edge);
+        
+        // Move to the next node
+        node = node->nodet_next;
     
     // Stop once reached back the start tree
     } while (node != start);
@@ -461,8 +461,7 @@ void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, int cou
 void mfl_traverse_tree_to_print_newick_char(mfl_node_t *start)
 {
     dbg_printf("Starting...\n");
-    int count = 0;
-    mfl_traverse_tree_to_print_newick_char_recursive(start, count);
+    mfl_traverse_tree_to_print_newick_char_recursive(start);
     dbg_printf("\n...Done");
     return;
 }
