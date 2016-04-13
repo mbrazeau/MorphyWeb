@@ -30,6 +30,7 @@ void tui_print_node_data(mfl_node_t* p, const char *calling_fxn)
     //dbg_printf("\t\n");
     dbg_printf("\tp->nodet_isroot: %i\n", p->nodet_isroot);
     //dbg_printf("\t\n");
+    dbg_printf("\t\t(%s() called by: %s() )\n", __FXN_NAME__, calling_fxn);
     
 }
 
@@ -50,6 +51,7 @@ int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose)
     }
     
 }
+
 
 int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* calling_fxn)
 {
@@ -76,6 +78,7 @@ int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* callin
         return 1;
     }
 }
+
 
 void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* calling_fxn)
 {
@@ -122,6 +125,16 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
     }
     
 }
+
+
+/* TO DO:
+ *
+ *  - Design some 'heavy-duty' node/tree checkers
+ *  - Check against cyclicity and anastomosis
+ *      -- Nodes get 'used' (pointed to) at most once via each node pointer variable
+ *  - Check against data anomalies
+ *
+ **/
 
 int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose)
 {
