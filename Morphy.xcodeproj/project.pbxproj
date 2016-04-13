@@ -50,6 +50,7 @@
 		51D7522F1CBE78250003D21F /* tuimfy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuimfy.h; sourceTree = "<group>"; };
 		51D752301CBE78D80003D21F /* tui_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tui_io.c; sourceTree = "<group>"; };
 		51D752321CBEB7F40003D21F /* tmatrixproc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tmatrixproc.c; sourceTree = "<group>"; };
+		51D752341CBEEF450003D21F /* testinput */ = {isa = PBXFileReference; lastKnownFileType = folder; path = testinput; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* Morphy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Morphy; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6A0FF2C0290799A04C91782 /* Morphy.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Morphy.1; sourceTree = "<group>"; };
 		E134E0D114D02F98001A1A63 /* NexusParse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusParse.cpp; sourceTree = "<group>"; };
@@ -150,6 +151,7 @@
 				51D752321CBEB7F40003D21F /* tmatrixproc.c */,
 				51D7522D1CBD720E0003D21F /* tui_utilities.c */,
 				E1ACBCA114A8BD34005BB9D5 /* main.c */,
+				51D752341CBEEF450003D21F /* testinput */,
 			);
 			path = tui;
 			sourceTree = "<group>";

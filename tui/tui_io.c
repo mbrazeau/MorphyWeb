@@ -73,6 +73,11 @@ int tui_check_simple_table_dimensions(const char* table, int rows, int cols)
         if (mfl_is_valid_morphy_ctype(*c)) {
             ++actual;
         }
+        else if (*c == '(' || *c == '{') {
+            mfl_move_in_nexus_multistate(&c);
+            //++c;
+            ++actual;
+        }
         ++c;
     } while (*c != ';');
     
@@ -80,7 +85,8 @@ int tui_check_simple_table_dimensions(const char* table, int rows, int cols)
         return 0;
     }
     else {
-        dbg_eprintf("input matrix has unexpected dimensions");
+        dbg_eprintf("input matrix has unexpected dimensions: ");
+        dbg_printf("%i\n\n", actual);
         exit(actual);
     }
 }
