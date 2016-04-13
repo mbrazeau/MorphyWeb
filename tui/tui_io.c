@@ -98,7 +98,7 @@ void tui_get_simple_table_dimensions(const char*table, int* rows, int* cols)
     
     mfl_move_current_to_digit(&c);
     *cols = mfl_read_nexus_type_int(&c);
-    dbg_printf("\nColumns: %i; ", *cols);
+    dbg_printf("\nColumns: %i.\n\n", *cols);
 }
 
 char* tui_get_simple_table()
@@ -123,18 +123,84 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle)
      *
      */
     
-    char* inputtable =  "4 10;"
-                        "0012300001"
-                        "0012300001"
-                        "0012300001"
-                        "0012300001;";
-    
     int num_rows = 0;
     int num_cols = 0;
     
-    tui_check_simple_table_formatted(inputtable);
-    tui_get_simple_table_dimensions(inputtable, &num_rows, &num_cols);
-    tui_check_simple_table_dimensions(inputtable, num_rows, num_cols);
+    tui_check_simple_table_formatted(input_table);
+    tui_get_simple_table_dimensions(input_table, &num_rows, &num_cols);
+    tui_check_simple_table_dimensions(input_table, num_rows, num_cols);
     
 }
 
+char* tui_readfile_to_str(FILE *input)
+{
+    int i = 0, filesize = 0;
+    char c = 0;
+    char* inputfilestr = NULL;
+    
+    while (c != EOF) {
+        ++filesize;
+        c = fgetc(input);
+    }
+
+    dbg_printf("Input file is %i characters long.\n\n", filesize);
+    rewind(input);
+    
+    inputfilestr = (char*)malloc(filesize * sizeof(char));
+    
+    
+    do {
+        inputfilestr[i] = fgetc(input);
+        ++i;
+    } while (i < (filesize-1));
+    inputfilestr[filesize-1] = '\0';inputfilestr[filesize] = '\0';
+    
+    dbg_printf("The input file: \n");
+    dbg_printf("%s\n\n", inputfilestr);
+    
+    return inputfilestr;
+}
+
+void tui_destroy_file_string(char* oldinput)
+{
+    free(oldinput);
+}
+
+
+int tui_parse_test_file(const char* arg1, const char* arg2)
+{
+    
+    FILE* inputfile;
+    
+    char* filstr = NULL;
+    
+    if (!(inputfile = fopen(arg1, "r"))) {
+        dbg_eprintf("file does not exist.\n");
+        return(1);
+    }
+    else {
+        dbg_printf("\nProcessing file % . . .\n", arg1);
+    }
+    
+    
+    filstr = tui_readfile_to_str(inputfile);
+    
+    mfl_handle_t testhandle;
+    testhandle = mfl_create_handle();
+    
+    // Do stuff to the file here.
+    /*  Options for arg2
+     *
+     *  matrix;
+     *  newick
+     */
+    
+    //Processing as a matrix
+    tui_simple_table_parser((const char*)filstr, testhandle);
+    
+    tui_destroy_file_string(filstr);
+    
+    mfl_destroy_handle(testhandle);
+    fclose(inputfile);
+    
+}

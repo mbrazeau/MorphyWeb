@@ -102,13 +102,27 @@ int tui_getting_numstates_test()
     
 }
 
-int main (void)
+int main (int argc, char *argv[])
 {
     dbg_printf("\n\t****************************************\n\n");
     dbg_printf("\t  Welcome to the Morphy Test Interface\n\n");
     dbg_printf("\t****************************************\n\n\n");
     
     
+    /* Begin the new bit */
+    
+    if (argc == 3) {
+        dbg_printf("Processing file %s as %s . . .\n\n", argv[1], argv[2]);
+        tui_parse_test_file(argv[1], argv[2]);
+    }
+    else if (argc > 3) {
+        dbg_eprintf("too many arguments.\n");
+        exit(1);
+    }
+    else if (argc == 1) {
+        dbg_printf("argv[0] == %s...\n\m", argv[0]);
+        //exit(0);
+    }
     
     
     /* Everything below here should be written into or replaced by a real test. */
@@ -140,11 +154,6 @@ int main (void)
     mfl_free_tree(newtree);
     
     dbg_printf("Exit the program\n\n");
-    
-    dbg_printf("Testing simple table parser:\n");
-    tui_simple_table_parser(NULL, NULL);
-    dbg_printf("\n\n");
-    dbg_printf("\n\n");
     
 	return 0;
 }
