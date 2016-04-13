@@ -353,7 +353,7 @@ int mfl_number_of_digits_in_integer(int n)
 }
 
 // Getting the power of an integer (equivalent to pow from math but does not output a double!)
-int mfl_power(int base, unsigned int exp) {
+int mfl_power(const int base, const unsigned int exp) {
 
     //Variables
     int i, result = 1;
@@ -365,7 +365,7 @@ int mfl_power(int base, unsigned int exp) {
 }
 
 //Getting the total number of digit in a sequence from 1 to n
-int mfl_number_of_digits_in_sequence(int n)
+int mfl_number_of_digits_in_sequence(const int n)
 {
     //Variables
     int digits_in_n, digits_in_sequence;
@@ -386,7 +386,7 @@ int mfl_number_of_digits_in_sequence(int n)
 }
 
 //Getting the maximum number of characters in newick string
-int mfl_number_of_characters_in_newick(int num_taxa)
+int mfl_number_of_characters_in_newick(const int num_taxa)
 {
     //Variables
     int num_brackets = 2*(num_taxa - 1), num_commas = num_taxa - 1, newick_size;
@@ -398,7 +398,7 @@ int mfl_number_of_characters_in_newick(int num_taxa)
 }
 
 //Getting number of taxa from a mfl_tree_t
-int mfl_tree_t_max_number_of_taxa(mfl_tree_t *input_tree)
+int mfl_tree_t_max_number_of_taxa(const mfl_tree_t *input_tree)
 {
     /* MDB says: This function doesn't really return the number 
      * num_taxa_active, but a total num_taxa at time of tree allocation.
@@ -423,8 +423,6 @@ int mfl_tree_t_max_number_of_taxa(mfl_tree_t *input_tree)
     return num_taxa_active;
 }
 
-
-
 // Traversing the tree to spit out the newich characters
 void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start)
 {
@@ -433,21 +431,32 @@ void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start)
     mfl_node_t *node = start;
     
     if (node->nodet_tip != 0) {
-        dbg_printf("Saved tip: %i\n", node->nodet_tip);
+        // print a tip
+        dbg_printf("%i", node->nodet_tip);
         
         return;
         
     } else {
-        dbg_printf("No tip in this traverse.\n");
+        // open a clade
+        dbg_printf("(");
     }
     
     // Move to the next node
     node = node->nodet_next;
-
+    
     do {
-        
-        // This should go through the next nodes and print the next tip
+        // Go through the next nodes and print the next tip
         mfl_traverse_tree_to_print_newick_char_recursive(node->nodet_edge);
+        
+        // close a clade if the next edge is not a tip
+        if(node->nodet_edge->nodet_tip == 0) {
+            dbg_printf(")");
+        } else {
+            // add a comma to separate the tips (unless next node is not a tip)
+            if(node->nodet_next->nodet_edge->nodet_tip != 0) {
+                dbg_printf(",");
+            }
+        }
         
         // Move to the next node
         node = node->nodet_next;
@@ -458,13 +467,6 @@ void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start)
     return;
 }
 
-void mfl_traverse_tree_to_print_newick_char(mfl_node_t *start)
-{
-    dbg_printf("Starting...\n");
-    mfl_traverse_tree_to_print_newick_char_recursive(start);
-    dbg_printf("\n...Done");
-    return;
-}
 
 // Write newick string from tree_t structure
 char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active)
@@ -514,11 +516,12 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
 //    if (input_tree->treet_root->nodet_isroot != 0) {
         //If rooted, print the rooted command firts
         //root_command = rooted_command;
-        dbg_printf("%s",rooted_command);
-        dbg_printf("(",rooted_command);
+        dbg_printf("temp_examp6=%s",rooted_command);
         //Then proceed through the tree from the root
-        mfl_traverse_tree_to_print_newick_char(input_tree->treet_root);
-        dbg_printf(");",rooted_command);
+        mfl_traverse_tree_to_print_newick_char_recursive(input_tree->treet_root);
+        //Closing the tree
+        dbg_printf(");");
+        dbg_printf("\nWARNING: remove example");
 //    }
 //    else {
 //        //Set an arbitrary root
@@ -566,12 +569,12 @@ void mfl_test_newick_stuff()
 
     //tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
     
-    dbg_printf("Imported tree is: %s\n", temp_example_newick_for_writing7);
-    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing7, 0);
+    dbg_printf("Imported tree is: %s\n", temp_example_newick_for_writing6);
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
 
     dbg_printf("\n\n\nTesting convert to newick\n");
     
-    int n_taxa_active = 4;
+    dbg_printf("%s\n", temp_example_newick_for_writing6);
     mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
     
     dbg_printf("\n\n\n");
