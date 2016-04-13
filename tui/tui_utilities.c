@@ -6,12 +6,13 @@
 //
 //
 
-#include "morphy.h"
+/*  In this file:
+ *  General-purpose testing and output functions for Morphy.
+ *
+ */
 
-void tui_print_node_data(mfl_node_t* p, const char* calling_fxn);
-int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose);
-void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* calling_fxn);
-int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* calling_fxn);
+#include "morphy.h"
+#include "tuimfy.h"
 
 
 void tui_print_node_data(mfl_node_t* p, const char *calling_fxn)
@@ -127,14 +128,30 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
 }
 
 
-/* TO DO:
- *
- *  - Design some 'heavy-duty' node/tree checkers
- *  - Check against cyclicity and anastomosis
- *      -- Nodes get 'used' (pointed to) at most once via each node pointer variable
- *  - Check against data anomalies
- *
- **/
+int tui_check_broken_tree(mfl_tree_t *t)
+{
+    /* 
+     *  What defines a broken tree?
+     *  Anastomosis.
+     *  Cyclicity.
+     *  Pointers that shouldn't be
+     *  Dangling pointers that shouldn't be.
+     *
+     */
+    
+    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
+    
+    // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
+    //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
+    //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
+    
+    // Pointers that should be. Harder to define, but they should point to valid memory or to NULL.
+    
+    // Dangling pointers. Related to the above.
+    
+    return 0;
+}
+
 
 int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose)
 {

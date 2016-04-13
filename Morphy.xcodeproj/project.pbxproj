@@ -16,6 +16,7 @@
 		51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA61CA27DFA009EEDF2 /* mfl_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */; settings = {ASSET_TAGS = (); }; };
 		51D7522E1CBD720E0003D21F /* tui_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D7522D1CBD720E0003D21F /* tui_utilities.c */; settings = {ASSET_TAGS = (); }; };
+		51D752311CBE78D80003D21F /* tui_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D752301CBE78D80003D21F /* tui_io.c */; settings = {ASSET_TAGS = (); }; };
 		8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* Morphy.1 */; };
 		E117201F1631602A0021AAA7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 /* End PBXBuildFile section */
@@ -45,6 +46,8 @@
 		51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_starttree.c; sourceTree = "<group>"; };
 		51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_tree.c; sourceTree = "<group>"; };
 		51D7522D1CBD720E0003D21F /* tui_utilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tui_utilities.c; sourceTree = "<group>"; };
+		51D7522F1CBE78250003D21F /* tuimfy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tuimfy.h; sourceTree = "<group>"; };
+		51D752301CBE78D80003D21F /* tui_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tui_io.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* Morphy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Morphy; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6A0FF2C0290799A04C91782 /* Morphy.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Morphy.1; sourceTree = "<group>"; };
 		E134E0D114D02F98001A1A63 /* NexusParse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NexusParse.cpp; sourceTree = "<group>"; };
@@ -140,8 +143,10 @@
 			isa = PBXGroup;
 			children = (
 				E1D5259E14C94C010079F5EC /* Makefile */,
-				E1ACBCA114A8BD34005BB9D5 /* main.c */,
+				51D7522F1CBE78250003D21F /* tuimfy.h */,
+				51D752301CBE78D80003D21F /* tui_io.c */,
 				51D7522D1CBD720E0003D21F /* tui_utilities.c */,
+				E1ACBCA114A8BD34005BB9D5 /* main.c */,
 			);
 			path = tui;
 			sourceTree = "<group>";
@@ -228,6 +233,7 @@
 				51D7522E1CBD720E0003D21F /* tui_utilities.c in Sources */,
 				51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */,
 				51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */,
+				51D752311CBE78D80003D21F /* tui_io.c in Sources */,
 				51D40FA41CA27DFA009EEDF2 /* mfl_newick.c in Sources */,
 				51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */,
 			);

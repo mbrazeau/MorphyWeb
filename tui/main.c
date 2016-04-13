@@ -1,6 +1,6 @@
 #include "ncl/ncl.h"
 #include "morphy.h"
-
+#include "tuimfy.h"
 void mfl_test_newick_stuff();
 void tui_test_character_stuff();
 
@@ -108,10 +108,10 @@ int main (void)
     dbg_printf("\t  Welcome to the Morphy Test Interface\n\n");
     dbg_printf("\t****************************************\n\n\n");
     
-    dbg_printf("\n\n");
-    dbg_eprintf("not really an error");
-    dbg_printf("\n\n");
     
+    
+    
+    /* Everything below here should be written into or replaced by a real test. */
     dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
     tui_getting_numstates_test();
