@@ -33,5 +33,9 @@ int tui_parse_test_file(const char* arg1, const char* arg2);
  */
 int tui_test_matrix_processing(void);
 
+/*to clean up*/
+void mfl_test_newick_stuff();
+void tui_test_character_stuff();
+
 #endif /* tuimfy_h */
 

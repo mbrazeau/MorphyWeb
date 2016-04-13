@@ -282,6 +282,7 @@ void            mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, ch
 void            mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring);
 void            mfl_move_in_nexus_multistate(char **col);
 mfl_charstate*  mfl_allocate_nodal_character_set(int num_characters);
+bool            mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, int input_num_chars);
 void            mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa);
 void            mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_taxa, int num_chars);
 mfl_matrix_t*   mfl_create_mfl_matrix(int num_taxa, int num_chars);

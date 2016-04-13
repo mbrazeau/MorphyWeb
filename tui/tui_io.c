@@ -10,6 +10,15 @@
 #include "morphy.h"
 #include "tuimfy.h"
 
+void tui_ignore_nexus_comment(char **current)
+{
+    if (**current != '[') {
+        dbg_eprintf("not on valid Nexus comment flag");
+    }
+    do {
+        ++(*current);
+    } while (**current != ']');
+}
 
 int tui_check_simple_table_formatted(const char* input_table)
 {
