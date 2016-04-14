@@ -551,6 +551,13 @@ void mfl_unroot_tree(mfl_tree_t *tree)
     // If the root is non-binary
 }
 
+void mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes)
+{
+    mfl_initialise_nodearray(newtree->treet_treenodes, num_taxa, num_nodes);
+    
+    newtree->treet_num_taxa = num_taxa;
+}
+
 mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 {
     int num_nodes = 0;
@@ -563,7 +570,8 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
     memset(newtree, 0, sizeof(mfl_tree_t));
     
     newtree->treet_treenodes = mfl_allocate_nodearray(num_taxa, num_nodes);
-    mfl_initialise_nodearray(newtree->treet_treenodes, num_taxa, num_nodes);
+    
+    mfl_initialise_tree(newtree, num_taxa, num_nodes);
     
     return newtree;
 }

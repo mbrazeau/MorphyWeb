@@ -223,7 +223,8 @@ typedef struct mfl_tree_t {
 	mfl_node_t *treet_root;                 // Pointer to the root of the tree.
     mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
-	int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
+    int treet_num_taxa;                     // Total number of terminals.
+    int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
     int treet_island_id;                    // An identification number for the parent start tree.
     int *treet_compressed_tree;             // The integer encoding of the tree for tree comparisons and saving memory
 	int *treet_comptree_holder;             // Holder for comparisons.
@@ -333,6 +334,7 @@ void            mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa
 void            mfl_free_nodearray(mfl_nodearray_t nodearray);
 int             mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches);
 void            mfl_unroot_tree(mfl_tree_t *tree);
+void            mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes);
 mfl_tree_t*     mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_tree(mfl_tree_t *tree_to_free);
 

@@ -127,6 +127,17 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
     
 }
 
+int tui_count_times_in_array(const void* key, const void *array, size_t arraymax, size_t size)
+{
+    
+    size_t i = 0;
+    int arrayend;
+    
+    //for (i = 0; <#condition#>; <#increment#>) {
+    //  <#statements#>
+    //}
+    
+}
 
 int tui_check_broken_tree(mfl_tree_t *t)
 {
@@ -140,6 +151,9 @@ int tui_check_broken_tree(mfl_tree_t *t)
      */
     
     // Checking anastomosis. Each node record should be accessed by no more than one other edge.
+    
+    // Create a record
+    
     
     // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
     //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
