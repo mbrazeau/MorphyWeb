@@ -211,7 +211,7 @@ void tui_print_newick_recursive(mfl_node_t *start)
 void tui_print_newick(mfl_node_t *start)
 {
     // Running the recursive loop
-    tui_print_newick_recursive(mfl_node_t *start);
+    tui_print_newick_recursive(start);
     // Closing the tree
     dbg_printf(");");
 }
