@@ -56,6 +56,7 @@ int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose)
 
 int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* calling_fxn)
 {
+    
     bool allchecks = true;
     
     if (p->nodet_isroot) {
@@ -127,19 +128,64 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
     
 }
 
-int tui_count_times_in_array(const void* key, const void *array, size_t arraymax, size_t size)
+int tui_count_matching_node_pointers_in_array(const mfl_node_t* key, const mfl_nodearray_t nds, int listmax)
 {
+    int i, j;
+    int count = 0;
     
-    size_t i = 0;
-    int arrayend;
+    for (i = 0; i < listmax; ++i) {
+        if (key == nds[i]->nodet_edge) {
+            ++count;
+        }
+    }
     
-    //for (i = 0; <#condition#>; <#increment#>) {
-    //  <#statements#>
-    //}
-    
+    return count;
 }
 
-int tui_check_broken_tree(mfl_tree_t *t)
+
+/**
+ Counts the number of taxa, but also has a built-in error check.
+ It will loop over the taxa array counting the number of taxa that have the
+ tip value set. However, it will also attempt to discover whether there are 
+ unexpected non-tip nodes inside the node array.
+ @Param t pointer to mfl_tree_t
+ @Returns int number of taxa
+ */
+int tui_count_num_taxa(mfl_tree_t *t)
+{
+
+    int i = 0;
+    int num_taxa = 0;
+    bool intipssubarray = true;
+    
+    do {
+        if (t->treet_treenodes[i]->nodet_tip) {
+            if (intipssubarray) {
+                ++num_taxa;
+            }
+            else {
+                dbg_eprintf("unexpected non-tip node in the terminal sub-array");
+                return 0;
+            }
+        }
+        else {
+            intipssubarray = false;
+        }
+    } while (t->treet_treenodes[i]);
+    
+    return num_taxa;
+}
+
+/**
+ Attempts to determine if a tree is broken by checking for: dangling pointers 
+ intended for nodes; invalid pointers to nodes; cyclicity and anastomosis.
+ 
+ @param mfl_tree_t* tree to be checked.
+ @param int* yes/no value for verbose output
+ @returns int
+ 
+ */
+int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
 {
     /* 
      *  What defines a broken tree?
@@ -150,9 +196,63 @@ int tui_check_broken_tree(mfl_tree_t *t)
      *
      */
     
-    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
+    int err = 0;
+    int i = 0;
+    int num_nodes = 0;
+    int num_taxa = 0;
     
-    // Create a record
+    if (!t->treet_num_taxa) {
+        dbg_eprintf("tree does not contain treet_num_taxa value!");
+        dbg_eprintf(". . . Calculating estimated num_taxa from tips.\n");
+        if (!(num_taxa = tui_count_num_taxa(t))) {
+            dbg_eprintf("tree has no terminals or has invalid terminal sub-array");
+            dbg_printf("Your goddamned tree at %p is broken.\n", t);
+            return -1;
+        }
+    }
+    else {
+        num_taxa = t->treet_num_taxa;
+    }
+    
+    
+    num_nodes = mfl_calculate_number_of_nodes_to_allocate(t->treet_num_taxa);
+    mfl_nodearray_t testnodes = mfl_allocate_nodearray(t->treet_num_taxa, num_nodes);
+    
+    // Check for dangling pointers and tip node misbehaviour
+    // Could probably delegate this to a function
+    for (i = 0; i < num_nodes; ++i) {
+        
+        if (!t->treet_treenodes[i]->nodet_edge) {
+            if (!t->treet_treenodes[i]->nodet_isroot) {
+                dbg_printf("dangling pointer at: %p", t->treet_treenodes[i]);
+                err = 1;
+                if (*verbose) {
+                    dbg_printf("Error found at:");
+                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                }
+            }
+        }
+        else if (i < t->treet_num_taxa) {
+            if (t->treet_treenodes[i]->nodet_edge->nodet_tip) {
+                dbg_printf("ERROR in %s(): terminals connected without ancestral internal node\n", __FXN_NAME__);
+                err = 1;
+                
+            }
+            if (t->treet_treenodes[i]->nodet_next) {
+                dbg_printf("ERROR in %s(): terminal node has unexpected non-NULL value at nodet_next\n", __FXN_NAME__);
+                err = 1;
+            }
+            if (t->treet_treenodes[i]->nodet_tip != (i-1)) {
+                dbg_printf("ERROR in %s(): unexpected tip number reassignment at: %p\n",__FXN_NAME__, t->treet_treenodes[i]);
+                if (*verbose) {
+                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                }
+                err = 1;
+            }
+        }
+    }
+    
+    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
     
     
     // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
@@ -162,6 +262,12 @@ int tui_check_broken_tree(mfl_tree_t *t)
     // Pointers that should be. Harder to define, but they should point to valid memory or to NULL.
     
     // Dangling pointers. Related to the above.
+    
+    if (err) {
+        dbg_printf("\nYour goddamned tree at %p is broken.\n", t);
+    }
+    
+    free(testnodes);
     
     return 0;
 }

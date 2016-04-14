@@ -308,13 +308,19 @@ void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_da
 
 // Apply the data to the tips of the tree.
 
+/**
+ Allocates all the memory required to store character data (pre- and post-conversion
+ in the appropriate vectors. Does not populate the vectors with data--only creates
+ the empty matrix, ready for populating with data.
+ 
+ @param mfl_matrix_t* newmatrix, the Morphy-type matrix to be set up
+ @param num_states the number of character states
+ @param int the number of taxa
+ @param int the number of characters
+ @returns void
+ */
 void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars)
 {
-    /*  Allocates all the memory required to store character data (pre- and post-conversion
-     *  in the appropriate vectors. Does not populate the vectors with data--only creates
-     *  the empty matrix, ready for populating with data.
-     */
-    
     int i = 0;
     int j = 0;
     int charcells_size = num_states+1; // +1 for endline character;

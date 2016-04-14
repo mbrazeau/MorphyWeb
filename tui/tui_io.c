@@ -219,3 +219,23 @@ int tui_parse_test_file(const char* arg1, const char* arg2)
     fclose(inputfile);
     
 }
+
+/*
+ * I think we can incorporate the NCL for I/O, I just need to figure out 
+ * how to do that. Will work on that below.
+ */
+
+void tui_Nexus_Newick_reader(char *filename)
+{
+    NxsTaxaBlock *taxa = new NxsTaxaBlock();
+    NxsTreesBlock *trees = new NxsTreesBlock(taxa);
+}
+
+void tui_Nexus_matrix_reader(char *filename)
+{
+    
+    NxsTaxaBlock *taxa = new NxsTaxaBlock();
+    NxsAssumptionsBlock *assumptions = new NxsAssumptionsBlock(taxa);
+    NxsCharactersBlock *characters = new NxsCharactersBlock(taxa, assumptions);
+    
+}

@@ -9,6 +9,7 @@
 #ifndef tuimfy_h
 #define tuimfy_h
 
+#include "ncl/ncl.h"
 
 /*
  * Function prototypes for testing

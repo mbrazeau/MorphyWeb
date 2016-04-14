@@ -1,4 +1,4 @@
-#include "ncl/ncl.h"
+
 #include "morphy.h"
 #include "tuimfy.h"
 
