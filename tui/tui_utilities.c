@@ -179,7 +179,98 @@ int tui_count_num_taxa(mfl_tree_t *t)
 
 
 /**
- # int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
+ # tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verbose)
+ Scans the tree checking for dangling pointers and other pointer errors. These would
+ lead to FATAL ERRORS in processes on the tree.
+ 
+ @param mfl_tree_t*
+ @param int
+ @param int*
+ @return int error value, 0 for no error
+ */
+int tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verbose)
+{
+    int i = 0;
+ 
+    int err = 0;
+    
+    for (i = 0; i < num_nodes; ++i) {
+        
+        if (!t->treet_treenodes[i]->nodet_edge) {
+            if (!t->treet_treenodes[i]->nodet_isroot) {
+                dbg_printf("dangling pointer at: %p", t->treet_treenodes[i]);
+                err = 1;
+                if (*verbose) {
+                    dbg_printf("Error found at:");
+                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                }
+            }
+        }
+        else if (i < t->treet_num_taxa) {
+            if (t->treet_treenodes[i]->nodet_edge->nodet_tip) {
+                dbg_printf("ERROR in %s(): terminals connected without ancestral internal node\n", __FXN_NAME__);
+                err = 1;
+                
+            }
+            if (t->treet_treenodes[i]->nodet_next) {
+                dbg_printf("ERROR in %s(): terminal node has unexpected non-NULL value at nodet_next\n", __FXN_NAME__);
+                err = 1;
+            }
+            if (t->treet_treenodes[i]->nodet_tip != (i-1)) {
+                dbg_printf("ERROR in %s(): unexpected tip number reassignment at: %p\n",__FXN_NAME__, t->treet_treenodes[i]);
+                if (*verbose) {
+                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                }
+                err = 1;
+            }
+        }
+    }
+    
+    return err;
+}
+
+
+/**
+ #int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
+ Checks for multiple edge pointers pointing to the same node. Such a situation
+ could cause a FATAL ERROR in a
+ */
+int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
+{
+    
+    int i = 0;
+    int j = 0;
+    int count = 0;
+    int err = 0;
+    
+    mfl_nodearray_t testnodes = mfl_allocate_nodearray(t->treet_num_taxa, num_nodes);
+    
+    memcpy(testnodes, t->treet_treenodes, (num_nodes+1)*sizeof(mfl_nodearray_t*)); // CHECK THAT THIS IS CORRECT SIZING
+    
+    for (i = 0; i < num_nodes; ++i) {
+        count = 0;
+        
+        for (j = 0; j < num_nodes; ++j) {
+            if (testnodes[i] == t->treet_treenodes[j]) {
+                ++count;
+            }
+        }
+        if (count > 1) {
+            dbg_printf("ERROR detected by %s: mfl_node_t %p interacts with more than one edge\n\n",__FXN_NAME__, testnodes[i]);
+            if (*verbose) {
+                tui_print_node_data(testnodes[i], __FXN_NAME__);
+            }
+            ++err;
+        }
+    }
+    
+    free(testnodes);
+    
+    return err;
+}
+
+/**
+ ## int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
  Attempts to determine if a tree is broken by checking for: dangling pointers 
  intended for nodes; invalid pointers to nodes; cyclicity and anastomosis.
  
@@ -219,44 +310,14 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     
     
     num_nodes = mfl_calculate_number_of_nodes_to_allocate(t->treet_num_taxa);
-    mfl_nodearray_t testnodes = mfl_allocate_nodearray(t->treet_num_taxa, num_nodes);
     
     // Check for dangling pointers and tip node misbehaviour
     // Could probably delegate this to a function
-    for (i = 0; i < num_nodes; ++i) {
-        
-        if (!t->treet_treenodes[i]->nodet_edge) {
-            if (!t->treet_treenodes[i]->nodet_isroot) {
-                dbg_printf("dangling pointer at: %p", t->treet_treenodes[i]);
-                err = 1;
-                if (*verbose) {
-                    dbg_printf("Error found at:");
-                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
-                }
-            }
-        }
-        else if (i < t->treet_num_taxa) {
-            if (t->treet_treenodes[i]->nodet_edge->nodet_tip) {
-                dbg_printf("ERROR in %s(): terminals connected without ancestral internal node\n", __FXN_NAME__);
-                err = 1;
-                
-            }
-            if (t->treet_treenodes[i]->nodet_next) {
-                dbg_printf("ERROR in %s(): terminal node has unexpected non-NULL value at nodet_next\n", __FXN_NAME__);
-                err = 1;
-            }
-            if (t->treet_treenodes[i]->nodet_tip != (i-1)) {
-                dbg_printf("ERROR in %s(): unexpected tip number reassignment at: %p\n",__FXN_NAME__, t->treet_treenodes[i]);
-                if (*verbose) {
-                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
-                }
-                err = 1;
-            }
-        }
-    }
+    err = tui_check_tree_for_dangling_pointers(t, num_nodes, verbose);
     
     // Checking anastomosis. Each node record should be accessed by no more than one other edge.
     
+    err = tui_check_for_anastomosis(t, num_nodes, verbose);
     
     // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
     //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
@@ -269,8 +330,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     if (err) {
         dbg_printf("\nYour goddamned tree at %p is broken.\n", t);
     }
-    
-    free(testnodes);
     
     return 0;
 }
