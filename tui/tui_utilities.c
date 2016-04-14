@@ -164,3 +164,46 @@ int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose)
         dbg_printf("%p", ptr);
     }
 }
+
+
+// Printing a newick string from a mfl_tree_t
+void tui_print_newick(mfl_node_t *start)
+{
+    
+    // Set the node to start
+    mfl_node_t *node = start;
+    
+    if (node->nodet_tip != 0) {
+        // print a tip
+        dbg_printf("%i", node->nodet_tip);
+        
+        return;
+        
+    } else {
+        // open a clade
+        dbg_printf("(");
+    }
+    
+    // Move to the next node
+    node = node->nodet_next;
+    
+    do {
+        if (node != start->nodet_next) {
+            dbg_printf(",");
+        }
+        // Go through the next nodes and print the next tip
+        tui_print_newick(node->nodet_edge);
+        
+        // close a clade if the next edge is not a tip
+        if(node->nodet_edge->nodet_tip == 0) {
+            dbg_printf(")");
+        }
+
+        // Move to the next node
+        node = node->nodet_next;
+    
+    // Stop once reached back the start tree
+    } while (node != start);
+    
+    return;
+}

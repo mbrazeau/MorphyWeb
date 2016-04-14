@@ -21,6 +21,7 @@ int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose);
 void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* calling_fxn);
 int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* calling_fxn);
 int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose);
+void tui_print_newick(mfl_node_t *start);
 
 /*  tui_io.c
  */
