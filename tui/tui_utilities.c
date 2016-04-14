@@ -128,20 +128,6 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
     
 }
 
-int tui_count_matching_node_pointers_in_array(const mfl_node_t* key, const mfl_nodearray_t nds, int listmax)
-{
-    int i, j;
-    int count = 0;
-    
-    for (i = 0; i < listmax; ++i) {
-        if (key == nds[i]->nodet_edge) {
-            ++count;
-        }
-    }
-    
-    return count;
-}
-
 
 /**
  # int tui_count_num_taxa(mfl_tree_t *t)
@@ -182,7 +168,6 @@ int tui_count_num_taxa(mfl_tree_t *t)
  # tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verbose)
  Scans the tree checking for dangling pointers and other pointer errors. These would
  lead to FATAL ERRORS in processes on the tree.
- 
  @param mfl_tree_t*
  @param int
  @param int*
@@ -233,7 +218,11 @@ int tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verb
 /**
  #int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
  Checks for multiple edge pointers pointing to the same node. Such a situation
- could cause a FATAL ERROR in a
+ could cause a FATAL ERROR in any tree operation routine.
+ @param mfl_tree_t* t, the subject tree
+ @param int num_nodes, the number of nodes in the whole structure
+ @param int* verbose, declaring verbosity
+ @returns int the number of errors detected
  */
 int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
 {
@@ -312,7 +301,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     num_nodes = mfl_calculate_number_of_nodes_to_allocate(t->treet_num_taxa);
     
     // Check for dangling pointers and tip node misbehaviour
-    // Could probably delegate this to a function
     err = tui_check_tree_for_dangling_pointers(t, num_nodes, verbose);
     
     // Checking anastomosis. Each node record should be accessed by no more than one other edge.
@@ -324,8 +312,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
     
     // Pointers that should be. Harder to define, but they should point to valid memory or to NULL.
-    
-    // Dangling pointers. Related to the above.
     
     if (err) {
         dbg_printf("\nYour goddamned tree at %p is broken.\n", t);
