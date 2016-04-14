@@ -367,6 +367,7 @@ int mfl_power(const int base, const unsigned int exp) {
 //Getting the total number of digit in a sequence from 1 to n
 int mfl_number_of_digits_in_sequence(const int n)
 {
+    
     //Variables
     int digits_in_n, digits_in_sequence;
 
@@ -512,6 +513,7 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     
     //Allocating memory to the newick
     newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
+    
     if (!newick_tree_out) {
         dbg_printf("ERROR in mfl_convert_mfl_tree_t_to_newick(): unable to allocate memory for Newick string\n");
         return NULL;

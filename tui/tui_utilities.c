@@ -144,6 +144,7 @@ int tui_count_matching_node_pointers_in_array(const mfl_node_t* key, const mfl_n
 
 
 /**
+ # int tui_count_num_taxa(mfl_tree_t *t)
  Counts the number of taxa, but also has a built-in error check.
  It will loop over the taxa array counting the number of taxa that have the
  tip value set. However, it will also attempt to discover whether there are 
@@ -176,7 +177,9 @@ int tui_count_num_taxa(mfl_tree_t *t)
     return num_taxa;
 }
 
+
 /**
+ # int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
  Attempts to determine if a tree is broken by checking for: dangling pointers 
  intended for nodes; invalid pointers to nodes; cyclicity and anastomosis.
  

@@ -43,12 +43,21 @@
 
 #include "morphy.h"
 
+/**
+ Checks that a symbol is a valid type used by Morphy for
+ conversion to bit code as an mfl_charstate type. Valid symbols include:
+ 
+ * Alphanumeric characters
+ * '?'
+ * '-'
+ * '+'
+ * '@'
+ 
+ @param char c the input character
+ @returns bool 0 for false, 1 for true
+ */
 bool mfl_is_valid_morphy_ctype(char c)
 {
-    /* MDB: It would be nice to have some way of centralising the 
-     * database of valid non-alphanumeric characters. For now, its
-     * this function. But it could be accomplished with some sort of
-     * clever preprocessor macro. */
     if (isalnum(c)) {
         return true;
     }
@@ -69,6 +78,9 @@ bool mfl_is_valid_morphy_ctype(char c)
     }
 }
 
+/**
+ Allocates a data partition.
+ */
 mfl_nodedata_t* mfl_alloc_datapart(void)
 {
     mfl_nodedata_t* newdatapart = NULL;
@@ -146,15 +158,22 @@ int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
 }
 
 
+/**
+ Takes an alphanumeric value on the scale 0-9ABC...xyz and returns an int
+ representing the number of shifts needed for setting its corresponding
+ bit in an mfl_charstate. This function is used if there is no pre-
+ specified list of state symbols. In effect, Morphy will convert them to a
+ character state corresponding to their order as a default. Will not work
+ well with more than 62 states since it only uses letters and numbers. 
+ @param char input character
+ @returns the shift value of the alphanumeric character
+ */
 int mfl_convert_alphanum_to_shift_value(char in)
 {
-    /* Takes an alphanumeric value on the scale 0-9ABC...xyz and returns an int
-     * representing the number of shifts needed for setting its corresponding
-     * bit in an mfl_charstate. This function is used if there is no pre-
-     * specified list of state symbols. In effect, Morphy will convert them to a
-     * character state corresponding to their order as a default. Will not work
-     * well with more than 62 states since it only uses letters and numbers. */
     
+    /**
+     !!! FIXME: Requires improved support for character types. Thus function is unfinished.
+     */
     if (isdigit(in)) {
         return in - '0' + MORPHY_SPECIAL_STATE_PAD;
     }

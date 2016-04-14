@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8161CA1915100498FD0 /* mfyinterface.c */; settings = {ASSET_TAGS = (); }; };
+		516FAC6A1CC00862002590DB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 516FAC691CC00862002590DB /* main.cpp */; };
+		516FAC6F1CC00AE4002590DB /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 516FAC6E1CC00AE4002590DB /* gtest.framework */; };
 		51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F991CA19995009EEDF2 /* mfl_brswap.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */; settings = {ASSET_TAGS = (); }; };
@@ -23,6 +25,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		516FAC651CC00862002590DB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
@@ -38,6 +49,9 @@
 /* Begin PBXFileReference section */
 		5159B8151CA1915100498FD0 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
 		5159B8161CA1915100498FD0 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
+		516FAC671CC00862002590DB /* GT-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "GT-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		516FAC691CC00862002590DB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		516FAC6E1CC00AE4002590DB /* gtest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = gtest.framework; sourceTree = "<group>"; };
 		51D40F981CA19892009EEDF2 /* morphy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = morphy.h; sourceTree = "<group>"; };
 		51D40F991CA19995009EEDF2 /* mfl_brswap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_brswap.c; sourceTree = "<group>"; };
 		51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_characters.c; sourceTree = "<group>"; };
@@ -75,6 +89,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		516FAC641CC00862002590DB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				516FAC6F1CC00AE4002590DB /* gtest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -88,7 +110,9 @@
 		08FB7794FE84155DC02AAC07 /* Morphy */ = {
 			isa = PBXGroup;
 			children = (
+				516FAC6E1CC00AE4002590DB /* gtest.framework */,
 				08FB7795FE84155DC02AAC07 /* Source */,
+				516FAC681CC00862002590DB /* GT-Tests */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
 			name = Morphy;
@@ -110,8 +134,17 @@
 			isa = PBXGroup;
 			children = (
 				8DD76FB20486AB0100D96B5E /* Morphy */,
+				516FAC671CC00862002590DB /* GT-Tests */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		516FAC681CC00862002590DB /* GT-Tests */ = {
+			isa = PBXGroup;
+			children = (
+				516FAC691CC00862002590DB /* main.cpp */,
+			);
+			path = "GT-Tests";
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
@@ -180,6 +213,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		516FAC661CC00862002590DB /* GT-Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 516FAC6D1CC00862002590DB /* Build configuration list for PBXNativeTarget "GT-Tests" */;
+			buildPhases = (
+				516FAC631CC00862002590DB /* Sources */,
+				516FAC641CC00862002590DB /* Frameworks */,
+				516FAC651CC00862002590DB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "GT-Tests";
+			productName = "GT-Tests";
+			productReference = 516FAC671CC00862002590DB /* GT-Tests */;
+			productType = "com.apple.product-type.tool";
+		};
 		8DD76FA90486AB0100D96B5E /* Morphy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "Morphy" */;
@@ -205,6 +255,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0460;
+				TargetAttributes = {
+					516FAC661CC00862002590DB = {
+						CreatedOnToolsVersion = 7.0.1;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "Morphy" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -221,11 +276,20 @@
 			projectRoot = "";
 			targets = (
 				8DD76FA90486AB0100D96B5E /* Morphy */,
+				516FAC661CC00862002590DB /* GT-Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		516FAC631CC00862002590DB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				516FAC6A1CC00862002590DB /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8DD76FAB0486AB0100D96B5E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -341,6 +405,106 @@
 			};
 			name = Debug;
 		};
+		516FAC6B1CC00862002590DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/usr/local/lib/ncl,
+					/usr/local/include,
+					/Users/mbrazeau/Documents/Morphy,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/lib,
+					/usr/local/lib/ncl,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "/Users/mbrazeau/Documents/Morphy googletest/googletest/include";
+			};
+			name = Debug;
+		};
+		516FAC6C1CC00862002590DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/usr/local/lib/ncl,
+					/Users/mbrazeau/Documents/Morphy,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/lib,
+					/usr/local/lib/ncl,
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "/Users/mbrazeau/Documents/Morphy googletest/googletest/include";
+			};
+			name = Release;
+		};
 		E139ECA716050C9000800B30 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -449,6 +613,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
+		};
+		516FAC6D1CC00862002590DB /* Build configuration list for PBXNativeTarget "GT-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				516FAC6B1CC00862002590DB /* Debug */,
+				516FAC6C1CC00862002590DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
