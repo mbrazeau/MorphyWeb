@@ -164,8 +164,22 @@ int tui_count_num_taxa(mfl_tree_t *t)
 }
 
 
+bool tui_check_reciprocal_edge(mfl_node_t *n, mfl_tree_t* t, int num_nodes, int *verbose)
+{
+    int i = 0;
+    bool backlink = 0;
+    
+    for (i = 0; i < num_nodes; ++i) {
+        if (t->treet_treenodes[i]->nodet_edge == n) {
+            backlink = true;
+        }
+    }
+    
+    return backlink;
+}
+
 /**
- # tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verbose)
+ # tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verbose)
  Scans the tree checking for dangling pointers and other pointer errors. These would
  lead to FATAL ERRORS in processes on the tree.
  @param mfl_tree_t*
@@ -173,7 +187,7 @@ int tui_count_num_taxa(mfl_tree_t *t)
  @param int*
  @return int error value, 0 for no error
  */
-int tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verbose)
+int tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verbose)
 {
     int i = 0;
  
@@ -183,12 +197,30 @@ int tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verb
         
         if (!t->treet_treenodes[i]->nodet_edge) {
             if (!t->treet_treenodes[i]->nodet_isroot) {
-                dbg_printf("ERROR in input tree: dangling pointer at: %p\n ", t->treet_treenodes[i]);
-                err = 1;
+                
                 if (*verbose) {
-                    dbg_printf("Error found in: ");
-                    tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                    dbg_printf("WARNING possible dangling edge pointer at: %p\n ", t->treet_treenodes[i]);
+                    if (*verbose) {
+                        dbg_printf("Error found in: ");
+                        tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                    }
                 }
+                
+                if (!tui_check_reciprocal_edge(t->treet_treenodes[i], t, num_nodes, verbose)) {
+                    if (*verbose) {
+                        dbg_printf("However, no reciprocal backlink found.\n\n");
+                    }
+                    err = 0;
+                }
+                else {
+                    dbg_printf("ERROR in %s(): node %p points to valid node with no reciprocal link\n", __FXN_NAME__, t->treet_treenodes[i]);
+                    if (*verbose) {
+                        dbg_printf("Error found in: ");
+                        tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
+                    }
+                    err = 1;
+                }
+                
             }
         }
         else if (i < t->treet_num_taxa) {
@@ -201,7 +233,7 @@ int tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verb
                 dbg_printf("ERROR in %s(): terminal node has unexpected non-NULL value at nodet_next\n", __FXN_NAME__);
                 err = 1;
             }
-            if (t->treet_treenodes[i]->nodet_tip != (i-1)) {
+            if (t->treet_treenodes[i]->nodet_tip != (i+1)) {
                 dbg_printf("ERROR in %s(): unexpected tip number reassignment at: %p\n",__FXN_NAME__, t->treet_treenodes[i]);
                 if (*verbose) {
                     tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
@@ -237,10 +269,11 @@ int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
     memcpy(testnodes, t->treet_treenodes, (num_nodes+1)*sizeof(mfl_nodearray_t*)); // CHECK THAT THIS IS CORRECT SIZING
     
     for (i = 0; i < num_nodes; ++i) {
+        
         count = 0;
         
         for (j = 0; j < num_nodes; ++j) {
-            if (testnodes[i] == t->treet_treenodes[j]) {
+            if (testnodes[i] == t->treet_treenodes[j]->nodet_edge) {
                 ++count;
             }
         }
@@ -270,6 +303,7 @@ int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
  */
 int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
 {
+    dbg_printf("BEGIN TEST %s()\n", __FXN_NAME__);
     /* 
      *  What defines a broken tree?
      *  Anastomosis.
@@ -300,7 +334,7 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     num_nodes = mfl_calculate_number_of_nodes_to_allocate(t->treet_num_taxa);
     
     // Check for dangling pointers and tip node misbehaviour
-    err = tui_check_tree_for_dangling_pointers(t, num_nodes, verbose);
+    err = tui_check_tree_for_connection_errors(t, num_nodes, verbose);
     if (err) {
         dbg_pfail("\nYour goddamned tree is broken.");
         dbg_printf("\tThe goddamned broken tree at %p\n", t);
@@ -316,9 +350,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
     //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
     //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
-    
-    // Pointers that should be. Harder to define, but they should point to valid memory or to NULL.
-    
     
     
     return err;
@@ -386,4 +417,37 @@ void tui_print_newick(mfl_node_t *start)
     tui_print_newick_recursive(start);
     // Closing the tree
     dbg_printf(");");
+}
+
+
+void tui_test_checktree_(void)
+{
+    /*
+     FAIL CHECKS TO-DO
+     
+     - Reciprocal edges (x)
+     - Anastomosis (x)
+     - Ring-closure errors
+     
+     */
+    
+    char temp_example1[] = "temp_examp2=[&R] (2,(6,((3,4),(5,1))));";
+    char temp_example2[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));";
+    
+    dbg_printf("\n\nTesting an assembled tree for breaks\n\n");
+    mfl_tree_t* testtr = mfl_convert_newick_to_mfl_tree_t(temp_example1, 0);
+    
+    int verbose = TUI_SILENT;
+    tui_check_broken_tree(testtr, &verbose);
+    
+    mfl_free_tree(testtr);
+    
+    /* Do it again with non-consecutive tip numbers. */
+    testtr = mfl_convert_newick_to_mfl_tree_t(temp_example2, 0);
+
+    tui_check_broken_tree(testtr, &verbose);
+    
+    mfl_free_tree(testtr);
+    
+    dbg_printf("END broken tree test\n\n");
 }

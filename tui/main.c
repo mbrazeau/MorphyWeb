@@ -231,8 +231,15 @@ int main (int argc, char *argv[])
     mfl_join_node_edges(newtree->treet_treenodes[2], newtree->treet_treenodes[num_taxa + 1]->nodet_next);
     mfl_insert_branch(newtree->treet_treenodes[num_taxa + 1], newtree->treet_treenodes[num_taxa + 1]->nodet_next->nodet_next, newtree->treet_treenodes[1]);
     
+    
+    
+    /* Testing broken tree stuff*/
+    
     int verbose = true;
     tui_check_broken_tree(newtree, &verbose);
+    tui_test_checktree_();
+    
+    /**/
     
     dbg_printf("Free the tree\n\n");
     

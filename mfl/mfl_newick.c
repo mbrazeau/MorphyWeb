@@ -134,10 +134,10 @@ bool mfl_newick_tree_is_rooted(char *newick_string)
     }
     else if (*newick_string == 'R' || *newick_string == 'r') {
         is_rooted = true;
-        dbg_printf("Newick string is rooted\n");
+        dbg_printf("Newick string is rooted\n\n");
     }
     else {
-        dbg_printf("Newick string is unrooted\n");
+        dbg_printf("Newick string is unrooted\n\n");
     }
     
     return is_rooted;
@@ -330,7 +330,10 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     mfl_test_newick_setup(tree_from_newick->treet_root);
     
     /* Process the rooting options*/
-    if (!mfl_newick_tree_is_rooted(newick_tree)) {
+    if (mfl_newick_tree_is_rooted(newick_tree)) {
+        tree_from_newick->treet_root->nodet_isroot = 1;
+    }
+    else {
         /* FINISH: Unroot the tree. */
     }
     

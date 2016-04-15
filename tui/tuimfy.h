@@ -11,6 +11,9 @@
 
 #include "ncl/ncl.h"
 
+#define TUI_SILENT 0
+#define TUI_VERBOSE 1
+
 /*
  * Function prototypes for testing
  */
@@ -41,6 +44,7 @@ int tui_test_matrix_processing(void);
 /* to clean up*/
 void mfl_test_newick_stuff();
 void tui_test_character_stuff();
+void tui_test_checktree_(void);
 
 #endif /* tuimfy_h */
 
