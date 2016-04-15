@@ -336,6 +336,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     
     return tree_from_newick;
 }
+
 /**
  Counts the number of digits in an integer.
  @param n, an integer.
@@ -556,17 +557,6 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     
     return newick_tree_out;
 
-}
-
-/**
- Converts an input mfl_tree_t into a newick character string
- @param *input_tree, a pointer to the mfl_tree_t object to convert.
- @param num_taxa_active, the active number of taxa in the tree. Can be set to 0 to be infered.
- @returns a character newick string.
- */
-void mfl_newick_string(char *newick_string)
-{    
-    free(newick_string);
 }
 
 
