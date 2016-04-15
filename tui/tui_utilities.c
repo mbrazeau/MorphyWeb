@@ -441,11 +441,11 @@ int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose)
 
 
 // Printing a newick string from a mfl_tree_t
-void tui_print_newick_recursive(mfl_node_t *start)
+void tui_print_newick_recursive(mfl_node_t *n)
 {
     
     // Set the node to start
-    mfl_node_t *node = start;
+    mfl_node_t *node = n;
     
     if (node->nodet_tip != 0) {
         // print a tip
@@ -462,7 +462,7 @@ void tui_print_newick_recursive(mfl_node_t *start)
     node = node->nodet_next;
     
     do {
-        if (node != start->nodet_next) {
+        if (node != n->nodet_next) {
             dbg_printf(",");
         }
         // Go through the next nodes and print the next tip
@@ -477,7 +477,7 @@ void tui_print_newick_recursive(mfl_node_t *start)
         node = node->nodet_next;
     
     // Stop once reached back the start tree
-    } while (node != start);
+    } while (node != n);
     
     return;
 }
