@@ -183,10 +183,10 @@ int tui_check_tree_for_dangling_pointers(mfl_tree_t* t, int num_nodes, int *verb
         
         if (!t->treet_treenodes[i]->nodet_edge) {
             if (!t->treet_treenodes[i]->nodet_isroot) {
-                dbg_printf("dangling pointer at: %p", t->treet_treenodes[i]);
+                dbg_printf("ERROR in input tree: dangling pointer at: %p\n ", t->treet_treenodes[i]);
                 err = 1;
                 if (*verbose) {
-                    dbg_printf("Error found at:");
+                    dbg_printf("Error found in: ");
                     tui_print_node_data(t->treet_treenodes[i], __FXN_NAME__);
                 }
             }
@@ -280,7 +280,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
      */
     
     int err = 0;
-    int i = 0;
     int num_nodes = 0;
     int num_taxa = 0;
     
@@ -302,6 +301,13 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     
     // Check for dangling pointers and tip node misbehaviour
     err = tui_check_tree_for_dangling_pointers(t, num_nodes, verbose);
+    if (err) {
+        dbg_pfail("\nYour goddamned tree is broken.");
+        dbg_printf("\tThe goddamned broken tree at %p\n", t);
+    }
+    else {
+        dbg_ppass("input tree connections verified OK");
+    }
     
     // Checking anastomosis. Each node record should be accessed by no more than one other edge.
     
@@ -313,11 +319,9 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     
     // Pointers that should be. Harder to define, but they should point to valid memory or to NULL.
     
-    if (err) {
-        dbg_printf("\nYour goddamned tree at %p is broken.\n", t);
-    }
     
-    return 0;
+    
+    return err;
 }
 
 
