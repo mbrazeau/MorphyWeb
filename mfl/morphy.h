@@ -352,11 +352,12 @@ int         mfl_seek_largest_tip_number_newick(char *newick_string);
 mfl_node_t* mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa);
 mfl_tree_t* mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa);
 int         mfl_number_of_digits_in_integer(int n);
-int         mfl_power(int base, unsigned int exp);
-int         mfl_number_of_digits_in_sequence(int n);
-int         mfl_number_of_characters_in_newick(int num_taxa);
-int         mfl_tree_t_number_of_taxa(mfl_tree_t *input_tree);
-char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *root_start);
+int         mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int &tips_length);
+int         mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa);
+int         mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start);
+char*       mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int &count);
+char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active);
+
 
 /* In mfl_brwap.c */
 bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);

@@ -395,7 +395,7 @@ int mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int &tips_length
  @param &num_taxa, an integer counter for the number of tips (ideally set to 0).
  @returns the updated num_taxa counter.
  */
-int traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa)
+int mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa)
 {
     // Set the node to start
     mfl_node_t *node = start;
@@ -412,7 +412,7 @@ int traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa)
     
     do {
         // Go through the next nodes and print the next tip
-        traverse_mfl_tree_t_number_of_taxa(node->nodet_edge, num_taxa);
+        mfl_traverse_mfl_tree_t_number_of_taxa(node->nodet_edge, num_taxa);
             
         // Move to the next node
         node = node->nodet_next;
@@ -519,7 +519,7 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     
     if(num_taxa_active == 0) {
         //Infer number of taxa from mfl_tree_t
-        num_taxa_active = traverse_mfl_tree_t_number_of_taxa(input_tree->treet_root, num_taxa_active);
+        num_taxa_active = mfl_traverse_mfl_tree_t_number_of_taxa(input_tree->treet_root, num_taxa_active);
     }
 
     
@@ -558,6 +558,18 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
 
 }
 
+/**
+ Converts an input mfl_tree_t into a newick character string
+ @param *input_tree, a pointer to the mfl_tree_t object to convert.
+ @param num_taxa_active, the active number of taxa in the tree. Can be set to 0 to be infered.
+ @returns a character newick string.
+ */
+void mfl_newick_string(char *newick_string)
+{    
+    free(newick_string);
+}
+
+
 
 void mfl_test_newick_stuff()
 {
@@ -594,17 +606,14 @@ void mfl_test_newick_stuff()
     dbg_printf("Imported tree is: %s\n", temp_example_newick_for_writing7);
     tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing7, 0);
 
-    dbg_printf("\n\n\nTesting convert to newick\n");
+    dbg_printf("Testing convert to newick\n");
     
     dbg_printf("%s\n", temp_example_newick_for_writing7);
     char *newick_string;
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
     
     dbg_printf("The output newick string is:\n%s", newick_string);
-    
-    dbg_printf("\n\n\n");
-    
-    
+    free(newick_string);
     
     mfl_free_tree(tree_from_newick); // Some bug here
     
