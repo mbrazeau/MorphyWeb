@@ -396,13 +396,17 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
 }
 
 
+/**
+ Allocates memory for a new matrix and allocates memory for the list of
+ character vectors pointed to by the mat_matrix variable. The returned matrix
+ has no storage for the content of the vectors, just a list for pointers to
+ that eventual data. Further setups are handled by mfl_setup_new_empty_matrix()
+ @param int num_taxa: the number of input taxa
+ @param int num_chars: the number of input characters
+ @return mfl_matrix_t* the resulting empty matrix.
+ */
 mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
 {
-    /*  Allocates memory for a new matrix and allocates memory for the list of
-     *  character vectors pointed to by the mat_matrix variable. The returned matrix
-     *  has no storage for the content of the vectors, just a list for pointers to
-     *  that eventual data. Further setups are handled by mfl_setup_new_empty_matrix()
-     */
     
     mfl_matrix_t *newmatrix = NULL;
     
