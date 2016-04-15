@@ -217,36 +217,7 @@ int main (int argc, char *argv[])
     
     mfl_test_newick_stuff();
     
-    mfl_tree_t *newtree;
-    int num_taxa = 5;
-    int num_nodes = 0;
-    
-    newtree = mfl_alloctree_with_nodes(num_taxa);
-    
-    /* Setting up a binary fork to start testing some of the new functions. Currently hard-coded*/
-    mfl_create_binary_fork(newtree->treet_treenodes[num_taxa], newtree->treet_treenodes[0], newtree->treet_treenodes[1], newtree->treet_treenodes);
-    
-    /* Adding a hard-coded branch to the tree */
-    mfl_make_new_n_ary_ring_node(newtree->treet_treenodes[num_taxa+1], 2, newtree->treet_treenodes);
-    mfl_join_node_edges(newtree->treet_treenodes[2], newtree->treet_treenodes[num_taxa + 1]->nodet_next);
-    mfl_insert_branch(newtree->treet_treenodes[num_taxa + 1], newtree->treet_treenodes[num_taxa + 1]->nodet_next->nodet_next, newtree->treet_treenodes[1]);
-    
-    
-    
-    /* Testing broken tree stuff*/
-    
-    int verbose = true;
-    tui_check_broken_tree(newtree, &verbose);
-    tui_test_checktree_();
-    
-    /**/
-    
-    dbg_printf("Free the tree\n\n");
-    
-    mfl_free_tree(newtree);
-    
-    dbg_printf("Exit the program\n\n");
-
+    dbg_printf("\n\nGoodbye!\n\n");
     
 	return 0;
 }

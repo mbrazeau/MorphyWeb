@@ -30,6 +30,7 @@ typedef struct tui_testrec {
 
 /*  tui_utilities.c
  */
+void mfl_tree_check_traversal(mfl_node_t *node);
 void tui_print_node_data(mfl_node_t* p, const char* calling_fxn);
 int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose);
 void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* calling_fxn);

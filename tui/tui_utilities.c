@@ -14,6 +14,41 @@
 #include "morphy.h"
 #include "tuimfy.h"
 
+
+void mfl_tree_check_traversal(mfl_node_t *node)
+{
+    /* 
+     *** UPDATE FOR MORE EXTENSIVE CHECKING ***
+     */
+    mfl_node_t *p = NULL;
+    int i = 0;
+    
+    if (node->nodet_tip) {
+        dbg_printf("tip: %i\n", node->nodet_tip);
+        return;
+    }
+    
+    p = node->nodet_next;
+    
+    do {
+        mfl_tree_check_traversal(p->nodet_edge);
+        p = p->nodet_next;
+    } while (p != node);
+    
+    dbg_printf("Node %i: ", node->nodet_index);
+    
+    p = node->nodet_next;
+    
+    do {
+        ++i;
+        dbg_printf("child %i: %i ", i, p->nodet_edge->nodet_index);
+        p = p->nodet_next;
+    } while (p != node);
+    dbg_printf("\n");
+    
+    return;
+}
+
 int tui_print_warning(const char *msg, const char *fxn_name, tui_testrec* testrec)
 {
     /*
@@ -357,6 +392,7 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
      */
     
     int err = 0;
+    int ret = 0;
     int num_nodes = 0;
     int num_taxa = 0;
     
@@ -378,6 +414,28 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     
     // Check for dangling pointers and tip node misbehaviour
     err = tui_check_tree_for_connection_errors(t, num_nodes, verbose);
+    
+    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
+    
+    ret = tui_check_for_anastomosis(t, num_nodes, verbose);
+    
+    if (ret) {
+        err = ret;
+    }
+    
+    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
+    
+    ret = tui_check_for_anastomosis(t, num_nodes, verbose);
+    
+    if (ret) {
+        err = ret;
+    }
+    
+    // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
+    //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
+    //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
+    
+    
     if (err) {
         dbg_pfail("\nYour goddamned tree is broken.");
         dbg_printf("\tThe goddamned broken tree at %p\n", t);
@@ -386,15 +444,8 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
         dbg_ppass("input tree connections verified OK");
     }
     
-    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
     
-    err = tui_check_for_anastomosis(t, num_nodes, verbose);
-    
-    // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
-    //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
-    //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
-    
-    
+    dbg_printf("END broken tree test\n\n");
     return err;
 }
 
@@ -491,6 +542,5 @@ void tui_test_checktree_(void)
     tui_check_broken_tree(testtr, &verbose);
     
     mfl_free_tree(testtr);
-    
-    dbg_printf("END broken tree test\n\n");
+
 }

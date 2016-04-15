@@ -155,8 +155,6 @@ int mfl_read_newick_int(char **newick_position)
         ++(*newick_position);
     } while (**newick_position != ',' && **newick_position != ')');
     
-    dbg_printf("Tip to retrieve: %i\n", tip_number);
-    
     return tip_number;
 }
 
@@ -255,38 +253,6 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
 }
 
 
-void mfl_test_newick_setup(mfl_node_t *node)
-{
-    /* RENAME AND MOVE TO TUI ALONG WITH OTHER TESTS */
-    mfl_node_t *p = NULL;
-    int i = 0;
-    
-    if (node->nodet_tip) {
-        dbg_printf("tip: %i\n", node->nodet_tip);
-        return;
-    }
-    
-    p = node->nodet_next;
-    
-    do {
-        mfl_test_newick_setup(p->nodet_edge);
-        p = p->nodet_next;
-    } while (p != node);
-    
-    dbg_printf("Node %i: ", node->nodet_index);
-    
-    p = node->nodet_next;
-    
-    do {
-        ++i;
-        dbg_printf("child %i: %i ", i, p->nodet_edge->nodet_index);
-        p = p->nodet_next;
-    } while (p != node);
-    dbg_printf("\n");
-    
-    return;
-}
-
 mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
 {
     int num_taxa_local = 0; // If the number of taxa is not supplied by the user, it is easy to calculate it from the Newick string.
@@ -326,8 +292,6 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     tree_from_newick->treet_root = mfl_traverse_newick_recursively(newick_position, tree_from_newick->treet_treenodes, num_taxa_local);
     
     dbg_printf("The newick string processed: %s\n", newick_tree);
-    
-    mfl_test_newick_setup(tree_from_newick->treet_root);
     
     /* Process the rooting options*/
     if (mfl_newick_tree_is_rooted(newick_tree)) {
