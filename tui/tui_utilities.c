@@ -107,7 +107,6 @@ void tui_print_node_data(mfl_node_t* p, const char *calling_fxn)
     dbg_printf("\tp->nodet_uppass_visited: %i\n", p->nodet_uppass_visited);
     //dbg_printf("\t\n");
     //dbg_printf("\t\n");
-    dbg_printf("\tp->nodet_isroot: %i\n", p->nodet_isroot);
     //dbg_printf("\t\n");
     dbg_printf("\t\t(%s() called by: %s() )\n", __FXN_NAME__, calling_fxn);
     
@@ -132,34 +131,6 @@ int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose)
 }
 
 
-int tui_check_node_is_root(mfl_node_t* p, const int* verbose, const char* calling_fxn)
-{
-    
-    bool allchecks = true;
-    
-    if (p->nodet_isroot) {
-        dbg_printf("Node %p called by %s() is declared as root\n\n", p, calling_fxn);
-    }
-    else {
-        dbg_printf("Node %p called by %s() is NOT declared as root\n\n", p, calling_fxn);
-        allchecks = false;
-    }
-    
-    if (*verbose) {
-        dbg_printf("From %s()\n", __FXN_NAME__);
-        tui_print_node_data(p, __FXN_NAME__);
-        dbg_printf("\n\n");
-    }
-    
-    if (allchecks) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-
-
 void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* calling_fxn)
 {
     void* ret = NULL;
@@ -178,18 +149,17 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
         return 0;
     }
     
+    q = p;
     do {
         err = NULL;
-        q = q->nodet_next;
+        
         if (q->nodet_edge) {
             err = tui_check_binary_traversal(q->nodet_edge, verbose, __FXN_NAME__);
-        }
-        else {
-            tui_check_node_is_root(q, verbose, __FXN_NAME__);
         }
         if (err) {
             ret = err;
         }
+        q = q->nodet_next;
     } while (q != p);
     
     if (!ret) {
@@ -274,7 +244,7 @@ int tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verb
     for (i = 0; i < num_nodes; ++i) {
         
         if (!t->treet_treenodes[i]->nodet_edge) {
-            if (!t->treet_treenodes[i]->nodet_isroot) {
+            if (t->treet_treenodes[i] != t->treet_root) {
                 
                 if (*verbose) {
                     dbg_printf("WARNING possible dangling edge pointer at: %p\n ", t->treet_treenodes[i]);

@@ -80,7 +80,6 @@ void mfl_safe_reset_node_params(mfl_node_t* node)
 {
     /* If a node is made available, reset safe values here */
     node->nodet_isbottom         = NULL;
-    node->nodet_isroot           = NULL;
     node->nodet_maxsteps         = NULL;
     node->nodet_minsteps         = NULL;
     node->nodet_downpass_visited = NULL;

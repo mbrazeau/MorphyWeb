@@ -294,10 +294,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     dbg_printf("The newick string processed: %s\n", newick_tree);
     
     /* Process the rooting options*/
-    if (mfl_newick_tree_is_rooted(newick_tree)) {
-        tree_from_newick->treet_root->nodet_isroot = 1;
-    }
-    else {
+    if (!mfl_newick_tree_is_rooted(newick_tree)) {
         mfl_unroot_tree(tree_from_newick);
     }
     
