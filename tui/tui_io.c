@@ -20,6 +20,7 @@ void tui_ignore_nexus_comment(char **current)
     } while (**current != ']');
 }
 
+
 int tui_check_simple_table_formatted(const char* input_table)
 {
     char *c = (char*)input_table;

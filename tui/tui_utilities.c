@@ -14,6 +14,49 @@
 #include "morphy.h"
 #include "tuimfy.h"
 
+int tui_print_warning(const char *msg, const char *fxn_name, tui_testrec* testrec)
+{
+    /*
+        Although not yet implemented, this function can be updated to take the warning message and print it to 
+        screen. The problem is passing variable numbers of arguments for format conversions
+     */
+    
+    if (testrec->tr_num_warn == ULLONG_MAX) {
+        
+        if (testrec->tr_verbosity) {
+            
+            dbg_printf("WARNING: number of warnings has overflowed the buffer at %llu\n", testrec->tr_num_warn);
+            
+            testrec->tr_warn_overflow = testrec->tr_num_warn;
+            testrec->tr_num_warn = 1;
+        }
+    }
+    else {
+        ++testrec->tr_num_warn;
+    }
+    
+    return 0;
+}
+
+int tui_conclude_test(const char *testname, tui_testrec *testrec)
+{
+    
+    dbg_printf("Test concluded with %llu errors and %llu warnings\n\n", testrec->tr_num_err, testrec->tr_num_warn);
+    
+    if (testrec->tr_err_overflow) {
+        dbg_printf("\t Number of errors overflowed the buffer: %llu additional errors (just to rub it in)\n", testrec->tr_err_overflow);
+    }
+    if (testrec->tr_warn_overflow) {
+        dbg_printf("\t Number of warnings overflowed the buffer: %llu additional warnings\n", testrec->tr_err_overflow);
+    }
+    
+    if (testrec->tr_verbosity == TUI_SILENT) {
+        dbg_printf("\tAt least %llu warnings were suppressed. To view these, re-run the test in VERBOSE mode", testrec->tr_num_warn);
+    }
+    dbg_printf("\n\n");
+    
+}
+
 
 void tui_print_node_data(mfl_node_t* p, const char *calling_fxn)
 {

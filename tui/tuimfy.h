@@ -14,6 +14,16 @@
 #define TUI_SILENT 0
 #define TUI_VERBOSE 1
 
+typedef struct tui_testrec {
+  
+    unsigned long long int tr_num_err;   // Number of errors counted
+    unsigned long long int tr_err_overflow; // If the number of errors overflows ULLONG_MAX
+    unsigned long long int tr_num_warn;         // As above but for warnings
+    unsigned long long int tr_warn_overflow;
+    int tr_verbosity;
+    
+} tui_testrec;
+
 /*
  * Function prototypes for testing
  */
