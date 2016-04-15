@@ -487,12 +487,23 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     
     if(num_taxa_active == 0) {
         //Infer number of taxa from mfl_tree_t
-        num_taxa_active = mfl_traverse_mfl_tree_t_number_of_taxa(input_tree->treet_root, num_taxa_active);
+        if (input_tree->treet_root) {
+            num_taxa_active = mfl_traverse_mfl_tree_t_number_of_taxa(input_tree->treet_root, num_taxa_active);
+            
+            //Get the newick string length
+            
+            newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active, input_tree->treet_root) + 2;  // the + 2 is for the terminal '\0'
+        }
+        else {
+            num_taxa_active = mfl_traverse_mfl_tree_t_number_of_taxa(input_tree->treet_start, num_taxa_active);
+            
+            //Get the newick string length
+            
+            newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active, input_tree->treet_start) + 2;  // the + 2 is for the terminal '\0'
+        }
     }
 
     
-    //Get the newick string length
-    newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active, input_tree->treet_root) + 2;  // the + 2 is for the terminal '\0'
 
     //Allocating memory to the newick
     newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
@@ -506,7 +517,8 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     }
 
     //Adding starting with the root command
-    if (input_tree->treet_root->nodet_isroot != 0) {
+    if (input_tree->treet_root/*->nodet_isroot != 0*/) { // Note that there's no need to check the is-root variable. In fact, this can lead to a crash (and did)
+                                                         // when the tree is unrooted unexpectedly. I'm going to remove the isroot variable from the node struct
         root_command = "[&R] ";
     } else {
         root_command = "[&U] ";
@@ -517,7 +529,12 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     }
     
     //Creating the newick string out
-    newick_tree_out = mfl_traverse_tree_to_print_newick_char_recursive(input_tree->treet_root, newick_tree_out, count);
+    if (input_tree->treet_root) {
+        newick_tree_out = mfl_traverse_tree_to_print_newick_char_recursive(input_tree->treet_root, newick_tree_out, count);
+    }
+    else {
+        newick_tree_out = mfl_traverse_tree_to_print_newick_char_recursive(input_tree->treet_start, newick_tree_out, count);
+    }
     
     //Closing the tree
     strcat(newick_tree_out, tree_end);
@@ -532,13 +549,13 @@ void mfl_test_newick_stuff()
 {
     /* This function will be eliminated from the library. */
     
-    char temp_example_newick_for_writing1[] = "temp_examp1=[&R] (2,((3,4),(5,1)));";
+    char temp_example_newick_for_writing1[] = "temp_examp1=[&U] (2,((3,4),(5,1)));";
     char temp_example_newick_for_writing2[] = "temp_examp2=[&R] (2,(6,((3,4),(5,1))));";
     char temp_example_newick_for_writing3[] = "temp_examp3=[&R] (2,(6,((3,4),5),1));";
     char temp_example_newick_for_writing4[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));"; // Polytomy and multi-digit tip number not in sequence
     char temp_example_newick_for_writing5[] = "temp_examp5=[&R] (((((1,4),5),3),2),6);";
     char temp_example_newick_for_writing6[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
-    char temp_example_newick_for_writing7[] = "temp_examp7=[&R] ((1000,856),(2,3),(56,4));";
+    char temp_example_newick_for_writing7[] = "temp_examp7=[&U] ((1000,856),(2,3),(56,4));";
     
     char *sample_newick = NULL;
     

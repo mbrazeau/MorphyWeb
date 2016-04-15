@@ -559,8 +559,8 @@ void mfl_unroot_tree(mfl_tree_t *tree)
         return;
     }
     
-    p = tree->treet_root->nodet_next;
-    q = p;
+    q = tree->treet_root->nodet_next;
+    p = tree->treet_root;
     
     do {
         p = p->nodet_next;
@@ -589,6 +589,8 @@ void mfl_unroot_tree(mfl_tree_t *tree)
         q = mfl_find_rightmost_tip_in_tree(q);
         tree->treet_start = q->nodet_edge;
     }
+    
+    tree->treet_root = NULL;
     
 }
 
