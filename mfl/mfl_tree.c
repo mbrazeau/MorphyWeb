@@ -536,20 +536,62 @@ int mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 }
 
 
+mfl_node_t* mfl_find_rightmost_tip_in_tree(mfl_node_t* n)
+{
+    
+    mfl_node_t *p;
+    
+    if (n->nodet_tip) {
+        return n;
+    }
+    
+    return mfl_find_rightmost_tip_in_tree(n->nodet_next->nodet_edge);
+}
+
+
 void mfl_unroot_tree(mfl_tree_t *tree)
 {
-    //mfl_node_t *root = NULL;
+    mfl_node_t *p = NULL;
+    mfl_node_t *q = NULL;
     
     if (!tree->treet_root) {
         dbg_printf("WARNING in mfl_unroot_tree(): attempt to deroot tree with no valid pointer to root\n");
         return;
     }
     
-    // If the root is binary:
+    p = tree->treet_root->nodet_next;
+    q = p;
     
+    do {
+        p = p->nodet_next;
+    } while (p->nodet_next != tree->treet_root);
     
-    // If the root is non-binary
+    if (p == q->nodet_next) {
+        // The root is binary; perform binary unrooting
+        mfl_join_node_edges(p->nodet_edge, q->nodet_edge);
+        mfl_make_node_available(p);
+        mfl_make_node_available(q);
+    }
+    else {
+        // The root is polychotomous, perform polychotomous unrooting
+        p->nodet_next = q;
+    }
+    
+    mfl_make_node_available(tree->treet_root);
+    
+    // This bit sets the root as either the base of tip #1 or the base of some arbitary
+    // tip. This can be changed, but the start pointer should always be at the base
+    // of some tip. This keeps uppass calculations simple.
+    if (tree->treet_treenodes[0]->nodet_edge) {
+        tree->treet_start = tree->treet_treenodes[0]->nodet_edge;
+    }
+    else {
+        q = mfl_find_rightmost_tip_in_tree(q);
+        tree->treet_start = q->nodet_edge;
+    }
+    
 }
+
 
 void mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes)
 {

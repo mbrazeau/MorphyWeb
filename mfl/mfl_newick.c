@@ -298,7 +298,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
         tree_from_newick->treet_root->nodet_isroot = 1;
     }
     else {
-        /* FINISH: Unroot the tree. */
+        mfl_unroot_tree(tree_from_newick);
     }
     
     return tree_from_newick;
