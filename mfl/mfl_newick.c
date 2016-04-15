@@ -336,11 +336,13 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     
     return tree_from_newick;
 }
-
-// Finding the number of digits in an integer
+/**
+ Counts the number of digits in an integer.
+ @param n, an integer.
+ @returns int the number of digits in n.
+ */
 int mfl_number_of_digits_in_integer(int n)
 {
-    //Variables
     int count=0;
 
     //Counting the digits
@@ -352,90 +354,103 @@ int mfl_number_of_digits_in_integer(int n)
   return(count);
 }
 
-// Getting the power of an integer (equivalent to pow from math but does not output a double!)
-int mfl_power(const int base, const unsigned int exp) {
-
-    //Variables
-    int i, result = 1;
-
-    //Calculating the power as an integer
-    for (i = 0; i < exp; i++)
-        result *= base;
-    return result;
-}
-
-//Getting the total number of digit in a sequence from 1 to n
-int mfl_number_of_digits_in_sequence(const int n)
+/**
+ Traverse a mfl_tree_t to get the number of digits in the tips.
+ @param *start, a mfl_node_t pointer to the starting node in the tree.
+ @param &tips_length, an integer counter for the number of digits (ideally set to 0).
+ @returns the updated tips_length counter.
+ */
+int mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int &tips_length)
 {
+    // Set the node to start
+    mfl_node_t *node = start;
     
-    //Variables
-    int digits_in_n, digits_in_sequence;
+    if (node->nodet_tip != 0) {
+        // convert the tip into a character
+        tips_length = tips_length + mfl_number_of_digits_in_integer(node->nodet_tip);
+        
+        return tips_length;
+    }
+        
+    // Move to the next node
+    node = node->nodet_next;
+    
+    do {
+        // Go through the next nodes and print the next tip
+        mfl_traverse_tree_to_get_tip_char_length(node->nodet_edge, tips_length);
+        
+        // Move to the next node
+        node = node->nodet_next;
+        
+        // Stop once reached back the start tree
+    } while (node != start);
+    
+    return tips_length;
 
-    // Get the number of digits in n
-    digits_in_n = mfl_number_of_digits_in_integer(n);
-
-    // Get the total number of digits in the sequence from 1 to n conditional on n
-    /* TG: For n being an integer and x being the number of digit in n, the
-    * number of digits in the sequence from 1 to n is equal to:
-    * "x*n - ( 10^(x-1) + 10^(x-2), ..., + 10^(x-x) - (x-1) )"
-    * or, more conveniently:
-    * "x*n - ( ((10^x) - 1)/(10 - 1) - x )"" */
-
-    digits_in_sequence = digits_in_n * n - ( (mfl_power(10,digits_in_n) - 1)/(10 - 1) - digits_in_n); 
-
-    return(digits_in_sequence);
 }
 
-//Getting the maximum number of characters in newick string
-int mfl_number_of_characters_in_newick(const int num_taxa)
+/**
+ Traverse a mfl_tree_t to get the number of tips in the tree.
+ @param *start, a mfl_node_t pointer to the starting node in the tree.
+ @param &num_taxa, an integer counter for the number of tips (ideally set to 0).
+ @returns the updated num_taxa counter.
+ */
+int traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa)
 {
-    //Variables
+    // Set the node to start
+    mfl_node_t *node = start;
+    
+    if (node->nodet_tip != 0) {
+        // add to counter
+        num_taxa++;
+    
+        return num_taxa;
+    }
+    
+    // Move to the next node
+    node = node->nodet_next;
+    
+    do {
+        // Go through the next nodes and print the next tip
+        traverse_mfl_tree_t_number_of_taxa(node->nodet_edge, num_taxa);
+            
+        // Move to the next node
+        node = node->nodet_next;
+            
+        // Stop once reached back the start tree
+    } while (node != start);
+        
+    return num_taxa;
+}
+
+
+/**
+ Get the maximum number of characters in a newick string
+ @param num_taxa, an integer being the number of taxa present in the newick string.
+ @param *start, a mfl_node_t pointer to the starting node in the tree.
+ @returns the maximum number of characters in the newick string.
+ */
+int mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start)
+{
     int num_brackets = 2*(num_taxa - 1), num_commas = num_taxa - 1, newick_size;
+    int tips_length = 0;
 
+    //Get the number of digits in the tips
+    tips_length = mfl_traverse_tree_to_get_tip_char_length(start, tips_length);
+    
     //Get the newick string size
-    newick_size = mfl_number_of_digits_in_sequence(num_taxa) + num_brackets + num_commas + 6; // The final +6 includes the closing semi-colon (1), the root header (4) and a space between the root header and the start of the newick string (1)
-
+    newick_size = tips_length + num_brackets + num_commas + 6; // The final +6 includes the closing semi-colon (1), the root header (4) and a space between the root header and the start of the newick string (1)
+    
     return newick_size;
 }
 
-//Getting number of taxa from a mfl_tree_t
-int mfl_tree_t_max_number_of_taxa(const mfl_tree_t *input_tree)
-{
-    /* MDB says: This function doesn't really return the number 
-     * num_taxa_active, but a total num_taxa at time of tree allocation.
-     * The number num_taxa_active should be determined by a traversal
-     * on the tree, since it should refer exclusively to the number of
-     * taxa active in the assembled tree, rather than in the allocated tree
-     * 
-     */
-    
-    int num_taxa_active = 0, count = 0;
-    
-    while(input_tree->treet_treenodes[count] != '\0') {
-        
-        //Count the number of nodet_tip
-        if(input_tree->treet_treenodes[count]->nodet_tip != 0) {
-            ++num_taxa_active;
-        }
-        
-        ++count;
-    }
-    
-    return num_taxa_active;
-}
-
-
-//char *source = "This is an example.";
-//int i;
-//
-//for (i = 0; i < strlen(source); i++){
-//    
-//    printf("%c", source[i]);
-//    
-//}
-
-
-// Traversing the tree to spit out the newich characters
+/**
+ Traverse a mfl_tree_t to print each newick characters.
+ @param *start, a mfl_node_t pointer to the starting node in the tree.
+ @param *newick_tree_out, a character pointer to fill in with the newick characters.
+ @param &count, a counter for the newick characters position (ideally set to 0).
+ @returns a character newick string.
+ */
 char* mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int &count)
 {
     int i = 0;
@@ -491,29 +506,29 @@ char* mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *
 }
 
 
-// Write newick string from tree_t structure
+/**
+ Converts an input mfl_tree_t into a newick character string
+ @param *input_tree, a pointer to the mfl_tree_t object to convert.
+ @param num_taxa_active, the active number of taxa in the tree. Can be set to 0 to be infered.
+ @returns a character newick string.
+ */
 char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active)
 {
-    //Variables
-    char *newick_tree_out = NULL;
-    char *root_command;
-    char *tree_end = ");\0";
-    int newick_string_length = 0;
-    int count = 0; // This is the counter for the recursive loop
-    int i;
+    char *newick_tree_out = NULL, *root_command, *tree_end = ");\0";
+    int newick_string_length = 0, count = 0,i;
     
-    //Infering max number of taxa
     if(num_taxa_active == 0) {
         //Infer number of taxa from mfl_tree_t
-        num_taxa_active = mfl_tree_t_max_number_of_taxa(input_tree);
+        num_taxa_active = traverse_mfl_tree_t_number_of_taxa(input_tree->treet_root, num_taxa_active);
     }
 
-    //Get the newick string length
-    newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active) + 2;  // the + 2 is for the terminal '\0'
     
+    //Get the newick string length
+    newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active, input_tree->treet_root) + 2;  // the + 2 is for the terminal '\0'
+
     //Allocating memory to the newick
     newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
-    
+
     if (!newick_tree_out) {
         dbg_printf("ERROR in mfl_convert_mfl_tree_t_to_newick(): unable to allocate memory for Newick string\n");
         return NULL;
@@ -521,7 +536,7 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     else {
         memset(newick_tree_out, 0, newick_string_length * sizeof(char));
     }
-    
+
     //Adding starting with the root command
     if (input_tree->treet_root->nodet_isroot != 0) {
         root_command = "[&R] ";
