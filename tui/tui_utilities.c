@@ -389,6 +389,9 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
      *  Pointers that shouldn't be
      *  Dangling pointers that shouldn't be.
      *
+     *  TO DO:
+     *  Check array ends and off-by-1 errors in the node arrays.
+     *  Cyclicity checks in the internal node rings.
      */
     
     int err = 0;
@@ -444,7 +447,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
         dbg_ppass("input tree connections verified OK");
     }
     
-    
     dbg_printf("END broken tree test\n\n");
     return err;
 }
@@ -456,9 +458,14 @@ int tui_check_all_binary(mfl_tree_t *querytree, const int *verbose)
     
     mfl_node_t *start_ptr = NULL;
     
-    if (ptr = tui_check_binary_traversal(start_ptr, verbose, __FXN_NAME__) ) {
-        dbg_eprintf(__FXN_NAME__, "non-binary node detected at: ");
+    if ((ptr = tui_check_binary_traversal(start_ptr, verbose, __FXN_NAME__)) ) {
+        dbg_eprintf("non-binary node detected at: ");
         dbg_printf("%p", ptr);
+        
+        return 1;
+    }
+    else {
+        return 0;
     }
 }
 
