@@ -427,7 +427,9 @@ char* mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *
     if (node->nodet_tip != 0) {
         // convert the tip into a character
         tip_length = mfl_number_of_digits_in_integer(node->nodet_tip);
-        char tip_num[tip_length];
+        char tip_num[tip_length];                                           // This is a clever trick! However, it could result in a fatal
+                                                                            // error if tip_length ends up being 0. Might want a check with
+                                                                            // mfl_number_of_digits_in_integer() against null values.
         sprintf(tip_num, "%d", node->nodet_tip);
         // print a tip (depending on the number of integer in there)
         i = mfl_number_of_digits_in_integer(node->nodet_tip);
