@@ -232,7 +232,7 @@ int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
     int count = 0;
     int err = 0;
     
-    mfl_nodearray_t testnodes = mfl_allocate_nodearray(t->treet_num_taxa, num_nodes);
+    mfl_nodearray_t testnodes = (mfl_nodearray_t)malloc((num_nodes+1)*sizeof(mfl_node_t*));
     
     memcpy(testnodes, t->treet_treenodes, (num_nodes+1)*sizeof(mfl_nodearray_t*)); // CHECK THAT THIS IS CORRECT SIZING
     
