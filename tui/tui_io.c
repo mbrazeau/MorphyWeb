@@ -71,6 +71,24 @@ int tui_check_simple_table_formatted(const char* input_table)
 }
 
 
+void tui_print_charstate_bits(const mfl_charstate cell, const int max_states)
+{
+    int i = 1;
+    
+    i = i << max_states;
+    
+    do {
+        if (i & cell) {
+            dbg_printf("1");
+        }
+        else {
+            dbg_printf("0");
+        }
+        i = i >> 1;
+    } while (i);
+}
+
+
 int tui_check_simple_table_dimensions(const char* table, int rows, int cols)
 {
     int expected = rows * cols;

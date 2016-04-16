@@ -102,7 +102,7 @@ typedef enum
     MFL_PT_RATCHET_SEARCH,
     
     /* MFL_PT_TIP_DATA (char*). The sequence of characters in the data matrix. 
-     * These get converted to the charstate int32_t by functions in the Morphy
+     * These get converted to the charstate uint64_t by functions in the Morphy
      * library immediately before a search is initiated. The reason why we do it
      * this way is because the way the data gets converted will depend on some 
      * other options set by the user. */
@@ -223,13 +223,15 @@ typedef enum
 {
     MFL_OPT_FITCH,
     MFL_OPT_WAGNER,
-    MFL_OPT_DOLLO,
-    MFL_OPT_IRREVERSIBLE,
+    MFL_OPT_DOLLO_UP,
+    MFL_OPT_DOLLO_DN,
+    MFL_OPT_IRREVERSIBLE_UP,
+    MFL_OPT_IRREVERSIBLE_DN,
     // New or custom optimisation types are added in this position
     MFL_OPT_COST_MATRIX,
     
     MFL_OPT_MAX
-} mfl_optimisation_t;
+} mfl_parsimony_t;
 
 typedef enum
 {
@@ -239,6 +241,15 @@ typedef enum
     
     MFL_MULTISTATE_MAX
 } mfl_multicell_t ;
+
+typedef enum
+{
+    MFL_DATATYPE_STANDARD,
+    MFL_DATATYPE_DNA,
+    MFL_DATATYPE_PROTEIN,
+    
+    MFL_DATATYPE_MAX
+} mfl_datatype_t;
 
 typedef void* mfl_handle_t;
 

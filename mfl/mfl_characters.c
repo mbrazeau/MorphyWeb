@@ -137,11 +137,11 @@ void mfl_free_nodedata(mfl_nodedata_t *olddata)
     free(olddata);
 }
 
-/**
+/*!
  # mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
  Allocates a nodal character set used as either the downpass or uppass set
  within a particular partition for a particular node.
- @param int num_characters the number of characters
+ @param num_characters (int) num_characters the number of characters
  @return mfl_charstate* the vector of characters.
  */
 mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
@@ -160,7 +160,7 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
     return newcharset;
 }
 
-/*
+/*!
  #int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
  Looks up the symbol held by 'in' in the datype_converter array. The index
  within the array where the symbols match is found, plus the number of special 
@@ -169,8 +169,8 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
  own way of shuffling the symbols. Also, if the Nexus standard is followed and 
  sybols list is supplied, then the order in which input symbols are declared 
  determines their ordering in asymmetric characters.
- @param char in, the input symbol
- @param char* the array of datatypes in their
+ @param in (char) the input symbol
+ @param datype_converter (char*) the array of datatypes in their
  */
 int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
 {
@@ -188,14 +188,14 @@ int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
 }
 
 
-/**
+/*!
  # int mfl_shift_value_DEFAULT_catdata(char in)
  Takes an alphanumeric value on the scale 0-9ABC...xyz and returns an int
  representing the number of shifts needed for setting its corresponding
  bit in an mfl_charstate. This function is used as a DEFAULT if there is no 
  pre-specified list of state symbols. In effect, Morphy will convert them to 
  a character state corresponding to their order as a default.
- @param char input character
+ @param in (char) input character
  @returns the shift value of the alphanumeric character
  */
 int mfl_shift_value_DEFAULT_catdata(char in)
@@ -228,7 +228,7 @@ int mfl_shift_value_DEFAULT_catdata(char in)
 /**
  # bool mfl_char_is_DNA_base(char in)
  Checks whether an input character is a valid single-base DNA symbol
- @param char in the input character
+ @param in (char) in the input character
  @return bool true/false
  */
 bool mfl_char_is_DNA_base(char in)
@@ -289,14 +289,14 @@ int mfl_shift_value_amino_acid(char state_symbol)
 }
 
 
-/**
+/*!
  #mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
  Converts a string of character states corresponding to a matrix cell containing
  multistate values. For each state symbole, the shift value of the data type converter 
  is calculated and that bit 'shifted in' by that amount and then added to the output
  with a bitwise OR.
- @param char* xstates the string corresponding to the multistate cell.
- @param char* datype_converter the ordered array of symbols used to calculated the number of shifts
+ @param xstates (char*) the string corresponding to the multistate cell.
+ @param datype_converter (char*) the ordered array of symbols used to calculated the number of shifts
  @returns a mfl_charstate value
  */
 mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
@@ -317,29 +317,261 @@ mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter
 }
 
 
-/*mfl_charstate mfl_convert_single_symbol_categorical(char symbol)
+/**
+ # mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
+ Sets the bits in an mfl_charstate variable to the appropriate value and returns
+ the result.
+ @param gapmethod (mfl_optimisation_t) the optimality method applied to the gap character.
+ @return mfl_charstate bits set to the corresponding treatment.
+ */
+mfl_charstate mfl_convert_gap_character(mfl_gap_t gapmethod)
 {
-    int shift_value;
-    u_int64_t bit_setter;
-    mfl_charstate charstate;
+    if (gapmethod == MFL_GAP_INAPPLICABLE || gapmethod == MFL_GAP_NEWSTATE) {
+        return MORPHY_INAPPLICABLE_BITPOS;
+    }
+    else {
+        return MORPHY_MISSING_DATA_BITWISE;
+    }
+}
+
+
+/*!
+ If the typeset list is supplied as an input string rather than an array, this
+ sets the new char array to be a space-less vector of symbols use as character
+ states in a Nexus-derived "Format Symbols" command. A lookup into this will return
+ the required shift value.
+ @param datype_converter (char*) the set of symbols to convert presented as a string
+ @param symbols_list (char*) the subtoken of symbols taken from input
+ */
+void mfl_set_datatype_converter_from_symbol_list(char* datype_converter, char* symbols_list)
+{
+    
+    int i = 0;
+    char *dtype_ptr = NULL;
+    
+    dtype_ptr = symbols_list;
+    
+    while (dtype_ptr) {
+        if (!isspace(*dtype_ptr)) {
+            datype_converter[i] = *dtype_ptr;
+            ++i;
+        }
+        ++dtype_ptr;
+    }
+}
+
+
+char* mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, int listmax)
+{
+    int i = 0;
+    char *ptr = NULL;
+    
+    for (i = 0; i < *listend; ++i) {
+        if (*key == *(list + i)) {
+            ptr = (list + i);
+            break;
+        }
+    }
+    
+    if (!ptr) {
+        if (*listend < listmax) {
+            list[*listend] = *key;
+            ++(*listend);
+            list[*listend] = '\0';
+        }
+        else {
+            dbg_printf("ERROR in mfl_search_in_chartypes_array(): %s: line: %i\n", __FILE__, __LINE__);
+            dbg_printf("\t Insufficient space in array for %i member \'%c\'. Exceeding max states: %i.\n", *listend, *key, MORPHY_MAX_STATE_NUMBER);
+            dbg_printf("Returning NULL\n\n");
+            ++(*listend); // Exceed list max for error reporting.
+            return NULL;
+        }
+    }
+    
+    return ptr;
+}
+
+
+int mfl_get_numstates_from_matrix(char *inputmatrix)
+{
+    /* When no state symbols are specified and default reading is in effect,
+     * the number of unique symbols used can, with some assumptions, be
+     * counted directly from the matrix.
+     * */
+    
+    int count = 0;
+    char *current = NULL;
+    int listmax = MORPHY_MAX_STATE_NUMBER+MORPHY_SPECIAL_STATE_PAD; // +1 for terminal null.
+    char statesymbols[listmax];
+    int dbg_loopcount = 0;
+    
+    statesymbols[0] = NULL;
+    current = inputmatrix;
+    
+    do {
+        if (*current != '?' && mfl_is_valid_morphy_ctype(*current)) {
+            mfl_search_char_in_chartypes_array(current, statesymbols, &count, listmax);
+        }
+        ++current;
+        ++dbg_loopcount;
+    } while (*current);
     
     
+    //CHECK FOR ERROR HERE
+    if (count > listmax) {
+        dbg_printf("ERROR in %s, %s, line: %i\n", __FUNCTION__, __FILE__, __LINE__);
+        dbg_printf("\t State symbols outnumber MORPHY_MAX_STATE_NUMBER. Returning NULL\n\n");
+        return NULL;
+    }
     
+    
+    return count-1;
+}
+
+
+mfl_parsimony_t* mfl_alloc_chartype_list(int input_num_chars)
+{
+    mfl_parsimony_t* chars_by_ctype = (mfl_parsimony_t*)malloc(input_num_chars * sizeof(mfl_parsimony_t));
+    
+    if (!chars_by_ctype) {
+        dbg_eprintf("unable to allocate memory for new chars_by_ctype array\n");
+    }
+    else {
+        memset(chars_by_ctype, MORPHY_DEFAULT_PARSIMONY_METHOD, input_num_chars * sizeof(mfl_parsimony_t));
+    }
+    
+    return chars_by_ctype;
+}
+
+
+void mfl_destroy_chartype_list(mfl_parsimony_t *ctype_list)
+{
+    free(ctype_list);
+}
+
+mfl_parsimony_t* mfl_get_chartypes_list(mfl_handle_s* mfl_handle)
+{
+    int i;
+    mfl_parsimony_t* ctype_setters = mfl_alloc_chartype_list(mfl_handle->n_chars);
+    
+    if (mfl_handle->ctypes) {
+        memccpy(ctype_setters, mfl_handle->ctypes, mfl_handle->n_chars, sizeof(mfl_parsimony_t));
+    }
+    else if (mfl_handle->ctypes_cmd) {
+        if (!mfl_handle->n_ctypes) {
+            dbg_printf("All characters are of type %s\n", MORPHY_DEFAULT_PARSIMONY_NAME);
+        }
+        else {
+            // Parse each ctype command
+            for (i = 0; i < MFL_OPT_MAX; ++i) {
+                // THE IMPORTANT BITS HERE
+                if (mfl_handle->ctypes_cmd[i]) {
+                    mfl_read_nexus_style_list_subcmd(mfl_handle->ctypes_cmd[i], i, (int*)ctype_setters, mfl_handle->n_chars);
+                }
+            }
+        }
+    }
+    else {
+        dbg_printf("All characters are of type %s\n", MORPHY_DEFAULT_PARSIMONY_NAME);
+    }
+    
+    return ctype_setters;
+}
+
+
+mfl_charstate mfl_standard_conversion_rules(char *c, mfl_gap_t gaprule)
+{
+    
+}
+
+
+/*mfl_charstate mfl_CUSTOM_CONVERSION_RULES(char *c, mfl_gap_t gaprule)
+{
+    __TEMPLATE__FOR__CUSTOM__CONVERSION__RULE
 }*/
 
 
+/*!
+ An interface for the conversion rule used to turn input characters into
+ set bits in an mfl_charstate variable. If ever there is a need to write 
+ different conversion rules, they can be set in here.
+ @param parsimtyme (mfl_parsimony_t) the type of parsimony function used
+ @return Pointer to the wrapper on the conversion rules to be applied to
+ the data.
+ */
+mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype)
+{
+    mfl_char2bit_fn ret = NULL;
+    
+    switch (parsimtype) {
+        
+        case MFL_OPT_FITCH:
+            ret = mfl_standard_conversion_rules;
+            break;
+        case MFL_OPT_WAGNER:
+            ret = mfl_standard_conversion_rules;
+            break;
+        case MFL_OPT_DOLLO_UP:
+            ret = mfl_standard_conversion_rules;
+            break;
+        case MFL_OPT_DOLLO_DN:
+            ret = mfl_standard_conversion_rules;
+            break;
+        case MFL_OPT_IRREVERSIBLE_UP:
+            ret = mfl_standard_conversion_rules;
+            break;
+        case MFL_OPT_IRREVERSIBLE_DN:
+            ret = mfl_standard_conversion_rules;
+            break;
+        case MFL_OPT_COST_MATRIX:
+            ret = mfl_standard_conversion_rules;
+            break;
+        /*case ___CUSTOM_TYPE___:
+             ret = __POINTER_TO_CUSTOM_CONVERSION_ROUTINE;
+             break;*/
+        default:
+            break;
+    }
+    
+    return ret;
+}
 
- 
- 
-/*mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
+void mfl_apply_conversion_rule(mfl_character_vector_t *character)
+{
+    character->cv_conversion_rule = mfl_fetch_conversion_rule(character->cv_parsim_method);
+}
+
+/*
+ Converting the columns
+ */
+
+// Has a gap? What's the gap conversion rule? Convert for that.
+
+// Did a datatype command come in?
+//  If Yes:
+//      Is it a mixed set (e.g. Std. and DNA)?
+//      Did a symbols list come in?
+//          If yes:
+//              Set converter according to symbols list
+//          If no:
+//              Set converter according to defaults
+//
+//  If no:
+//      Set a default or try to detect type?
+//          For now: use default.
+//
+//
+
+void mfl_setup_convert_charcells_to_mfl_charstates(mfl_matrix_t* m, mfl_handle_t handle)
 {
     
-    
-}*/
+}
 
-// NEXT:
-
-// Read through matrix string; populate the cells in the cv_character_cells.
+/*
+ *
+ * Functions for parsing the input matrix string into substrings. 
+ *
+ */
 
 void mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring)
 {
@@ -704,117 +936,6 @@ void mfl_move_in_nexus_multistate(char **col)
 }
 
 
-/**
- # mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
- Sets the bits in an mfl_charstate variable to the appropriate value and returns
- the result.
- @param mfl_optimisation_t opt_method, the optimality method applied to the gap character.
- @return mfl_charstate bits set to the corresponding treatment.
- */
-mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
-{
-    if (opt_method == MFL_GAP_INAPPLICABLE || opt_method == MFL_GAP_NEWSTATE) {
-        return MORPHY_INAPPLICABLE_BITPOS;
-    }
-    else {
-        return MORPHY_MISSING_DATA_BITWISE;
-    }
-}
-
-/**
- # void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
- If the typeset list is supplied as an input string rather than an array, this
- sets the new char array to be a space-less vector of symbols use as character
- states in a Nexus-derived "Format Symbols" command. A lookup into this will return 
- the required shift value.
- */
-void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
-{
-
-    int i = 0;
-    char *dtype_ptr = NULL;
-    
-    dtype_ptr = datatype_list;
-    
-    while (dtype_ptr) {
-        if (!isspace(*dtype_ptr)) {
-            datype_converter[i] = *dtype_ptr;
-            ++i;
-        }
-        ++dtype_ptr;
-    }
-}
-
-
-char* mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, int listmax)
-{
-    int i = 0;
-    char *ptr = NULL;
-    
-    for (i = 0; i < *listend; ++i) {
-        if (*key == *(list + i)) {
-            ptr = (list + i);
-            break;
-        }
-    }
-    
-    
-    if (!ptr) {
-        if (*listend < listmax) {
-            list[*listend] = *key;
-            ++(*listend);
-            list[*listend] = '\0';
-        }
-        else {
-            dbg_printf("ERROR in mfl_search_in_chartypes_array(): %s: line: %i\n", __FILE__, __LINE__);
-            dbg_printf("\t Insufficient space in array for %i member \'%c\'. Exceeding max states: %i.\n", *listend, *key, MORPHY_MAX_STATE_NUMBER);
-            dbg_printf("Returning NULL\n\n");
-            ++(*listend); // Exceed list max for error reporting.
-            return NULL;
-        }
-    }
-    
-    return ptr;
-}
-
-
-int mfl_get_numstates_from_matrix(char *inputmatrix)
-{
-    /* When no state symbols are specified and default reading is in effect, 
-     * the number of unique symbols used can, with some assumptions, be
-     * counted directly from the matrix.
-     * */
-    
-    int count = 0;
-    char *current = NULL;
-    int listmax = MORPHY_MAX_STATE_NUMBER+MORPHY_SPECIAL_STATE_PAD; // +1 for terminal null.
-    char statesymbols[listmax];
-    int dbg_loopcount = 0;
-    
-    statesymbols[0] = NULL;
-    current = inputmatrix;
-    
-    do {
-        if (*current != '?' && mfl_is_valid_morphy_ctype(*current)) {
-            mfl_search_char_in_chartypes_array(current, statesymbols, &count, listmax);
-        }
-        ++current;
-        ++dbg_loopcount;
-    } while (*current);
-    
-    
-    //CHECK FOR ERROR HERE
-    if (count > listmax) {
-        dbg_printf("ERROR in %s, %s, line: %i\n", __FUNCTION__, __FILE__, __LINE__);
-        dbg_printf("\t State symbols outnumber MORPHY_MAX_STATE_NUMBER. Returning NULL\n\n");
-        return NULL;
-    }
-    
-    
-    return count-1;
-}
-
-
 bool mfl_is_nexus_stop_position(char a)
 {
     bool is_stop = false;
@@ -866,7 +987,7 @@ int mfl_read_nexus_type_int(char **current)
 }
 
 
-void mfl_set_include_value(int vectornum, bool includeval, bool* includes)
+void mfl_set_include_value(int vectornum, int includeval, int* includes)
 {
     /* In any set of bool include array, this sets the entry's value to the
      * desired true/false value */
@@ -881,7 +1002,7 @@ void mfl_set_include_value(int vectornum, bool includeval, bool* includes)
 }
 
 
-void mfl_set_include_range(int first, int last, bool includeval, bool* includes)
+void mfl_set_include_range(int first, int last, int includeval, int* includes)
 {
     /* Set all boolean values in includes to the true/false value indicated in
      * by includeval */
@@ -906,7 +1027,7 @@ void mfl_move_current_to_digit(char** current)
 }
 
 
-void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand)
+void mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand)
 {
     /* A generic function for setting a list of boolean values that is used
      * for including or excluding items from a list supplied by the user.
@@ -970,29 +1091,43 @@ void mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *
 }
 
 
-bool* mfl_alloc_character_inclusion_list(int num_chars)
+int* mfl_alloc_set_list(int num_chars)
 {
-    bool *new_inclusion_list = NULL;
+    int *new_inclusion_list = NULL;
     
-    new_inclusion_list = (bool*)malloc(num_chars *sizeof(bool));
+    new_inclusion_list = (int*)malloc(num_chars *sizeof(int));
     if (!new_inclusion_list) {
         dbg_printf("ERROR in mfl_alloc_character_inclusion_list(): unable to allocate memory\n");
     }
     else {
-        memset(new_inclusion_list, MORPHY_DEFAULT_CHARACTER_INCLUDE, num_chars * sizeof(bool));
+        memset(new_inclusion_list, MORPHY_DEFAULT_CHARACTER_INCLUDE, num_chars * sizeof(int));
     }
     
     return new_inclusion_list;
 }
 
 
-void mfl_free_inclusion_list(bool *inclist)
+void mfl_free_set_list(bool *inclist)
 {
     free(inclist);
 }
 
+/*!
+ Takes a Nexus-formatted integer list and sets corresponding positions in the 
+ input list to the value indicated by setval
+ */
+void mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int* list, int nelems)
+{
+    //int* list = NULL;
+    
+    //list = mfl_alloc_set_list(nelems);
+    subcommand = mfl_move_past_eq_sign(subcommand);
+    mfl_set_inclusion_list(list, setval, nelems, subcommand);
+}
 
-bool* mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
+/* It may be possible to get rid of this function in favour of a more
+ * general one. */
+/*int * mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
 {
     bool* includelist = NULL;
     
@@ -1001,7 +1136,7 @@ bool* mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
     mfl_set_inclusion_list(includelist, false, Nexus_NCHARS, subcommand);
     
     return includelist;
-}
+}*/
 
 
 int mfl_calculate_data_partitions_required(mfl_handle_t mfl_handle)

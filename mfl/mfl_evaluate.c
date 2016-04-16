@@ -161,7 +161,7 @@ void mfl_wagner_downpass_binary_node(mfl_node_t *node)
     }
 }
 
-mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_optimisation_t parsim_type)
+mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type)
 {
     mfl_parsim_fn ret = NULL;
     
@@ -194,7 +194,7 @@ mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_optimisation_t parsim_type)
     return  ret;
 }
 
-mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_optimisation_t parsim_type)
+mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type)
 {
     mfl_parsim_fn ret = NULL;
     
@@ -238,7 +238,7 @@ void mfl_evaluate_downpass(mfl_node_t *node)
     
     // For each data partition at the node, set the correct type and evaluation
     for (i = 0; i < num_dataparts; ++i) {
-        evaluator = mfl_fetch_downpass_parsimony_fxn(node->nodet_dataparts[i]->nd_optimisation_method);
+        evaluator = mfl_fetch_downpass_parsimony_fxn(node->nodet_dataparts[i]->nd_parsim_method);
         evaluator(node);
     }
     

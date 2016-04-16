@@ -506,10 +506,16 @@ void mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_n
 }
 
 
+/*!
+ Returns 0 if the node is binary, -1 if not defined (no branching) and otherwise 
+ returns the number of branchings detected. 
+ @param querynode (mfl_node_t*) the base of the internal node being queried for n-ariness
+ @param test_n_branches (int) the expected number of descendant branches
+ @return the number of descendant branches found if true, 0 if number of descendants does 
+ not match the expected value.
+ */
 int mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 {
-    /* Returns 0 if the node is binary, -1 if not defined (no branching)
-     * and otherwise returns the number of branchings detected. */
     mfl_node_t *node_ptr = NULL;
     int num_branching = 0;
     

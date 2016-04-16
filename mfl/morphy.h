@@ -82,6 +82,8 @@ using namespace std;
 #define MORPHY_DEFAULT_ADDITION_SEQUENCE_REPS 10
 #define MORPHY_DEFAULT_CHARACTER_INCLUDE true
 #define MORPHY_DEFAULT_MULTISTATE_HANDLE MFL_MULTSTATE_UNCERTAINTY
+#define MORPHY_DEFAULT_PARSIMONY_METHOD MFL_OPT_FITCH
+#define MORPHY_DEFAULT_PARSIMONY_NAME "Fitch (unordered)"
 
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
@@ -121,15 +123,15 @@ typedef struct {
     mfl_search_t            search_type;
     int                     n_iterations;
     int                     n_treelimit;
-    int*                    fitch_list;
-    int*                    wagner_list;
-    int*                    dollo_list;
-    int*                    irreversible_list;
-    int*                    usertype_list;
+    int                     n_ctypes;
+    char*                   ctypes_cmd[MFL_OPT_MAX];
+    mfl_parsimony_t         ctypes[MFL_OPT_MAX];
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
     char*                   format_symbols;
     char*                   input_data;
+    int                     n_datatypes;
+    mfl_datatype_t          datatypes[MFL_DATATYPE_MAX];
     mfl_add_sequence_t      addseq_type;
     bool                    collapse_nolen;
     mfl_set_collapse_at_t   collapse_at;
@@ -150,12 +152,12 @@ typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
 typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a function that performs parsimony calculations at a node.
-typedef mfl_charstate (*mfl_char2bit_fn)(char *states);    // Pointer to conversion functions following conversion rules for a particular character type
+typedef mfl_charstate (*mfl_char2bit_fn)(char *states, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
 typedef struct mfl_datapartition_t {
     int part_n_characters;
-    mfl_optimisation_t part_optimisation_method;
+    mfl_parsimony_t part_optimisation_method;
     bool part_has_inapplicables;
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
@@ -166,8 +168,9 @@ typedef struct mfl_datapartition_t {
 
 
 typedef struct mfl_character_vector_t {
-    int cv_num_colums;
+    long long int cv_col_number;
     bool cv_has_gaps;
+    mfl_parsimony_t cv_parsim_method;
     mfl_multicell_t cv_multistate_method;
     mfl_char2bit_fn cv_conversion_rule;
     char** cv_character_cells;
@@ -185,7 +188,7 @@ typedef struct mfl_matrix_t {
 
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
-    mfl_optimisation_t nd_optimisation_method;  // The optimisation method applied to all characters in this datablock.
+    mfl_parsimony_t nd_parsim_method;  // The optimisation method applied to all characters in this datablock.
     bool nd_has_inapplicables;                  // false: no inapplicables; true: has inapplicables.
     bool nd_char_is_directed;                   // Character depends on tree rooting or not.
     mfl_costs_t *nd_costmatrix;                 // Cost matrix associated with these characters.
@@ -291,13 +294,14 @@ mfl_matrix_t*   mfl_create_mfl_matrix(int num_taxa, int num_chars);
 void            mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars);
 void            mfl_free_nodedata(mfl_nodedata_t *olddata);
 mfl_nodedata_t* mfl_alloc_datapart(void);
-bool*           mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS);
-void            mfl_free_inclusion_list(bool *inclist);
-bool*           mfl_alloc_character_inclusion_list(int num_chars);
-void            mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand);
+int*            mfl_alloc_set_list(int num_chars);
+void            mfl_free_set_list(bool *inclist);
+void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int *list, int nelems);
+void            mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand);
+//void            mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand);
 void            mfl_move_current_to_digit(char** current);
-void            mfl_set_include_range(int first, int last, bool includeval, bool* includes);
-void            mfl_set_include_value(int vectornum, bool includeval, bool* includes);
+void            mfl_set_include_range(int first, int last, int includeval, int* includes);
+void            mfl_set_include_value(int vectornum, int includeval, int* includes);
 int             mfl_get_numstates_from_matrix(char *inputmatrix);
 int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);

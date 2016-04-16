@@ -572,7 +572,7 @@ void tui_test_checktree_(void)
     
     
     /* Cycle a ring */
-    testtr->treet_treenodes[6]->nodet_next->nodet_next = testtr->treet_treenodes[6]->nodet_next;
+    //testtr->treet_treenodes[6]->nodet_next->nodet_next = testtr->treet_treenodes[6]->nodet_next;
     
     int verbose = TUI_SILENT;
     tui_check_broken_tree(testtr, &verbose);
