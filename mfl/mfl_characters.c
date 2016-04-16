@@ -44,8 +44,13 @@
 #include "morphy.h"
 
 /**
- Checks that a symbol is a valid type used by Morphy for
- conversion to bit code as an mfl_charstate type. Valid symbols include:
+ #bool mfl_is_valid_morphy_ctype(char c)
+ Checks that a symbol is a valid type used by Morphy for conversion
+ to bit code as an mfl_charstate type. This is a critical function
+ in Morphy upon which many other functions might depend. If any
+ new symbols are to be added/recognized, they should be added here.
+ However, with a maximum of 64-1 states prossible, 65 different
+ symbols (+'?') should be sufficient. Valid symbols include:
  
  * Alphanumeric characters
  * '?'
@@ -79,7 +84,10 @@ bool mfl_is_valid_morphy_ctype(char c)
 }
 
 /**
+ # mfl_nodedata_t* mfl_alloc_datapart(void)
  Allocates a data partition.
+ @param: void
+ @retun pointer to a datapartition (mfl_nodedata_t)
  */
 mfl_nodedata_t* mfl_alloc_datapart(void)
 {
@@ -98,7 +106,14 @@ mfl_nodedata_t* mfl_alloc_datapart(void)
     return newdatapart;
 }
 
-
+/**
+ # void mfl_free_nodedata(mfl_nodedata_t *olddata)
+ Frees all of the data used in a SINGLE data partition from within a
+ node. Any other associated memory allocated with a datapartition should
+ be freed in here before returning.
+ @param mfl_nodedata_t* corresponding to the partition being freed
+ @return void
+ */
 void mfl_free_nodedata(mfl_nodedata_t *olddata)
 {
     
@@ -124,7 +139,13 @@ void mfl_free_nodedata(mfl_nodedata_t *olddata)
     free(olddata);
 }
 
-
+/**
+ # mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
+ Allocates a nodal character set used as either the downpass or uppass set
+ within a particular partition for a particular node.
+ @param int num_characters the number of characters
+ @return mfl_charstate* the vector of characters.
+ */
 mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
 {
     mfl_charstate *newcharset = NULL;
@@ -141,7 +162,18 @@ mfl_charstate* mfl_allocate_nodal_character_set(int num_characters)
     return newcharset;
 }
 
-
+/*
+ #int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
+ Looks up the symbol held by 'in' in the datype_converter array. The index
+ within the array where the symbols match is found, plus the number of special 
+ states reserved in Morphy determines the number of shifts to be used to convert 
+ the symbol. Each character partition could have its own datype_converter and its 
+ own way of shuffling the symbols. Also, if the Nexus standard is followed and 
+ sybols list is supplied, then the order in which input symbols are declared 
+ determines their ordering in asymmetric characters.
+ @param char in, the input symbol
+ @param char* the array of datatypes in their
+ */
 int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
 {
     int i = 0;
@@ -159,21 +191,17 @@ int mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter)
 
 
 /**
+ # int mfl_shift_value_DEFAULT_catdata(char in)
  Takes an alphanumeric value on the scale 0-9ABC...xyz and returns an int
  representing the number of shifts needed for setting its corresponding
- bit in an mfl_charstate. This function is used if there is no pre-
- specified list of state symbols. In effect, Morphy will convert them to a
- character state corresponding to their order as a default. Will not work
- well with more than 62 states since it only uses letters and numbers. 
+ bit in an mfl_charstate. This function is used as a DEFAULT if there is no 
+ pre-specified list of state symbols. In effect, Morphy will convert them to 
+ a character state corresponding to their order as a default.
  @param char input character
  @returns the shift value of the alphanumeric character
  */
-int mfl_convert_alphanum_to_shift_value(char in)
+int mfl_shift_value_DEFAULT_catdata(char in)
 {
-    
-    /**
-     !!! FIXME: Requires improved support for character types. Thus function is unfinished.
-     */
     if (isdigit(in)) {
         return in - '0' + MORPHY_SPECIAL_STATE_PAD;
     }
@@ -186,6 +214,12 @@ int mfl_convert_alphanum_to_shift_value(char in)
             return in - 'a' + 11 + 26 + MORPHY_SPECIAL_STATE_PAD;
         }
     }
+    else if (in == '@') {
+        return in - 'a' + 11 + 26 + MORPHY_SPECIAL_STATE_PAD + 1;
+    }
+    else if (in == '+') {
+        return in - 'a' + 11 + 26 + MORPHY_SPECIAL_STATE_PAD + 2;
+    }
     else {
         dbg_printf("ERROR in mfl_convert_alphanum_to_shift_value(): input is not alphanumeric\n");
         return 0;
@@ -193,6 +227,80 @@ int mfl_convert_alphanum_to_shift_value(char in)
 }
 
 
+/**
+ # bool mfl_char_is_DNA_base(char in)
+ Checks whether an input character is a valid single-base DNA symbol
+ @param char in the input character
+ @return bool true/false
+ */
+bool mfl_char_is_DNA_base(char in)
+{
+    if (in == 'a' || in == 'A') {
+        return true;
+    }
+    else if (in == 'c' || in == 'C') {
+        return true;
+    }
+    else if (in == 'g' || in == 'G') {
+        return true;
+    }
+    else if (in == 't' || in == 'T') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+/**
+ */
+int mfl_shift_value_DNA_base(char in)
+{
+    if (in == 'a' || in == 'A') {
+        return 2;
+    }
+    else if (in == 'c' || in == 'C') {
+        return 3;
+    }
+    else if (in == 'g' || in == 'G') {
+        return 4;
+    }
+    else if (in == 't' || in == 'T') {
+        return 5;
+    }
+    else {
+        dbg_eprintf("input not valid DNA base");
+        return 0;
+    }
+}
+
+
+/**
+ */
+mfl_charstate mfl_set_DNA_bits(char in)
+{
+    // Check is single-state symbol
+    //  Get conversion number
+    // If IUPAC symbol, then do the bitwise operations needed
+}
+
+
+int mfl_shift_value_amino_acid(char state_symbol)
+{
+    
+}
+
+
+/**
+ #mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
+ Converts a string of character states corresponding to a matrix cell containing
+ multistate values. For each state symbole, the shift value of the data type converter 
+ is calculated and that bit 'shifted in' by that amount and then added to the output
+ with a bitwise OR.
+ @param char* xstates the string corresponding to the multistate cell.
+ @param char* datype_converter the ordered array of symbols used to calculated the number of shifts
+ @returns a mfl_charstate value
+ */
 mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter)
 {
     u_int64_t inbit = 0;
@@ -203,6 +311,7 @@ mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter
         inbit = 1;
         shift_val = mfl_convert_nexus_symbol_to_shift_value(*xstates, datype_converter);
         inbit = inbit << shift_val;
+        xstate_bits = xstate_bits | inbit;
         ++xstates;
     } while (xstates && *xstates != ')' && *xstates != '}');
     
@@ -218,22 +327,13 @@ mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter
     
     
     
-}
+}*/
 
 
-mfl_charstate mfl_convert_state_symbol_DNA(char state_symbol)
-{
-    
-}
 
-
-mfl_charstate mfl_convert_state_symbol_amino_acid(char state_symbol)
-{
- 
-}
  
  
-mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
+/*mfl_datapartition_t* mfl_convert_and_partition_input_data(mfl_handle_t* mfl_handle)
 {
     
     
@@ -248,6 +348,7 @@ void mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring)
     *substring = singleton;
     substring[1] = '\0';
 }
+
 
 void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring)
 {
@@ -295,6 +396,9 @@ void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_da
             if (mfl_is_valid_morphy_ctype(*current)) {
                 mfl_copy_singleton_subtoken_to_substring(*current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
+                if (*current == '-') {
+                    matrix->mat_matrix[column]->cv_has_gaps = true;
+                }
                 //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
             }
