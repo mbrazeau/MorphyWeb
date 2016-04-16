@@ -71,6 +71,8 @@ using namespace std;
                                       the first bit position is reserved for 
                                       gap as a state or as logical impossibility
                                                                               */
+#define MORPHY_INAPPLICABLE_BITPOS 1
+#define MORPHY_MISSING_DATA_BITWISE ((~0)^1)
 
 //Defaults
 #define MORPHY_DEFAULT_WEIGHT 1.0

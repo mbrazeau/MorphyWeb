@@ -1,6 +1,5 @@
 /*
- *
- * mfl_characters.c
+ *  mfl_characters.c
  *
  *
  *  THE MORPHY FUNCTION LIBRARY
@@ -43,8 +42,8 @@
 
 #include "morphy.h"
 
-/**
- #bool mfl_is_valid_morphy_ctype(char c)
+/*!
+ ## bool mfl_is_valid_morphy_ctype(char c)
  Checks that a symbol is a valid type used by Morphy for conversion
  to bit code as an mfl_charstate type. This is a critical function
  in Morphy upon which many other functions might depend. If any
@@ -52,14 +51,14 @@
  However, with a maximum of 64-1 states prossible, 65 different
  symbols (+'?') should be sufficient. Valid symbols include:
  
- * Alphanumeric characters
- * '?'
- * '-'
- * '+'
- * '@'
+ - Alphanumeric characters
+ - '?'
+ - '-'
+ - '+'
+ - at symbol
  
- @param char c the input character
- @returns bool 0 for false, 1 for true
+ @param c (int) the input character
+ @returns (bool) 0 for false, 1 for true
  */
 bool mfl_is_valid_morphy_ctype(char c)
 {
@@ -83,11 +82,11 @@ bool mfl_is_valid_morphy_ctype(char c)
     }
 }
 
-/**
- # mfl_nodedata_t* mfl_alloc_datapart(void)
+/*!
+ ## mfl_nodedata_t* mfl_alloc_datapart(void)
  Allocates a data partition.
- @param: void
- @retun pointer to a datapartition (mfl_nodedata_t)
+
+ @return pointer to a datapartition (mfl_nodedata_t)
  */
 mfl_nodedata_t* mfl_alloc_datapart(void)
 {
@@ -106,13 +105,12 @@ mfl_nodedata_t* mfl_alloc_datapart(void)
     return newdatapart;
 }
 
-/**
- # void mfl_free_nodedata(mfl_nodedata_t *olddata)
+/*!
+ ## void mfl_free_nodedata(mfl_nodedata_t *olddata)
  Frees all of the data used in a SINGLE data partition from within a
  node. Any other associated memory allocated with a datapartition should
  be freed in here before returning.
- @param mfl_nodedata_t* corresponding to the partition being freed
- @return void
+ @param olddata (mfl_nodedata_t*) corresponding to the partition being freed
  */
 void mfl_free_nodedata(mfl_nodedata_t *olddata)
 {
@@ -396,9 +394,11 @@ void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_da
             if (mfl_is_valid_morphy_ctype(*current)) {
                 mfl_copy_singleton_subtoken_to_substring(*current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
-                if (*current == '-') {
-                    matrix->mat_matrix[column]->cv_has_gaps = true;
+                
+                if (*current == '-') {                                  // This does obfuscate a process involving special states.
+                    matrix->mat_matrix[column]->cv_has_gaps = true;     // Might need a better way to handle this.
                 }
+                
                 //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
             }
@@ -704,23 +704,33 @@ void mfl_move_in_nexus_multistate(char **col)
 }
 
 
+/**
+ # mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
+ Sets the bits in an mfl_charstate variable to the appropriate value and returns
+ the result.
+ @param mfl_optimisation_t opt_method, the optimality method applied to the gap character.
+ @return mfl_charstate bits set to the corresponding treatment.
+ */
 mfl_charstate mfl_convert_gap_character(mfl_optimisation_t opt_method)
 {
     if (opt_method == MFL_GAP_INAPPLICABLE || opt_method == MFL_GAP_NEWSTATE) {
-        //
-        return 1;
+        return MORPHY_INAPPLICABLE_BITPOS;
     }
     else {
-        return ~0;
+        return MORPHY_MISSING_DATA_BITWISE;
     }
 }
 
-
+/**
+ # void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
+ If the typeset list is supplied as an input string rather than an array, this
+ sets the new char array to be a space-less vector of symbols use as character
+ states in a Nexus-derived "Format Symbols" command. A lookup into this will return 
+ the required shift value.
+ */
 void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatype_list, int num_states)
 {
-    /* Sets an new char array to be a space-less vector of symbols use as
-     * character states in a Nexus-derived "Format Symbols" command. A lookup
-     * into this will return the required shift value. */
+
     int i = 0;
     char *dtype_ptr = NULL;
     
