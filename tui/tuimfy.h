@@ -30,6 +30,11 @@ typedef struct tui_testrec {
 
 /*  tui_utilities.c
  */
+int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int *verbose);
+int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose);
+int tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verbose);
+bool tui_check_reciprocal_edge(mfl_node_t *n, mfl_tree_t* t, int num_nodes, int *verbose);
+int tui_count_num_taxa(mfl_tree_t *t);
 void mfl_tree_check_traversal(mfl_node_t *node);
 void tui_print_node_data(mfl_node_t* p, const char* calling_fxn);
 int tui_tip_check(mfl_node_t* n, const char* calling_fxn, const int* verbose);

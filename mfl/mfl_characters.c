@@ -627,6 +627,7 @@ void mfl_set_datatype_converter_from_nexus(char* datype_converter, char* datatyp
             datype_converter[i] = *dtype_ptr;
             ++i;
         }
+        ++dtype_ptr;
     }
 }
 

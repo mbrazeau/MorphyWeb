@@ -339,6 +339,66 @@ int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
     return err;
 }
 
+int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int *verbose)
+{
+    int i = 0;
+    int err = 0;
+    int count = 0;
+    mfl_node_t* p = NULL;
+    mfl_nodearray_t nds = t->treet_treenodes;
+    
+    for (i = t->treet_num_taxa; i < num_nodes; ++i) {
+        
+        // Check for valid next pointer.
+        if (!nds[i]->nodet_next) {
+            if (nds[i]->nodet_edge) {
+                err = 1;
+                dbg_eprintf("node with valid nodet_edge has no valid nodet_next pointer");
+                dbg_printf("\tNode @: %p", nds[i]);
+                if (*verbose) {
+                    tui_print_node_data(nds[i], __FXN_NAME__);
+                }
+            }
+        }
+        
+        // Check against nodet_next pointer to non-internal node.
+        if (nds[i]->nodet_next->nodet_tip) {
+            err = 1;
+            dbg_eprintf("nodet_next pointer in internal node points to terminal node");
+            dbg_printf("\tNode @: %p", nds[i]);
+            if (*verbose) {
+                tui_print_node_data(nds[i], __FXN_NAME__);
+            }
+        }
+        
+        // Check against infinite loops
+        // This is accomplished by counting the number of times a node is accessed by another nodet_next pointer.
+        
+        count = 0;
+        
+        p = nds[t->treet_num_taxa];
+        do {
+            if (p->nodet_next == nds[i]) {
+                ++count;
+            }
+            ++p;
+        } while (p < nds[num_nodes]);
+        
+        if (count > 1) {
+            err = 1;
+            dbg_eprintf("node accessed by more than one nodet_next pointer in array. Condition would lead to infinite loop\n");
+            dbg_printf("\tNode @: %p", nds[i]);
+            if (*verbose) {
+                tui_print_node_data(nds[i], __FXN_NAME__);
+            }
+        }
+        
+    }
+    
+    
+    return err;
+}
+
 /**
  ## int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
  Attempts to determine if a tree is broken by checking for: dangling pointers 
@@ -347,7 +407,6 @@ int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
  @param mfl_tree_t* tree to be checked.
  @param int* yes/no value for verbose output
  @returns int
- 
  */
 int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
 {
@@ -395,6 +454,7 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     if (ret) {
         err = ret;
     }
+    ret = 0;
     
     // Checking anastomosis. Each node record should be accessed by no more than one other edge.
     
@@ -403,10 +463,18 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     if (ret) {
         err = ret;
     }
+    ret = 0;
     
     // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
     //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
     //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
+    
+    ret = tui_check_all_node_ring_circularity(t, num_nodes, verbose);
+    
+    if (ret) {
+        err = ret;
+    }
+    ret = 0;
     
     
     if (err) {

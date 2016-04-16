@@ -202,7 +202,7 @@ int main (int argc, char *argv[])
         exit(1);
     }
     else if (argc == 1) {
-        dbg_printf("argv[0] == %s...\n\m", argv[0]);
+        dbg_printf("argv[0] == %s...\n\n", argv[0]);
         //exit(0);
     }
     
