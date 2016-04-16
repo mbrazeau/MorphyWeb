@@ -150,7 +150,7 @@ void tui_test_character_stuff()
     testmatrix = mfl_create_mfl_matrix(num_taxa, num_chars);
     
     mfl_setup_new_empty_matrix(testmatrix, num_states, num_taxa, num_chars);
-    mfl_populate_chartype_character_vector(testmatrix, matrix, num_chars, num_taxa);
+    mfl_populate_chartype_character_vectors(testmatrix, matrix, num_chars, num_taxa);
     
     tui_print_out_converted_matrix(testmatrix, num_taxa, num_chars);
     

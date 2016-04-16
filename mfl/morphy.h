@@ -128,6 +128,7 @@ typedef struct {
     mfl_parsimony_t         ctypes[MFL_OPT_MAX];
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
+    int                     n_symbols;
     char*                   format_symbols;
     char*                   input_data;
     int                     n_datatypes;
@@ -282,12 +283,24 @@ void mfl_move_past_symbol(char** c, char symbol);
 char *mfl_move_past_eq_sign(char *input);
 
 bool            mfl_is_valid_morphy_ctype(char c);
-void            mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa);
+void            mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa);
 void            mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring);
 void            mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring);
 void            mfl_move_in_nexus_multistate(char **col);
 mfl_charstate*  mfl_allocate_nodal_character_set(int num_characters);
+int             mfl_convert_nexus_symbol_to_shift_value(char in, char *datype_converter);
+int             mfl_shift_value_DEFAULT_catdata(char in);
+bool            mfl_char_is_DNA_base(char in);
+int             mfl_shift_value_DNA_base(char in);
+mfl_charstate   mfl_convert_gap_character(mfl_gap_t gapmethod);
+void            mfl_set_datatype_converter_from_symbol_list(char* datype_converter, char* symbols_list);
+char*           mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, int listmax);
+mfl_parsimony_t*    mfl_alloc_chartype_list(int input_num_chars);
+void            mfl_destroy_chartype_list(mfl_parsimony_t *ctype_list);
+mfl_parsimony_t*    mfl_get_chartypes_list(mfl_handle_s* mfl_handle);
+mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype);
 bool            mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, int input_num_chars);
+int             mfl_check_state_number_support(char *datatype_list);
 void            mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa);
 void            mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_taxa, int num_chars);
 mfl_matrix_t*   mfl_create_mfl_matrix(int num_taxa, int num_chars);
@@ -298,7 +311,6 @@ int*            mfl_alloc_set_list(int num_chars);
 void            mfl_free_set_list(bool *inclist);
 void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int *list, int nelems);
 void            mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand);
-//void            mfl_set_inclusion_list(bool* includes, bool includeval, int listmax, char *subcommand);
 void            mfl_move_current_to_digit(char** current);
 void            mfl_set_include_range(int first, int last, int includeval, int* includes);
 void            mfl_set_include_value(int vectornum, int includeval, int* includes);
@@ -307,6 +319,7 @@ int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);
 bool            mfl_is_nexus_stop_position(char a);
 mfl_charstate   mfl_convert_nexus_multistate(char *xstates, char *datype_converter);
+mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
 
 /* In mfl_starttree.c */
 

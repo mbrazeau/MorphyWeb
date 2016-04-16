@@ -449,6 +449,7 @@ void mfl_destroy_chartype_list(mfl_parsimony_t *ctype_list)
     free(ctype_list);
 }
 
+
 mfl_parsimony_t* mfl_get_chartypes_list(mfl_handle_s* mfl_handle)
 {
     int i;
@@ -495,7 +496,7 @@ mfl_charstate mfl_standard_conversion_rules(char *c, mfl_gap_t gaprule)
  An interface for the conversion rule used to turn input characters into
  set bits in an mfl_charstate variable. If ever there is a need to write 
  different conversion rules, they can be set in here.
- @param parsimtyme (mfl_parsimony_t) the type of parsimony function used
+ @param parsimtype (mfl_parsimony_t) the type of parsimony function used
  @return Pointer to the wrapper on the conversion rules to be applied to
  the data.
  */
@@ -601,7 +602,7 @@ void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substri
 }
 
 
-void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa)
+void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa)
 {
     int column = 0;
     int row = 0;
@@ -668,11 +669,10 @@ void mfl_populate_chartype_character_vector(mfl_matrix_t *matrix, char *input_da
  in the appropriate vectors. Does not populate the vectors with data--only creates
  the empty matrix, ready for populating with data.
  
- @param mfl_matrix_t* newmatrix, the Morphy-type matrix to be set up
- @param num_states the number of character states
- @param int the number of taxa
- @param int the number of characters
- @returns void
+ @param newmatrix (mfl_matrix_t*) the Morphy-type matrix to be set up
+ @param num_states (int) the number of character states
+ @param num_taxa (int) the number of taxa
+ @param num_chars (int) the number of characters
  */
 void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars)
 {
@@ -737,8 +737,8 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
  character vectors pointed to by the mat_matrix variable. The returned matrix
  has no storage for the content of the vectors, just a list for pointers to
  that eventual data. Further setups are handled by mfl_setup_new_empty_matrix()
- @param int num_taxa: the number of input taxa
- @param int num_chars: the number of input characters
+ @param num_taxa (int) the number of input taxa
+ @param num_chars (int) the number of input characters
  @return mfl_matrix_t* the resulting empty matrix.
  */
 mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
@@ -1027,19 +1027,26 @@ void mfl_move_current_to_digit(char** current)
 }
 
 
+/*!
+ A generic function for setting a list of integer values that is used
+ for applying enumerated rules to a list supplied by the user.
+ The list needs to be formatted in the Nexus style and must have
+ numerical values.
+ 
+ Reads the given subcommand, setting the positing in includes to the
+ true/false value specified by includeval. Converts the numeric tokens to
+ integers (1-based) which are used to index the include array (0-based).
+ If a range of values is specified by the '-' character, then all
+ positions in that range are set to includeval. Attempts to index out of
+ list maximum are disallowed; ranges out of list maximum are truncated. 
+ @param includes (int*) the array with each position corresponding to the 
+ members of some other list (e.g. the input characters or taxa).
+ @param includeval (int) the value to be set according to the command.
+ @param listmax (int) the size of the list.
+ @param subcommand (char*) the input string that is to be parsed.
+ */
 void mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand)
 {
-    /* A generic function for setting a list of boolean values that is used
-     * for including or excluding items from a list supplied by the user.
-     * The list needs to be formatted in the Nexus style and must have 
-     * numerical values.
-     *
-     * Reads the given subcommand, setting the positing in includes to the
-     * true/false value specified by includeval. Converts the numeric tokens to
-     * integers (1-based) which are used to index the include array (0-based). 
-     * If a range of values is specified by the '-' character, then all 
-     * positions in that range are set to includeval. Attempts to index out of 
-     * list maximum are disallowed; ranges out of list maximum are truncated. */
     
     int first = 0;
     int last = 0; // first and last for identifier ranges (e.g. taxa 1-4 or
@@ -1083,7 +1090,7 @@ void mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *su
                     mfl_set_include_value(first, includeval, includes);
                 }
                 else {
-                    dbg_printf("WARNING in mfl_set_inclusion_list(): value will attempt to index outside of range. Ignorning proposed index\n");
+                    dbg_printf("WARNING in mfl_set_inclusion_list(): value will attempt to index outside of range. Ignorning proposed index.\n");
                 }
             }
         }
@@ -1112,34 +1119,65 @@ void mfl_free_set_list(bool *inclist)
     free(inclist);
 }
 
+
 /*!
- Takes a Nexus-formatted integer list and sets corresponding positions in the 
- input list to the value indicated by setval
+ Takes a Nexus-formatted integer list and parses it to set the 
+ corresponding positions in the input list to the value indicated 
+ by setval parameter. Thus, setval should correspond to the 
+ instructions of the command and the subcommand is the
  */
 void mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int* list, int nelems)
 {
-    //int* list = NULL;
-    
-    //list = mfl_alloc_set_list(nelems);
     subcommand = mfl_move_past_eq_sign(subcommand);
     mfl_set_inclusion_list(list, setval, nelems, subcommand);
 }
 
-/* It may be possible to get rid of this function in favour of a more
- * general one. */
-/*int * mfl_read_nexus_exset_subcmd(char *subcommand, int Nexus_NCHARS)
-{
-    bool* includelist = NULL;
-    
-    includelist = mfl_alloc_character_inclusion_list(Nexus_NCHARS);
-    subcommand = mfl_move_past_eq_sign(subcommand);
-    mfl_set_inclusion_list(includelist, false, Nexus_NCHARS, subcommand);
-    
-    return includelist;
-}*/
 
-
-int mfl_calculate_data_partitions_required(mfl_handle_t mfl_handle)
+/*!
+ Creates the array of character column vectors corresponding to the transformation
+ series of the input dataset, sets all character type values and the pointers
+ to the conversion rule for that character type. All conversion rules are applied
+ and the appropriate treatment of gaps as either missing data or a (special) state
+ @param mfl_handle (mfl_handle_s*) the analysis parameters set by the user interface
+ @returns pointer to a new matrix.
+ */
+mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 {
+    int num_states = 0;
+    char* input_chardata = NULL;
     
+    mfl_matrix_t* new_inmatrix = mfl_create_mfl_matrix(mfl_handle->n_taxa, mfl_handle->n_chars);
+    
+    // Get the matrix string from the handle.
+    input_chardata = mfl_handle->input_data;
+    
+    // Perform checks on input data.
+    mfl_check_nexus_matrix_dimensions(input_chardata, mfl_handle->n_taxa, mfl_handle->n_chars);
+    // MORE CHECKS: Wrap in a single function****
+    
+    
+    
+    if (mfl_handle->n_symbols && mfl_handle->format_symbols) {
+        // Handle input symbol stuff
+        num_states = mfl_handle->n_symbols;
+    }
+    else {
+        dbg_printf("No symbols list supplied. Attempting to estimate state number from input matrix.\n");
+        // If no value supplied, then attempt to get number of states
+        // from the input matrix directly.
+        num_states = mfl_get_numstates_from_matrix(input_chardata);
+    }
+    
+    mfl_populate_chartype_character_vectors(new_inmatrix, input_chardata, mfl_handle->n_chars, mfl_handle->n_taxa);
+    
+    // Set each column's parsimony type.
+    // Set each column's conversion rule.
+    // Apply the appropriate conversion.
+    
+    // Finish. (Next task: set up partitions).
+    
+    return new_inmatrix;
 }
+
+
+
