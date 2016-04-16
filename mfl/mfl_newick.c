@@ -36,7 +36,7 @@
 
 #include "morphy.h"
 
-/**
+/*!
  Checks if newick string is valid.
  @param *newick_input, a pointer to a character string.
  @returns int whether the newick tree is invalid (0) or valid (1).
@@ -94,7 +94,7 @@ int mfl_is_valid_newick(char *newick_input)
     return is_valid;
 }
 
-/**
+/*!
  Counting the number of internal nodes in a newick string.
  @param *newick_input, a pointer to a character string.
  @returns int the number of internal nodes.
@@ -128,7 +128,7 @@ int mfl_count_internal_nodes_in_newick(char *newick_string)
     
 }
 
-/**
+/*!
  Checks if a newick tree is rooted or unrooted.
  @param *newick_input, a pointer to a character string.
  @returns bool whether the tree is rooted (true) or unrooted (false).
@@ -158,7 +158,7 @@ bool mfl_newick_tree_is_rooted(char *newick_string)
     return is_rooted;
 }
 
-/**
+/*!
  Reads a newick tip number.
  @param **newick_position, a pointer to a tip position in a newick string.
  @returns int the tip number.
@@ -177,7 +177,7 @@ int mfl_read_newick_int(char **newick_position)
     return tip_number;
 }
 
-/**
+/*!
  Locates the next opening bracket in a newick string.
  @param *newick_tree, a pointer to a character string.
  @returns char a pointer to the next opening bracket.
@@ -196,7 +196,7 @@ char *mfl_find_next_opening_bracket_in_newick(char *newick_tree)
 }
 
 
-/**
+/*!
  Finds the largest tip number in a newick string.
  @param *newick_string, a pointer to a character string.
  @returns int the number of the largest tip in the newick string.
@@ -224,7 +224,7 @@ int mfl_seek_largest_tip_number_newick(char *newick_string)
     return largest_tip_number;
 }
 
-/**
+/*!
  Generates a mfl_node_t object from a newick position.
  @param **newick_position, a pointer to a tip position in a newick string.
  @param nodearray, the mfl_nodearray_t to where to store the node
@@ -286,7 +286,7 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     return new_parent;
 }
 
-/**
+/*!
  Converts a newick string into a mfl_tree_t tree.
  @param *newick_input, a pointer to a character string.
  @param num_taxa, an integer that is the number of taxa.
@@ -340,7 +340,7 @@ mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
     return tree_from_newick;
 }
 
-/**
+/*!
  Counts the number of digits in an integer.
  @param n, an integer.
  @returns int the number of digits in n.
@@ -358,7 +358,7 @@ int mfl_number_of_digits_in_integer(int n)
   return(count);
 }
 
-/**
+/*!
  Traverse a mfl_tree_t to get the number of digits in the tips.
  @param *start, a mfl_node_t pointer to the starting node in the tree.
  @param &tips_length, an integer counter for the number of digits (ideally set to 0).
@@ -393,7 +393,7 @@ int mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int &tips_length
 
 }
 
-/**
+/*!
  Traverse a mfl_tree_t to get the number of tips in the tree.
  @param *start, a mfl_node_t pointer to the starting node in the tree.
  @param &num_taxa, an integer counter for the number of tips (ideally set to 0).
@@ -428,7 +428,7 @@ int mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa)
 }
 
 
-/**
+/*!
  Get the maximum number of characters in a newick string
  @param num_taxa, an integer being the number of taxa present in the newick string.
  @param *start, a mfl_node_t pointer to the starting node in the tree.
@@ -448,7 +448,7 @@ int mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start)
     return newick_size;
 }
 
-/**
+/*!
  Traverse a mfl_tree_t to print each newick characters.
  @param *start, a mfl_node_t pointer to the starting node in the tree.
  @param *newick_tree_out, a character pointer to fill in with the newick characters.
@@ -511,8 +511,24 @@ char* mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *
     return newick_tree_out;
 }
 
+/*!
+ Roots a mfl_tree_t at a given node
+ @param *input_tree a pointer to a mfl_tree_t to root
+ @param *traget_node a pointer to the node to root
+ @returns mfl_tree_t with the root now at the target node.
+ */
+void mfl_root_tree_at_target_node(mfl_tree_t input_tree, mfl_node_t target_node)
+{
+    //The tree must not be rooted!
+    if (input_tree.treet_root){
+        dbg_printf("ERROR: the input tree is already rooted!"); // Addition to the message for the profane version: "the fuck you think you're doing with that root?"
+    } else {
+        //Set the root to be the target node
+        input_tree.treet_root = &target_node;
+    }
+}
 
-/**
+/*!
  Converts an input mfl_tree_t into a newick character string
  @param *input_tree, a pointer to the mfl_tree_t object to convert.
  @param num_taxa_active, the active number of taxa in the tree. Can be set to 0 to be infered.
@@ -540,8 +556,6 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
             newick_string_length = mfl_number_of_characters_in_newick(num_taxa_active, input_tree->treet_start) + 2;  // the + 2 is for the terminal '\0'
         }
     }
-
-    
 
     //Allocating memory to the newick
     newick_tree_out = (char*)malloc(newick_string_length * sizeof(char));
@@ -594,6 +608,7 @@ void mfl_test_newick_stuff()
     char temp_example_newick_for_writing5[] = "temp_examp5=[&R] (((((1,4),5),3),2),6);";
     char temp_example_newick_for_writing6[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
     char temp_example_newick_for_writing7[] = "temp_examp7=[&U] ((1000,856),(2,3),(56,4));";
+    char temp_example_newick_for_writing8[] = "temp_examp8=[&R] (1,(2,(3,(4,5))));";
     
     char *sample_newick = NULL;
     
@@ -615,16 +630,24 @@ void mfl_test_newick_stuff()
 
     //tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
     
-    dbg_printf("Imported tree is: %s\n", temp_example_newick_for_writing7);
-    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing7, 0);
+    dbg_printf("\n\n\n");
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing8, 0);
 
     dbg_printf("Testing convert to newick\n");
     
-    dbg_printf("%s\n", temp_example_newick_for_writing7);
     char *newick_string;
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
     
-    dbg_printf("The output newick string is:\n%s", newick_string);
+    dbg_printf("The output newick string is: %s\n\n", newick_string);
+    dbg_printf("Now unroot the tree\n");
+    mfl_unroot_tree(tree_from_newick);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
+    dbg_printf("And print it again: %s\n\n", newick_string);
+    dbg_printf("Now reroot the tree:\n");
+//    tree_from_newick = mfl_root_tree_at_target_node(tree_from_newick, tree_from_newick->treet_start);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
+    dbg_printf("And print it again: %s\n\n", newick_string);
+    
     free(newick_string);
     
     mfl_free_tree(tree_from_newick); // Some bug here
