@@ -213,9 +213,11 @@ int main (int argc, char *argv[])
     tui_getting_numstates_test();
     dbg_printf("\n\n");
     
-    dbg_printf("Generate a new tree\n\n");
-    
+    dbg_printf("Test Newick stuff\n\n");
     mfl_test_newick_stuff();
+    
+    dbg_printf("Test treecheck stuff\n\n");
+    tui_test_checktree_();
     
     dbg_printf("\n\nGoodbye!\n\n");
     

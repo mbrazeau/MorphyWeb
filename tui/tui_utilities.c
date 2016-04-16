@@ -344,7 +344,7 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
     int i = 0;
     int err = 0;
     int count = 0;
-    mfl_node_t* p = NULL;
+    mfl_node_t** p = NULL;
     mfl_nodearray_t nds = t->treet_treenodes;
     
     for (i = t->treet_num_taxa; i < num_nodes; ++i) {
@@ -362,12 +362,14 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
         }
         
         // Check against nodet_next pointer to non-internal node.
-        if (nds[i]->nodet_next->nodet_tip) {
-            err = 1;
-            dbg_eprintf("nodet_next pointer in internal node points to terminal node");
-            dbg_printf("\tNode @: %p", nds[i]);
-            if (*verbose) {
-                tui_print_node_data(nds[i], __FXN_NAME__);
+        if (nds[i]->nodet_next) {
+            if (nds[i]->nodet_next->nodet_tip) {
+                err = 1;
+                dbg_eprintf("nodet_next pointer in internal node points to terminal node");
+                dbg_printf("\tNode @: %p", nds[i]);
+                if (*verbose) {
+                    tui_print_node_data(nds[i], __FXN_NAME__);
+                }
             }
         }
         
@@ -376,17 +378,18 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
         
         count = 0;
         
-        p = nds[t->treet_num_taxa];
+        p = &nds[t->treet_num_taxa];
+        
         do {
-            if (p->nodet_next == nds[i]) {
+            if ((**p).nodet_next == nds[i]) {
                 ++count;
             }
             ++p;
-        } while (p < nds[num_nodes]);
+        } while (*p < nds[num_nodes-1]);
         
         if (count > 1) {
             err = 1;
-            dbg_eprintf("node accessed by more than one nodet_next pointer in array. Condition would lead to infinite loop\n");
+            dbg_eprintf("node accessed by more than one nodet_next pointer in array. Condition would lead to infinite loop");
             dbg_printf("\tNode @: %p", nds[i]);
             if (*verbose) {
                 tui_print_node_data(nds[i], __FXN_NAME__);
@@ -420,7 +423,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
      *
      *  TO DO:
      *  Check array ends and off-by-1 errors in the node arrays.
-     *  Cyclicity checks in the internal node rings.
      */
     
     int err = 0;
@@ -561,20 +563,16 @@ void tui_print_newick(mfl_node_t *start)
 
 void tui_test_checktree_(void)
 {
-    /*
-     FAIL CHECKS TO-DO
-     
-     - Reciprocal edges (x)
-     - Anastomosis (x)
-     - Ring-closure errors
-     
-     */
     
     char temp_example1[] = "temp_examp2=[&R] (2,(6,((3,4),(5,1))));";
     char temp_example2[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));";
     
     dbg_printf("\n\nTesting an assembled tree for breaks\n\n");
     mfl_tree_t* testtr = mfl_convert_newick_to_mfl_tree_t(temp_example1, 0);
+    
+    
+    /* Cycle a ring */
+    testtr->treet_treenodes[6]->nodet_next->nodet_next = testtr->treet_treenodes[6]->nodet_next;
     
     int verbose = TUI_SILENT;
     tui_check_broken_tree(testtr, &verbose);
