@@ -10,13 +10,15 @@
 #include "tuimfy.h"
 
 
-mfl_handle_t* tui_create_handle_from_simple_matrix()
+mfl_handle_t* tui_create_test_handle()
 {
     
 }
 
 
-int tui_test_matrix_processing(const char *filename)
+int tui_test_matrix_processing(mfl_handle_t *mfl_handle)
 {
+    
+    // Get the partition
     
 }

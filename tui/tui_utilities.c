@@ -390,7 +390,7 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
         if (count > 1) {
             err = 1;
             dbg_eprintf("node accessed by more than one nodet_next pointer in array. Condition would lead to infinite loop");
-            dbg_printf("\tNode @: %p", nds[i]);
+            dbg_printf("\tNode @: %p\n", nds[i]);
             if (*verbose) {
                 tui_print_node_data(nds[i], __FXN_NAME__);
             }
@@ -481,13 +481,13 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     
     if (err) {
         dbg_pfail("\nYour goddamned tree is broken.");
-        dbg_printf("\tThe goddamned broken tree at %p\n", t);
+        dbg_printf("\tThe goddamned tree at %p. That's the one that's broken.\n", t);
     }
     else {
         dbg_ppass("input tree connections verified OK");
     }
     
-    dbg_printf("END broken tree test\n\n");
+    dbg_printf("\nEND broken tree test\n\n");
     return err;
 }
 
