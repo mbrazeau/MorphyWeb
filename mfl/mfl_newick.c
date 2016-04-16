@@ -36,6 +36,11 @@
 
 #include "morphy.h"
 
+/**
+ Checks if newick string is valid.
+ @param *newick_input, a pointer to a character string.
+ @returns int whether the newick tree is invalid (0) or valid (1).
+ */
 int mfl_is_valid_newick(char *newick_input)
 {
     int i = 0;
@@ -89,6 +94,11 @@ int mfl_is_valid_newick(char *newick_input)
     return is_valid;
 }
 
+/**
+ Counting the number of internal nodes in a newick string.
+ @param *newick_input, a pointer to a character string.
+ @returns int the number of internal nodes.
+ */
 int mfl_count_internal_nodes_in_newick(char *newick_string)
 {
     
@@ -118,6 +128,11 @@ int mfl_count_internal_nodes_in_newick(char *newick_string)
     
 }
 
+/**
+ Checks if a newick tree is rooted or unrooted.
+ @param *newick_input, a pointer to a character string.
+ @returns bool whether the tree is rooted (true) or unrooted (false).
+ */
 bool mfl_newick_tree_is_rooted(char *newick_string)
 {
     bool is_rooted = false;
@@ -143,7 +158,11 @@ bool mfl_newick_tree_is_rooted(char *newick_string)
     return is_rooted;
 }
 
-
+/**
+ Reads a newick tip number.
+ @param **newick_position, a pointer to a tip position in a newick string.
+ @returns int the tip number.
+ */
 int mfl_read_newick_int(char **newick_position)
 {
     int tip_number = 0;
@@ -158,7 +177,11 @@ int mfl_read_newick_int(char **newick_position)
     return tip_number;
 }
 
-
+/**
+ Locates the next opening bracket in a newick string.
+ @param *newick_tree, a pointer to a character string.
+ @returns char a pointer to the next opening bracket.
+ */
 char *mfl_find_next_opening_bracket_in_newick(char *newick_tree)
 {
     if (*newick_tree == '(') {
@@ -173,6 +196,11 @@ char *mfl_find_next_opening_bracket_in_newick(char *newick_tree)
 }
 
 
+/**
+ Finds the largest tip number in a newick string.
+ @param *newick_string, a pointer to a character string.
+ @returns int the number of the largest tip in the newick string.
+ */
 int mfl_seek_largest_tip_number_newick(char *newick_string)
 {
     int retrieved_tip = 0;
@@ -196,7 +224,13 @@ int mfl_seek_largest_tip_number_newick(char *newick_string)
     return largest_tip_number;
 }
 
-
+/**
+ Generates a mfl_node_t object from a newick position.
+ @param **newick_position, a pointer to a tip position in a newick string.
+ @param nodearray, the mfl_nodearray_t to where to store the node
+ @param num_taxa, an integer that is the number of taxa.
+ @returns mfl_node_t a node of the tree in the mfl_tree_t structure.
+ */
 mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearray_t nodearray, int num_taxa)
 {
     
@@ -252,7 +286,12 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     return new_parent;
 }
 
-
+/**
+ Converts a newick string into a mfl_tree_t tree.
+ @param *newick_input, a pointer to a character string.
+ @param num_taxa, an integer that is the number of taxa.
+ @returns mfl_tree_t the mfl_tree_t structure.
+ */
 mfl_tree_t *mfl_convert_newick_to_mfl_tree_t(char *newick_tree, int num_taxa)
 {
     int num_taxa_local = 0; // If the number of taxa is not supplied by the user, it is easy to calculate it from the Newick string.
