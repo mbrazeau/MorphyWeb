@@ -253,10 +253,20 @@ typedef struct mfl_treelist_t {
 } mfl_treelist_t;
 
 
+/*!
+ @discussion Contains the parameters of the tree search process.
+ */
 typedef struct mfl_searchrec_t {
-    long int sr_num_reps;
+    mfl_search_t sr_searchtype;
+    mfl_branch_swap_t sr_bswaptype;
+    mfl_add_sequence_t sr_stepwise;
+    long int sr_num_reps_stepwise;
     long int sr_best_length;
-    int      sr_num_partitions;
+    int sr_trees_held_stepwise;
+    int sr_num_partitions;
+    bool sr_increase_treebuffer;
+    long long int sr_current_treebuffer_size;
+    mfl_tree_t** sr_treebuffer;
 } mfl_searchrec_t;
 
 

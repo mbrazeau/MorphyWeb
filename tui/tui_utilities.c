@@ -73,10 +73,10 @@ int tui_print_warning(const char *msg, const char *fxn_name, tui_testrec* testre
     return 0;
 }
 
-int tui_conclude_test(const char *testname, tui_testrec *testrec)
+void tui_conclude_test(const char *testname, tui_testrec *testrec)
 {
     
-    dbg_printf("Test concluded with %llu errors and %llu warnings\n\n", testrec->tr_num_err, testrec->tr_num_warn);
+    dbg_printf("%s concluded with %llu errors and %llu warnings\n\n", testname, testrec->tr_num_err, testrec->tr_num_warn);
     
     if (testrec->tr_err_overflow) {
         dbg_printf("\t Number of errors overflowed the buffer: %llu additional errors (just to rub it in)\n", testrec->tr_err_overflow);
@@ -179,12 +179,12 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
 
 /**
  # int tui_count_num_taxa(mfl_tree_t *t)
- Counts the number of taxa, but also has a built-in error check.
+ Counts the number of terminals, but also has a built-in error check.
  It will loop over the taxa array counting the number of taxa that have the
  tip value set. However, it will also attempt to discover whether there are 
  unexpected non-tip nodes inside the node array.
- @Param t pointer to mfl_tree_t
- @Returns int number of taxa
+ @Param t (mfl_tree_t*) an input tree.
+ @Returns Number of taxa (int)
  */
 int tui_count_num_taxa(mfl_tree_t *t)
 {
@@ -230,9 +230,9 @@ bool tui_check_reciprocal_edge(mfl_node_t *n, mfl_tree_t* t, int num_nodes, int 
  # tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verbose)
  Scans the tree checking for dangling pointers and other pointer errors. These would
  lead to FATAL ERRORS in processes on the tree.
- @param mfl_tree_t*
- @param int
- @param int*
+ @param t (mfl_tree_t*)
+ @param num_nodes (int)
+ @param verbose (int*)
  @return int error value, 0 for no error
  */
 int tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verbose)
@@ -299,9 +299,9 @@ int tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verb
  #int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
  Checks for multiple edge pointers pointing to the same node. Such a situation
  could cause a FATAL ERROR in any tree operation routine.
- @param mfl_tree_t* t, the subject tree
- @param int num_nodes, the number of nodes in the whole structure
- @param int* verbose, declaring verbosity
+ @param t (mfl_tree_t*) the subject tree
+ @param num_nodes (int) the number of nodes in the whole structure
+ @param verbose (int*) declaring verbosity
  @returns int the number of errors detected
  */
 int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
@@ -407,8 +407,8 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
  Attempts to determine if a tree is broken by checking for: dangling pointers 
  intended for nodes; invalid pointers to nodes; cyclicity and anastomosis.
  
- @param mfl_tree_t* tree to be checked.
- @param int* yes/no value for verbose output
+ @param t (mfl_tree_t*) tree to be checked.
+ @param verbose (int*) yes/no value for verbose output
  @returns int
  */
 int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
@@ -421,9 +421,9 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
      *  Pointers that shouldn't be
      *  Dangling pointers that shouldn't be.
      *
-     *  TO DO:
-     *  Check array ends and off-by-1 errors in the node arrays.
      */
+
+    // TODO: Check array ends and off-by-1 errors in the node arrays.
     
     int err = 0;
     int ret = 0;

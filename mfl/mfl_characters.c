@@ -405,6 +405,7 @@ char* mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, in
 }
 
 
+
 int mfl_get_numstates_from_matrix(char *inputmatrix)
 {
     /* When no state symbols are specified and default reading is in effect,
@@ -437,6 +438,9 @@ int mfl_get_numstates_from_matrix(char *inputmatrix)
         return NULL;
     }
     
+    int a = 1, b = 2;
+    bool if_else = a > b;
+    b = a * if_else + b * !if_else;
     
     return count-1;
 }
@@ -642,10 +646,6 @@ void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_d
             if (mfl_is_valid_morphy_ctype(*current)) {
                 mfl_copy_singleton_subtoken_to_substring(*current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
-                
-                if (*current == '-') {                                  // This does obfuscate a process involving special states.
-                    matrix->mat_matrix[column]->cv_has_gaps = true;     // Might need a better way to handle this.
-                }
                 
                 //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
@@ -1185,6 +1185,7 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_populate_chartype_character_vectors(new_inmatrix, input_chardata, mfl_handle->n_chars, mfl_handle->n_taxa);
     
+    // If set as is set as inapplicable, 
     // Set each column's parsimony type.
     // Set each column's conversion rule.
     // Apply the appropriate conversion.

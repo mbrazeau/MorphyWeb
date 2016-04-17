@@ -244,17 +244,24 @@ int tui_parse_test_file(const char* arg1, const char* arg2)
  * how to do that. Will work on that below.
  */
 
-void tui_Nexus_Newick_reader(char *filename)
+void tui_parse_test_infile(char *infile)
 {
-    NxsTaxaBlock *taxa = new NxsTaxaBlock();
-    NxsTreesBlock *trees = new NxsTreesBlock(taxa);
-}
-
-void tui_Nexus_matrix_reader(char *filename)
-{
+    int i = 0;
+    unsigned int nchar = 0;
     
-    NxsTaxaBlock *taxa = new NxsTaxaBlock();
-    NxsAssumptionsBlock *assumptions = new NxsAssumptionsBlock(taxa);
-    NxsCharactersBlock *characters = new NxsCharactersBlock(taxa, assumptions);
+    MultiFormatReader infile_reader(-1);
+    //infile_reader.ReadFilepath(*infile, MultiFormatReader::NEXML_FORMAT);
+    
+    NxsTaxaBlock* taxa = infile_reader.GetTaxaBlock(0);
+    
+    NxsCharactersBlock* nex_characters = infile_reader.GetCharactersBlock(taxa, 0);
+ 
+    nchar = nex_characters->GetNChar();
+    
+    
+    
+    
+    //string matrix;
+
     
 }
