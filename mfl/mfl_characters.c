@@ -581,6 +581,8 @@ void mfl_setup_convert_charcells_to_mfl_charstates(mfl_matrix_t* m, mfl_handle_t
     
 }
 
+
+
 /*
  *
  * Functions for parsing the input matrix string into substrings. 
