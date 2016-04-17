@@ -250,21 +250,26 @@ bool mfl_char_is_DNA_base(char in)
     }
 }
 
-/**
+
+/*!
+ @discussion Calculates the number of shifts required to convert a DNA base 
+ symbol in an mfl_charstate variable.
+ @param in (char) the input alpha character for a DNA base
+ @return The number of left-shifts required to set the bit
  */
 int mfl_shift_value_DNA_base(char in)
 {
     if (in == 'a' || in == 'A') {
-        return 2;
+        return 1 + MORPHY_SPECIAL_STATE_PAD;
     }
     else if (in == 'c' || in == 'C') {
-        return 3;
+        return 2 + MORPHY_SPECIAL_STATE_PAD;
     }
     else if (in == 'g' || in == 'G') {
-        return 4;
+        return 3 + MORPHY_SPECIAL_STATE_PAD;
     }
     else if (in == 't' || in == 'T') {
-        return 5;
+        return 4 + MORPHY_SPECIAL_STATE_PAD;
     }
     else {
         dbg_eprintf("input not valid DNA base");
@@ -273,8 +278,6 @@ int mfl_shift_value_DNA_base(char in)
 }
 
 
-/**
- */
 mfl_charstate mfl_set_DNA_bits(char in)
 {
     // Check is single-state symbol
@@ -361,6 +364,16 @@ void mfl_set_datatype_converter_from_symbol_list(char* datype_converter, char* s
 }
 
 
+
+/*!
+ @discussion Does a linear search for a character in a list.
+ @warning This function (and those it depends on) need testing for off-by-1 errors.
+ @param key (char*) the character to be searched in the array.
+ @param list (char*) the array to search
+ @param listend (int *) the index of the last entry in the list
+ @param listmax (int) the maximum size the list can have.
+ @return Pointer to the key's match in the array, NULL if no match
+ */
 char* mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, int listmax)
 {
     int i = 0;
