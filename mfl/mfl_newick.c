@@ -512,23 +512,6 @@ char* mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *
 }
 
 /*!
- Roots a mfl_tree_t at a given node
- @param *input_tree a pointer to a mfl_tree_t to root
- @param *traget_node a pointer to the node to root
- @returns mfl_tree_t with the root now at the target node.
- */
-void mfl_root_tree_at_target_node(mfl_tree_t input_tree, mfl_node_t target_node)
-{
-    //The tree must not be rooted!
-    if (input_tree.treet_root){
-        dbg_printf("ERROR: the input tree is already rooted!"); // Addition to the message for the profane version: "the fuck you think you're doing with that root?"
-    } else {
-        //Set the root to be the target node
-        input_tree.treet_root = &target_node;
-    }
-}
-
-/*!
  Converts an input mfl_tree_t into a newick character string
  @param *input_tree, a pointer to the mfl_tree_t object to convert.
  @param num_taxa_active, the active number of taxa in the tree. Can be set to 0 to be infered.
@@ -569,11 +552,12 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_acti
     }
 
     //Adding starting with the root command
-    if (input_tree->treet_root/*->nodet_isroot != 0*/) { // Note that there's no need to check the is-root variable. In fact, this can lead to a crash (and did)
-                                                         // when the tree is unrooted unexpectedly. I'm going to remove the isroot variable from the node struct
+    if (input_tree->treet_root) {
         root_command = "[&R] ";
     } else {
         root_command = "[&U] ";
+        //Add an arbitrary polytomy with a root at the starting node of the tree.
+         mfl_root_target_node(input_tree, input_tree->treet_start);
     }
     for (i = 0; i < 5; ++i) {
         newick_tree_out[i] = root_command[i];
@@ -631,22 +615,17 @@ void mfl_test_newick_stuff()
     //tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
     
     dbg_printf("\n\n\n");
-    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing8, 0);
-
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing2, 0);
     dbg_printf("Testing convert to newick\n");
-    
     char *newick_string;
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
-    
-    dbg_printf("The output newick string is: %s\n\n", newick_string);
-    dbg_printf("Now unroot the tree\n");
+    dbg_printf("The output newick string is: %s\n", newick_string);
+    dbg_printf("Unrooting tree:\n");
     mfl_unroot_tree(tree_from_newick);
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
-    dbg_printf("And print it again: %s\n\n", newick_string);
-    dbg_printf("Now reroot the tree:\n");
-//    tree_from_newick = mfl_root_tree_at_target_node(tree_from_newick, tree_from_newick->treet_start);
-    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0);
-    dbg_printf("And print it again: %s\n\n", newick_string);
+    dbg_printf("The output newick string is: %s\n", newick_string);
+
+
     
     free(newick_string);
     
