@@ -361,6 +361,21 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
             }
         }
         
+        // Check for mid-branch internal cycle ("galls")
+        if (nds[i]->nodet_next) {
+            if (nds[i]->nodet_next->nodet_next) {
+                if (nds[i]->nodet_next->nodet_next == nds[i]) {
+                    err = 1;
+                    dbg_eprintf("Theres a gall in the branch");
+                    dbg_printf("\tNode @: %p", nds[i]);
+                    if (*verbose) {
+                        tui_print_node_data(nds[i], __FXN_NAME__);
+                    }
+                }
+            }
+        }
+
+        
         // Check against nodet_next pointer to non-internal node.
         if (nds[i]->nodet_next) {
             if (nds[i]->nodet_next->nodet_tip) {
