@@ -13,12 +13,11 @@
 char* mfl_drawtree_create_virtual_grid(int num_taxa)
 {
     int i, j;
-    int ASCII_space = 32;
     //int max_buffer_width = 80;
     int depth = 0;
     char *virtual_grid = NULL;
     
-    depth = 3 * num_taxa;
+    depth = 2 * num_taxa;
     
     virtual_grid = (char*)malloc(((MAX_BUFFER_WIDTH+1) * depth + 1) * sizeof(char)); // +1 to buffer for a newline character at buffer end of each row.
                                                                                      // +1 to sum for the terminal null character. 
@@ -26,7 +25,7 @@ char* mfl_drawtree_create_virtual_grid(int num_taxa)
         dbg_eprintf("unable to allocate memory for tree drawing. Returning NULL");
     }
     else {
-        memset(virtual_grid, ' ', ((MAX_BUFFER_WIDTH+1) * depth + 1) * sizeof(char));
+        memset(virtual_grid, '.', ((MAX_BUFFER_WIDTH+1) * depth + 1) * sizeof(char));
     }
     
     for (i = 0; i < depth; ++i) {
@@ -55,9 +54,9 @@ void tui_put_chars_into_tipfield(char *ch, char *tipbuffer)
 }
 
 
-void mfl_put_character_in_cell(char const ch, int row, int col, char* grid, int max_buffer_width)
+void mfl_put_character_in_cell(char const ch, int row, int col, char* grid)
 {
-    grid[ row * (max_buffer_width + 1) + col ] = ch;
+    grid[ row * (MAX_BUFFER_WIDTH + 1) + col ] = ch;
 }
 
 char mfl_get_character_in_cell(int row, int col, char* grid, int max_buffer_width)
@@ -67,7 +66,11 @@ char mfl_get_character_in_cell(int row, int col, char* grid, int max_buffer_widt
 
 void mfl_printree_set_node_coordinates(mfl_node_t *n, int row)
 {
-    int branchlen = 4;
+    int branchlen = 5;
+    int num_descendants = 0;
+    mfl_node_t* p = NULL;
+    mfl_node_t* leftdesc = NULL;
+    mfl_node_t* rightdesc = NULL;
     
     if (n->nodet_tip) {
         n->row = row;
@@ -75,23 +78,31 @@ void mfl_printree_set_node_coordinates(mfl_node_t *n, int row)
     }
     else {
         
+        p = n->nodet_next;
+        leftdesc = p->nodet_edge;
+        
+        do {
+            rightdesc = p->nodet_edge;
+            p = p->nodet_next;
+        } while (p != n);
+        
         // Set the row level:
         // This next part should get replaced by something smarter that knows about how many descendant tips there are
         // and what the largest and smallest row numbers are.
         
-        if (n->nodet_next->nodet_next->nodet_edge->row > n->nodet_next->nodet_edge->row) {
-            n->row = n->nodet_next->nodet_edge->row + ((n->nodet_next->nodet_next->nodet_edge->row - n->nodet_next->nodet_edge->row) / 2);
+        if (rightdesc->row > leftdesc->row) {
+            n->row = leftdesc->row + ((rightdesc->row - leftdesc->row) / 2);
         }
         else {
-            n->row = n->nodet_next->nodet_next->nodet_edge->row + ((n->nodet_next->nodet_edge->row - n->nodet_next->nodet_next->nodet_edge->row) / 2) + 1;
+            n->row = rightdesc->row + ((leftdesc->row - rightdesc->row) / 2);
         }
         
         // Now set the new column level. Replace as above.
-        if (n->nodet_next->nodet_edge->col < n->nodet_next->nodet_next->nodet_edge->col) {
-            n->col = n->nodet_next->nodet_edge->col - branchlen;
+        if (leftdesc->col < rightdesc->col) {
+            n->col = leftdesc->col - branchlen;
         }
         else {
-            n->col = n->nodet_next->nodet_next->nodet_edge->col - branchlen;
+            n->col = rightdesc->col - branchlen;
         }
         
     }
@@ -103,7 +114,7 @@ void mfl_drawtree_apply_subbranch(mfl_node_t* parent, mfl_node_t* desc, char *gr
     int brlen = desc->branchl_cdraw;
     
     for (i = 1; i < desc->col - parent->col; ++i) {
-        mfl_put_character_in_cell('-', desc->row, parent->col + i, grid, MAX_BUFFER_WIDTH);
+        mfl_put_character_in_cell('-', desc->row, parent->col + i, grid);
     }
 }
 
@@ -126,7 +137,6 @@ void mfl_printtree_set_coords_traversal(mfl_node_t* n, int* currentrow, char* gr
     
     
     mfl_printree_set_node_coordinates(n, *currentrow);
-    n->branchl_cdraw = 4;
 }
 
 void mfl_drawtree_add_nodebar(mfl_node_t* n, mfl_node_t* ldesc, mfl_node_t* rdesc, char* grid)
@@ -136,19 +146,19 @@ void mfl_drawtree_add_nodebar(mfl_node_t* n, mfl_node_t* ldesc, mfl_node_t* rdes
     // Right descendant
     do {
         ++i;
-        mfl_put_character_in_cell('|', n->row + i, n->col, grid, MAX_BUFFER_WIDTH);
+        mfl_put_character_in_cell('|', n->row + i, n->col, grid);
     } while (n->row + i < rdesc->row);
     
-    mfl_put_character_in_cell('\\', n->row + i, n->col, grid, MAX_BUFFER_WIDTH);
+    mfl_put_character_in_cell('\\', n->row + i, n->col, grid);
     
     // Left descendant
     i = 0;
     do {
         ++i;
-        mfl_put_character_in_cell('|', n->row - i, n->col, grid, MAX_BUFFER_WIDTH);
+        mfl_put_character_in_cell('|', n->row - i, n->col, grid);
     } while (n->row - i > ldesc->row);
     
-    mfl_put_character_in_cell('/', n->row - i, n->col, grid, MAX_BUFFER_WIDTH);
+    mfl_put_character_in_cell('/', n->row - i, n->col, grid);
     
 }
 
@@ -159,13 +169,12 @@ void mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid)
     mfl_node_t* rdesc = NULL;
     
     if (n->nodet_tip) {
-        //n->branchl_cdraw = 4;
-        //mfl_drawtree_apply_subbranch(n, grid);
         return;
     }
     
     p = n->nodet_next;
     ldesc = p->nodet_edge;
+    
     do {
         mfl_drawtree_draw_traversal(p->nodet_edge, grid);
         mfl_drawtree_apply_subbranch(n, p->nodet_edge, grid);
@@ -173,7 +182,9 @@ void mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid)
         p = p->nodet_next;
     } while (p != n);
     
-    mfl_put_character_in_cell('+', n->row, n->col, grid, MAX_BUFFER_WIDTH);
+    dbg_printf("Vising internal node: %i\n", n->nodet_index);
+    
+    mfl_put_character_in_cell('+', n->row, n->col, grid);
     mfl_drawtree_add_nodebar(n, ldesc, rdesc, grid);
     return;
 }
@@ -181,21 +192,11 @@ void mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid)
 void tui_test_tree_printing()
 {
     
-    char *grid = mfl_drawtree_create_virtual_grid(11);
+    char *grid = mfl_drawtree_create_virtual_grid(13);
     
     char *ch = &grid[15];
-    /**ch = 'A';
-    tui_move_print_head_down(&ch, 80);
-    *ch = 'A';
-    tui_move_print_head_down(&ch, 80);
-    *ch = 'A';
-    tui_move_print_head_down(&ch, 80);
-    *ch = 'A';*/
     
-    //char name[] = "Jansusiscus\n";
-    //tui_put_chars_into_tipfield(name, &grid[60]);
-    
-    char newick[] = "[&R] = (((((8,(9,10)),3)(((2,5),1),(((4,11),6),7))),12),13);";
+    char newick[] = "[&R] = ((((((8,9,10)),3)(((2,5),1),(((4,11),6,7)))),12),13);";
     
     mfl_tree_t* printme = mfl_convert_newick_to_mfl_tree_t(newick, 13);
     ch = grid + 80 - 15 - 3;
@@ -206,8 +207,8 @@ void tui_test_tree_printing()
     mfl_printtree_set_coords_traversal(printme->treet_root, &firstrow, grid);
     mfl_drawtree_draw_traversal(printme->treet_root, grid);
     //dbg_printf("________\n");
-    //dbg_printf("          1.........2.........3.........4.........5.........6.........7.........8\n");
-    //dbg_printf("012345678901234567890123456789012345678901234567890123456789012345678901234567890\n");
+    dbg_printf("          1.........2.........3.........4.........5.........6.........7.........8\n");
+    dbg_printf("012345678901234567890123456789012345678901234567890123456789012345678901234567890\n");
     dbg_printf("%s", grid);
     
     return;

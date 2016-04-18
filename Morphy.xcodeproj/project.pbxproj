@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		512549C31CC43A04002C8B57 /* mfl_drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = 512549C21CC43A04002C8B57 /* mfl_drawtree.c */; settings = {ASSET_TAGS = (); }; };
 		5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8161CA1915100498FD0 /* mfyinterface.c */; settings = {ASSET_TAGS = (); }; };
 		516FAC6A1CC00862002590DB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 516FAC691CC00862002590DB /* main.cpp */; };
 		516FAC6F1CC00AE4002590DB /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 516FAC6E1CC00AE4002590DB /* gtest.framework */; };
@@ -47,6 +48,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		512549C21CC43A04002C8B57 /* mfl_drawtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_drawtree.c; sourceTree = "<group>"; };
 		5159B8151CA1915100498FD0 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
 		5159B8161CA1915100498FD0 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
 		516FAC671CC00862002590DB /* GT-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "GT-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -167,6 +169,7 @@
 				51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */,
 				51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */,
 				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
+				512549C21CC43A04002C8B57 /* mfl_drawtree.c */,
 				51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */,
 				51D40F991CA19995009EEDF2 /* mfl_brswap.c */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
@@ -294,6 +297,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				512549C31CC43A04002C8B57 /* mfl_drawtree.c in Sources */,
 				51D40FA31CA27DFA009EEDF2 /* mfl_initialise.c in Sources */,
 				E117201F1631602A0021AAA7 /* main.c in Sources */,
 				51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */,

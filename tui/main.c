@@ -211,7 +211,7 @@ int main (int argc, char *argv[])
     dbg_printf("\nEnd tree print test\n");
     
     /* Everything below here should be written into or replaced by a real test. */
-    dbg_printf("Testing include set values:\n");
+    /*dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
     tui_getting_numstates_test();
     dbg_printf("\n\n");
@@ -222,7 +222,7 @@ int main (int argc, char *argv[])
     dbg_printf("Test treecheck stuff\n\n");
     tui_test_checktree_();
     
-    dbg_printf("\n\nGoodbye!\n\n");
+    dbg_printf("\n\nGoodbye!\n\n");*/
     
 	return 0;
 }
