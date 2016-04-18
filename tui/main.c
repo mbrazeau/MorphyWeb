@@ -184,6 +184,39 @@ void tui_test_character_stuff()
      mfl_free_inclusion_list(includelist);*/
 }
 
+
+void tui_test_tree_printing()
+{
+    int num_taxa = 12;
+    char *grid = mfl_drawtree_create_virtual_grid(num_taxa);
+    
+    char newick[] = "[&R] = ((2,(1,(3,(9,10)))),4,(7,((5,(11,12)),(6,8))));";
+    
+    mfl_tree_t* printme = mfl_convert_newick_to_mfl_tree_t(newick, num_taxa);
+    
+    printme->treet_treenodes[0]->nodet_tipname = (char*)"Borosaurus jibberstoni";
+    printme->treet_treenodes[1]->nodet_tipname = (char*)"Wayne";
+    printme->treet_treenodes[2]->nodet_tipname = (char*)"Ur mom";
+    printme->treet_treenodes[3]->nodet_tipname = (char*)"Taxon 1";
+    printme->treet_treenodes[4]->nodet_tipname = (char*)"Taxon Two";
+    printme->treet_treenodes[5]->nodet_tipname = (char*)"Foo";
+    printme->treet_treenodes[6]->nodet_tipname = (char*)"Bar";
+    printme->treet_treenodes[7]->nodet_tipname = (char*)"Fubarus";
+    
+    int firstrow = 0;
+    mfl_drawtree_set_coords_traversal(printme->treet_root, &firstrow, grid, num_taxa);
+    mfl_drawtree_draw_traversal(printme->treet_root, grid);
+    
+    grid = mfl_drawtree(printme);
+    
+    //dbg_printf("________\n");
+    dbg_printf("          1.........2.........3.........4.........5.........6.........7.........8\n");
+    dbg_printf("012345678901234567890123456789012345678901234567890123456789012345678901234567890\n");
+    dbg_printf("%s", grid);
+    
+    return;
+}
+
 int main (int argc, char *argv[])
 {
     dbg_printf("\n\t****************************************\n\n");

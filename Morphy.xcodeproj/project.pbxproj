@@ -49,6 +49,7 @@
 
 /* Begin PBXFileReference section */
 		512549C21CC43A04002C8B57 /* mfl_drawtree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_drawtree.c; sourceTree = "<group>"; };
+		5157EFBB1CC5422D00B4CBFB /* mfl_drawtree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mfl_drawtree.h; sourceTree = "<group>"; };
 		5159B8151CA1915100498FD0 /* mfl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mfl.h; sourceTree = "<group>"; };
 		5159B8161CA1915100498FD0 /* mfyinterface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfyinterface.c; sourceTree = "<group>"; };
 		516FAC671CC00862002590DB /* GT-Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "GT-Tests"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -169,6 +170,7 @@
 				51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */,
 				51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */,
 				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
+				5157EFBB1CC5422D00B4CBFB /* mfl_drawtree.h */,
 				512549C21CC43A04002C8B57 /* mfl_drawtree.c */,
 				51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */,
 				51D40F991CA19995009EEDF2 /* mfl_brswap.c */,

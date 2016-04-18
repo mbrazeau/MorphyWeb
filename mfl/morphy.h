@@ -386,6 +386,7 @@ void    mfl_drawtree_apply_subbranch(mfl_node_t* parent, mfl_node_t* desc, char 
 void    mfl_drawtree_set_coords_traversal(mfl_node_t* n, int* currentrow, char* grid, int num_taxa);
 void    mfl_drawtree_add_nodebar(mfl_node_t* n, mfl_node_t* ldesc, mfl_node_t* rdesc, char* grid);
 void    mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid);
+char*   mfl_drawtree(mfl_tree_t* t);
 
 /* In mfl_newick.c */
 int         mfl_is_valid_newick(char *newick_input);
