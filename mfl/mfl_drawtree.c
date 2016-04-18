@@ -6,7 +6,7 @@
 //
 //
 #include "morphy.h"
-
+#include "tuimfy.h"
 #define MAX_BUFFER_WIDTH 80
 #define DEFAULT_TIP_COLUMN 63
 
@@ -25,7 +25,7 @@ char* mfl_drawtree_create_virtual_grid(int num_taxa)
         dbg_eprintf("unable to allocate memory for tree drawing. Returning NULL");
     }
     else {
-        memset(virtual_grid, '.', ((MAX_BUFFER_WIDTH+1) * depth + 1) * sizeof(char));
+        memset(virtual_grid, ' ', ((MAX_BUFFER_WIDTH+1) * depth + 1) * sizeof(char));
     }
     
     for (i = 0; i < depth; ++i) {
@@ -44,30 +44,32 @@ void tui_move_print_head_down(char **printhead, const int max_buffer_width)
 }
 
 
-void tui_put_chars_into_tipfield(char *ch, char *tipbuffer)
-{
-    int i= 0;
-    do {
-        tipbuffer[i] = ch[i];
-        ++i;
-    } while (tipbuffer[i] != '\n' && ch[i] != '\n');
-}
-
-
 void mfl_put_character_in_cell(char const ch, int row, int col, char* grid)
 {
     grid[ row * (MAX_BUFFER_WIDTH + 1) + col ] = ch;
 }
 
-char mfl_get_character_in_cell(int row, int col, char* grid, int max_buffer_width)
+char mfl_get_character_in_cell(int row, int col, char* grid)
 {
-    return grid[ row * (max_buffer_width + 1) + col ];
+    return grid[ row * (MAX_BUFFER_WIDTH + 1) + col ];
 }
+
+void mfl_write_into_tipfield(char* name, char* grid, int row, int col)
+{
+    int i = 0;
+    
+    while ((mfl_get_character_in_cell(row, col+i+1, grid) != '\n') && name[i] != '\n' && name[i]) {
+        mfl_put_character_in_cell(name[i], row, col+i+1, grid);
+        ++i;
+    }
+}
+
+
+
 
 void mfl_printree_set_node_coordinates(mfl_node_t *n, int row)
 {
-    int branchlen = 5;
-    int num_descendants = 0;
+    int branchlen = 8; // TODO: Get rid of this magic number; calculate estimated tree depth
     mfl_node_t* p = NULL;
     mfl_node_t* leftdesc = NULL;
     mfl_node_t* rightdesc = NULL;
@@ -169,6 +171,9 @@ void mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid)
     mfl_node_t* rdesc = NULL;
     
     if (n->nodet_tip) {
+        if (n->nodet_tipname) {
+            mfl_write_into_tipfield(n->nodet_tipname, grid, n->row, n->col);
+        }
         return;
     }
     
@@ -192,16 +197,20 @@ void mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid)
 void tui_test_tree_printing()
 {
     
-    char *grid = mfl_drawtree_create_virtual_grid(13);
+    char *grid = mfl_drawtree_create_virtual_grid(7);
     
-    char *ch = &grid[15];
+    char newick[] = "[&R] = ((2,1,3),4,(7,(5,6)));";
     
-    char newick[] = "[&R] = ((((((8,9,10)),3)(((2,5),1),(((4,11),6,7)))),12),13);";
+    mfl_tree_t* printme = mfl_convert_newick_to_mfl_tree_t(newick, 7);
     
-    mfl_tree_t* printme = mfl_convert_newick_to_mfl_tree_t(newick, 13);
-    ch = grid + 80 - 15 - 3;
-    
-    //mfl_put_character_in_cell('#', 1, 59, grid, 80);
+    printme->treet_treenodes[0]->nodet_tipname = (char*)"Borosaurus jibberstoni";
+    printme->treet_treenodes[1]->nodet_tipname = (char*)"Wayne";
+    printme->treet_treenodes[2]->nodet_tipname = (char*)"Ur mom";
+    printme->treet_treenodes[3]->nodet_tipname = (char*)"Taxon 1";
+    printme->treet_treenodes[4]->nodet_tipname = (char*)"Taxon Two";
+    printme->treet_treenodes[5]->nodet_tipname = (char*)"Foo";
+    printme->treet_treenodes[6]->nodet_tipname = (char*)"Bar";
+    printme->treet_treenodes[7]->nodet_tipname = (char*)"Fubarus";
     
     int firstrow = 0;
     mfl_printtree_set_coords_traversal(printme->treet_root, &firstrow, grid);
