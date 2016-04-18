@@ -28,6 +28,8 @@ typedef struct tui_testrec {
  * Function prototypes for testing
  */
 
+void tui_test_tree_printing();
+
 /*  tui_utilities.c
  */
 int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int *verbose);

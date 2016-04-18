@@ -207,6 +207,9 @@ typedef struct mfl_node_t {
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
+    int row;
+    int col;
+    int branchl_cdraw;
     bool nodet_isingroup;                       // Indicates if node is within the ingroup or not.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.

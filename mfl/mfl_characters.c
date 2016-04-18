@@ -1185,6 +1185,7 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_populate_chartype_character_vectors(new_inmatrix, input_chardata, mfl_handle->n_chars, mfl_handle->n_taxa);
     
+    // TODO: finish this list of tasks
     // If set as is set as inapplicable, 
     // Set each column's parsimony type.
     // Set each column's conversion rule.

@@ -206,6 +206,9 @@ int main (int argc, char *argv[])
         //exit(0);
     }
     
+    dbg_printf("Testing the tree printing:\n");
+    tui_test_tree_printing();
+    dbg_printf("\nEnd tree print test\n");
     
     /* Everything below here should be written into or replaced by a real test. */
     dbg_printf("Testing include set values:\n");
