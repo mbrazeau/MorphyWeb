@@ -62,7 +62,8 @@ void mfl_drawtree_write_into_tipfield(char* name, char* grid, int row, int col)
 
 void mfl_drawtree_set_coords_traversal(mfl_node_t *n, int row, int num_taxa)
 {
-    int branchlen = (2*63) / num_taxa; // TODO: Get rid of this magic number; calculate estimated tree depth
+    int branchlen = 3 * 63 / (num_taxa - 2);    // TODO: Eventually, we'll need some more sophisticated
+                                                // way of doing this. For now, this keeps things pretty well under control.
     mfl_node_t* p = NULL;
     mfl_node_t* leftdesc = NULL;
     mfl_node_t* rightdesc = NULL;
@@ -107,7 +108,6 @@ void mfl_drawtree_set_coords_traversal(mfl_node_t *n, int row, int num_taxa)
 void mfl_drawtree_apply_subbranch(mfl_node_t* parent, mfl_node_t* desc, char *grid)
 {
     int i = 0;
-    int brlen = desc->branchl_cdraw;
     
     for (i = 1; i < desc->col - parent->col; ++i) {
         mfl_put_character_in_cell('-', desc->row, parent->col + i, grid);
