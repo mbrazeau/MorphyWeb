@@ -643,19 +643,25 @@ void mfl_free_tree(mfl_tree_t *tree_to_free)
  Add a root to a node ring (creating a polytomy)
  @param input_tree a pointer to a mfl_tree_t to root
  @param target_node_ring_start a pointer to the node to root
- @returns void
  */
 void mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_start)
 {
     //The tree must not be rooted!
     if (input_tree->treet_root){
-        dbg_printf("ERRORin mfl_root_target_node(): the input tree is already rooted!"); // Addition to the message for the profane version: "the fuck you think you're doing with that root?"
-    } else {
+        if (!input_tree->treet_root->nodet_edge) {
+            dbg_printf("ERROR in mfl_root_target_node(): the input tree is already rooted!"); // Addition to the message for the profane version: "the fuck you think you're doing with that root?"
+            return;
+        }
+        else {
+            dbg_eprintf("tree has root with unexpected nodet_edge pointer non-NULL value\n");
+            return;
+        }    } else {
         
-        //Copy the target node (pointing to the next node in the ring)
+        //Generate the new root node
         mfl_node_t *root_node; mfl_alloc_node();
-        
         root_node = mfl_get_next_available_node(input_tree->treet_treenodes);
+        
+        //Connect the node to the ring
         mfl_insert_node_in_ring(target_node_ring_start, root_node);
         
         //Setting it's nodet_edge to NULL;
@@ -670,5 +676,63 @@ void mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_s
         
         //Point the tree root to the root_node
         input_tree->treet_root = root_node;
+    }
+}
+
+/*!
+ Add a root to an edge
+ @param input_tree a pointer to a mfl_tree_t to root
+ @param target_node a pointer to the node linking to the next edge to root
+ */
+void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
+{
+    //The tree must not be rooted!
+    if (input_tree->treet_root){
+        if (!input_tree->treet_root->nodet_edge) {
+            dbg_printf("ERROR in mfl_root_target_node(): the input tree is already rooted!"); // Addition to the message for the profane version: "the fuck you think you're doing with that root?"
+            return;
+        }
+        else {
+            dbg_eprintf("tree has root with unexpected nodet_edge pointer non-NULL value\n");
+            return;
+        }
+    } else {
+        
+        //Generate the new root node
+        mfl_node_t *root_node; mfl_alloc_node();
+        root_node = mfl_get_next_available_node(input_tree->treet_treenodes);
+        
+        //Generate the two other nodes in the new root ring
+        mfl_node_t *root_ring_node_left; mfl_alloc_node();
+        root_ring_node_left = mfl_get_next_available_node(input_tree->treet_treenodes);
+        mfl_node_t *root_ring_node_right; mfl_alloc_node();
+        root_ring_node_right = mfl_get_next_available_node(input_tree->treet_treenodes);
+
+        
+        //Generate the root node ring
+//        root_node->nodet_next = root_ring_node_left;
+//        root_ring_node_left->nodet_next = root_ring_node_right;
+//        root_ring_node_right->nodet_next = root_node;
+        mfl_make_ring(root_node, root_ring_node_left, root_ring_node_right); // bottom is pointing to NULL (root), left is pointing to target_node and right is pointing to target_node->edge
+        //Check if node is ring //TG: this part might be over kill since mfl_make_ring is supose to work smoothly. Just to be sure though.
+        bool check_ring;
+        check_ring = mfl_check_is_in_ring(root_node);
+        if(check_ring == false) {
+            dbg_printf("ERROR in mfl_root_target_edge(): Rooting node ring is broken!");
+        }
+        
+        //Join the new edges
+        mfl_join_node_edges(target_node->nodet_edge, root_ring_node_right);
+        mfl_join_node_edges(target_node, root_ring_node_left);
+        
+        //Setting it's nodet_edge to NULL;
+        root_node->nodet_edge = NULL;
+        
+        //Point the tree root to the root_node
+        input_tree->treet_root = root_node;
+        
+        /*
+         * TG: It's probably safe to add a broken tree checker here no?
+         */
     }
 }
