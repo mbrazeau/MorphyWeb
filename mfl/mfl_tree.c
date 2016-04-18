@@ -553,7 +553,6 @@ mfl_node_t* mfl_find_rightmost_tip_in_tree(mfl_node_t* n)
     return mfl_find_rightmost_tip_in_tree(n->nodet_next->nodet_edge);
 }
 
-
 void mfl_unroot_tree(mfl_tree_t *tree)
 {
     mfl_node_t *p = NULL;
@@ -638,4 +637,38 @@ void mfl_free_tree(mfl_tree_t *tree_to_free)
     
     // Free the tree
     free(tree_to_free);
+}
+
+/*!
+ Add a root to a node ring (creating a polytomy)
+ @param input_tree a pointer to a mfl_tree_t to root
+ @param target_node_ring_start a pointer to the node to root
+ @returns void
+ */
+void mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_start)
+{
+    //The tree must not be rooted!
+    if (input_tree->treet_root){
+        dbg_printf("ERRORin mfl_root_target_node(): the input tree is already rooted!"); // Addition to the message for the profane version: "the fuck you think you're doing with that root?"
+    } else {
+        
+        //Copy the target node (pointing to the next node in the ring)
+        mfl_node_t *root_node; mfl_alloc_node();
+        
+        root_node = mfl_get_next_available_node(input_tree->treet_treenodes);
+        mfl_insert_node_in_ring(target_node_ring_start, root_node);
+        
+        //Setting it's nodet_edge to NULL;
+        root_node->nodet_edge = NULL;
+        
+        //Check if node is ring
+        bool check_ring;
+        check_ring = mfl_check_is_in_ring(target_node_ring_start);
+        if(check_ring == false) {
+            dbg_printf("ERROR in mfl_root_target_node(): Rooting target node broke the node ring!");
+        }
+        
+        //Point the tree root to the root_node
+        input_tree->treet_root = root_node;
+    }
 }
