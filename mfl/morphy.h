@@ -202,8 +202,11 @@ typedef struct mfl_nodedata_t {
 } mfl_nodedata_t;
 
 
+typedef struct mfl_nodestack_t mfl_nodestack_t;
+
 typedef struct mfl_node_t {
 	mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
+    mfl_nodestack_t* nodet_ndstack;           // The nodestack of the tree to which this node belongs.
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
@@ -218,19 +221,25 @@ typedef struct mfl_node_t {
 	int nodet_maxsteps;                         // Maximum number of transformations along branch represented by nodet_edge.
     double nodet_mean_branchlen;                // Mean branch length.
     long long int nodet_tree_index;             // Identity of the tree to which this node belongs.
-    int nodet_num_partitions;
+    int nodet_num_dat_partitions;
     mfl_nodedata_t **nodet_dataparts;
 } mfl_node_t;
 
 
 typedef mfl_node_t ** mfl_nodearray_t;  // A pointer of pointers to nodes used in trees.
 
+typedef struct mfl_nodestack_t {
+    int nstk_numnodes;
+    int nstk_maxsize;
+    mfl_nodearray_t nstk_availbale_nds;
+} mfl_nodestack_t;
 
 typedef struct mfl_tree_t {
 	mfl_nodearray_t treet_treenodes;        // The nodes of the tree. Never point these to another instance of mfl_tree.
 	mfl_node_t *treet_root;                 // Pointer to the root of the tree.
     mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
+    mfl_nodestack_t* treet_nodestack;       // Unused nodes
     int treet_num_taxa;                     // Total number of terminals.
     int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
     int treet_island_id;                    // An identification number for the parent start tree.

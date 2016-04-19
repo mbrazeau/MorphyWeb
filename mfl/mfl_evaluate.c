@@ -234,7 +234,7 @@ void mfl_evaluate_downpass(mfl_node_t *node)
     int num_dataparts;
     mfl_parsim_fn evaluator;
     
-    num_dataparts = node->nodet_num_partitions;
+    num_dataparts = node->nodet_num_dat_partitions;
     
     // For each data partition at the node, set the correct type and evaluation
     for (i = 0; i < num_dataparts; ++i) {

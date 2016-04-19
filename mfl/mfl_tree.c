@@ -74,7 +74,7 @@ int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
  its nodet_edge pointer. Useful only in rooted trees or trees, or where knowing 
  where the root used to be is important.
  @param querynode (mfl_node_t*) the node to be checked.
- @return <#return description#>
+ @return true if node points towards the root, otherwise false
  */
 bool mfl_check_node_is_bottom(mfl_node_t *querynode)
 {
@@ -179,6 +179,37 @@ bool mfl_node_is_available(mfl_node_t *node)
 }
 
 
+void mfl_put_node_on_nodestack(mfl_node_t* n)
+{
+    mfl_nodestack_t* nds = n->nodet_ndstack;
+    
+    mfl_make_node_available(n);
+    
+    // !!!: Other cleanup operations might go here.
+    
+    if (nds->nstk_numnodes < nds->nstk_maxsize) {
+        nds->nstk_availbale_nds[nds->nstk_numnodes-1] = n;
+        ++nds->nstk_numnodes;
+    }
+    else {
+        dbg_eprintf("insufficient space for new node on nodestack");
+        return;
+    }
+}
+
+
+mfl_node_t* mfl_get_node_from_nodestack(mfl_nodestack_t *nds)
+{
+    mfl_node_t* retnode = NULL;
+    
+    --nds->nstk_numnodes;
+    retnode = nds->nstk_availbale_nds[nds->nstk_numnodes];
+    nds->nstk_availbale_nds[nds->nstk_numnodes] = NULL;
+    
+    return retnode;
+}
+
+
 /*!
  @discussion Performs a linear search in a node array to find a node that is 
  not joined to any other nodes by either a next pointer or an edge pointer.
@@ -213,10 +244,21 @@ mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 }
 
 
+/*!
+ @discussion Removes a branch from a target tree and returns a pointer to the 
+ base of the excised node.
+ @note I think there can be some big changes to this function and to generally
+ how we handle removal and reinsertion of branches.
+ @param free_node_bottom (mfl_node_t*) pointer to the base of the internal node 
+ ring to be removed and which connects the node to the target tree.
+ @param free_node_top (mfl_node_t*) pointer to the 'upper' node ring that 
+ connects the source branch to the target tree.
+ @return pointer to the ring forming the base of the excised branch.
+ */
 mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top)
 {
-    mfl_node_t * source_branch_upper = NULL;
-    mfl_node_t * source_branch_lower = NULL;
+    mfl_node_t * tgt_branch_upper = NULL;
+    mfl_node_t * tgt_branch_bottom = NULL;
     mfl_node_t * ptr_to_removed_branch = NULL;
     
 #ifdef MFY_DEBUG
@@ -225,14 +267,15 @@ mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_no
     }
 #endif
     /*Put the business code in */
-    source_branch_lower = free_node_bottom->nodet_edge;
-    source_branch_upper = free_node_top->nodet_edge;
+    tgt_branch_bottom = free_node_bottom->nodet_edge;
+    tgt_branch_upper = free_node_top->nodet_edge;
     
     free_node_bottom->nodet_edge = NULL;
     free_node_top->nodet_edge = NULL; // Removes pointers to the source tree
     
-    source_branch_upper->nodet_edge = source_branch_lower;
-    source_branch_lower->nodet_edge = source_branch_upper;  // "Reconnects" the "broken" source tree
+    tgt_branch_upper->nodet_edge = tgt_branch_bottom;
+    tgt_branch_bottom->nodet_edge = tgt_branch_upper;  // "Reconnects" the
+                                                       // "broken" source tree
     
     ptr_to_removed_branch = free_node_bottom;
     
@@ -240,7 +283,18 @@ mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_no
 }
 
 
-void mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_free_desendant_edge, mfl_node_t *tgt_branch_bottom)
+/*!
+ @discussion Inserts a ring with only one edge connection into a target tree.
+ @note as above, there are likely to be changes to how this stuff is handled 
+ in the future.
+ @param src_bottom_node (mfl_node_t*) the source tree's root-ward ring node
+ @param src_free_descendant_edge (mfl_node_t*) the ring node of the node cycle
+ that is to be connected to the upper (rootward-directed) node of the target 
+ tree
+ @param tgt_branch_bottom (mfl_node_t*) the upper (rootward-directed) node 
+ across the internode of the target tree where the node will be inserted.
+ */
+void mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_free_descendant_edge, mfl_node_t *tgt_branch_bottom)
 {
     mfl_node_t * tgt_branch_top = NULL;
     tgt_branch_top = tgt_branch_bottom->nodet_edge;
@@ -255,15 +309,24 @@ void mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_free_desenda
 #endif
     
     // Point the target branches to the source node
-    tgt_branch_bottom->nodet_edge   = src_free_desendant_edge;
+    tgt_branch_bottom->nodet_edge   = src_free_descendant_edge;
     tgt_branch_top->nodet_edge      = src_bottom_node;
     
     // Point the source branches to the targe nodes
     src_bottom_node->nodet_edge         = tgt_branch_top;
-    src_free_desendant_edge->nodet_edge = tgt_branch_top;
+    src_free_descendant_edge->nodet_edge = tgt_branch_top;
 }
 
 
+/*!
+ @discussion Sets three input nodes into a ring cycle for use as an internal
+ node in a tree.
+ @param bottom_node (mfl_node_t*) the node that seeds the ring and forms the 
+ bottom "rootward" connection if directed
+ @param left_node (mfl_node_t*) the next node after the root
+ @param right_node (mfl_node_t*) the next node after the left node and joins the
+ bottom node via its next pointer
+ */
 void mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node)
 {
     bottom_node->nodet_next = left_node;
@@ -272,6 +335,11 @@ void mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *r
 }
 
 
+/*!
+ @discussion Wrapper function for node allocation and checking for any failures
+ to allocate memory
+ @return pointer to an mfl_node_t
+ */
 mfl_node_t * mfl_alloc_node(void)
 {
     mfl_node_t *newnode = NULL;
@@ -291,6 +359,11 @@ mfl_node_t * mfl_alloc_node(void)
 }
 
 
+/*!
+ @discussion Wrapper function on free() which is used to free node memory. 
+ @note Any memory allocated within a node should be freed here as well.
+ @param node (mfl_node_t*) pointer to the node that will be free.
+ */
 void mfl_free_node(mfl_node_t *node)
 {
     /*
@@ -302,12 +375,15 @@ void mfl_free_node(mfl_node_t *node)
 }
 
 
+/*!
+ @discussion Loops through the node pointer array freeing each node.
+ @param treenodes (mfl_nodearray_t) an array of pointers to nodes froma source
+ tree.
+ */
 void mfl_free_treenodes(mfl_nodearray_t treenodes)
 {
-    int counter = 0;
-    
+
     do {
-        ++counter;
         if (*treenodes) {
             mfl_free_node(*treenodes);
         }
@@ -317,6 +393,18 @@ void mfl_free_treenodes(mfl_nodearray_t treenodes)
 }
 
 
+/*!
+ @discussion After an array of pointers to nodes has been sized, this function
+ is used to allocate memory for each node pointer, thereby allowing a tree to be
+ created in memory. 
+ @note the last node pointer in the array is a NULL pointer and signals the end
+ of the array.
+ @note a calling function must specify either num_nodes or num_taxa but does not
+ need to specify both
+ @param nodearray (mfl_nodearray_t) the array of empty node pointers.
+ @param num_nodes (int) the number of nodes to allocate.
+ @param num_taxa (int) the number of terminal taxa.
+ */
 void mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
 {
     int i = 0;
@@ -372,8 +460,9 @@ mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes)
         }
     }
     
-    
-    new_nodearray = (mfl_node_t**)malloc( (num_nodes + 1) * sizeof(mfl_node_t*)); // The +1 allows for a NULL pointer at then end of the array to (hopefully) keep it read-safe.
+    // The +1 allows for a NULL pointer at then end of the array to (hopefully)
+    // keep it read-safe.
+    new_nodearray = (mfl_node_t**)malloc( (num_nodes + 1) * sizeof(mfl_node_t*));
     
     if (!new_nodearray) {
         dbg_printf("Error in mfl_allocate_node_array(int num_taxa, int num_nodes): failed to allocate new node array.\n");
@@ -570,10 +659,11 @@ void mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_n
 /*!
  Returns 0 if the node is binary, -1 if not defined (no branching) and otherwise 
  returns the number of branchings detected. 
- @param querynode (mfl_node_t*) the base of the internal node being queried for n-ariness
+ @param querynode (mfl_node_t*) the base of the internal node being queried for 
+ n-ariness
  @param test_n_branches (int) the expected number of descendant branches
- @return the number of descendant branches found if true, 0 if number of descendants does 
- not match the expected value.
+ @return the number of descendant branches found if true, 0 if number of 
+ descendants does not match the expected value.
  */
 int mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 {
@@ -605,14 +695,13 @@ int mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
 mfl_node_t* mfl_find_rightmost_tip_in_tree(mfl_node_t* n)
 {
     
-    mfl_node_t *p;
-    
     if (n->nodet_tip) {
         return n;
     }
     
     return mfl_find_rightmost_tip_in_tree(n->nodet_next->nodet_edge);
 }
+
 
 void mfl_unroot_tree(mfl_tree_t *tree)
 {
