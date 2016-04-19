@@ -658,7 +658,7 @@ void mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_s
         }    } else {
         
         //Generate the new root node
-        mfl_node_t *root_node; mfl_alloc_node();
+        mfl_node_t *root_node;
         root_node = mfl_get_next_available_node(input_tree->treet_treenodes);
         
         //Connect the node to the ring
@@ -699,20 +699,21 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
     } else {
         
         //Generate the new root node
-        mfl_node_t *root_node; mfl_alloc_node();
+        mfl_node_t *root_node;
         root_node = mfl_get_next_available_node(input_tree->treet_treenodes);
+        // Temporary linking the root to itseld
+        root_node->nodet_next = root_node;
         
-        //Generate the two other nodes in the new root ring
-        mfl_node_t *root_ring_node_left; mfl_alloc_node();
+        //Generate the two other nodes in the new root ring and pointing them to themselves
+        mfl_node_t *root_ring_node_left;
         root_ring_node_left = mfl_get_next_available_node(input_tree->treet_treenodes);
-        mfl_node_t *root_ring_node_right; mfl_alloc_node();
+        root_ring_node_left->nodet_next = root_ring_node_left;
+        mfl_node_t *root_ring_node_right;
         root_ring_node_right = mfl_get_next_available_node(input_tree->treet_treenodes);
+        root_ring_node_right->nodet_next = root_ring_node_right;
 
         
         //Generate the root node ring
-//        root_node->nodet_next = root_ring_node_left;
-//        root_ring_node_left->nodet_next = root_ring_node_right;
-//        root_ring_node_right->nodet_next = root_node;
         mfl_make_ring(root_node, root_ring_node_left, root_ring_node_right); // bottom is pointing to NULL (root), left is pointing to target_node and right is pointing to target_node->edge
         //Check if node is ring //TG: this part might be over kill since mfl_make_ring is supose to work smoothly. Just to be sure though.
         bool check_ring;
