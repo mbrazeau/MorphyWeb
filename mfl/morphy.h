@@ -352,6 +352,9 @@ mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_br
 void            mfl_destroy_n_nary_ring(mfl_node_t *bottom_node);
 bool            mfl_check_is_in_ring(mfl_node_t *start);
 mfl_node_t*     mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node);
+mfl_node_t*     mfl_get_node_from_nodestack(mfl_nodestack_t *nds);
+void            mfl_destroy_nodestack(mfl_nodestack_t* ndstk);
+void            mfl_push_node_to_nodestack(mfl_node_t* n);
 mfl_node_t*     mfl_get_next_available_node(mfl_nodearray_t nodearray);
 bool            mfl_node_is_available(mfl_node_t *node);
 void            mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2);

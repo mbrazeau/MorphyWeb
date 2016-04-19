@@ -215,7 +215,7 @@ void mfl_destroy_nodestack(mfl_nodestack_t* ndstk)
 }
 
 
-void mfl_put_node_on_nodestack(mfl_node_t* n)
+void mfl_push_node_to_nodestack(mfl_node_t* n)
 {
     mfl_nodestack_t* nds = n->nodet_ndstack;
     
@@ -661,23 +661,6 @@ void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *
     
     mfl_join_node_edges(parent->nodet_next, child1);
     mfl_join_node_edges(parent->nodet_next->nodet_next, child2);
-}
-
-
-
-void mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
-{
-    int i = 0;
-    
-    for (i = 0; nodearray[i]; ++i) {
-        nodearray[i]->nodet_index = i;
-        if (i < num_taxa) {
-            nodearray[i]->nodet_tip = i + 1;
-        }
-        else {
-            nodearray[i]->nodet_tip = 0;
-        }
-    }
 }
 
 
