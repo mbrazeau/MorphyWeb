@@ -629,6 +629,8 @@ void mfl_test_newick_stuff()
     mfl_unroot_tree(tree_from_newick);
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, true);
     dbg_printf("The output newick string is (with polytomy): %s\n", newick_string);
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing2, 0);
+    mfl_unroot_tree(tree_from_newick);
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, false);
     dbg_printf("The output newick string is (without polytomy): %s\n", newick_string);
 
