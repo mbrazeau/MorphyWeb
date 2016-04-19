@@ -1,31 +1,20 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2012-10-06T22:15:58
+# Project created by QtCreator 2016-04-19T10:56:48
 #
 #-------------------------------------------------
 
 QT       += core gui
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Morphy
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    heuristicsearchdialog.cpp \
-    taxadialog.cpp \
-    charactersdialog.cpp \
-    #treeviewer.cpp
+        mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    heuristicsearchdialog.h \
-    taxadialog.h \
-    charactersdialog.h \
-    #treeviewer.h
+HEADERS  += mainwindow.h
 
-FORMS    += mainwindow.ui \
-    heuristicsearchdialog.ui \
-    taxadialog.ui \
-    charactersdialog.ui \
-    #treeviewer.ui
+FORMS    += mainwindow.ui
