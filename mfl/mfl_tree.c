@@ -52,12 +52,16 @@
 
 #include "morphy.h"
 
+
+/*!
+ @discussion Gives the number of nodes required to build an mfl_tree_t with 
+ 3-node internal node ring cycles for a tree with num_taxa leaves.
+ @param num_taxa (int) the number of terminal leaves
+ @return the number of nodes required to build a completely binary, rooted 
+ tree.
+ */
 int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
 {
-    /* This function allows us to size the node array in the tree and correctly 
-     * allocate sufficient memory for a tree.
-     */
-    
     int num_nodes = 0;
     num_nodes = num_taxa + 3 * (num_taxa - 1);
     
@@ -65,6 +69,13 @@ int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
 }
 
 
+/*!
+ @discussion Verifies that a node points towards the root of the tree through 
+ its nodet_edge pointer. Useful only in rooted trees or trees, or where knowing 
+ where the root used to be is important.
+ @param querynode (mfl_node_t*) the node to be checked.
+ @return <#return description#>
+ */
 bool mfl_check_node_is_bottom(mfl_node_t *querynode)
 {
     bool is_bottom = 0;
@@ -76,6 +87,13 @@ bool mfl_check_node_is_bottom(mfl_node_t *querynode)
     return is_bottom;
 }
 
+
+/*!
+ @discussion When a node is made available, this function is called to reset
+ internal node parameters that are dependent on the topology. Any new topology-
+ dependent parameters need to be added here.
+ @param node (mfl_node_t*) the node to be reset.
+ */
 void mfl_safe_reset_node_params(mfl_node_t* node)
 {
     /* If a node is made available, reset safe values here */
@@ -86,6 +104,12 @@ void mfl_safe_reset_node_params(mfl_node_t* node)
     node->nodet_uppass_visited   = NULL;
 }
 
+
+/*!
+ @discussion Joins two nodes at their edge pointers
+ @param node1 (mfl_node_t*) one side of the union
+ @param node2 (mfl_node_t*) the other side of the union
+ */
 void mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2)
 {
     node1->nodet_edge = node2;
@@ -93,6 +117,14 @@ void mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2)
 }
 
 
+/*!
+ @discussion Disconnects the reciprocal edge pointers of two nodes.
+ @note: this function provides no guarantees that the input nodes are 
+ reciprocal. Thus, it is safer to call mfl_disconnect_node() to ensure that that
+ @param node1 (mfl_node_t*) the first node of the union to break.
+ @param node2 (mfl_node_t*) What *should* be the second node of the union to
+ break.
+ */
 void mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2)
 {
     node1->nodet_edge = NULL;
@@ -100,6 +132,23 @@ void mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2)
 }
 
 
+/*!
+ @discussion Breaks a node from its reciprocal edge. This operation will result
+ in breaking a tree into subtrees.
+ @param n (mfl_node_t*) the node at the desired break point.
+ */
+void mfl_disconnect_node(mfl_node_t* n)
+{
+    mfl_node_t* p = n->nodet_edge;
+    mfl_disconnect_node_edges(p, n);
+}
+
+
+/*!
+ @discussion Makes a node available for re-use in another part of the tree by
+ nullifying its connections to other nodes and
+ @param node (mfl_node_t*) the node to be made available
+ */
 void mfl_make_node_available(mfl_node_t *node)
 {
     node->nodet_next = NULL;
@@ -108,6 +157,12 @@ void mfl_make_node_available(mfl_node_t *node)
 }
 
 
+/*!
+ @discussion Checks whether an internal node is available by checking whether or
+ not it has connections to other nodes.
+ @param node (mfl_node_t*) the node to be queried
+ @return true if available, false if unavailable (i.e. has connections).
+ */
 bool mfl_node_is_available(mfl_node_t *node)
 {
     bool is_available = false;
@@ -124,6 +179,12 @@ bool mfl_node_is_available(mfl_node_t *node)
 }
 
 
+/*!
+ @discussion Performs a linear search in a node array to find a node that is 
+ not joined to any other nodes by either a next pointer or an edge pointer.
+ @param nodearray (mfl_nodearray_t) the array of nodes to be searched.
+ @return pointer to an available node.
+ */
 mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 {
     int i = 0;
