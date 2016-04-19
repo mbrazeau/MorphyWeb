@@ -347,7 +347,7 @@ mfl_node_t*     mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_
 mfl_node_t*     mfl_get_next_available_node(mfl_nodearray_t nodearray);
 bool            mfl_node_is_available(mfl_node_t *node);
 void            mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2);
-void            mfl_disconnect_node(mfl_node_t* n)
+void            mfl_disconnect_node(mfl_node_t* n);
 void            mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2);
 void            mfl_make_node_available(mfl_node_t *node);
 void            mfl_safe_reset_node_params(mfl_node_t* node);
