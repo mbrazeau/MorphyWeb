@@ -346,7 +346,6 @@ mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
 /* In mfl_starttree.c */
 
 /* In mfl_tree.c */
-void            mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa);
 void            mfl_initialise_ring_node(mfl_node_t *bottom_node);
 void            mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2, mfl_nodearray_t nodes);
 mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches, mfl_nodearray_t nodes);
@@ -371,7 +370,7 @@ void            mfl_free_node(mfl_node_t *node);
 void            mfl_free_treenodes(mfl_nodearray_t treenodes);
 void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int num_taxa);
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes);
-void            mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes);
+void            mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes);
 void            mfl_free_nodearray(mfl_nodearray_t nodearray);
 int             mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches);
 mfl_node_t*     mfl_find_rightmost_tip_in_tree(mfl_node_t* n);

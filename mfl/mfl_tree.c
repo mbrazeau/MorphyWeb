@@ -179,6 +179,42 @@ bool mfl_node_is_available(mfl_node_t *node)
 }
 
 
+mfl_nodestack_t* mfl_create_empty_nodestack(int num_internal_nodes)
+{
+    mfl_nodestack_t* newndstk = NULL;
+    
+    newndstk = (mfl_nodestack_t*)malloc(sizeof(mfl_nodestack_t));
+    if (!newndstk) {
+        dbg_eprintf("unable to allocate memory for new nodestack");
+    }
+    else {
+        memset(newndstk, 0, sizeof(mfl_nodestack_t));
+    }
+    
+    newndstk->nstk_availbale_nds = (mfl_nodearray_t)malloc((num_internal_nodes + 1) * sizeof(mfl_node_t*));
+    
+    if (!newndstk->nstk_availbale_nds) {
+        dbg_eprintf("unable to allocate memory for node array in new nodestack");
+    }
+    else {
+        memset(newndstk->nstk_availbale_nds, 0, (num_internal_nodes + 1) * sizeof(mfl_node_t*));
+    }
+    
+    newndstk->nstk_availbale_nds[num_internal_nodes] = NULL;
+    
+    newndstk->nstk_maxsize = num_internal_nodes;
+    
+    return newndstk;
+}
+
+
+void mfl_destroy_nodestack(mfl_nodestack_t* ndstk)
+{
+    free(ndstk->nstk_availbale_nds);
+    free(ndstk);
+}
+
+
 void mfl_put_node_on_nodestack(mfl_node_t* n)
 {
     mfl_nodestack_t* nds = n->nodet_ndstack;
@@ -430,21 +466,6 @@ void mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int n
 }
 
 
-void mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
-{
-    int i = 0;
-    
-    for (i = 0; nodearray[i]; ++i) {
-        nodearray[i]->nodet_index = i;
-        if (i < num_taxa) {
-            nodearray[i]->nodet_tip = i + 1;
-        }
-        else {
-            nodearray[i]->nodet_tip = 0;
-        }
-    }
-}
-
 
 mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes)
 {
@@ -643,14 +664,37 @@ void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *
 }
 
 
-void mfl_initialise_nodearray(mfl_nodearray_t nodearray, int num_taxa, int num_nodes)
+
+void mfl_setup_nodearray(mfl_nodearray_t nodearray, int num_nodes, int num_taxa)
 {
     int i = 0;
+    
+    for (i = 0; nodearray[i]; ++i) {
+        nodearray[i]->nodet_index = i;
+        if (i < num_taxa) {
+            nodearray[i]->nodet_tip = i + 1;
+        }
+        else {
+            nodearray[i]->nodet_tip = 0;
+        }
+    }
+}
+
+
+void mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes)
+{
+    int i = 0;
+    int j = 0;
+    mfl_nodearray_t nodearray = t->treet_treenodes;
     
     for (i = 0; i < num_nodes; ++i) {
         nodearray[i]->nodet_index = i;
         if (i < num_taxa) {
             nodearray[i]->nodet_tip = i + 1;
+        }
+        else {
+            t->treet_nodestack->nstk_availbale_nds[j] = nodearray[i];
+            ++j;
         }
     }
 }
@@ -751,10 +795,11 @@ void mfl_unroot_tree(mfl_tree_t *tree)
 
 void mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes)
 {
-    mfl_initialise_nodearray(newtree->treet_treenodes, num_taxa, num_nodes);
+    mfl_initialise_nodearray(newtree, num_taxa, num_nodes);
     
     newtree->treet_num_taxa = num_taxa;
 }
+
 
 mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 {
@@ -769,6 +814,8 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
     
     newtree->treet_treenodes = mfl_allocate_nodearray(num_taxa, num_nodes);
     
+    newtree->treet_nodestack = mfl_create_empty_nodestack(num_nodes - num_taxa);
+    
     mfl_initialise_tree(newtree, num_taxa, num_nodes);
     
     return newtree;
@@ -780,7 +827,7 @@ void mfl_free_tree(mfl_tree_t *tree_to_free)
     
     mfl_free_treenodes(tree_to_free->treet_treenodes);
     mfl_free_nodearray(tree_to_free->treet_treenodes);
-    
+    mfl_destroy_nodestack(tree_to_free->treet_nodestack);
     /*
      * Any other allocated memory in a tree should be freed here
      */
@@ -788,6 +835,7 @@ void mfl_free_tree(mfl_tree_t *tree_to_free)
     // Free the tree
     free(tree_to_free);
 }
+
 
 /*!
  Add a root to a node ring (creating a polytomy)

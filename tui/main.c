@@ -188,7 +188,7 @@ void tui_test_character_stuff()
 void tui_test_tree_printing()
 {
     int num_taxa = 78;
-    char *grid = mfl_drawtree_create_virtual_grid(num_taxa);
+    char *grid = NULL;
     
     char newick[] = "[&R] = tree PAUP_1 = [&U] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
     
@@ -203,16 +203,15 @@ void tui_test_tree_printing()
     printme->treet_treenodes[6]->nodet_tipname = (char*)"Bar";
     printme->treet_treenodes[7]->nodet_tipname = (char*)"Fubarus";
     
-    int firstrow = 0;
-    mfl_drawtree_set_coords_traversal(printme->treet_root, &firstrow, grid, num_taxa);
-    mfl_drawtree_draw_traversal(printme->treet_root, grid);
-    
     grid = mfl_drawtree(printme);
     
     //dbg_printf("________\n");
     dbg_printf("          1.........2.........3.........4.........5.........6.........7.........8\n");
     dbg_printf("012345678901234567890123456789012345678901234567890123456789012345678901234567890\n");
     dbg_printf("%s", grid);
+    
+    mfl_free_tree(printme);
+    free(grid);
     
     return;
 }
@@ -239,23 +238,23 @@ int main (int argc, char *argv[])
         //exit(0);
     }
     
-    dbg_printf("Testing the tree printing:\n");
+    /*dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
-    dbg_printf("\nEnd tree print test\n");
+    dbg_printf("\nEnd tree print test\n");*/
     
     /* Everything below here should be written into or replaced by a real test. */
-    dbg_printf("Testing include set values:\n");
+    /*dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
     tui_getting_numstates_test();
-    dbg_printf("\n\n");
+    dbg_printf("\n\n");*/
     
     dbg_printf("Test Newick stuff\n\n");
     mfl_test_newick_stuff();
     
-    dbg_printf("Test treecheck stuff\n\n");
+    /*dbg_printf("Test treecheck stuff\n\n");
     tui_test_checktree_();
     
-    dbg_printf("\n\nGoodbye!\n\n");
+    dbg_printf("\n\nGoodbye!\n\n");*/
     
 	return 0;
 }

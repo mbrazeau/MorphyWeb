@@ -438,10 +438,6 @@ int mfl_get_numstates_from_matrix(char *inputmatrix)
         return NULL;
     }
     
-    int a = 1, b = 2;
-    bool if_else = a > b;
-    b = a * if_else + b * !if_else;
-    
     return count-1;
 }
 
