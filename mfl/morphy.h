@@ -399,6 +399,8 @@ void    mfl_drawtree_draw_traversal(mfl_node_t* n, char *grid);
 char*   mfl_drawtree(mfl_tree_t* t);
 
 /* In mfl_newick.c */
+
+// TODO: Update function prototypes as a bunch of these have been changed to have no return values
 int         mfl_is_valid_newick(char *newick_input);
 int         mfl_count_internal_nodes_in_newick(char *newick_string);
 bool        mfl_newick_tree_is_rooted(char *newick_string);
