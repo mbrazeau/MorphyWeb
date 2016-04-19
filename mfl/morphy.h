@@ -382,7 +382,7 @@ char*   mfl_drawtree_create_virtual_grid(int num_taxa);
 void    mfl_put_character_in_cell(char const ch, int row, int col, char* grid);
 char    mfl_drawtree_get_character_in_cell(int row, int col, char* grid);
 void    mfl_drawtree_write_into_tipfield(char* name, char* grid, int row, int col);
-void    mfl_drawtree_set_coords_traversal(mfl_node_t *n, int row, int num_taxa);
+void    mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa);
 void    mfl_drawtree_apply_subbranch(mfl_node_t* parent, mfl_node_t* desc, char *grid);
 void    mfl_drawtree_set_coords_traversal(mfl_node_t* n, int* currentrow, char* grid, int num_taxa);
 void    mfl_drawtree_add_nodebar(mfl_node_t* n, mfl_node_t* ldesc, mfl_node_t* rdesc, char* grid);
