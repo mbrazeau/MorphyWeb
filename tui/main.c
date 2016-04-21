@@ -212,8 +212,62 @@ void tui_test_tree_printing()
     
     mfl_free_tree(printme);
     free(grid);
+}
+
+void tui_test_newick_stuff()
+{
+    /* This function will be eliminated from the library. */
     
-    return;
+    char temp_example_newick_for_writing1[] = "temp_examp1=[&U] (2,((3,4),(5,1)));";
+    char temp_example_newick_for_writing2[] = "temp_examp2=[&R] (2,(6,((3,4),(5,1))));";
+    char temp_example_newick_for_writing3[] = "temp_examp3=[&R] (2,(6,((3,4),5),1));";
+    char temp_example_newick_for_writing4[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));"; // Polytomy and multi-digit tip number not in sequence
+    char temp_example_newick_for_writing5[] = "temp_examp5=[&R] (((((1,4),5),3),2),6);";
+    char temp_example_newick_for_writing6[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
+    char temp_example_newick_for_writing7[] = "temp_examp7=[&U] ((1000,856),(2,3),(56,4));";
+    char temp_example_newick_for_writing8[] = "temp_examp8=[&R] (1,(2,(3,(4,5))));";
+    
+    char *sample_newick = NULL;
+    
+    int num_taxa = 0;
+    int num_nodes = 0;
+    
+    mfl_tree_t *tree_from_newick = NULL;
+    
+    int largest = 0;
+    
+    largest = mfl_seek_largest_tip_number_newick(temp_example_newick_for_writing1);
+    dbg_printf("Largest in example 1: %i\n", largest);
+    largest = mfl_seek_largest_tip_number_newick(temp_example_newick_for_writing4);
+    dbg_printf("Largest in example 4: %i\n", largest);
+    
+    sample_newick = mfl_find_next_opening_bracket_in_newick(temp_example_newick_for_writing4);
+    dbg_printf("The string after finding the opening bracket:\n");
+    dbg_printf("%s\n", sample_newick);
+    
+    //tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing6, 0);
+    
+    dbg_printf("\n\n\n");
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing2, 0);
+    dbg_printf("Testing convert to newick\n");
+    char *newick_string;
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, true);
+    dbg_printf("The output newick string is: %s\n", newick_string);
+    dbg_printf("Unrooting tree:\n");
+    mfl_unroot_tree(tree_from_newick);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, true);
+    dbg_printf("The output newick string is (with polytomy): %s\n", newick_string);
+    tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing2, 0);
+    mfl_unroot_tree(tree_from_newick);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, false);
+    dbg_printf("The output newick string is (without polytomy): %s\n", newick_string);
+    
+    
+    
+    free(newick_string);
+    
+    mfl_free_tree(tree_from_newick); // Some bug here
+    
 }
 
 int main (int argc, char *argv[])
@@ -249,12 +303,13 @@ int main (int argc, char *argv[])
     dbg_printf("\n\n");*/
     
     dbg_printf("Test Newick stuff\n\n");
-    mfl_test_newick_stuff();
+    tui_test_newick_stuff();
     
     dbg_printf("Test treecheck stuff\n\n");
     tui_test_checktree_();
     
     dbg_printf("\n\nGoodbye!\n\n");
     
+    dbg_printf("\n\nGoodbye!\n\n");    
 	return 0;
 }
