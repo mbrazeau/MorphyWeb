@@ -662,3 +662,65 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
     return newick_tree_out;
 
 }
+
+///*!
+// Stores a newick string in an array
+// @param storing_array (mfl_tree_t**) an array of pointers to pointers to mfl_tree_t trees
+// @param newick_string (char*) a pointer to the newick string.
+// @param count (int*) where to store the newick_string in the array
+// @returns a pointer to mfl_tree_t trees.
+// */
+//mfl_tree_t** mfl_store_newick_strings(mfl_tree_t **storing_array, char *newick_string, int *count)
+//{
+//    storing_array[*count] = mfl_convert_newick_to_mfl_tree_t(newick_string, 0);;
+//    return storing_array;
+//}
+//
+///*!
+// Allocates memory for the storing array
+// @param array_size (int) the size of the array to allocate
+// @returns an empty storing array (mfl_tree_t **).
+// */
+//mfl_tree_t** mfl_allocate_storing_array(int array_size)
+//{
+//    mfl_tree_t **storing_array = (mfl_tree_t**)malloc(array_size * sizeof(mfl_tree_t));
+//    
+//    if (!storing_array) {
+//        dbg_printf("ERROR in mfl_allocate_storing_array(): unable to allocate memory for the storing array\n");
+//        return NULL;
+//    }
+//    else {
+//        memset(storing_array, 0, array_size * sizeof(mfl_tree_t));
+//    }
+//    
+//    return storing_array;
+//}
+//
+///*!
+// Stores some trees from an input file into an aray of character pointers
+// @returns a storing array (char **) containing multiple newick trees.
+// */
+//// TODO: input the newicks from a i/o file
+//char** mfl_store_newick_in_array()
+//{
+//    
+//}
+//
+///*!
+// Frees an array of newick strings
+// @param newick_storing_array (mfl_tree_t **) an array of characters pointers mfl_tree_t trees.
+// */
+//void mfl_free_newick_in_array(mfl_tree_t **newick_storing_array)
+//{
+//    int i = 0;
+//    int array_length = 0;
+//    
+//    //Free the newick trees in the array
+//    do {
+//        free(newick_storing_array[i]);
+//        ++i;
+//    } while (newick_storing_array[i] != '\0');
+//    
+//    //Free the array
+//    free(newick_storing_array);
+//}
