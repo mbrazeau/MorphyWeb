@@ -178,7 +178,6 @@ void* tui_check_binary_traversal(mfl_node_t *p, const int* verbose, const char* 
 
 
 /**
- # int tui_count_num_taxa(mfl_tree_t *t)
  Counts the number of terminals, but also has a built-in error check.
  It will loop over the taxa array counting the number of taxa that have the
  tip value set. However, it will also attempt to discover whether there are 
@@ -226,8 +225,7 @@ bool tui_check_reciprocal_edge(mfl_node_t *n, mfl_tree_t* t, int num_nodes, int 
     return backlink;
 }
 
-/**
- # tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verbose)
+/*!
  Scans the tree checking for dangling pointers and other pointer errors. These would
  lead to FATAL ERRORS in processes on the tree.
  @param t (mfl_tree_t*)
@@ -295,8 +293,7 @@ int tui_check_tree_for_connection_errors(mfl_tree_t* t, int num_nodes, int *verb
 }
 
 
-/**
- #int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
+/*!
  Checks for multiple edge pointers pointing to the same node. Such a situation
  could cause a FATAL ERROR in any tree operation routine.
  @param t (mfl_tree_t*) the subject tree
@@ -338,6 +335,15 @@ int tui_check_for_anastomosis(mfl_tree_t* t, int num_nodes, int *verbose)
     
     return err;
 }
+
+
+/*mfl_tree_t* tui_create_tree_for_testing(int num_taxa, bool israndom, char* input_tree, bool isconstraint)
+{
+    
+    
+    
+}*/
+
 
 int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int *verbose)
 {
@@ -417,9 +423,9 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
     return err;
 }
 
-/**
- ## int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
- Attempts to determine if a tree is broken by checking for: dangling pointers 
+
+/*!
+ Attempts to determine if a tree is broken by checking for: dangling pointers
  intended for nodes; invalid pointers to nodes; cyclicity and anastomosis.
  
  @param t (mfl_tree_t*) tree to be checked.
@@ -429,16 +435,6 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
 int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
 {
     dbg_printf("BEGIN TEST %s()\n", __FXN_NAME__);
-    /* 
-     *  What defines a broken tree?
-     *  Anastomosis.
-     *  Cyclicity.
-     *  Pointers that shouldn't be
-     *  Dangling pointers that shouldn't be.
-     *
-     */
-
-    // TODO: Check array ends and off-by-1 errors in the node arrays.
     
     int err = 0;
     int ret = 0;
@@ -473,14 +469,6 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     }
     ret = 0;
     
-    // Checking anastomosis. Each node record should be accessed by no more than one other edge.
-    
-    ret = tui_check_for_anastomosis(t, num_nodes, verbose);
-    
-    if (ret) {
-        err = ret;
-    }
-    ret = 0;
     
     // Checking cyclicity. Each node in a ring should form a closed cycle and only point to nodes
     //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
@@ -566,6 +554,7 @@ void tui_print_newick_recursive(mfl_node_t *n)
     
     return;
 }
+
 
 void tui_print_newick(mfl_node_t *start)
 {
