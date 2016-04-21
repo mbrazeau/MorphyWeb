@@ -215,9 +215,16 @@ void mfl_destroy_nodestack(mfl_nodestack_t* ndstk)
 }
 
 
-void mfl_push_node_to_nodestack(mfl_node_t* n)
+void mfl_push_node_to_nodestack(mfl_node_t* n, mfl_nodestack_t* ndstk)
 {
-    mfl_nodestack_t* nds = n->nodet_ndstack;
+    mfl_nodestack_t* nds;
+    
+    if (!ndstk) {
+         nds = n->nodet_ndstack;
+    }
+    else {
+        nds = ndstk;
+    }
     
     mfl_make_node_available(n);
     
@@ -672,12 +679,14 @@ void mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes)
     
     for (i = 0; i < num_nodes; ++i) {
         nodearray[i]->nodet_index = i;
+        nodearray[i]->nodet_ndstack = t->treet_nodestack;
         if (i < num_taxa) {
             nodearray[i]->nodet_tip = i + 1;
         }
         else {
             t->treet_nodestack->nstk_availbale_nds[j] = nodearray[i];
             ++j;
+            t->treet_nodestack->nstk_numnodes = j;
         }
     }
 }

@@ -238,9 +238,9 @@ int main (int argc, char *argv[])
         //exit(0);
     }
     
-    /*dbg_printf("Testing the tree printing:\n");
+    dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
-    dbg_printf("\nEnd tree print test\n");*/
+    dbg_printf("\nEnd tree print test\n");
     
     /* Everything below here should be written into or replaced by a real test. */
     /*dbg_printf("Testing include set values:\n");
@@ -251,10 +251,10 @@ int main (int argc, char *argv[])
     dbg_printf("Test Newick stuff\n\n");
     mfl_test_newick_stuff();
     
-    /*dbg_printf("Test treecheck stuff\n\n");
+    dbg_printf("Test treecheck stuff\n\n");
     tui_test_checktree_();
     
-    dbg_printf("\n\nGoodbye!\n\n");*/
+    dbg_printf("\n\nGoodbye!\n\n");
     
 	return 0;
 }

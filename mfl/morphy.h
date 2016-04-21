@@ -204,6 +204,7 @@ typedef struct mfl_nodedata_t {
 
 typedef struct mfl_nodestack_t mfl_nodestack_t;
 
+
 typedef struct mfl_node_t {
 	mfl_node_t *nodet_edge, *nodet_next; // Pointers to the neighboring node in the tree; the next node in the node ring.
     mfl_nodestack_t* nodet_ndstack;           // The nodestack of the tree to which this node belongs.
@@ -228,11 +229,13 @@ typedef struct mfl_node_t {
 
 typedef mfl_node_t ** mfl_nodearray_t;  // A pointer of pointers to nodes used in trees.
 
-typedef struct mfl_nodestack_t {
+
+typedef struct mfl_nodestack_t {    // Manages memory for unused nodes and avoid allocation on the fly or searches in the array.
     int nstk_numnodes;
     int nstk_maxsize;
     mfl_nodearray_t nstk_availbale_nds;
 } mfl_nodestack_t;
+
 
 typedef struct mfl_tree_t {
 	mfl_nodearray_t treet_treenodes;        // The nodes of the tree. Never point these to another instance of mfl_tree.
@@ -354,7 +357,8 @@ bool            mfl_check_is_in_ring(mfl_node_t *start);
 mfl_node_t*     mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node);
 mfl_node_t*     mfl_get_node_from_nodestack(mfl_nodestack_t *nds);
 void            mfl_destroy_nodestack(mfl_nodestack_t* ndstk);
-void            mfl_push_node_to_nodestack(mfl_node_t* n);
+mfl_nodestack_t* mfl_create_empty_nodestack(int num_internal_nodes);
+void            mfl_push_node_to_nodestack(mfl_node_t* n, mfl_nodestack_t* ndstk);
 mfl_node_t*     mfl_get_next_available_node(mfl_nodearray_t nodearray);
 bool            mfl_node_is_available(mfl_node_t *node);
 void            mfl_disconnect_node_edges(mfl_node_t *node1, mfl_node_t *node2);
