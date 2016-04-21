@@ -309,7 +309,9 @@ int main (int argc, char *argv[])
     tui_test_checktree_();
     
     dbg_printf("\n\nGoodbye!\n\n");
-    
-    dbg_printf("\n\nGoodbye!\n\n");    
+    tui_test_newick_stuff();
+    dbg_printf("Test treecheck stuff\n\n");
+    tui_test_checktree_();
+    dbg_printf("\n\nGoodbye!\n\n");
 	return 0;
 }
