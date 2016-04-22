@@ -706,7 +706,8 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
 // */
 //// TODO: input the newicks from a i/o file
 //    MDB: Don't handle any i/o operations in the library. Just deal with
-//          handling the strings.
+//          handling the strings. However, simple file i/o for a list of
+//          trees can be dealt with in the TUI.
 //char** mfl_store_newick_in_array()
 //{
 //    
@@ -716,6 +717,8 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
 // Frees an array of newick strings
 // @param newick_storing_array (mfl_tree_t **) an array of characters pointers mfl_tree_t trees.
 // */
+// MDB: Why is the newick storing array of type mfl_tree_t**? Newick trees are char*
+// and an array of them would be of type char**
 //void mfl_free_newick_in_array(mfl_tree_t **newick_storing_array)
 //{
 //    int i = 0;

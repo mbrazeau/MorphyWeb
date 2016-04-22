@@ -113,8 +113,8 @@
 		08FB7794FE84155DC02AAC07 /* Morphy */ = {
 			isa = PBXGroup;
 			children = (
-				516FAC6E1CC00AE4002590DB /* gtest.framework */,
 				08FB7795FE84155DC02AAC07 /* Source */,
+				516FAC6E1CC00AE4002590DB /* gtest.framework */,
 				516FAC681CC00862002590DB /* GT-Tests */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
