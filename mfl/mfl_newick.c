@@ -687,6 +687,9 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
 // */
 //mfl_tree_t** mfl_allocate_storing_array(int array_size)
 //{
+//    MDB: This malloc will lead to an error. You're returning a pointer of pointers
+//         to mfl_tree_t, but sizing it according to the size of a mfl_tree_t struct.
+//         the size should be of an mfl_tree_t*.
 //    mfl_tree_t **storing_array = (mfl_tree_t**)malloc(array_size * sizeof(mfl_tree_t));
 //    
 //    if (!storing_array) {
