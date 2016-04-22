@@ -672,6 +672,10 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
 // */
 //mfl_tree_t** mfl_store_newick_strings(mfl_tree_t **storing_array, char *newick_string, int *count)
 //{
+     // MDB: Why does count need to be a pointer?
+     // MDB: Why are you returning storing array? You've passed it in as a pointer, so
+     // there's no need to return it. In fact, this could lead to some
+     // unpredictable effects.
 //    storing_array[*count] = mfl_convert_newick_to_mfl_tree_t(newick_string, 0);;
 //    return storing_array;
 //}
