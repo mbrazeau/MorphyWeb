@@ -705,6 +705,8 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
 // @returns a storing array (char **) containing multiple newick trees.
 // */
 //// TODO: input the newicks from a i/o file
+//    MDB: Don't handle any i/o operations in the library. Just deal with
+//          handling the strings.
 //char** mfl_store_newick_in_array()
 //{
 //    
