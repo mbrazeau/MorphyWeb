@@ -170,7 +170,7 @@ typedef struct mfl_datapartition_t {
 
 typedef struct mfl_character_vector_t {
     long long int cv_col_number;
-    bool cv_has_gaps;
+    int cv_num_gaps;
     mfl_parsimony_t cv_parsim_method;
     mfl_multicell_t cv_multistate_method;
     mfl_char2bit_fn cv_conversion_rule;
