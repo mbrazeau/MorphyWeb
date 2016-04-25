@@ -55,13 +55,14 @@ char*   tui_readfile_to_str(FILE *input);
 void    tui_destroy_file_string(char* oldinput);
 void    tui_parse_test_infile(char *infile);
 int     tui_check_simple_table_formatted(const char* input_table);
-void    tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle);
-int     tui_check_simple_table_dimensions(const char* table, int rows, int cols);
-void    tui_get_simple_table_dimensions(const char*table, int* rows, int* cols);
 mfl_handle_s*   tui_parse_test_file(const char* arg1, const char* arg2);
 
 /*  tmtarixproc.c
  */
+void    tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle);
+int     tui_check_simple_table_dimensions(const char* table, int rows, int cols);
+void    tui_get_simple_table_dimensions(const char*table, int* rows, int* cols);
+char*   tui_get_simple_table_matrix(const char* input_table);
 int     tui_test_matrix_processing(void);
 
 /* to clean up*/
