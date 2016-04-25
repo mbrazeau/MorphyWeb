@@ -135,12 +135,46 @@ void tui_get_simple_table_dimensions(const char*table, int* rows, int* cols)
     dbg_printf("\nColumns: %i.\n\n", *cols);
 }
 
-char* tui_get_simple_table()
+
+char* tui_get_simple_table_matrix(const char* input_table)
 {
+    int i = 0;
+    char *ch = (char*)input_table;
+    char *matrix = NULL;
+    
+    mfl_move_past_symbol(&ch, ';');
+    ++ch;
+    
+    do {
+        ++ch;
+        if (!isspace(*ch)) {
+            ++i;
+        }
+    } while (*ch);
+    
+    // Reset ch
+    ch = (char*)input_table;
+    mfl_move_past_symbol(&ch, ';');
+    ++ch;
+    
+    matrix = (char*)malloc((i+1)*sizeof(char));
+    
+    i = 0;
+    do {
+        if (!isspace(*ch)) {
+            matrix[i] = *ch;
+            ++i;
+        }
+        ++ch;
+    } while (*ch);
+    
+    matrix[i] = *ch;
+    
+    return matrix;
     
 }
 
-void tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle)
+void tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle)
 {
     /*  Reads a simple table. Table still requires some formatting, consistent with
      *  but without all the extra Nexus overhead. The basic format will be:
@@ -160,10 +194,23 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle)
     int num_rows = 0;
     int num_cols = 0;
     
-    tui_check_simple_table_formatted(input_table);
-    tui_get_simple_table_dimensions(input_table, &num_rows, &num_cols);
-    tui_check_simple_table_dimensions(input_table, num_rows, num_cols);
+    if (tui_check_simple_table_formatted(input_table)) {
+        dbg_eprintf("unable to verify formatting");
+        return;
+    }
     
+    tui_get_simple_table_dimensions(input_table, &num_rows, &num_cols);
+    
+    if (tui_check_simple_table_dimensions(input_table, num_rows, num_cols)) {
+        dbg_eprintf("unable to verify dimensions");
+        return;
+    }
+    
+    // Append the table into the handle
+    test_handle->input_data = tui_get_simple_table_matrix(input_table);
+    
+    dbg_printf("\nChecking the stored matrix:\n");
+    dbg_printf("%s\n\n", test_handle->input_data);
 }
 
 char* tui_readfile_to_str(FILE *input)
@@ -201,7 +248,9 @@ void tui_destroy_file_string(char* oldinput)
 }
 
 
-int tui_parse_test_file(const char* arg1, const char* arg2)
+
+
+mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
 {
     
     FILE* inputfile;
@@ -210,7 +259,7 @@ int tui_parse_test_file(const char* arg1, const char* arg2)
     
     if (!(inputfile = fopen(arg1, "r"))) {
         dbg_eprintf("file does not exist.\n");
-        return(1);
+        exit(-1);
     }
     else {
         dbg_printf("\nProcessing file % . . .\n", arg1);
@@ -219,13 +268,13 @@ int tui_parse_test_file(const char* arg1, const char* arg2)
     
     filstr = tui_readfile_to_str(inputfile);
     
-    mfl_handle_t testhandle;
-    testhandle = mfl_create_handle();
+    mfl_handle_s* testhandle;
+    testhandle = mfl_t2s(mfl_create_handle());
     
     // Do stuff to the file here.
     /*  Options for arg2
      *
-     *  matrix;
+     *  matrix
      *  newick
      */
     
@@ -234,8 +283,10 @@ int tui_parse_test_file(const char* arg1, const char* arg2)
     
     tui_destroy_file_string(filstr);
     
-    mfl_destroy_handle(testhandle);
+    //mfl_destroy_handle(testhandle);
     fclose(inputfile);
+    
+    return testhandle;
     
 }
 
@@ -257,11 +308,5 @@ void tui_parse_test_infile(char *infile)
     NxsCharactersBlock* nex_characters = infile_reader.GetCharactersBlock(taxa, 0);
  
     nchar = nex_characters->GetNChar();
-    
-    
-    
-    
-    //string matrix;
-
     
 }

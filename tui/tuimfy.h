@@ -50,10 +50,10 @@ void    tui_print_newick(mfl_node_t *n);
 /*  tui_io.c
  */
 int     tui_check_simple_table_formatted(const char* input_table);
-void    tui_simple_table_parser(const char* input_table, mfl_handle_t test_handle);
+void    tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle);
 int     tui_check_simple_table_dimensions(const char* table, int rows, int cols);
 void    tui_get_simple_table_dimensions(const char*table, int* rows, int* cols);
-int     tui_parse_test_file(const char* arg1, const char* arg2);
+mfl_handle_s*     tui_parse_test_file(const char* arg1, const char* arg2);
 
 /*  tmtarixproc.c
  */
