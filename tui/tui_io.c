@@ -118,12 +118,11 @@ char* tui_readfile_to_str(FILE *input)
     return inputfilestr;
 }
 
+
 void tui_destroy_file_string(char* oldinput)
 {
     free(oldinput);
 }
-
-
 
 
 mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
@@ -170,7 +169,6 @@ mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
  * I think we can incorporate the NCL for I/O, I just need to figure out 
  * how to do that. Will work on that below.
  */
-
 void tui_parse_test_infile(char *infile)
 {
     int i = 0;
