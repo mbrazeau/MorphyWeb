@@ -323,7 +323,7 @@ void            mfl_set_datatype_converter_from_symbol_list(char* datype_convert
 char*           mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, int listmax);
 mfl_parsimony_t*    mfl_alloc_chartype_list(int input_num_chars);
 void            mfl_destroy_chartype_list(mfl_parsimony_t *ctype_list);
-mfl_parsimony_t*    mfl_get_chartypes_list(mfl_handle_s* mfl_handle);
+mfl_parsimony_t*    mfl_get_chartypes_list(const mfl_handle_s* mfl_handle);
 mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype);
 bool            mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, int input_num_chars);
 int             mfl_check_state_number_support(char *datatype_list);
@@ -335,11 +335,16 @@ void            mfl_free_nodedata(mfl_nodedata_t *olddata);
 mfl_nodedata_t* mfl_alloc_datapart(void);
 int*            mfl_alloc_set_list(int num_chars);
 void            mfl_free_set_list(bool *inclist);
-void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int *list, int nelems);
-void            mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand);
+//void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int *list, int nelems);
+
+void mfl_read_nexus_style_list_subcmd(char *subcommand, mfl_uint setval, mfl_uint* list, int nelems);
+void mfl_set_include_value(int vectornum, int includeval, mfl_uint* includes);
+void mfl_set_include_range(int first, int last, int includeval, mfl_uint* includes);
+
+void            mfl_set_inclusion_list(mfl_uint* includes, int includeval, int listmax, char *subcommand);
 void            mfl_move_current_to_digit(char** current);
-void            mfl_set_include_range(int first, int last, int includeval, int* includes);
-void            mfl_set_include_value(int vectornum, int includeval, int* includes);
+//void            mfl_set_include_range(int first, int last, int includeval, int* includes);
+//void            mfl_set_include_value(int vectornum, int includeval, int* includes);
 int             mfl_get_numstates_from_matrix(char *inputmatrix);
 int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);
