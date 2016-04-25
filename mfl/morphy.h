@@ -95,7 +95,8 @@ using namespace std;
  *
  */
 
-typedef uint64_t mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
+typedef uint64_t mfl_uint;
+typedef mfl_uint mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
