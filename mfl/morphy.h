@@ -88,6 +88,7 @@ using namespace std;
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
 
+#define MORPHY_UINTMAX UINT64_MAX
 
 /*
  *
@@ -97,6 +98,7 @@ using namespace std;
 
 typedef uint64_t mfl_uint;
 typedef mfl_uint mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
+
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
@@ -277,7 +279,7 @@ typedef struct mfl_searchrec_t {
     mfl_branch_swap_t sr_bswaptype;
     mfl_add_sequence_t sr_stepwise;
     long int sr_num_reps_stepwise;
-    long int sr_best_length;
+    mfl_uint sr_best_length;
     int sr_trees_held_stepwise;
     int sr_num_partitions;
     bool sr_increase_treebuffer;
