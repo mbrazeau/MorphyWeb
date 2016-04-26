@@ -849,12 +849,12 @@ void mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa
 }
 
 
-void mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_taxa, int num_chars)
+void mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_taxa, int num_chars)
 {
     int i = 0;
     
     for (i = 0; i < num_chars; ++i) {
-        mfl_destroy_character_cells(oldmatrix->mat_matrix[i]->cv_character_cells, num_states, num_taxa);
+        mfl_destroy_character_cells(oldmatrix->mat_matrix[i]->cv_character_cells, oldmatrix->mat_matrix[i]->cv_num_states, num_taxa);
         free(oldmatrix->mat_matrix[i]->cv_character_cells);
         free(oldmatrix->mat_matrix[i]->cv_chardata);
         free(oldmatrix->mat_matrix[i]);

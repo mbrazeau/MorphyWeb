@@ -333,7 +333,7 @@ mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype);
 bool            mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, int input_num_chars);
 int             mfl_check_state_number_support(char *datatype_list);
 void            mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa);
-void            mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_states, int num_taxa, int num_chars);
+void            mfl_destroy_mfl_matrix(mfl_matrix_t *oldmatrix, int num_taxa, int num_chars);
 mfl_matrix_t*   mfl_create_mfl_matrix(int num_taxa, int num_chars);
 void            mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num_taxa, int num_chars);
 void            mfl_free_nodedata(mfl_nodedata_t *olddata);

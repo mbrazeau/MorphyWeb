@@ -177,7 +177,7 @@ void tui_test_character_stuff()
     
     /* Need to calculate num_states!*/
     
-    mfl_destroy_mfl_matrix(testmatrix, num_states, num_taxa, num_chars);
+    mfl_destroy_mfl_matrix(testmatrix, num_taxa, num_chars);
     
     
     /*char *subcmd = NULL;

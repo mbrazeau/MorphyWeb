@@ -150,7 +150,10 @@ int tui_test_matrix_processing(mfl_handle_s *mfl_handle)
     internmatrix = mfl_create_internal_data_matrix((const mfl_handle_s*)mfl_handle);
     
     tui_print_out_converted_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars);
+    
+    mfl_destroy_mfl_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars);
     dbg_printf("\nEnd test for matrix conversion\n\n");
+    
     
     // Print the contents of the data matrix.
     
