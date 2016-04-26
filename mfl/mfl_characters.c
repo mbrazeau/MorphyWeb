@@ -1275,18 +1275,19 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
         mfl_count_gaps_in_each_character(new_inmatrix);
     }
     
-    // TODO: finish this list of tasks
     chartypes = mfl_get_chartypes_list(mfl_handle);
-    
-    dbg_printf("Printing chartypes array:\n");
-    int i = 0;
-    for (i = 0; i < mfl_handle->n_chars; ++i) {
-        dbg_printf("%i ", chartypes[i]);
-    }
-    
-    //  Loop over the columns and set the parsimony type.
     mfl_set_cv_chartypes(new_inmatrix, mfl_handle, chartypes);
     
+    // TODO: finish this list of tasks
+    // Next: check if there's a format_symbols list. Then set up the symbol
+    // translators appropriately.
+    if (mfl_handle->format_symbols) {
+        // Set up the symbol translation ordering array accordingly
+    } else {
+        // Default symbol translation ordering array is applied.
+    }
+    
+    int i;
     dbg_printf("Printing chartypes array:\n");
     for (i = 0; i < mfl_handle->n_chars; ++i) {
         dbg_printf("%i ", chartypes[i]);
