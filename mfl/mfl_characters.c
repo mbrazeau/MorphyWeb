@@ -742,7 +742,7 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
 {
     int i = 0;
     int j = 0;
-    int charcells_size = num_states+1; // +1 for endline character;
+    int charcells_size = num_states+1; // +1 for terminal null character;
     
     if (!num_states) {
         dbg_printf("ERROR in mfl_setup_new_empty_matrix(): cannot setup matrix without number of states\n");
@@ -763,6 +763,7 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
         
         // Allocate and set up the char-type transformation series vectors
         newmatrix->mat_matrix[i]->cv_character_cells = (char**)malloc(num_taxa * sizeof(char*));
+        newmatrix->mat_matrix[i]->cv_num_states = num_states;
         
         if (!newmatrix->mat_matrix[i]->cv_character_cells) {
             dbg_printf("ERROR in mfl_setup_new_empty_matrix(): unable to allocate memory for cv_character_cells\n");

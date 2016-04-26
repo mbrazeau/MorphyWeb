@@ -179,6 +179,7 @@ typedef struct mfl_character_vector_t {
     mfl_parsimony_t cv_parsim_method;
     mfl_multicell_t cv_multistate_method;
     mfl_char2bit_fn cv_conversion_rule;
+    int cv_num_states;
     char** cv_character_cells;
     mfl_charstate* cv_chardata;
 } mfl_character_vector_t;
