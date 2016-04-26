@@ -91,6 +91,27 @@ void mfl_drawtree_write_into_tipfield(char* name, char* grid, int row, int col)
     }
 }
 
+int mfl_drawtree_calculate_branchlength(int num_taxa)
+{
+    // TODO: There will be a more sophisticated way of doing this.
+    
+    int num_units = 0;
+    float branchlen;
+    
+    branchlen = 3 * 63 / (num_taxa - 1);
+    
+    if (branchlen < 1) {
+        num_units = 1;
+    }
+    else {
+        num_units = (int)branchlen;
+        if (num_units < 1) {
+            num_units = 1;
+        }
+    }
+    
+    return num_units;
+}
 
 /*!
  @discussion Sets the spatial coordinates for ASCII text drawing for a tip or 
@@ -102,8 +123,8 @@ void mfl_drawtree_write_into_tipfield(char* name, char* grid, int row, int col)
  */
 void mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa)
 {
-    int branchlen = 3 * 63 / (num_taxa - 2);    // TODO: Eventually, we'll need some more sophisticated
-                                                // way of doing this. For now, this keeps things pretty well under control.
+    int branchlen = mfl_drawtree_calculate_branchlength(num_taxa);
+    
     mfl_node_t* p = NULL;
     mfl_node_t* leftdesc = NULL;
     mfl_node_t* rightdesc = NULL;
