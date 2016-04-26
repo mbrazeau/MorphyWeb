@@ -66,6 +66,8 @@ using namespace std;
  *
  */
 
+#define MORPHY_UINTMAX UINT64_MAX
+
 #define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
 #define MORPHY_MAX_STATE_NUMBER (64 - MORPHY_SPECIAL_STATE_PAD) /* The reason this isn't 64 is because the
                                       the first bit position is reserved for 
@@ -88,7 +90,7 @@ using namespace std;
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
 
-#define MORPHY_UINTMAX UINT64_MAX
+
 
 /*
  *
@@ -128,7 +130,7 @@ typedef struct {
     int                     n_treelimit;
     int                     n_ctypes;
     char*                   ctypes_cmd[MFL_OPT_MAX];
-    mfl_parsimony_t         ctypes[MFL_OPT_MAX];
+    mfl_parsimony_t*        ctypes;                         // A 'preloaded' array of ctypes, rather than a command to be parsed
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
     int                     n_symbols;
@@ -339,11 +341,11 @@ int*            mfl_alloc_set_list(int num_chars);
 void            mfl_free_set_list(bool *inclist);
 //void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int *list, int nelems);
 
-void mfl_read_nexus_style_list_subcmd(char *subcommand, mfl_uint setval, mfl_uint* list, int nelems);
-void mfl_set_include_value(int vectornum, int includeval, mfl_uint* includes);
-void mfl_set_include_range(int first, int last, int includeval, mfl_uint* includes);
+void mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int* list, int nelems);
+void mfl_set_include_value(int vectornum, int includeval, int* includes);
+void mfl_set_include_range(int first, int last, int includeval, int* includes);
 
-void            mfl_set_inclusion_list(mfl_uint* includes, int includeval, int listmax, char *subcommand);
+void            mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand);
 void            mfl_move_current_to_digit(char** current);
 //void            mfl_set_include_range(int first, int last, int includeval, int* includes);
 //void            mfl_set_include_value(int vectornum, int includeval, int* includes);

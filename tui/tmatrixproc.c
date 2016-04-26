@@ -126,6 +126,9 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle)
         return;
     }
     
+    test_handle->n_chars = num_cols;
+    test_handle->n_taxa = num_rows;
+    
     // Append the table into the handle
     test_handle->input_data = tui_get_simple_table_matrix(input_table);
     
@@ -133,13 +136,23 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle)
     dbg_printf("%s\n\n", test_handle->input_data);
 }
 
+
 int tui_test_matrix_processing(mfl_handle_s *mfl_handle)
 {
-    char wagners[] = "2-6 10 21-25";
-    char costmat[] = "11-15";
+    char wagners[] = "1-3 6";
+    char costmat[] = "8-10";
     mfl_handle->ctypes_cmd[MFL_OPT_WAGNER] = wagners;
     mfl_handle->ctypes_cmd[MFL_OPT_COST_MATRIX] = costmat;
+    mfl_handle->n_ctypes = 2;
     
-    // Get the partition
+    mfl_matrix_t* internmatrix = NULL;
+    
+    internmatrix = mfl_create_internal_data_matrix((const mfl_handle_s*)mfl_handle);
+    
+    tui_print_out_converted_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars);
+    dbg_printf("\nEnd test for matrix conversion\n\n");
+    
+    // Print the contents of the data matrix.
+    
     
 }

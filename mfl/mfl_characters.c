@@ -518,9 +518,8 @@ mfl_parsimony_t* mfl_get_chartypes_list(const mfl_handle_s* mfl_handle)
         else {
             // Parse each ctype command
             for (i = 0; i < MFL_OPT_MAX; ++i) {
-                // THE IMPORTANT BITS HERE
                 if (mfl_handle->ctypes_cmd[i]) {
-                    mfl_read_nexus_style_list_subcmd(mfl_handle->ctypes_cmd[i], i, (mfl_uint*)ctype_setters, mfl_handle->n_chars);
+                    mfl_read_nexus_style_list_subcmd(mfl_handle->ctypes_cmd[i], i, (int*)ctype_setters, mfl_handle->n_chars);
                 }
             }
         }
@@ -1052,22 +1051,19 @@ int mfl_read_nexus_type_int(char **current)
 }
 
 
-void mfl_set_include_value(int vectornum, int includeval, mfl_uint* includes)
+void mfl_set_include_value(int vectornum, int includeval, int* includes)
 {
     /* In any set of bool include array, this sets the entry's value to the
      * desired true/false value */
     
     
     if (includeval) {
-        includes[vectornum-1] = true;
-    }
-    else {
-        includes[vectornum-1] = false;
+        includes[vectornum-1] = includeval;
     }
 }
 
 
-void mfl_set_include_range(int first, int last, int includeval, mfl_uint* includes)
+void mfl_set_include_range(int first, int last, int includeval, int* includes)
 {
     /* Set all boolean values in includes to the true/false value indicated in
      * by includeval */
@@ -1109,7 +1105,7 @@ void mfl_move_current_to_digit(char** current)
  @param listmax (int) the size of the list.
  @param subcommand (char*) the input string that is to be parsed.
  */
-void mfl_set_inclusion_list(mfl_uint* includes, int includeval, int listmax, char *subcommand)
+void mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand)
 {
     
     int first = 0;
@@ -1198,7 +1194,7 @@ void mfl_free_set_list(bool *inclist)
  input setval.
  @param nelems (int) the length of the list parameter.
  */
-void mfl_read_nexus_style_list_subcmd(char *subcommand, mfl_uint setval, mfl_uint* list, int nelems)
+void mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int* list, int nelems)
 {
     subcommand = mfl_move_past_eq_sign(subcommand);
     mfl_set_inclusion_list(list, setval, nelems, subcommand);
@@ -1259,9 +1255,6 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     // TODO: Wrap more checks into this function
     mfl_check_nexus_matrix_dimensions(input_chardata, mfl_handle->n_taxa, mfl_handle->n_chars);
     
-    mfl_populate_chartype_character_vectors(new_inmatrix, input_chardata, mfl_handle->n_chars, mfl_handle->n_taxa);
-    
-    
     if (mfl_handle->n_symbols && mfl_handle->format_symbols) {
         num_states = mfl_handle->n_symbols;
         // Generate a data converter that derives from the symbols list.
@@ -1273,18 +1266,32 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
         num_states = mfl_get_numstates_from_matrix(input_chardata);
     }
     
+    mfl_setup_new_empty_matrix(new_inmatrix, num_states, mfl_handle->n_taxa, mfl_handle->n_chars);
+    
+    mfl_populate_chartype_character_vectors(new_inmatrix, input_chardata, mfl_handle->n_chars, mfl_handle->n_taxa);
+    
     if (mfl_handle->gap_method == MFL_GAP_INAPPLICABLE) {
         mfl_count_gaps_in_each_character(new_inmatrix);
     }
     
     // TODO: finish this list of tasks
-    // Setting each column's parsimony type.
-    //  Get the tokens for each type of parsimony (if set)
     chartypes = mfl_get_chartypes_list(mfl_handle);
+    
+    dbg_printf("Printing chartypes array:\n");
+    int i = 0;
+    for (i = 0; i < mfl_handle->n_chars; ++i) {
+        dbg_printf("%i ", chartypes[i]);
+    }
     
     //  Loop over the columns and set the parsimony type.
     mfl_set_cv_chartypes(new_inmatrix, mfl_handle, chartypes);
     
+    dbg_printf("Printing chartypes array:\n");
+    for (i = 0; i < mfl_handle->n_chars; ++i) {
+        dbg_printf("%i ", chartypes[i]);
+    }
+
+    dbg_printf("\n");
     // !!!: Appropriate step/cost matrices would be set here.
     
     // Set each column's conversion rule.

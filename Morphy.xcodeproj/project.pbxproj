@@ -14,7 +14,7 @@
 		51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F991CA19995009EEDF2 /* mfl_brswap.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA31CA27DFA009EEDF2 /* mfl_initialise.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */; settings = {ASSET_TAGS = (); }; };
+		51D40FA31CA27DFA009EEDF2 /* mfl_searchrec.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9D1CA27DFA009EEDF2 /* mfl_searchrec.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA41CA27DFA009EEDF2 /* mfl_newick.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */; settings = {ASSET_TAGS = (); }; };
 		51D40FA61CA27DFA009EEDF2 /* mfl_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */; settings = {ASSET_TAGS = (); }; };
@@ -59,7 +59,7 @@
 		51D40F991CA19995009EEDF2 /* mfl_brswap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_brswap.c; sourceTree = "<group>"; };
 		51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_characters.c; sourceTree = "<group>"; };
 		51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_evaluate.c; sourceTree = "<group>"; };
-		51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_initialise.c; sourceTree = "<group>"; };
+		51D40F9D1CA27DFA009EEDF2 /* mfl_searchrec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_searchrec.c; sourceTree = "<group>"; };
 		51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_newick.c; sourceTree = "<group>"; };
 		51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_starttree.c; sourceTree = "<group>"; };
 		51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mfl_tree.c; sourceTree = "<group>"; };
@@ -167,7 +167,7 @@
 				5159B8161CA1915100498FD0 /* mfyinterface.c */,
 				51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */,
 				51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */,
-				51D40F9D1CA27DFA009EEDF2 /* mfl_initialise.c */,
+				51D40F9D1CA27DFA009EEDF2 /* mfl_searchrec.c */,
 				51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */,
 				51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */,
 				5157EFBB1CC5422D00B4CBFB /* mfl_drawtree.h */,
@@ -300,7 +300,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				512549C31CC43A04002C8B57 /* mfl_drawtree.c in Sources */,
-				51D40FA31CA27DFA009EEDF2 /* mfl_initialise.c in Sources */,
+				51D40FA31CA27DFA009EEDF2 /* mfl_searchrec.c in Sources */,
 				E117201F1631602A0021AAA7 /* main.c in Sources */,
 				51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */,
 				5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */,

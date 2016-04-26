@@ -125,6 +125,25 @@ void tui_destroy_file_string(char* oldinput)
 }
 
 
+tui_testcmd_t tui_read_cmdline_argv(const char* arg2)
+{
+    //tui_testcmd_t ret = TUI_CMD_MAX;
+    
+    if (strcmp(arg2, "matrix")) {
+        return TUI_CMD_MATRIX_INPUT_BASIC;
+    }
+    else if (strcmp(arg2, "newikc")) {
+        return TUI_CMD_NEWICK_INPUT_BASIC;
+    }
+    else if (strcmp(arg2, "command")) {
+        return TUI_CMD_COMMAND_BASIC;
+    }
+    else {
+        return TUI_CMD_MAX;
+    }
+}
+
+
 mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
 {
     
@@ -137,7 +156,7 @@ mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
         exit(-1);
     }
     else {
-        dbg_printf("\nProcessing file % . . .\n", arg1);
+        dbg_printf("\nProcessing file %s . . .\n", arg1);
     }
     
     
@@ -151,19 +170,25 @@ mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
      *
      *  matrix
      *  newick
+     *  commands
+     *
      */
     
     //Processing as a matrix
     tui_simple_table_parser((const char*)filstr, testhandle);
     
-    tui_destroy_file_string(filstr);
+    dbg_printf("Test matrix processing:\n\n");
+    tui_test_matrix_processing(testhandle);
     
-    //mfl_destroy_handle(testhandle);
+    
+    tui_destroy_file_string(filstr);
+    mfl_destroy_handle(testhandle);
     fclose(inputfile);
     
     return testhandle;
     
 }
+
 
 /*
  * I think we can incorporate the NCL for I/O, I just need to figure out 

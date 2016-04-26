@@ -108,7 +108,28 @@ void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_
     
     dbg_printf("Printing this obfuscated matrix:\n");
     
+    dbg_printf("Char numbers:\n");
+    dbg_printf("\t");
+    for (i = 0; i < num_chars; ++i) {
+        if (matrix->mat_matrix[i]) {
+            dbg_printf("%i ", matrix->mat_matrix[i]->cv_num_gaps);
+        } else {
+            dbg_printf("# ");
+        }
+    }
+    dbg_printf("\n");
+    dbg_printf("\t");
+    for (i = 0; i < num_chars; ++i) {
+        if (matrix->mat_matrix[i]) {
+            dbg_printf("%i ", matrix->mat_matrix[i]->cv_parsim_method);
+        } else {
+            dbg_printf("# ");
+        }
+    }
+    
+    dbg_printf("\nMatrix:\n");
     for (i = 0; i < num_taxa; ++i) {
+        dbg_printf("\t");
         for (j = 0; j < num_chars; ++j) {
             dbg_printf("%s ", matrix->mat_matrix[j]->cv_character_cells[i]);
         }
@@ -292,15 +313,17 @@ int main (int argc, char *argv[])
         //exit(0);
     }
     
-    dbg_printf("Testing the tree printing:\n");
+    /*dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
-    dbg_printf("\nEnd tree print test\n");
+    dbg_printf("\nEnd tree print test\n");*/
+    
+    //-----
     
     /* Everything below here should be written into or replaced by a real test. */
     /*dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
     tui_getting_numstates_test();
-    dbg_printf("\n\n");*/
+    dbg_printf("\n\n");
     
     dbg_printf("Test Newick stuff\n\n");
     tui_test_newick_stuff();
@@ -312,6 +335,9 @@ int main (int argc, char *argv[])
     tui_test_newick_stuff();
     dbg_printf("Test treecheck stuff\n\n");
     tui_test_checktree_();
-    dbg_printf("\n\nGoodbye!\n\n");
+    
+    dbg_printf("\n\nGoodbye!\n\n");*/
+    
+    
 	return 0;
 }

@@ -24,10 +24,20 @@ typedef struct tui_testrec {
     
 } tui_testrec;
 
+
+typedef enum tui_testcmd_t {
+    TUI_CMD_MATRIX_INPUT_BASIC,
+    TUI_CMD_NEWICK_INPUT_BASIC,
+    TUI_CMD_COMMAND_BASIC,
+    
+    TUI_CMD_MAX
+} tui_testcmd_t;
+
+
 /*
  * Function prototypes for testing
  */
-
+void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_chars);
 void tui_test_tree_printing();
 
 /*  tui_utilities.c
@@ -63,7 +73,7 @@ void            tui_simple_table_parser(const char* input_table, mfl_handle_s* t
 int             tui_check_simple_table_dimensions(const char* table, int rows, int cols);
 void            tui_get_simple_table_dimensions(const char*table, int* rows, int* cols);
 char*           tui_get_simple_table_matrix(const char* input_table);
-int             tui_test_matrix_processing(void);
+int tui_test_matrix_processing(mfl_handle_s *mfl_handle);
 
 /* to clean up*/
 void            mfl_test_newick_stuff();
