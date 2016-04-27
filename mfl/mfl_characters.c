@@ -386,7 +386,7 @@ void mfl_set_datatype_converter_from_symbol_list(char* datype_converter, char* s
     
     dtype_ptr = symbols_list;
     
-    while (dtype_ptr) {
+    while (*dtype_ptr) {
         // There is a check here in case of accidental inclusion of unrecognised symbols
         if (!isspace(*dtype_ptr) && *dtype_ptr != '-' && *dtype_ptr != '?') {
             datype_converter[i] = *dtype_ptr;
@@ -652,6 +652,18 @@ void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const m
     int i = 0;
     int num_taxa = 0;
     char* dataconverter = NULL;
+    
+    
+    if (handle->format_symbols) {
+        dataconverter = (char*)malloc((handle->n_symbols + 1) * sizeof(char));
+        if (!dataconverter) {
+            dbg_eprintf("unable to allocate memory for new data converter");
+        }
+        else {
+            memset(dataconverter, 0, (handle->n_symbols + 1) * sizeof(char));
+        }
+        mfl_set_datatype_converter_from_symbol_list(dataconverter, handle->format_symbols);
+    }
     
     num_taxa = handle->n_taxa;
     
@@ -1296,7 +1308,6 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     if (mfl_handle->n_symbols && mfl_handle->format_symbols) {
         num_states = mfl_handle->n_symbols;
-        // Generate a data converter that derives from the symbols list.
     }
     else {
         dbg_printf("No symbols list supplied. Attempting to estimate state number from input matrix.\n");
