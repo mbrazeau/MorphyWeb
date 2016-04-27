@@ -352,23 +352,6 @@ mfl_charstate mfl_convert_gap_character(mfl_gap_t gapmethod)
 }
 
 
-/*mfl_charstate mfl_convert_symbols_to_charstate(char* statecell, char *datype_converter, mfl_gap_t gapmethod)
-{
-    
-    if (isalnum(*statecell)) {
-        return mfl_convert_nexus_multistate(statecell, datype_converter);
-    }
-    else if (*statecell == '-') {
-        return mfl_convert_gap_character(gapmethod);
-    }
-    else {
-        dbg_eprintf("unable to convert input character state symbol");
-        exit(-1);
-    }
-}*/
-
-
-
 /*!
  If the typeset list is supplied as an input string rather than an array, this
  sets the new char array to be a space-less vector of symbols use as character
@@ -476,6 +459,7 @@ int mfl_get_numstates_from_matrix(char *inputmatrix)
     return count-1;
 }
 
+
 /*!
  @discussion Allocates an array used to assign the parsimony type for each 
  column (transformation series)in the data matrix. Sets the default parsimony
@@ -547,6 +531,15 @@ mfl_parsimony_t* mfl_get_chartypes_list(const mfl_handle_s* mfl_handle)
 }
 
 
+/*!
+ @discussion Converts a symbol to a set bit in an mfl_charstate variable
+ @param c (char*) the input character from the data matrix
+ @param datype_converter (char*) the optional symbols list used to determine the
+ ordering of symbol values
+ @param gaprule (mfl_gap_t) the parameter for how the gap character will be 
+ handled
+ @return an mfl_charstate variable with the corresponding bit(s) set
+ */
 mfl_charstate mfl_standard_conversion_rule(char *c, char* datype_converter, mfl_gap_t gaprule)
 {
     if (mfl_is_valid_morphy_statesymbol(*c)) {
@@ -579,6 +572,9 @@ mfl_charstate mfl_standard_conversion_rule(char *c, char* datype_converter, mfl_
             return mfl_convert_gap_character(gaprule);
         }
     }
+    
+    dbg_eprintf("unable to convert input character");
+    return 0;
 }
 
 
@@ -604,31 +600,24 @@ mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype)
         
         case MFL_OPT_FITCH:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Fitch to std\n");
             break;
         case MFL_OPT_WAGNER:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Wagner to std\n");
             break;
         case MFL_OPT_DOLLO_UP:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Dollo UP to std\n");
             break;
         case MFL_OPT_DOLLO_DN:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Dollo DN to std\n");
             break;
         case MFL_OPT_IRREVERSIBLE_UP:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Irreversible UP to std\n");
             break;
         case MFL_OPT_IRREVERSIBLE_DN:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Irreversible DN to std\n");
             break;
         case MFL_OPT_COST_MATRIX:
             ret = mfl_standard_conversion_rule;
-            dbg_printf("Setting Cost Matrix to std\n");
             break;
         /*case ___CUSTOM_TYPE___:
              ret = __POINTER_TO_CUSTOM_CONVERSION_ROUTINE;
@@ -680,6 +669,7 @@ void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const m
     free(dataconverter);
     
 }
+
 
 void mfl_convert_all_characters_to_charstates(mfl_matrix_t* m, const mfl_handle_s* handle)
 {
@@ -1279,6 +1269,8 @@ void mfl_count_gaps_in_each_character(mfl_matrix_t* matrix)
     }
 }
 
+
+
 void mfl_set_cv_chartypes(mfl_matrix_t* matrix, const mfl_handle_s* mfl_handle, mfl_parsimony_t* chartypes)
 {
     int i = 0;
@@ -1354,9 +1346,9 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 
 
 
-mfl_datapartition_t** mfl_partition_matrix_by_parsimony_type(mfl_matrix_t* matrix, mfl_handle_s* mfl_handle)
+/*mfl_datapartition_t** mfl_partition_matrix_by_parsimony_type(mfl_matrix_t* matrix, mfl_handle_s* mfl_handle)
 {
     
-}
+}*/
 
 
