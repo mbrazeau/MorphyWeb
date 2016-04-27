@@ -159,8 +159,8 @@ char* tui_readfile_to_str(FILE *input)
     inputfilestr[filesize-1] = '\0';
     //inputfilestr[filesize] = '\0';
     
-    dbg_printf("The input file: \n");
-    dbg_printf("%s\n\n", inputfilestr);
+    //dbg_printf("The input file: \n");
+    //dbg_printf("%s\n\n", inputfilestr);
     
     return inputfilestr;
 }
