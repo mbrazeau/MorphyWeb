@@ -74,7 +74,7 @@ using namespace std;
                                       gap as a state or as logical impossibility
                                                                               */
 #define MORPHY_INAPPLICABLE_BITPOS 1
-#define MORPHY_MISSING_DATA_BITWISE ((~0)^1)
+#define MORPHY_MISSING_DATA_BITWISE (~1)
 
 //Defaults
 #define MORPHY_DEFAULT_WEIGHT 1.0
@@ -131,6 +131,8 @@ typedef struct {
     int                     n_ctypes;
     char*                   ctypes_cmd[MFL_OPT_MAX];
     mfl_parsimony_t*        ctypes;                         // A 'preloaded' array of ctypes, rather than a command to be parsed
+    int                     n_usertypes;
+    char**                  usertypes;
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
     int                     n_symbols;
@@ -158,7 +160,7 @@ typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
 typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a function that performs parsimony calculations at a node.
-typedef mfl_charstate (*mfl_char2bit_fn)(char *states, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
+typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
 typedef struct mfl_datapartition_t {
@@ -330,6 +332,7 @@ mfl_parsimony_t*    mfl_alloc_chartype_list(int input_num_chars);
 void            mfl_destroy_chartype_list(mfl_parsimony_t *ctype_list);
 mfl_parsimony_t*    mfl_get_chartypes_list(const mfl_handle_s* mfl_handle);
 mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype);
+void            mfl_apply_conversion_rules(mfl_matrix_t *matrix);
 bool            mfl_check_nexus_matrix_dimensions(char *input_matrix, int input_num_taxa, int input_num_chars);
 int             mfl_check_state_number_support(char *datatype_list);
 void            mfl_destroy_character_cells(char **char_cells, int num_states, int num_taxa);

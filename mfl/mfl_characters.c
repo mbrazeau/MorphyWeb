@@ -81,6 +81,22 @@ bool mfl_is_valid_morphy_ctype(char c)
     }
 }
 
+bool mfl_is_valid_morphy_statesymbol(char c)
+{
+    if (isalnum(c)) {
+        return true;
+    }
+    else if (c == '+') {
+        return true;
+    }
+    else if (c == '@') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 
 /*!
  Allocates a data partition.
@@ -301,6 +317,22 @@ mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter
     return xstate_bits;
 }
 
+mfl_charstate mfl_convert_using_default_rule(char *xstates)
+{
+    u_int64_t inbit = 0;
+    int shift_val;
+    mfl_charstate xstate_bits = 0;
+    
+    do {
+        inbit = 1;
+        shift_val = mfl_shift_value_DEFAULT_catdata(*xstates);
+        inbit = inbit << shift_val;
+        xstate_bits = xstate_bits | inbit;
+        ++xstates;
+    } while (*xstates);
+    
+    return xstate_bits;
+}
 
 /*!
  Sets the bits in an mfl_charstate variable to the appropriate value and returns
@@ -320,7 +352,7 @@ mfl_charstate mfl_convert_gap_character(mfl_gap_t gapmethod)
 }
 
 
-mfl_charstate mfl_convert_symbols_to_charstate(char* statecell, char *datype_converter, mfl_gap_t gapmethod)
+/*mfl_charstate mfl_convert_symbols_to_charstate(char* statecell, char *datype_converter, mfl_gap_t gapmethod)
 {
     
     if (isalnum(*statecell)) {
@@ -333,25 +365,8 @@ mfl_charstate mfl_convert_symbols_to_charstate(char* statecell, char *datype_con
         dbg_eprintf("unable to convert input character state symbol");
         exit(-1);
     }
-}
+}*/
 
-
-void mfl_convert_chartokens_to_charstate(mfl_character_vector_t *cv, int num_char, char* datype_converter, mfl_gap_t gapmethod)
-{
-    int i = 0;
-    mfl_gap_t lgapmeth = gapmethod;
-    
-    for (i = 0; i < num_char; ++i) {
-        if ((gapmethod == MFL_GAP_INAPPLICABLE) && (cv->cv_num_gaps < 3)) {
-            // Unless there are more than two gap characters within a column,
-            // the behaviour of a gap will be identical to missing data.
-            // Because the computations on 'normal' characters are likely to be
-            // much faster, this shortcut will save time.
-            lgapmeth = MFL_GAP_MISSING_DATA;
-        }
-        cv->cv_chardata[i] = mfl_convert_symbols_to_charstate(cv->cv_character_cells[i], datype_converter, lgapmeth);
-    }
-}
 
 
 /*!
@@ -372,14 +387,14 @@ void mfl_set_datatype_converter_from_symbol_list(char* datype_converter, char* s
     dtype_ptr = symbols_list;
     
     while (dtype_ptr) {
-        if (!isspace(*dtype_ptr)) {
+        // There is a check here in case of accidental inclusion of unrecognised symbols
+        if (!isspace(*dtype_ptr) && *dtype_ptr != '-' && *dtype_ptr != '?') {
             datype_converter[i] = *dtype_ptr;
             ++i;
         }
         ++dtype_ptr;
     }
 }
-
 
 
 /*!
@@ -532,20 +547,31 @@ mfl_parsimony_t* mfl_get_chartypes_list(const mfl_handle_s* mfl_handle)
 }
 
 
-mfl_charstate mfl_standard_conversion_rule(char *c, mfl_gap_t gaprule)
+mfl_charstate mfl_standard_conversion_rule(char *c, char* datype_converter, mfl_gap_t gaprule)
 {
-    if (*c != '-') {
-        return 0;
+    if (mfl_is_valid_morphy_statesymbol(*c)) {
+        if (datype_converter) {
+            return mfl_convert_nexus_multistate(c, datype_converter);
+        }
+        else {
+            return mfl_convert_using_default_rule(c);
+        }
     }
-    else {
+    else if (*c == '?') {
+        return MORPHY_MISSING_DATA_BITWISE;
+    }
+    else if (*c == '-') {
         if (gaprule == MFL_GAP_INAPPLICABLE) {
             // Gaps are translated into 1's. Missing data is inverse.
+            return mfl_convert_gap_character(gaprule);
         }
         else if (gaprule == MFL_GAP_MISSING_DATA) {
             // Gaps are translated into missing data.
+            return mfl_convert_gap_character(gaprule);
         }
         else if (gaprule == MFL_GAP_NEWSTATE) {
             // Gaps are translated into 1's. Missing data is not inverse.
+            return mfl_convert_gap_character(gaprule);
         }
     }
 }
@@ -573,24 +599,31 @@ mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype)
         
         case MFL_OPT_FITCH:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Fitch to std\n");
             break;
         case MFL_OPT_WAGNER:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Wagner to std\n");
             break;
         case MFL_OPT_DOLLO_UP:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Dollo UP to std\n");
             break;
         case MFL_OPT_DOLLO_DN:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Dollo DN to std\n");
             break;
         case MFL_OPT_IRREVERSIBLE_UP:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Irreversible UP to std\n");
             break;
         case MFL_OPT_IRREVERSIBLE_DN:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Irreversible DN to std\n");
             break;
         case MFL_OPT_COST_MATRIX:
             ret = mfl_standard_conversion_rule;
+            dbg_printf("Setting Cost Matrix to std\n");
             break;
         /*case ___CUSTOM_TYPE___:
              ret = __POINTER_TO_CUSTOM_CONVERSION_ROUTINE;
@@ -603,35 +636,40 @@ mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype)
 }
 
 
-void mfl_apply_conversion_rule(mfl_character_vector_t *character)
+void mfl_apply_conversion_rules(mfl_matrix_t *matrix)
 {
-    character->cv_conversion_rule = mfl_fetch_conversion_rule(character->cv_parsim_method);
+    int i = 0;
+    int num_chars = matrix->mat_num_characters;
+    
+    for (i = 0; i < num_chars; ++i) {
+        matrix->mat_matrix[i]->cv_conversion_rule = mfl_fetch_conversion_rule(matrix->mat_matrix[i]->cv_parsim_method);
+    }
 }
 
-/*
- Converting the columns
- */
 
-// Has a gap? What's the gap conversion rule? Convert for that.
-
-// Did a datatype command come in?
-//  If Yes:
-//      Is it a mixed set (e.g. Std. and DNA)?
-//      Did a symbols list come in?
-//          If yes:
-//              Set converter according to symbols list
-//          If no:
-//              Set converter according to defaults
-//
-//  If no:
-//      Set a default or try to detect type?
-//          For now: use default.
-//
-//
-
-void mfl_setup_convert_charcells_to_mfl_charstates(mfl_matrix_t* m, mfl_handle_t handle)
+void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const mfl_handle_s* handle)
 {
+    int i = 0;
+    int num_taxa = 0;
+    char* dataconverter = NULL;
     
+    num_taxa = handle->n_taxa;
+    
+    for (i = 0; i < num_taxa; ++i) {
+        //(char *c, char* datype_converter, mfl_gap_t gaprule)
+        cv->cv_conversion_rule(cv->cv_character_cells[i], dataconverter, handle->gap_method);
+    }
+    
+}
+
+void mfl_convert_all_characters_to_charstates(mfl_matrix_t* m, const mfl_handle_s* handle)
+{
+    int i = 0;
+    int num_chars = m->mat_num_characters;
+    
+    for (i = 0; i <num_chars; ++i) {
+        mfl_convert_charcells_to_mfl_charstates(m->mat_matrix[i], handle);
+    }
 }
 
 
@@ -1278,14 +1316,12 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     chartypes = mfl_get_chartypes_list(mfl_handle);
     mfl_set_cv_chartypes(new_inmatrix, mfl_handle, chartypes);
     
+    mfl_apply_conversion_rules(new_inmatrix);
+    
     // TODO: finish this list of tasks
     // Next: check if there's a format_symbols list. Then set up the symbol
     // translators appropriately.
-    if (mfl_handle->format_symbols) {
-        // Set up the symbol translation ordering array accordingly
-    } else {
-        // Default symbol translation ordering array is applied.
-    }
+    mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
     int i;
     dbg_printf("Printing chartypes array:\n");
