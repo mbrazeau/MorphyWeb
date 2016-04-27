@@ -966,7 +966,11 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
 }
 
 
-
+/*!
+ Increase the treebuffer size
+ @param trbuf (*mfl_treebuffer_t) a pointer to a tree buffer
+ @param addedlength (int) the number of spaces to add to the treebuffer
+ */
 void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
 {
     
@@ -988,7 +992,12 @@ void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
     trbuf->tb_maxtrees = newsize;
 }
 
-
+/*!
+ Adds a tree to a treebuffer
+ @param newtree (*mfl_tree_t) a pointer to a mfl_tree_t
+ @param trbuf (*mfl_treebuffer_t) a pointer to a treebuffer
+ @param mfl_handle (*mfl_handle_s) a pointer to the mfl_handle options
+ */
 void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle)
 {
     int addedlength = 0;
@@ -1013,7 +1022,11 @@ void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf,
     ++trbuf->tb_num_trees;
 }
 
-
+/*!
+ Allocates memory for a treebuffer
+ @param num_trees (int) the number of trees to allocate in the buffer
+ @return a tree buffer (mfl_treebuffer_t)
+ */
 mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees)
 {
     int trbufsize = 1;
@@ -1047,7 +1060,11 @@ mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees)
     return newtrbf;
 }
 
-
+/*!
+ Frees memory from a treebuffer
+ @param oldtreebuf (*mfl_treebuffer_t) the tree buffer to free
+ @param cleartrees (bool) whether to also clear the trees linked from the buffer (true) or not (false)
+ */
 void mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees)
 {
     if (cleartrees) {
