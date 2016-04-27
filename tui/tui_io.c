@@ -88,6 +88,52 @@ void tui_print_charstate_bits(const mfl_charstate cell, const int max_states)
     } while (i);
 }
 
+void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_chars, bool printbits)
+{
+    int i = 0;
+    int j = 0;
+    
+    dbg_printf("Printing this obfuscated matrix:\n");
+    
+    dbg_printf("Char numbers:\n");
+    dbg_printf("\t");
+    for (i = 0; i < num_chars; ++i) {
+        if (matrix->mat_matrix[i]) {
+            dbg_printf("%i ", matrix->mat_matrix[i]->cv_num_gaps);
+        } else {
+            dbg_printf("# ");
+        }
+    }
+    dbg_printf("\n");
+    dbg_printf("\t");
+    for (i = 0; i < num_chars; ++i) {
+        if (matrix->mat_matrix[i]) {
+            dbg_printf("%i ", matrix->mat_matrix[i]->cv_parsim_method);
+        } else {
+            dbg_printf("# ");
+        }
+    }
+    
+    dbg_printf("\nMatrix:\n");
+    for (i = 0; i < num_taxa; ++i) {
+        dbg_printf("\t");
+        for (j = 0; j < num_chars; ++j) {
+            dbg_printf("%s", matrix->mat_matrix[j]->cv_character_cells[i]);
+            if (printbits) {
+                dbg_printf("      ");
+            }
+        }
+        if (printbits) {
+            dbg_printf("\n\t");
+            for (j = 0; j < num_chars; ++j) {
+                tui_print_charstate_bits(matrix->mat_matrix[j]->cv_chardata[i], 5);
+                dbg_printf(" ");
+            }
+            dbg_printf("\n\n");
+        }
+    }
+}
+
 
 char* tui_readfile_to_str(FILE *input)
 {

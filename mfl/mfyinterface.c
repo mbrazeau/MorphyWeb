@@ -200,6 +200,10 @@ void mfl_destroy_resultant_data(mfl_handle_t mfl_handle)
 void mfl_destroy_handle(mfl_handle_t mfl_handle)
 {
     mfl_handle_s *mfl_struct = mfl_t2s(mfl_handle);
+    if (mfl_struct->input_data) {
+        free(mfl_struct->input_data);
+    }
+    
     if (mfl_struct->resultant_data) {
         mfl_destroy_resultant_data(mfl_handle);
     }

@@ -672,6 +672,8 @@ void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const m
         cv->cv_chardata[i] = cv->cv_conversion_rule(cv->cv_character_cells[i], dataconverter, handle->gap_method);
     }
     
+    free(dataconverter);
+    
 }
 
 void mfl_convert_all_characters_to_charstates(mfl_matrix_t* m, const mfl_handle_s* handle)
@@ -1329,9 +1331,6 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_apply_conversion_rules(new_inmatrix);
     
-    // TODO: finish this list of tasks
-    // Next: check if there's a format_symbols list. Then set up the symbol
-    // translators appropriately.
     mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
     int i;
@@ -1341,12 +1340,8 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     }
 
     dbg_printf("\n");
-    // !!!: Appropriate step/cost matrices would be set here.
     
-    // Set each column's conversion rule.
-    // Apply the appropriate conversion.
-    
-    // Finish. (Next task: set up partitions).
+    free(chartypes);
     
     return new_inmatrix;
 }

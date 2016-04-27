@@ -37,7 +37,7 @@ typedef enum tui_testcmd_t {
 /*
  * Function prototypes for testing
  */
-void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_chars);
+void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_chars, bool printbits);
 void tui_test_tree_printing();
 
 /*  tui_utilities.c

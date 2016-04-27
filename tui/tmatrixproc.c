@@ -141,15 +141,18 @@ int tui_test_matrix_processing(mfl_handle_s *mfl_handle)
 {
     char wagners[] = "1-3 6";
     char costmat[] = "8-10";
+    char symbols[] = "012734";
     mfl_handle->ctypes_cmd[MFL_OPT_WAGNER] = wagners;
     mfl_handle->ctypes_cmd[MFL_OPT_COST_MATRIX] = costmat;
     mfl_handle->n_ctypes = 2;
+    mfl_handle->format_symbols = symbols;
+    mfl_handle->n_symbols = 6;
     
     mfl_matrix_t* internmatrix = NULL;
     
     internmatrix = mfl_create_internal_data_matrix((const mfl_handle_s*)mfl_handle);
     
-    tui_print_out_converted_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars);
+    tui_print_out_converted_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars, true);
     
     mfl_destroy_mfl_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars);
     dbg_printf("\nEnd test for matrix conversion\n\n");
