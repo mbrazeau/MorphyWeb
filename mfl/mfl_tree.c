@@ -964,3 +964,99 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
          */
     }
 }
+
+
+
+void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
+{
+    
+    int newsize = trbuf->tb_max_buffersize + addedlength;
+    
+    mfl_tree_t** newtarray = (mfl_tree_t**)malloc(newsize * sizeof(mfl_tree_t*));
+    if (!newtarray) {
+        dbg_eprintf("unable to increase size of tree buffer");
+        return;
+    }
+    else {
+        memset(newtarray, 0, newsize * sizeof(mfl_tree_t*));
+    }
+    
+    memcpy(newtarray, trbuf->tb_savedtrees, (trbuf->tb_num_trees * sizeof(mfl_tree_t*)) );
+    
+    free(trbuf->tb_savedtrees);
+    trbuf->tb_savedtrees = newtarray;
+    trbuf->tb_maxtrees = newsize;
+}
+
+
+void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle)
+{
+    int addedlength = 0;
+    
+    if ((trbuf->tb_num_trees+1) >= trbuf->tb_max_buffersize) {
+        
+        if (mfl_handle->autoincrease) {
+            if (mfl_handle->autoinc_incr) {
+                addedlength = mfl_handle->autoinc_incr;
+            }
+            else {
+                addedlength = MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_DEFAULT;
+            }
+            mfl_resize_treebuffer(trbuf, addedlength);
+        }
+        else {
+            return;
+        }
+    }
+    
+    trbuf->tb_savedtrees[trbuf->tb_num_trees] = newtree;
+    ++trbuf->tb_num_trees;
+}
+
+
+mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees)
+{
+    int trbufsize = 1;
+    mfl_treebuffer_t* newtrbf = NULL;
+    
+    newtrbf = (mfl_treebuffer_t*)malloc(sizeof(mfl_treebuffer_t));
+    if (!newtrbf) {
+        dbg_eprintf("unable to allocate memory for new treebuffer");
+        return NULL;
+    }
+    else {
+        memset(newtrbf, 0, sizeof(mfl_treebuffer_t));
+    }
+    
+    if (num_trees) {
+        trbufsize = num_trees;
+    }
+    
+    newtrbf->tb_savedtrees = (mfl_tree_t**)malloc(trbufsize * sizeof(mfl_tree_t*));
+    if (!newtrbf->tb_savedtrees) {
+        dbg_eprintf("unable to allocte memory for tree array in new treebuffer");
+        free(newtrbf);
+        return NULL;
+    }
+    else {
+        memset(newtrbf->tb_savedtrees, 0, trbufsize * sizeof(mfl_tree_t*));
+    }
+    
+    newtrbf->tb_max_buffersize = trbufsize;
+    
+    return newtrbf;
+}
+
+
+void mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees)
+{
+    if (cleartrees) {
+        // Free all trees at pointers in savedtrees,
+    }
+        
+    if (oldtreebuf->tb_savedtrees) {
+        free(oldtreebuf->tb_savedtrees);
+    }
+    
+    free(oldtreebuf);
+}

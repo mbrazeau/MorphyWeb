@@ -128,6 +128,8 @@ typedef struct {
     mfl_search_t            search_type;
     int                     n_iterations;
     int                     n_treelimit;
+    bool                    autoincrease;
+    int                     autoinc_incr;
     int                     n_ctypes;
     char*                   ctypes_cmd[MFL_OPT_MAX];
     mfl_parsimony_t*        ctypes;                         // A 'preloaded' array of ctypes, rather than a command to be parsed
@@ -138,6 +140,8 @@ typedef struct {
     int                     n_symbols;
     char*                   format_symbols;
     char*                   input_data;
+    int                     n_input_newick_trees;
+    char**                  input_newick_trees;
     int                     n_datatypes;
     mfl_datatype_t          datatypes[MFL_DATATYPE_MAX];
     mfl_add_sequence_t      addseq_type;
@@ -267,13 +271,15 @@ typedef struct mfl_taxon_partition_t {      // For outgroups or other clade cons
 } mfl_taxon_partition_t;
 
 
-typedef struct mfl_treelist_t {
-    int tl_maxtrees;
-    int tl_maxlength;
-    int tl_bestlength;
-    int tl_num_islands;
-    mfl_tree_t** tl_savedtrees;
-} mfl_treelist_t;
+typedef struct mfl_treebuffer_t {
+    int tb_num_trees;
+    int tb_max_buffersize;
+    int tb_maxtrees;
+    int tb_max_steps;
+    int tb_bestlength;
+    int tb_num_islands;
+    mfl_tree_t** tb_savedtrees;
+} mfl_treebuffer_t;
 
 
 /*!
