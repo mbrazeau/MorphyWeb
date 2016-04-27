@@ -1333,13 +1333,13 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
-    int i;
+    /*int i;
     dbg_printf("Printing chartypes array:\n");
     for (i = 0; i < mfl_handle->n_chars; ++i) {
         dbg_printf("%i ", chartypes[i]);
     }
 
-    dbg_printf("\n");
+    dbg_printf("\n");*/
     
     free(chartypes);
     
