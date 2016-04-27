@@ -149,14 +149,15 @@ char* tui_readfile_to_str(FILE *input)
     dbg_printf("Input file is %i characters long.\n\n", filesize);
     rewind(input);
     
-    inputfilestr = (char*)malloc(filesize * sizeof(char));
+    inputfilestr = (char*)malloc((filesize+1) * sizeof(char));
     
     
     do {
         inputfilestr[i] = fgetc(input);
         ++i;
     } while (i < (filesize-1));
-    inputfilestr[filesize-1] = '\0';inputfilestr[filesize] = '\0';
+    inputfilestr[filesize-1] = '\0';
+    //inputfilestr[filesize] = '\0';
     
     dbg_printf("The input file: \n");
     dbg_printf("%s\n\n", inputfilestr);
@@ -178,7 +179,7 @@ tui_testcmd_t tui_read_cmdline_argv(const char* arg2)
     if (strcmp(arg2, "matrix")) {
         return TUI_CMD_MATRIX_INPUT_BASIC;
     }
-    else if (strcmp(arg2, "newikc")) {
+    else if (strcmp(arg2, "newick")) {
         return TUI_CMD_NEWICK_INPUT_BASIC;
     }
     else if (strcmp(arg2, "command")) {

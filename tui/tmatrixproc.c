@@ -133,7 +133,7 @@ void tui_simple_table_parser(const char* input_table, mfl_handle_s* test_handle)
     test_handle->input_data = tui_get_simple_table_matrix(input_table);
     
     dbg_printf("\nChecking the stored matrix:\n");
-    dbg_printf("%s\n\n", test_handle->input_data);
+    //dbg_printf("%s\n\n", test_handle->input_data);
 }
 
 
