@@ -558,7 +558,12 @@ mfl_charstate mfl_standard_conversion_rule(char *c, char* datype_converter, mfl_
         }
     }
     else if (*c == '?') {
-        return MORPHY_MISSING_DATA_BITWISE;
+        if (gaprule == MFL_GAP_INAPPLICABLE) {
+            return MORPHY_MISSING_DATA_BITWISE;
+        }
+        else {
+            return MORPHY_MISSING_DATA_BITWISE | 1;
+        }
     }
     else if (*c == '-') {
         if (gaprule == MFL_GAP_INAPPLICABLE) {
@@ -1310,6 +1315,7 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     if (mfl_handle->n_symbols && mfl_handle->format_symbols) {
         num_states = mfl_handle->n_symbols;
+        // TODO: do input checks.
     }
     else {
         dbg_printf("No symbols list supplied. Attempting to estimate state number from input matrix.\n");
