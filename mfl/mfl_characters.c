@@ -761,21 +761,8 @@ void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_d
     free(substring);
 }
 
-// Find and list the columns that have gaps in them (can be done simultaneously), setting the vector's cv_has_gaps flag
-//      This now gives the data needed to set a list of characters with gaps (the first partitioning)
 
-// Go through each cv_character_cell and convert its entry to the corresponding matrix cell.
-//      This is where the conversion rule needs to be defined.
-
-// Get the number of character types: unord, ord, dollo, irreversible, usertypes/sankoff
-
-// Set up the correct number of partitions
-
-// Copy the data into the partitions
-
-// Apply the data to the tips of the tree.
-
-/**
+/*!
  Allocates all the memory required to store character data (pre- and post-
  conversion in the appropriate vectors. Does not populate the vectors with 
  data--only creates the empty matrix, ready for populating with data.
