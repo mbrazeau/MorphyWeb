@@ -147,6 +147,7 @@ int tui_test_matrix_processing(mfl_handle_s *mfl_handle)
     mfl_handle->n_ctypes = 2;
     mfl_handle->format_symbols = symbols;
     mfl_handle->n_symbols = 6;
+    mfl_handle->gap_method = MFL_GAP_NEWSTATE;
     
     mfl_matrix_t* internmatrix = NULL;
     
