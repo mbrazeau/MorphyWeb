@@ -657,7 +657,7 @@ void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const m
     
     for (i = 0; i < num_taxa; ++i) {
         //(char *c, char* datype_converter, mfl_gap_t gaprule)
-        cv->cv_conversion_rule(cv->cv_character_cells[i], dataconverter, handle->gap_method);
+        cv->cv_chardata[i] = cv->cv_conversion_rule(cv->cv_character_cells[i], dataconverter, handle->gap_method);
     }
     
 }
