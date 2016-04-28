@@ -81,6 +81,13 @@ bool mfl_is_valid_morphy_ctype(char c)
     }
 }
 
+
+/*!
+ @discussion Checks that an input symbol is an allowed character state symbol, 
+ not including '?' or the '-' (gap) character.
+ @param c (char) an input symbol in the data matrix
+ @return true or false
+ */
 bool mfl_is_valid_morphy_statesymbol(char c)
 {
     if (isalnum(c)) {
@@ -317,6 +324,15 @@ mfl_charstate mfl_convert_nexus_multistate(char *xstates, char *datype_converter
     return xstate_bits;
 }
 
+
+/*!
+ @discussion When a symbols list is not supplied and Morphy's default symbol 
+ translation is in effect, this function sets the corresponding bit shift value
+ required for setting the bit(s) corresponding to the symbol's value.
+ @param xstates (char*) the string corresponding to symbolic (char-type) 
+ representation of the state in the matrix.
+ @return An mfl_charstate variable with the corresponding bit(s) set.
+ */
 mfl_charstate mfl_convert_using_default_rule(char *xstates)
 {
     u_int64_t inbit = 0;
@@ -551,7 +567,7 @@ mfl_charstate mfl_standard_conversion_rule(char *c, char* datype_converter, mfl_
         }
     }
     else if (*c == '?') {
-        if (gaprule == MFL_GAP_INAPPLICABLE) {
+        if (gaprule == MFL_GAP_INAPPLICABLE || gaprule == MFL_GAP_MISSING_DATA) {
             return MORPHY_MISSING_DATA_BITWISE;
         }
         else {
@@ -630,6 +646,14 @@ mfl_char2bit_fn mfl_fetch_conversion_rule(mfl_parsimony_t parsimtype)
 }
 
 
+/*!
+ @discussion Sets the conversion rule function pointer in each column vector in 
+ the matrix according to the specified parsimony method. Mostly, this step is 
+ not necessary, but provides an interface in case a programmer wished to modify
+ Morphy's rules for converting characters given a custom parsimony/optimatlity 
+ type.
+ @param matrix (mfl_matrix_t*) The internal matrix derived from input data.
+ */
 void mfl_apply_conversion_rules(mfl_matrix_t *matrix)
 {
     int i = 0;
@@ -641,6 +665,13 @@ void mfl_apply_conversion_rules(mfl_matrix_t *matrix)
 }
 
 
+/*!
+ @discussion Converts the symbolic char-type representations of the characters
+ to mfl_charstates in a single character column vector.
+ @param cv (mfl_character_vector_t*) a single column in the data matrix.
+ @param handle (const mfl_handle_s*) the interface handle that contains all of 
+ the analysis parameters.
+ */
 void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const mfl_handle_s* handle)
 {
     int i = 0;
@@ -671,6 +702,14 @@ void mfl_convert_charcells_to_mfl_charstates(mfl_character_vector_t* cv, const m
 }
 
 
+/*!
+ @discussion Converts all of the character column vectors from their char-type
+ symbolic representations (i.e. the input) to their corresponding set bits in
+ their respective mfl_charstate arrays in a matrix.
+ @param m (mfl_matrix_t*) the internal matrix based on input data.
+ @param handle (const mfl_handle_s*) the interface handle that contains all of 
+ the analysis parameters.
+ */
 void mfl_convert_all_characters_to_charstates(mfl_matrix_t* m, const mfl_handle_s* handle)
 {
     int i = 0;
@@ -742,19 +781,15 @@ void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_d
             if (mfl_is_valid_morphy_ctype(*current)) {
                 mfl_copy_singleton_subtoken_to_substring(*current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
-                
-                //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
             }
             else if (*current == '(' || *current == '{') {
                 mfl_copy_multistate_subtoken_to_substring(&current, substring);
                 strcpy(matrix->mat_matrix[column]->cv_character_cells[row], substring);
-                //memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
                 ++column;
             }
             ++current;
         } while (column < num_chars && *current != '\n');
-        //++current;
         ++row;
     } while (row < num_taxa);
     
@@ -792,8 +827,7 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
         }
         else {
             memset(newmatrix->mat_matrix[i], 0, sizeof(mfl_character_vector_t));
-        }
-        
+        }        
         
         // Allocate and set up the char-type transformation series vectors
         newmatrix->mat_matrix[i]->cv_character_cells = (char**)malloc(num_taxa * sizeof(char*));
@@ -815,7 +849,6 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
                 memset(newmatrix->mat_matrix[i]->cv_character_cells[j], 0, charcells_size * sizeof(char));
             }
         }
-        
         
         // Allocate the vector of bitwise state representations.
         newmatrix->mat_matrix[i]->cv_chardata = (mfl_charstate*)malloc(num_taxa * sizeof(sizeof(mfl_charstate)));
@@ -1266,6 +1299,7 @@ void mfl_set_cv_chartypes(mfl_matrix_t* matrix, const mfl_handle_s* mfl_handle, 
         matrix->mat_matrix[i]->cv_parsim_method = chartypes[i];
     }
 }
+
 
 /*!
  Creates the array of character column vectors corresponding to the 
