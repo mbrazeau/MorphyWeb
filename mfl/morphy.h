@@ -414,6 +414,12 @@ mfl_tree_t*     mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_tree(mfl_tree_t *tree_to_free);
 void            mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_start); //TG: WARNING: this creates a polytomy on the target node.
 void            mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node);
+mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees);
+void            mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle);
+void            mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
+void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
+
+
 //
 
 /* In mfl_initialise.c */
@@ -449,6 +455,7 @@ int         mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_t
 int         mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start);
 char*       mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int &count);
 char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active, bool root_polytomy);
+mfl_treebuffer_t *mfl_tree_from_newick_to_buffer(mfl_handle_s* mfl_handle);
 
 
 /* In mfl_brwap.c */

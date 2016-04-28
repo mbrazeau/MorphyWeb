@@ -365,7 +365,6 @@ int mfl_number_of_digits_in_integer(int n)
  @param start a mfl_node_t pointer to the starting node in the tree.
  @param tips_length an integer counter for the number of digits (ideally set to 
  0).
- @returns int the updated tips_length counter.
  */
 void mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int *tips_length)
 {
@@ -663,76 +662,34 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
 
 }
 
-///*!
-// Stores a newick string in an array
-// @param storing_array (mfl_tree_t**) an array of pointers to pointers to mfl_tree_t trees
-// @param newick_string (char*) a pointer to the newick string.
-// @param count (int*) where to store the newick_string in the array
-// @returns a pointer to mfl_tree_t trees.
-// */
-//mfl_tree_t** mfl_store_newick_strings(mfl_tree_t **storing_array, char *newick_string, int *count)
-//{
-     // MDB: Why does count need to be a pointer?
-     // MDB: Why are you returning storing array? You've passed it in as a pointer, so
-     // there's no need to return it. In fact, this could lead to some
-     // unpredictable effects.
-//    storing_array[*count] = mfl_convert_newick_to_mfl_tree_t(newick_string, 0);;
-//    return storing_array;
-//}
-//
-///*!
-// Allocates memory for the storing array
-// @param array_size (int) the size of the array to allocate
-// @returns an empty storing array (mfl_tree_t **).
-// */
-//mfl_tree_t** mfl_allocate_storing_array(int array_size)
-//{
-//    MDB: This malloc will lead to an error. You're returning a pointer of pointers
-//         to mfl_tree_t, but sizing it according to the size of a mfl_tree_t struct.
-//         the size should be of an mfl_tree_t*.
-//    mfl_tree_t **storing_array = (mfl_tree_t**)malloc(array_size * sizeof(mfl_tree_t));
-//    
-//    if (!storing_array) {
-//        dbg_printf("ERROR in mfl_allocate_storing_array(): unable to allocate memory for the storing array\n");
-//        return NULL;
-//    }
-//    else {
-//        memset(storing_array, 0, array_size * sizeof(mfl_tree_t));
-//    }
-//    
-//    return storing_array;
-//}
-//
-///*!
-// Stores some trees from an input file into an aray of character pointers
-// @returns a storing array (char **) containing multiple newick trees.
-// */
-//// TODO: input the newicks from a i/o file
-//    MDB: Don't handle any i/o operations in the library. Just deal with
-//          handling the strings. However, simple file i/o for a list of
-//          trees can be dealt with in the TUI.
-//char** mfl_store_newick_in_array()
-//{
-//    
-//}
-//
-///*!
-// Frees an array of newick strings
-// @param newick_storing_array (mfl_tree_t **) an array of characters pointers mfl_tree_t trees.
-// */
-// MDB: Why is the newick storing array of type mfl_tree_t**? Newick trees are char*
-// and an array of them would be of type char**
-//void mfl_free_newick_in_array(mfl_tree_t **newick_storing_array)
-//{
-//    int i = 0;
-//    int array_length = 0;
-//    
-//    //Free the newick trees in the array
-//    do {
-//        free(newick_storing_array[i]);
-//        ++i;
-//    } while (newick_storing_array[i] != '\0');
-//    
-//    //Free the array
-//    free(newick_storing_array);
-//}
+/*!
+ Converts the newick trees from the handle into a mfl_tree_t stored in a tree buffer
+ @param mfl_handle (mfl_handle_s) an mfl_handles containing the number of trees and newick strings
+ @returns a filled tree buffer.
+ */
+mfl_treebuffer_t *mfl_tree_from_newick_to_buffer(mfl_handle_s *mfl_handle)
+{
+    // Set the variables
+    mfl_treebuffer_t *tree_buffer_out = NULL;
+    int n_trees = 0;
+    int i = 0;
+    mfl_tree_t *temp_tree = NULL;
+    
+    // get the number of trees from the handle_s TG: or is that step overkill and could be merged with the one above?
+    n_trees = mfl_handle->n_input_newick_trees;
+    
+    //Create the tree buffer
+    tree_buffer_out = mfl_alloc_treebuffer(n_trees);
+    
+    //Add the trees to the tree buffer
+    for(i = 0; i < n_trees; ++i) { //TG: i must be strictly inferior to n_trees because the count starts at 0 not 1.
+        //converting the newick tree into mfl_tree_t
+        temp_tree =  mfl_convert_newick_to_mfl_tree_t(mfl_handle->input_newick_trees[i], 0);
+        //Appending the tree
+        mfl_append_tree_to_treebuffer(temp_tree, tree_buffer_out, mfl_handle);
+        //Reseting the temp_tree to avoid memory leaks
+        temp_tree = NULL;
+    }
+    
+    return tree_buffer_out;
+}
