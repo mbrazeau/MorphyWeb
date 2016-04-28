@@ -248,12 +248,40 @@ void tui_test_newick_stuff()
     newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, false);
     dbg_printf("The output newick string is (without polytomy): %s\n", newick_string);
     
-    
-    
-    free(newick_string);
-    
     mfl_free_tree(tree_from_newick); // Some bug here
     
+    
+    dbg_printf("Putting the following trees in the buffer:\n%s\n%s\n%s\n", temp_example_newick_for_writing1, temp_example_newick_for_writing5, temp_example_newick_for_writing6);
+    
+    //Create a char** to trees
+    char* list_of_newicks[] = {temp_example_newick_for_writing1, temp_example_newick_for_writing5, temp_example_newick_for_writing6};
+
+    //Create a handle
+    mfl_handle_s* testhandle;
+    testhandle = mfl_t2s(mfl_create_handle());
+    
+    //Add the trees to the handle
+    testhandle->n_input_newick_trees = 3;
+    testhandle->input_newick_trees = list_of_newicks;
+    
+    //Create the buffer
+    mfl_treebuffer_t *my_buffer = NULL;
+    my_buffer = mfl_tree_from_newick_to_buffer(testhandle);
+    
+    //Print what's in the buffer
+    dbg_printf("Trees in the buffer are:\n");
+    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[0], 0, true);
+    dbg_printf("%s\n", newick_string);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[1], 0, true);
+    dbg_printf("%s\n", newick_string);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[2], 0, true);
+    dbg_printf("%s\n", newick_string);
+//
+    //Cleaning
+//    free(newick_string);
+//    mfl_destroy_treebuffer(my_buffer, false);
+    
+    //TODO: clear the handle as well!
 }
 
 int main (int argc, char *argv[])
@@ -288,11 +316,12 @@ int main (int argc, char *argv[])
     /*dbg_printf("Testing include set values:\n");
     tui_test_character_stuff();
     tui_getting_numstates_test();
-    dbg_printf("\n\n");
+    dbg_printf("\n\n"); */
     
-    dbg_printf("Test Newick stuff\n\n");
-    tui_test_newick_stuff();
+//    dbg_printf("Test Newick stuff\n\n");
+//    tui_test_newick_stuff();
     
+    /*
     dbg_printf("Test treecheck stuff\n\n");
     tui_test_checktree_();
     

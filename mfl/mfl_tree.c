@@ -1002,7 +1002,7 @@ void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf,
 {
     int addedlength = 0;
     
-    if ((trbuf->tb_num_trees+1) >= trbuf->tb_max_buffersize) {
+    if ((trbuf->tb_num_trees+1) > trbuf->tb_max_buffersize) {
         
         if (mfl_handle->autoincrease) {
             if (mfl_handle->autoinc_incr) {
