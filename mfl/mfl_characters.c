@@ -728,6 +728,14 @@ void mfl_convert_all_characters_to_charstates(mfl_matrix_t* m, const mfl_handle_
  *
  */
 
+/*!
+ @discussion Copies the state symbol of a single-state cell in the input matrix
+ to the substring supplied and appends a terminal null. The result is a single-
+ character string. Used for creating the internal data matrix.
+ @param singleton (char) the single character state symbole
+ @param substring (char*) the substring into which the character will be 
+ copied at the first position. Substring must be pre-sized to fit the input.
+ */
 void mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring)
 {
     *substring = singleton;
@@ -735,6 +743,15 @@ void mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring)
 }
 
 
+/*!
+ @discussion Copies the state symbols in a multistate cell in the input matrix
+ into the supplied substring. Used for creating the internal data matrix.
+ @param xstatestoken (char**) pointer to the substring within the input data
+ string corresponding to the start of the multistate cell
+ @param substring (char*) the substring into which the character symbols will be
+ copied at the first position. Substring must be pre-sized to fit the input.
+ @return <#return description#>
+ */
 void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring)
 {
     int i = 0;
@@ -756,6 +773,18 @@ void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substri
 }
 
 
+/*!
+ @discussion Populates the char-type array of strings for the state symbols 
+ within the internal data matrix. These later get translated into mfl_charstate
+ variables.
+ @param matrix (mfl_matrix_t*) the internal matrix being set up when this
+ routine is called.
+ @param input_data_matrix (char*) the data matrix supplied as a string of
+ character state symbols only (no taxon names).
+ @param num_chars (int) the number of characters (columns) in the matrix
+ @param num_taxa (int) the number of taxa (rows) in the matrix
+ @return <#return description#>
+ */
 void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa)
 {
     int column = 0;
