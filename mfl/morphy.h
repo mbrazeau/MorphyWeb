@@ -58,7 +58,7 @@
 #define dbg_pcall(...)
 #endif
 
-using namespace std;
+//using namespace std;
 
 /* 
  *
@@ -286,16 +286,20 @@ typedef struct mfl_treebuffer_t {
  @discussion Contains the parameters of the tree search process.
  */
 typedef struct mfl_searchrec_t {
+    int  sr_num_taxa_included;
+    int* sr_included_taxa;
+    int  sr_num_chars_included;
+    int* sr_included_chars;
+    int  sr_num_partitions;
     mfl_search_t sr_searchtype;
     mfl_branch_swap_t sr_bswaptype;
     mfl_add_sequence_t sr_stepwise;
     long int sr_num_reps_stepwise;
     mfl_uint sr_best_length;
-    int sr_trees_held_stepwise;
-    int sr_num_partitions;
+    int  sr_num_trees_held_stepwise;
     bool sr_increase_treebuffer;
-    long long int sr_current_treebuffer_size;
-    mfl_tree_t** sr_treebuffer;
+    long long int sr_rearrangement_counter;
+    mfl_treebuffer_t* sr_treebuffer;
 } mfl_searchrec_t;
 
 

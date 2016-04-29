@@ -746,11 +746,10 @@ void mfl_copy_singleton_subtoken_to_substring(char singleton, char* substring)
 /*!
  @discussion Copies the state symbols in a multistate cell in the input matrix
  into the supplied substring. Used for creating the internal data matrix.
- @param xstatestoken (char**) pointer to the substring within the input data
+ @param xstatetoken (char**) pointer to the substring within the input data
  string corresponding to the start of the multistate cell
  @param substring (char*) the substring into which the character symbols will be
  copied at the first position. Substring must be pre-sized to fit the input.
- @return <#return description#>
  */
 void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substring)
 {
@@ -783,7 +782,6 @@ void mfl_copy_multistate_subtoken_to_substring(char** xstatetoken, char* substri
  character state symbols only (no taxon names).
  @param num_chars (int) the number of characters (columns) in the matrix
  @param num_taxa (int) the number of taxa (rows) in the matrix
- @return <#return description#>
  */
 void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_data_matrix, int num_chars, int num_taxa)
 {
@@ -1396,9 +1394,9 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 
 
 
-/*mfl_datapartition_t** mfl_partition_matrix_by_parsimony_type(mfl_matrix_t* matrix, mfl_handle_s* mfl_handle)
+mfl_datapartition_t** mfl_create_data_partitions_for_analysis(mfl_matrix_t* matrix, mfl_searchrec_t* searchrec)
 {
     
-}*/
+}
 
 
