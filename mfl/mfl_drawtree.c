@@ -125,6 +125,7 @@ void mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa)
 {
     int branchlen = mfl_drawtree_calculate_branchlength(num_taxa);
     
+        
     mfl_node_t* p = NULL;
     mfl_node_t* leftdesc = NULL;
     mfl_node_t* rightdesc = NULL;
@@ -135,6 +136,7 @@ void mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa)
     }
     else {
         
+        // Find left and right descendants:
         p = n->nodet_next;
         leftdesc = p->nodet_edge;
         
@@ -144,9 +146,6 @@ void mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa)
         } while (p != n);
         
         // Set the row level:
-        // This next part should get replaced by something smarter that knows about how many descendant tips there are
-        // and what the largest and smallest row numbers are.
-        
         if (rightdesc->row > leftdesc->row) {
             n->row = leftdesc->row + ((rightdesc->row - leftdesc->row) / 2);
         }
@@ -154,7 +153,7 @@ void mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa)
             n->row = rightdesc->row + ((leftdesc->row - rightdesc->row) / 2);
         }
         
-        // Now set the new column level. Replace as above.
+        // Set the new column level:
         if (leftdesc->col < rightdesc->col) {
             n->col = leftdesc->col - branchlen;
         }
@@ -211,7 +210,6 @@ void mfl_drawtree_set_coords_traversal(mfl_node_t* n, int* currentrow, char* gri
 
         p = p->nodet_next;
     } while (p != n);
-    
     
     mfl_drawtree_set_node_coords(n, *currentrow, num_taxa);
 }
