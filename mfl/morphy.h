@@ -58,7 +58,7 @@
 #define dbg_pcall(...)
 #endif
 
-//using namespace std;
+using namespace std;
 
 /* 
  *
@@ -68,11 +68,7 @@
 
 #define MORPHY_UINTMAX UINT64_MAX
 
-#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
-#define MORPHY_MAX_STATE_NUMBER (64 - MORPHY_SPECIAL_STATE_PAD) /* The reason this isn't 64 is because the
-                                      the first bit position is reserved for 
-                                      gap as a state or as logical impossibility
-                                                                              */
+
 #define MORPHY_INAPPLICABLE_BITPOS 1
 #define MORPHY_MISSING_DATA_BITWISE (~1)
 
@@ -101,6 +97,11 @@
 typedef uint64_t mfl_uint;
 typedef mfl_uint mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
+#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
+
+//The reason this isn't 64 is because the the first bit position is reserved for
+//gap as a state or as logical impossibility
+#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)  
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
