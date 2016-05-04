@@ -306,9 +306,9 @@ int main (int argc, char *argv[])
         //exit(0);
     }
     
-    /*dbg_printf("Testing the tree printing:\n");
+    dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
-    dbg_printf("\nEnd tree print test\n");*/
+    dbg_printf("\nEnd tree print test\n");
     
     //-----
     
