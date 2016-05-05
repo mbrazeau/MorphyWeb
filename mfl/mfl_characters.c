@@ -425,7 +425,7 @@ char* mfl_search_char_in_chartypes_array(char* key, char* list, int *listend, in
         }
         else {
             dbg_printf("ERROR in mfl_search_in_chartypes_array(): %s: line: %i\n", __FILE__, __LINE__);
-            dbg_printf("\t Insufficient space in array for %i member \'%c\'. Exceeding max states: %i.\n", *listend, *key, MORPHY_MAX_STATE_NUMBER);
+            dbg_printf("\t Insufficient space in array for %i member \'%c\'. Exceeding max states: %lu.\n", *listend, *key, MORPHY_MAX_STATE_NUMBER);
             dbg_printf("Returning NULL\n\n");
             ++(*listend); // Exceed list max for error reporting.
             return NULL;
@@ -1064,7 +1064,7 @@ int mfl_check_state_number_support(char *datatype_list)
     assert(num_symbols != 0);
     
     if (num_symbols > MORPHY_MAX_STATE_NUMBER) {
-        dbg_printf("ERROR in mfl_check_number_support(): number of input states exceeds maximum allowed (%i).\n", MORPHY_MAX_STATE_NUMBER);
+        dbg_printf("ERROR in mfl_check_number_support(): number of input states exceeds maximum allowed (%lu).\n", MORPHY_MAX_STATE_NUMBER);
         dbg_printf("State list will be truncated\n");
         return MORPHY_MAX_STATE_NUMBER;
     }
