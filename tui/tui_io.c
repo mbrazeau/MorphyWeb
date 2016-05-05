@@ -93,8 +93,6 @@ void tui_print_node_bipartition(mfl_node_t* n)
 
 void tui_partition_print_traversal(mfl_node_t* n)
 {
-    tui_print_node_bipartition(n);
-    
     mfl_node_t* p = NULL;
     
     if (n->nodet_tip) {
@@ -107,6 +105,7 @@ void tui_partition_print_traversal(mfl_node_t* n)
         p = p->nodet_next;
     } while (p != n);
     
+    tui_print_node_bipartition(n);
 }
 
 void tui_print_charstate_bits(const mfl_charstate cell, const int max_states)
