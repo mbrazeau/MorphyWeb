@@ -71,6 +71,44 @@ int tui_check_simple_table_formatted(const char* input_table)
 }
 
 
+void tui_print_node_bipartition(mfl_node_t* n)
+{
+    int i = 0;
+    int j = 0;
+    mfl_bitfield_t bitfield = 1;
+    
+    for (i = 0; i < n->nodet_bipart->bts_nfields; ++i) {
+        for (j = 0; j < MFL_BTS_IN_BITSET; ++j) {
+            if (n->nodet_bipart->bts_bitfields[i] & (bitfield << j)) {
+                dbg_printf("*");
+            }
+            else {
+                dbg_printf(".");
+            }
+        }
+    }
+    
+    dbg_printf("\n");
+}
+
+void tui_partition_print_traversal(mfl_node_t* n)
+{
+    tui_print_node_bipartition(n);
+    
+    mfl_node_t* p = NULL;
+    
+    if (n->nodet_tip) {
+        return;
+    }
+    
+    p = n->nodet_next;
+    do {
+        tui_partition_print_traversal(p->nodet_edge);
+        p = p->nodet_next;
+    } while (p != n);
+    
+}
+
 void tui_print_charstate_bits(const mfl_charstate cell, const int max_states)
 {
     int i = 1;

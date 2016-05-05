@@ -60,6 +60,8 @@ void            tui_print_newick(mfl_node_t *n);
 /*  tui_io.c
  */
 void            tui_ignore_nexus_comment(char **current);
+void            tui_print_node_bipartition(mfl_node_t* n);
+void            tui_partition_print_traversal(mfl_node_t* n);
 void            tui_print_charstate_bits(const mfl_charstate cell, const int max_states);
 char*           tui_readfile_to_str(FILE *input);
 void            tui_destroy_file_string(char* oldinput);

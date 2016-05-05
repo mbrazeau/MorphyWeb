@@ -200,6 +200,17 @@ void tui_test_tree_printing()
     free(grid);
 }
 
+void tui_test_bipartition_setting()
+{
+    int num_taxa = 78;
+    char nwktree[] = "tree1=[&R] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
+    mfl_tree_t* t = mfl_convert_newick_to_mfl_tree_t(nwktree, num_taxa);
+    
+    mfl_set_bipartitions(t->treet_root);
+    tui_partition_print_traversal(t->treet_root);
+    
+}
+
 void tui_test_newick_stuff()
 {
     /* This function will be eliminated from the library. */
@@ -309,6 +320,11 @@ int main (int argc, char *argv[])
     dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
     dbg_printf("\nEnd tree print test\n");
+    
+    
+    dbg_printf("Testing bipartition setting:\n");
+    tui_test_bipartition_setting();
+    dbg_printf("\nEnd bipartition test\n");
     
     //-----
     

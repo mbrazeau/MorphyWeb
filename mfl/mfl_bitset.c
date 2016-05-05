@@ -10,7 +10,7 @@
 
 void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition)
 {
-    int i = 1;
+    int i = 0;
     
     while ( (++i * MFL_BTS_IN_BITSET) < setposition) {
         printf("i: %i\n", i);
@@ -149,6 +149,9 @@ mfl_bitset_t* mfl_bts_create_bitset(int n_minbits)
     else {
         memset(newbitset->bts_bitfields, 0, n_fields * sizeof(uint64_t));
     }
+    
+    newbitset->bts_max_bitfields = n_fields;
+    newbitset->bts_nfields = n_fields;
     
     return newbitset;
 }

@@ -67,8 +67,6 @@ using namespace std;
  */
 
 #define MORPHY_UINTMAX UINT64_MAX
-
-
 #define MORPHY_INAPPLICABLE_BITPOS ((mfl_charstate)1)
 #define MORPHY_IS_APPLICABLE (~MORPHY_INAPPLICABLE_BITPOS)
 #define MORPHY_MISSING_DATA_BITWISE (~1)
@@ -505,3 +503,6 @@ bool            mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target);
 int             mfl_bts_calculate_n_bitfieds(int n_minbits);
 mfl_bitset_t*   mfl_bts_create_bitset(int n_minbits);
 bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
+
+/* in mfl_compare.c*/
+void            mfl_set_bipartitions(mfl_node_t* n);
