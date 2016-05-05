@@ -69,7 +69,8 @@ using namespace std;
 #define MORPHY_UINTMAX UINT64_MAX
 
 
-#define MORPHY_INAPPLICABLE_BITPOS 1
+#define MORPHY_INAPPLICABLE_BITPOS ((mfl_charstate)1)
+#define MORPHY_IS_APPLICABLE (~MORPHY_INAPPLICABLE_BITPOS)
 #define MORPHY_MISSING_DATA_BITWISE (~1)
 
 //Defaults
@@ -85,8 +86,13 @@ using namespace std;
 
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
+#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
 
+//The reason this isn't 64 is because the the first bit position is reserved for
+//gap as a state or as logical impossibility
+#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)
 
+#define MFL_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
 
 /*
  *
@@ -97,11 +103,12 @@ using namespace std;
 typedef uint64_t mfl_uint;
 typedef mfl_uint mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
-#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
+typedef mfl_uint mfl_bitfield_t;
 
-//The reason this isn't 64 is because the the first bit position is reserved for
-//gap as a state or as logical impossibility
-#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)  
+typedef struct mfl_bitset_t {
+    int bts_nfields;
+    mfl_bitfield_t* bts_bitfields;
+} mfl_bitset_t;
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
@@ -224,6 +231,7 @@ typedef struct mfl_node_t {
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
+    mfl_bitset_t nodet_bipart;
     int row;
     int col;
     int branchl_cdraw;
@@ -484,3 +492,13 @@ bool                    mfl_set_parameter(mfl_handle_t *mfl_handle, mfl_param_t 
 mfl_resultant_data_s*   mfl_morphy_controller(mfl_handle_s *mfl_handle);
 mfl_handle_t            mfl_s2t(mfl_handle_s *mfl_handle);
 mfl_handle_s*           mfl_t2s(mfl_handle_t mfl_handle);
+
+/* in mfl_bitset.c*/
+void            mfl_bts_setbit(mfl_bitset_t* bitset, mfl_uint set_to, int setposition);
+bool            mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target);
+bool            mfl_bts_OR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target);
+bool            mfl_bts_XOR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target);
+bool            mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target);
+int             mfl_bts_calculate_n_bitfieds(int n_minbits);
+mfl_bitset_t*   mfl_bts_create_bitset(int n_minbits);
+bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
