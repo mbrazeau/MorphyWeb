@@ -52,7 +52,6 @@
 
 #include "morphy.h"
 
-
 /*!
  @discussion Gives the number of nodes required to build an mfl_tree_t with 
  3-node internal node ring cycles for a tree with num_taxa leaves.
@@ -413,7 +412,7 @@ void mfl_free_node(mfl_node_t *node)
      * If any other memory allocation made in nodes, then calls to free that 
      * memory should be placed here.
      */
-    
+    mfl_bts_destroy_bitset(node->nodet_bipart);
     free(node);
 }
 
@@ -680,8 +679,10 @@ void mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes)
     for (i = 0; i < num_nodes; ++i) {
         nodearray[i]->nodet_index = i;
         nodearray[i]->nodet_ndstack = t->treet_nodestack;
+        nodearray[i]->nodet_bipart = mfl_bts_create_bitset(num_taxa);
         if (i < num_taxa) {
             nodearray[i]->nodet_tip = i + 1;
+            mfl_bts_setbit(nodearray[i]->nodet_bipart, 1, nodearray[i]->nodet_tip);
         }
         else {
             t->treet_nodestack->nstk_availbale_nds[j] = nodearray[i];

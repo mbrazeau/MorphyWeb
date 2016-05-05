@@ -231,7 +231,7 @@ typedef struct mfl_node_t {
 	char *nodet_tipname;                        // Name of the tip from the dataset.
 	int nodet_tip;                              // 1-based identifier of terminal. Assigned 0 if node is internal.
 	int nodet_index;                            // 0-based index of node in the node-array. In rings, this should be identical for all nodes.
-    mfl_bitset_t nodet_bipart;
+    mfl_bitset_t* nodet_bipart;
     int row;
     int col;
     int branchl_cdraw;
