@@ -72,6 +72,11 @@ using namespace std;
 #define MORPHY_INAPPLICABLE_BITPOS ((mfl_charstate)1)
 #define MORPHY_IS_APPLICABLE (~MORPHY_INAPPLICABLE_BITPOS)
 #define MORPHY_MISSING_DATA_BITWISE (~1)
+#define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
+#define MORPHY_NUM_VALID_NONALPHA  3
+#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
+#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)
+#define MFL_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
 
 //Defaults
 #define MORPHY_DEFAULT_WEIGHT 1.0
@@ -83,16 +88,6 @@ using namespace std;
 #define MORPHY_DEFAULT_MULTISTATE_HANDLE MFL_MULTSTATE_UNCERTAINTY
 #define MORPHY_DEFAULT_PARSIMONY_METHOD MFL_OPT_FITCH
 #define MORPHY_DEFAULT_PARSIMONY_NAME "Fitch (unordered)"
-
-#define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
-#define MORPHY_NUM_VALID_NONALPHA  3
-#define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
-
-//The reason this isn't 64 is because the the first bit position is reserved for
-//gap as a state or as logical impossibility
-#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)
-
-#define MFL_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
 
 /*
  *
@@ -107,8 +102,15 @@ typedef mfl_uint mfl_bitfield_t;
 
 typedef struct mfl_bitset_t {
     int bts_nfields;
+    int bts_max_bitfields;
     mfl_bitfield_t* bts_bitfields;
 } mfl_bitset_t;
+
+typedef struct mfl_bitsetlist_t {
+    int bsl_num_sets;
+    int bsl_max_sets;
+    mfl_bitset_t** bsl_bitsets;
+} mfl_bitsetlist_t;
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
@@ -264,6 +266,7 @@ typedef struct mfl_tree_t {
     mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
     mfl_nodestack_t* treet_nodestack;       // Unused nodes
+    mfl_bitsetlist_t* treet_bipartitions;
     int treet_num_taxa;                     // Total number of terminals.
     int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
     int treet_island_id;                    // An identification number for the parent start tree.
