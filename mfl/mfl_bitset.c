@@ -8,6 +8,19 @@
 
 #include "mfl_bitset.h"
 
+void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_uint set_to, int setposition)
+{
+    int i = 1;
+    
+    while ( (++i * MFL_BTS_IN_BITSET) < setposition) {
+        printf("i: %i\n", i);
+    };
+    --i;
+    
+    bitset->bts_bitfields[i] |= ( set_to << ((setposition - (i * MFL_BTS_IN_BITSET)) - 1) );
+    
+}
+
 
 bool mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 {
