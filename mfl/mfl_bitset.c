@@ -8,7 +8,7 @@
 
 #include "mfl_bitset.h"
 
-void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_uint set_to, int setposition)
+void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition)
 {
     int i = 1;
     
@@ -18,7 +18,6 @@ void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_uint set_to, int setposition)
     --i;
     
     bitset->bts_bitfields[i] |= ( set_to << ((setposition - (i * MFL_BTS_IN_BITSET)) - 1) );
-    
 }
 
 
