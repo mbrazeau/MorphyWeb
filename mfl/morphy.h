@@ -101,6 +101,7 @@ typedef mfl_uint mfl_bitfield_t;
 typedef struct mfl_bitset_t {
     int bts_nfields;
     int bts_max_bitfields;
+    int bts_max_bit;
     mfl_bitfield_t* bts_bitfields;
 } mfl_bitset_t;
 
