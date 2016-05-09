@@ -8,6 +8,14 @@
 
 #include "mfl_bitset.h"
 
+/*!
+ @discussion Sets a specified bit position in the bitset to the specified value 
+ (either 1 or 0).
+ @param bitset (mfl_bitset_t*) pointer to the bitset being manipulated
+ @param set_to (mfl_bitfield_t) either 0 or 1, specifying the desired value at 
+ the set position
+ @param setposition (int) the bit position to be set.
+ */
 void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition)
 {
     int i = 0;
@@ -21,6 +29,16 @@ void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition
 }
 
 
+/*!
+ @discussion Simulates a bitwise AND on an mfl_bitset_t struct. If a target 
+ bitset is supplied, that target will be set to the result of a bitwise AND 
+ between the test sets. Otherwise, returns a true/false value
+ @param set1 (mfl_bitset_t*) a bitset operand
+ @param set2 (mfl_bitset_t*) the second bitset operand
+ @param target (mfl_bitset_t*) an optional target bitset to the receive the 
+ result of bitwise and between set1 and set2.
+ @return true if bitwise AND exists between set1 and set2; otherwise false
+ */
 bool mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 {
     bool ret = false;
@@ -36,7 +54,7 @@ bool mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
     } else {
         for (i = 0; i < n_bitfields; ++i) {
             if ((set1->bts_bitfields[i] & set2->bts_bitfields[i])) {
-                ret = true;
+                return true;
             }
         }
     }
@@ -45,6 +63,16 @@ bool mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 }
 
 
+/*!
+ @discussion Simulates a bitwise OR on an mfl_bitset_t struct. If a target
+ bitset is supplied, that target will be set to the result of a bitwise OR
+ between the test sets. Otherwise, returns a true/false value.
+ @param set1 (mfl_bitset_t*) a bitset operand
+ @param set2 (mfl_bitset_t*) the second bitset operand
+ @param target (mfl_bitset_t*) an optional target bitset to the receive the
+ result of bitwise OR between set1 and set2.
+ @return true if bitwise OR exists between set1 and set2; otherwise false
+ */
 bool mfl_bts_OR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 {
     bool ret = false;
@@ -69,6 +97,16 @@ bool mfl_bts_OR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 }
 
 
+/*!
+ @discussion Simulates a bitwise XOR on an mfl_bitset_t struct. If a target
+ bitset is supplied, that target will be set to the result of a bitwise XOR
+ between the test sets. Otherwise, returns a true/false value.
+ @param set1 (mfl_bitset_t*) a bitset operand
+ @param set2 (mfl_bitset_t*) the second bitset operand
+ @param target (mfl_bitset_t*) an optional target bitset to the receive the
+ result of bitwise XOR between set1 and set2.
+ @return true if bitwise XOR exists between set1 and set2; otherwise false
+ */
 bool mfl_bts_XOR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 {
     bool ret = false;
@@ -93,6 +131,12 @@ bool mfl_bts_XOR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 }
 
 
+/*!
+ @discussion Simulates the bitwise complement operation on an mfl_bitset_t
+ @param bitset (mfl_bitset_t*) the source bitset that is operated on
+ @param target (mfl_bitset_t*) the target bitset for storing the result
+ @return true if the complement is non-null; otherwise false
+ */
 bool mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target)
 {
     bool ret = false;
