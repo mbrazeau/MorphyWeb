@@ -20,12 +20,10 @@ void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition
 {
     int i = 0;
     
-    while ( (++i * MFL_BTS_IN_BITSET) < setposition) {
-        printf("i: %i\n", i);
-    };
+    while ((++i * MFL_BTS_IN_BITSET) < setposition);
     --i;
     
-    bitset->bts_bitfields[i] |= ( set_to << ((setposition - (i * MFL_BTS_IN_BITSET)) - 1) );
+    bitset->bts_bitfields[i] |= (set_to << ((setposition - (i * MFL_BTS_IN_BITSET)) - 1));
 }
 
 
