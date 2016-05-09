@@ -153,12 +153,19 @@ bool mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target)
 }
 
 
+/*!
+ @discussion Calculates the number of bitsets of size MFL_BTS_IN_BITSET required
+ to accommodate bit fields wider than the machine's maximum integer width.
+ @param n_minbits (int) the number of bits required by the bitfield (e.g. the 
+ number of taxa in the dataset/trees for creating taxon bipartitions
+ @return the number of bitfields required.
+ */
 int mfl_bts_calculate_n_bitfieds(int n_minbits)
 {
     int n_fields = 0;
     
-    n_fields = n_minbits / 64;
-    if (n_minbits % 64) {
+    n_fields = n_minbits / MFL_BTS_IN_BITSET;
+    if (n_minbits % MFL_BTS_IN_BITSET) {
         n_fields += 1;
     }
     
