@@ -23,20 +23,20 @@ void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition
 
 bool mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target)
 {
-    bool ret = true;
+    bool ret = false;
     int i = 0;
     int n_bitfields = set1->bts_nfields;
     
     if (target) {
         for (i = 0; i < n_bitfields; ++i) {
-            if (!(target->bts_bitfields[i] = (set1->bts_bitfields[i] & set2->bts_bitfields[i]))) {
-                ret = false;
+            if ((target->bts_bitfields[i] = (set1->bts_bitfields[i] & set2->bts_bitfields[i]))) {
+                ret = true;
             }
         }
     } else {
         for (i = 0; i < n_bitfields; ++i) {
-            if (!(set1->bts_bitfields[i] & set2->bts_bitfields[i])) {
-                return false;
+            if ((set1->bts_bitfields[i] & set2->bts_bitfields[i])) {
+                ret = true;
             }
         }
     }
