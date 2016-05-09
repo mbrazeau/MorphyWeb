@@ -370,18 +370,13 @@ void            mfl_free_nodedata(mfl_nodedata_t *olddata);
 mfl_nodedata_t* mfl_alloc_datapart(void);
 int*            mfl_alloc_set_list(int num_chars);
 void            mfl_free_set_list(bool *inclist);
-//void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int *list, int nelems);
-
 void            mfl_read_nexus_style_list_subcmd(char *subcommand, int setval, int* list, int nelems);
 void            mfl_count_gaps_in_each_character(mfl_matrix_t* matrix);
 void            mfl_set_cv_chartypes(mfl_matrix_t* matrix, const mfl_handle_s* mfl_handle, mfl_parsimony_t* chartypes);
 void            mfl_set_include_value(int vectornum, int includeval, int* includes);
 void            mfl_set_include_range(int first, int last, int includeval, int* includes);
-
 void            mfl_set_inclusion_list(int* includes, int includeval, int listmax, char *subcommand);
 void            mfl_move_current_to_digit(char** current);
-//void            mfl_set_include_range(int first, int last, int includeval, int* includes);
-//void            mfl_set_include_value(int vectornum, int includeval, int* includes);
 int             mfl_get_numstates_from_matrix(char *inputmatrix);
 int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);
