@@ -285,3 +285,36 @@ void mfl_preorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     
     return;
 }
+
+
+/*!
+ @discussion Defines if final set is different than preliminary set
+ @param target_node (mfl_nodedata_t*) a target node
+ @return a boolean, whether the final set is different (TRUE) or not (FALSE)
+ */
+bool mfl_is_final_different(mfl_nodedata_t *target_node)
+{
+    bool is_node_different = 1;     // Probably safer to initialise the bool as being different
+    
+    // Check if the prelim set is equal to the final set
+    if(target_node->nd_prelim_set == target_node->nd_final_set){
+        // Sets are not different
+        is_node_different = 0;
+        return is_node_different;
+    }
+    //Sets are different
+    return is_node_different;
+}
+
+/*
+//TG: next step could be to add that in the traversal and store the results in a array of bools:
+
+ void mfl_my_traversal(bool *node_differences, int *count)
+ {
+    //...
+    node_differences[*count] = mfl_is_final_different(target_node);
+    //...
+ }
+ 
+//TG: and then use this in a character_to_change array
+*/
