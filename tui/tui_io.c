@@ -213,13 +213,13 @@ tui_testcmd_t tui_read_cmdline_argv(const char* arg2)
 {
     //tui_testcmd_t ret = TUI_CMD_MAX;
     
-    if (strcmp(arg2, "matrix")) {
+    if (!strcasecmp(arg2, "matrix")) {
         return TUI_CMD_MATRIX_INPUT_BASIC;
     }
-    else if (strcmp(arg2, "newick")) {
+    else if (!strcasecmp(arg2, "newick")) {
         return TUI_CMD_NEWICK_INPUT_BASIC;
     }
-    else if (strcmp(arg2, "command")) {
+    else if (!strcasecmp(arg2, "command")) {
         return TUI_CMD_COMMAND_BASIC;
     }
     else {
@@ -259,9 +259,9 @@ mfl_handle_s* tui_parse_test_file(const char* arg1, const char* arg2)
      */
     
     //Processing as a matrix
-    tui_simple_table_parser((const char*)filstr, testhandle);
-    
     dbg_printf("Test matrix processing:\n\n");
+    tui_read_cmdline_argv(arg2);
+    tui_simple_table_parser((const char*)filstr, testhandle);
     tui_test_matrix_processing(testhandle);
     
     
