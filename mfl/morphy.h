@@ -176,6 +176,13 @@ typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a
 typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
+typedef struct mfl_stepmatrix_t {
+    int      sm_numstates;
+    int*     sm_int_costs;
+    double*  sm_flt_costs;
+} mfl_stepmatrix_t;
+
+
 typedef struct mfl_datapartition_t {
     int part_n_characters;
     mfl_parsimony_t part_optimisation_method;
