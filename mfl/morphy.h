@@ -169,7 +169,7 @@ typedef enum {
     MFL_MST_MAX
 } mfl_multistate_t;
 
-typedef long double *mfl_costs_t;       // A matrix of transition costs.
+//typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
 typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a function that performs parsimony calculations at a node.
@@ -190,7 +190,7 @@ typedef struct mfl_datapartition_t {
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
     int part_weight;
-    mfl_costs_t *part_costmatrix;
+    //mfl_costs_t *part_costmatrix;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 
@@ -220,7 +220,7 @@ typedef struct mfl_nodedata_t {
     mfl_parsimony_t nd_parsim_method;  // The optimisation method applied to all characters in this datablock.
     bool nd_has_inapplicables;                  // false: no inapplicables; true: has inapplicables.
     bool nd_char_is_directed;                   // Character depends on tree rooting or not.
-    mfl_costs_t *nd_costmatrix;                 // Cost matrix associated with these characters.
+    //mfl_costs_t *nd_costmatrix;                 // Cost matrix associated with these characters.
     mfl_parsim_fn nd_downpass;                  // The downpass parsimony function.
     mfl_parsim_fn nd_uppass;                    // The uppass parsimony function.
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
