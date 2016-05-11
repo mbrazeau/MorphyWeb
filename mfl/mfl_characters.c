@@ -1399,21 +1399,26 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 int mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_handle_s* handle)
 {
     int i = 0;
-    int numparts = handle->n_ctypes + 1;
+    int numparts = handle->n_ctypes + handle->n_usertypes;
     
-    if (handle->gap_method != MFL_GAP_MISSING_DATA) {
-        return numparts;
-    }
-    
-    for (i = 0; i < m->mat_num_characters; ++i) {
-        // Examine combinations of each char type with gaps
-    }
+    // Count all the types being set.
     
 }
 
 
-mfl_datapartition_t** mfl_create_data_partitions_for_analysis(mfl_matrix_t* matrix, mfl_searchrec_t* searchrec)
+mfl_datapartition_t** mfl_create_data_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
+    int numparts = mfl_count_num_partitions_required(matrix, handle);
+    
+    mfl_datapartition_t** dataparts = (mfl_datapartition_t**)malloc(numparts * sizeof(mfl_datapartition_t*));
+    
+    if (!dataparts) {
+        dbg_eprintf("unable to allocate memory for datapartition");
+    }
+    else {
+        memset(dataparts, 0, numparts * sizeof(mfl_datapartition_t*));
+    }
+    
     
 }
 
