@@ -190,7 +190,8 @@ typedef struct mfl_datapartition_t {
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
     int part_weight;
-    //mfl_costs_t *part_costmatrix;
+    //mfl_costs_t *part_costmatrix;;
+    mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 
