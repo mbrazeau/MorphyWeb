@@ -211,6 +211,20 @@ void tui_test_bipartition_setting()
     
 }
 
+
+void tui_nexus_reader(char* argv1)
+{
+    NxsReader *myreader = new NxsReader;
+    myreader->ReadFilepath(argv1);
+    
+    NxsTaxaBlock *taxa = new NxsTaxaBlock();
+    NxsAssumptionsBlock *pAssumptions = new NxsAssumptionsBlock(taxa);
+    const NxsTransformationManager transmanager = pAssumptions->GetNxsTransformationManagerRef();
+//    string stepmatrixname = transmanager.GetUserTypeNames();
+//    const NxsIntStepMatrix inmatrix = transmanager.GetIntType(<#const std::string &name#>)
+}
+
+
 void tui_test_newick_stuff()
 {
     /* This function will be eliminated from the library. */
