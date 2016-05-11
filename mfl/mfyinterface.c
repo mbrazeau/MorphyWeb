@@ -123,7 +123,7 @@ bool mfl_set_addseq_t(mfl_handle_s *mfl_struct, void *param_data)
     mfl_struct->addseq_type = (mfl_add_sequence_t)(long int)param_data;
     if (!((mfl_struct->addseq_type >= 0) && (mfl_struct->addseq_type < MFL_AST_MAX)))
     {
-        throw mfl_exception(mfl_s2t(mfl_struct), "Invalid add seq type");
+        throw mfl_exception(mfl_s2t(mfl_struct), "Invalid addition sequence type");
     }
     return true;
 }
@@ -158,6 +158,7 @@ mfl_handle_t mfl_create_handle()
     memset(mfl_struct, 0, sizeof(mfl_handle_s));
 
     /* setup reasonable defaults */
+    mfl_struct->n_ctypes = 1;
     mfl_set_branchswap_t(mfl_struct, (void*)MFL_BST_SPR);
     mfl_set_collapse_value(mfl_struct, (void*)MFL_SC_MAX_LEN);
     mfl_set_treelimit(mfl_struct, (void*)MORPHY_DEFAULT_TREE_LIMIT);
