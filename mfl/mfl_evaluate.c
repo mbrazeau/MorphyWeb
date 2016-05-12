@@ -61,20 +61,20 @@ void mfl_fitch_downpass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp = NULL;
-    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
-    
-    for (i = 0; i < num_chars; ++i) {
-        if ((temp = leftchars[i] & rightchars[i])) {
-            parentchars[i] = temp;
-        }
-        else {
-            parentchars[i] = leftchars[i] | rightchars[i];
-            /* Increment the length of the tree, and maxsteps*/
-        }
-    }
+//    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
+//    
+//    for (i = 0; i < num_chars; ++i) {
+//        if ((temp = leftchars[i] & rightchars[i])) {
+//            parentchars[i] = temp;
+//        }
+//        else {
+//            parentchars[i] = leftchars[i] | rightchars[i];
+//            /* Increment the length of the tree, and maxsteps*/
+//        }
+//    }
 }
 
 void mfl_fitch_uppass_binary_node(mfl_node_t *node)
@@ -86,16 +86,16 @@ void mfl_fitch_uppass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp   = NULL;
-    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_OPT_FITCH]->nd_final_set;
-    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_OPT_FITCH]->nd_final_set;
-    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
+//    mfl_charstate* parent_prelim = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* parent_final  = node->nodet_dataparts[MFL_OPT_FITCH]->nd_final_set;
+//    mfl_charstate* leftchars     = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* rightchars    = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* ancchars      = ancestor->nodet_dataparts[MFL_OPT_FITCH]->nd_final_set;
+//    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
     
-    for (i = 0; i < num_chars; ++i) {
-        // Uppass business logic.
-    }
+//    for (i = 0; i < num_chars; ++i) {
+//        // Uppass business logic.
+//    }
 }
 
 inline int mfl_wagner_stepcount(mfl_charstate leftchar, mfl_charstate rightchar, mfl_charstate* parentchar, int weight)
@@ -145,20 +145,20 @@ void mfl_wagner_downpass_binary_node(mfl_node_t *node)
     lchild = node->nodet_next->nodet_edge;
     rchild = node->nodet_next->nodet_next->nodet_edge;
     mfl_charstate temp = NULL;
-    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
-    
-    for (i = 0; i < num_chars; ++i) {
-        if ((temp = leftchars[i] & rightchars[i])) {
-            
-        }
-        else {
-            //parentchars[i] = leftchars[i] | rightchars[i];
-            /*Lenght increase = */ mfl_wagner_stepcount(leftchars[i], rightchars[i], &parentchars[i],  NULL/* WEIGHT goes here*/);
-        }
-    }
+//    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
+//    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
+//    
+//    for (i = 0; i < num_chars; ++i) {
+//        if ((temp = leftchars[i] & rightchars[i])) {
+//            
+//        }
+//        else {
+//            //parentchars[i] = leftchars[i] | rightchars[i];
+//            /*Lenght increase = */ mfl_wagner_stepcount(leftchars[i], rightchars[i], &parentchars[i],  NULL/* WEIGHT goes here*/);
+//        }
+//    }
 }
 
 mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type)
@@ -237,10 +237,10 @@ void mfl_evaluate_downpass(mfl_node_t *node)
     num_dataparts = node->nodet_num_dat_partitions;
     
     // For each data partition at the node, set the correct type and evaluation
-    for (i = 0; i < num_dataparts; ++i) {
-        evaluator = mfl_fetch_downpass_parsimony_fxn(node->nodet_dataparts[i]->nd_parsim_method);
-        evaluator(node);
-    }
+//    for (i = 0; i < num_dataparts; ++i) {
+//        evaluator = mfl_fetch_downpass_parsimony_fxn(node->nodet_dataparts[i]->nd_parsim_method);
+//        evaluator(node);
+//    }
     
     return;
 }
