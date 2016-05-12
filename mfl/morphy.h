@@ -198,6 +198,13 @@ typedef struct mfl_datapartition_t {
 } mfl_datapartition_t;
 
 
+typedef struct {
+    int ptset_n_parts;
+    mfl_parsimony_t* ptset_parsimony_methods;
+    mfl_datapartition_t** ptset_partitions;
+} mfl_partition_set_t;
+
+
 typedef struct mfl_character_vector_t {
     long long int cv_col_number;
     int cv_num_gaps;
