@@ -178,8 +178,10 @@ typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, m
 
 typedef struct mfl_stepmatrix_t {
     int      sm_numstates;
-    int*     sm_int_costs;
-    double*  sm_flt_costs;
+    union {
+        int*     sm_int_costs;
+        double*  sm_flt_costs;
+    };
 } mfl_stepmatrix_t;
 
 
@@ -211,7 +213,7 @@ typedef struct mfl_character_vector_t {
 typedef struct mfl_matrix_t {
     int mat_num_taxa;
     int mat_num_characters;
-    int max_states;
+    int mat_max_states;
     mfl_character_vector_t** mat_matrix;
 } mfl_matrix_t;
 
