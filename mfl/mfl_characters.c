@@ -795,13 +795,13 @@ void mfl_populate_chartype_character_vectors(mfl_matrix_t *matrix, char *input_d
     
     current = input_data_matrix;
     
-    substring = (char*)malloc((matrix->max_states + 1) * sizeof(char));
+    substring = (char*)malloc((matrix->mat_max_states + 1) * sizeof(char));
     if (!substring) {
         dbg_printf("ERROR in mfl_populate_chartype_character_vector(): unable to allocate memory for character substring\n");
         return;
     }
     else {
-        memset(substring, 0, (matrix->max_states + 1) * sizeof(char));
+        memset(substring, 0, (matrix->mat_max_states + 1) * sizeof(char));
     }
     
     do {
@@ -890,7 +890,7 @@ void mfl_setup_new_empty_matrix(mfl_matrix_t *newmatrix, int num_states, int num
         }
     }
     
-    newmatrix->max_states = num_states;
+    newmatrix->mat_max_states = num_states;
 }
 
 
@@ -1403,15 +1403,31 @@ int mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_handle_s* handle)
     
     // Count all the types being set.
     
+    return numparts;
 }
 
-
-mfl_datapartition_t** mfl_create_data_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handle)
+mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
 {
-    int numparts = mfl_count_num_partitions_required(matrix, handle);
+    mfl_datapartition_t* newdatapart = (mfl_datapartition_t*)malloc(sizeof(mfl_datapartition_t));
+    if (!newdatapart) {
+        dbg_eprintf("unable to allocate memory for data partition");
+        return NULL;
+    }
+    else {
+        memset(newdatapart, 0, sizeof(mfl_datapartition_t));
+    }
+    
+    return newdatapart;
+}
+
+mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl_handle_s* handle)
+{
+    int i = 0;
+    int numparts = 0;
+    
+    numparts = mfl_count_num_partitions_required(matrix, handle);
     
     mfl_datapartition_t** dataparts = (mfl_datapartition_t**)malloc(numparts * sizeof(mfl_datapartition_t*));
-    
     if (!dataparts) {
         dbg_eprintf("unable to allocate memory for datapartition");
     }
@@ -1419,7 +1435,24 @@ mfl_datapartition_t** mfl_create_data_partitions_for_analysis(mfl_matrix_t* matr
         memset(dataparts, 0, numparts * sizeof(mfl_datapartition_t*));
     }
     
+    for (i = 0; i < numparts; ++i) {
+        dataparts[i] = mfl_alloc_empty_datapartition_t();
+    }
     
+    
+    return dataparts;
+
+}
+
+void mfl_setup_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handle)
+{
+    
+    mfl_datapartition_t** dataparts = mfl_create_data_partitions_array(matrix, handle);
+    // Allocate all of the partitions
+    
+    // Count the number of characters of each type, incrementing the appropriate counter in the partition
+    
+    // Size the charstate arrays in the partition.
 }
 
 
