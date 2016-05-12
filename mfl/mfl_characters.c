@@ -1455,4 +1455,7 @@ void mfl_setup_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handl
     // Size the charstate arrays in the partition.
 }
 
-
+void mfl_destroy_partition_set(void)
+{
+    
+}
