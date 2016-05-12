@@ -142,6 +142,7 @@ typedef struct {
     int                     n_ctypes;
     char*                   ctypes_cmd[MFL_OPT_MAX];
     mfl_parsimony_t*        ctypes;                         // A 'preloaded' array of ctypes, rather than a command to be parsed
+    mfl_parsimony_t*        ctype_setters;
     int                     n_usertypes;
     char**                  usertypes;
     mfl_branch_swap_t       bswap_type;
@@ -262,7 +263,7 @@ typedef struct mfl_node_t {
     double nodet_mean_branchlen;                // Mean branch length.
     long long int nodet_tree_index;             // Identity of the tree to which this node belongs.
     int nodet_num_dat_partitions;
-    mfl_nodedata_t **nodet_dataparts;
+    mfl_nodedata_t *nodet_dataparts;
 } mfl_node_t;
 
 
