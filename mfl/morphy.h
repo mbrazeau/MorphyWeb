@@ -458,6 +458,7 @@ char*   mfl_drawtree_create_virtual_grid(int num_taxa);
 void    mfl_put_character_in_cell(char const ch, int row, int col, char* grid);
 char    mfl_drawtree_get_character_in_cell(int row, int col, char* grid);
 void    mfl_drawtree_write_into_tipfield(char* name, char* grid, int row, int col);
+int     mfl_drawtree_calculate_branchlength(int num_taxa);
 void    mfl_drawtree_set_node_coords(mfl_node_t *n, int row, int num_taxa);
 void    mfl_drawtree_apply_subbranch(mfl_node_t* parent, mfl_node_t* desc, char *grid);
 void    mfl_drawtree_set_coords_traversal(mfl_node_t* n, int* currentrow, char* grid, int num_taxa);
@@ -482,6 +483,15 @@ int         mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_t
 int         mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start);
 char*       mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int &count);
 char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active, bool root_polytomy);
+
+void mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int *tips_length);
+void mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int* num_taxa);
+void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int* count);
+char* mfl_alloc_empty_newick(int newick_string_length);
+int mfl_get_num_active_taxa_in_tree(mfl_tree_t* input_tree);
+int mfl_calculate_newick_length(mfl_tree_t* input_tree, int num_taxa);
+void mfl_concatenate_newick_elements(char* destination, char* newick_substring, char* root_header);
+char* mfl_get_newick_root_header(bool isrooted);
 mfl_treebuffer_t *mfl_tree_from_newick_to_buffer(mfl_handle_s* mfl_handle);
 
 
@@ -519,3 +529,6 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 /* in mfl_compare.c*/
 void            mfl_set_bipartitions(mfl_node_t* n);
+
+/* in mfl_searchrec.c*/
+void mfl_initialise_searchrec(mfl_searchrec_t* searchrec);
