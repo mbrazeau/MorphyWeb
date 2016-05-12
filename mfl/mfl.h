@@ -150,7 +150,7 @@ typedef enum
 {
     MFL_IFRMT_NEXUS,
     MFL_IFRMT_PHYLOXML,
-    MFL_IFRMT_TNT,
+    MFL_IFRMT_XREAD,
     // Other input types to be handled
     
     MFL_IFRMT_MAX
