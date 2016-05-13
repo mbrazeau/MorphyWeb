@@ -132,7 +132,9 @@ typedef struct {
 
 typedef struct {
     int                     n_taxa;
+    bool*                   included_taxa;
     int                     n_chars;
+    bool*                   included_chars;
     mfl_inputformat_t       input_format;
     mfl_search_t            search_type;
     int                     n_iterations;
