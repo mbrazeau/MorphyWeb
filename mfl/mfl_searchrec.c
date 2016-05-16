@@ -36,14 +36,56 @@
 #include "morphy.h"
 
 /* temporary place for prototypes */
+void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
 void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
 void mfl_copy_from_all_partitions_into_node_data(mfl_node_t* n, mfl_partition_set_t* partset);
 void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts);
 /**/
 
-void mfl_initialise_searchrec(mfl_searchrec_t* searchrec)
+void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle)
 {
-    searchrec->sr_best_length = MORPHY_UINTMAX;
+    assert(handle);
+    searchrec->sr_abort_rep = false;
+    searchrec->sr_abort_swapping = false;
+    searchrec->sr_best_length   = MORPHY_UINTMAX;
+    searchrec->sr_num_taxa_included = handle->n_taxa;
+    searchrec->sr_num_chars_included = handle->n_chars;
+    // TODO: Handle included/excluded chars.
+    
+    // User/default values from the handle
+    searchrec->sr_stepwise      = handle->addseq_type;
+    searchrec->sr_searchtype    = handle->search_type;
+    searchrec->sr_bswaptype     = handle->bswap_type;
+    
+    if (handle->n_iterations) {
+        searchrec->sr_num_reps_stepwise = handle->n_iterations;
+    }
+    else {
+        searchrec->sr_num_reps_stepwise = MORPHY_DEFAULT_ADDITION_SEQUENCE_REPS;
+    }
+    
+    if (handle->maxtrees) {
+        searchrec->sr_maxtrees = handle->maxtrees;
+    }
+    else {
+        searchrec->sr_maxtrees = MORPHY_DEFAULT_TREE_LIMIT;
+    }
+    
+    if (!handle->autoincrease) {
+        searchrec->sr_increase_treebuffer = MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_SWITCH;
+    }
+    else {
+        if (!handle->autoinc_incr) {
+            searchrec->sr_autoinc_increment = MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_AMOUNT;
+        }
+    }
+    
+    
+    
+    // Values that will have to have been calculated before the search
+    if (!searchrec->sr_num_partitions) {
+        searchrec->sr_num_partitions = 1;
+    }
 }
 
 void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row)
