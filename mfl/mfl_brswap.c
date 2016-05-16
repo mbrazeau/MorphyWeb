@@ -46,9 +46,20 @@ void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* s
 void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
 {
     // Traverse the starting tree, making the requisit prunings
+    
+    // At each clipping:
+    //      mfl_regrafting_traversal()
 }
 
+void mfl_subtree_pruning_and_regrafting(mfl_tree_t* starttree, mfl_searchrec_t* searchrec)
+{
+    // Call mfl_pruning_traversal() on the start
+}
 
+void tui_spr_test_environment(void)
+{
+    // NOTE: This is a tui function and should be moved there.
+}
 
 bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
 {
