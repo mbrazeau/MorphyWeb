@@ -255,6 +255,7 @@ typedef struct mfl_node_t {
     int col;
     int branchl_cdraw;
     bool nodet_isingroup;                       // Indicates if node is within the ingroup or not.
+    int nodet_weight;                           // The number of tips of this node; tips are 1.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
 	int nodet_uppass_visited;                   // Indicates successful visit from an uppass traversal.
