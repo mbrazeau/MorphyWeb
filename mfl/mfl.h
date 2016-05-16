@@ -253,6 +253,11 @@ typedef enum
 
 typedef void* mfl_handle_t;
 
+typedef struct mfl_ctype_setter_t {
+    mfl_parsimony_t chartype;
+    char *ctype_cmd;
+} mfl_ctype_setter_t;
+
 mfl_handle_t mfl_create_handle();
 void mfl_destroy_handle(mfl_handle_t mfl_handle);
 void mfl_erase_trees_newick(mfl_handle_t mfl_handle);
