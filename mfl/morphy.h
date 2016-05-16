@@ -143,7 +143,6 @@ typedef struct {
     int                     autoinc_incr;
     int                     n_ctypes;
     char*                   ctypes_cmd[MFL_OPT_MAX];
-    mfl_parsimony_t*        ctypes;                         // A 'preloaded' array of ctypes, rather than a command to be parsed
     mfl_parsimony_t*        ctype_setters;
     int                     n_usertypes;
     char**                  usertypes;

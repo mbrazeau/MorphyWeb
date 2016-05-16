@@ -524,8 +524,8 @@ mfl_parsimony_t* mfl_get_chartypes_list(const mfl_handle_s* mfl_handle)
     int i;
     mfl_parsimony_t* ctype_setters = mfl_alloc_chartype_list(mfl_handle->n_chars);
     
-    if (mfl_handle->ctypes) {
-        memccpy(ctype_setters, mfl_handle->ctypes, mfl_handle->n_chars, sizeof(mfl_parsimony_t));
+    if (mfl_handle->ctype_setters) {
+        memccpy(ctype_setters, mfl_handle->ctype_setters, mfl_handle->n_chars, sizeof(mfl_parsimony_t));
     }
     else if (mfl_handle->ctypes_cmd) {
         if (!mfl_handle->n_ctypes) {
