@@ -286,6 +286,7 @@ typedef struct mfl_tree_t {
     mfl_nodestack_t* treet_nodestack;       // Unused nodes
     mfl_bitsetlist_t* treet_bipartitions;
     int treet_num_taxa;                     // Total number of terminals.
+    int treet_num_nodes;
     int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
     int treet_island_id;                    // An identification number for the parent start tree.
     int *treet_compressed_tree;             // The integer encoding of the tree for tree comparisons and saving memory
@@ -450,6 +451,8 @@ void            mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_
 mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees);
 void            mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle);
 void            mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
+void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
+mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 
 

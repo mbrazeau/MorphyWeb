@@ -1063,6 +1063,17 @@ mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees)
     return newtrbf;
 }
 
+void mfl_reset_nodestack(mfl_nodestack_t* nstk)
+{
+    int i = 0;
+    
+    for (i = nstk->nstk_numnodes; i; --i) {
+        if (!mfl_node_is_available(nstk->nstk_availbale_nds[i - 1])) {
+            nstk->nstk_availbale_nds[i - 1] = NULL;
+            --nstk->nstk_numnodes;
+        }
+    }
+}
 
 mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
 {
@@ -1097,6 +1108,9 @@ mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
         trcopy->treet_start = cpynds[t->treet_start->nodet_index];
         trcopy->treet_root = NULL;
     }
+    
+    // Reset the nodestack.
+    mfl_reset_nodestack(trcopy->treet_nodestack);
     
     return trcopy;
 }
