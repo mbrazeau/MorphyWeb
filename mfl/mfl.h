@@ -256,6 +256,7 @@ typedef void* mfl_handle_t;
 typedef struct mfl_ctype_setter_t {
     mfl_parsimony_t chartype;
     char *ctype_cmd;
+    char *ctype_name;
 } mfl_ctype_setter_t;
 
 mfl_handle_t mfl_create_handle();
