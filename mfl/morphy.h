@@ -79,7 +79,8 @@ using namespace std;
 //Defaults
 #define MORPHY_DEFAULT_WEIGHT 1.0
 #define MORPHY_DEFAULT_TREE_LIMIT 1000
-#define MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_DEFAULT 500
+#define MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_SWITCH false
+#define MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_AMOUNT 500
 #define MORPHY_DEFAULT_STEPWISE_HOLD 1
 #define MORPHY_DEFAULT_ADDITION_SEQUENCE_REPS 10
 #define MORPHY_DEFAULT_CHARACTER_INCLUDE true
@@ -97,6 +98,15 @@ typedef uint64_t mfl_uint;
 typedef mfl_uint mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
 
 typedef mfl_uint mfl_bitfield_t;
+
+typedef struct mfl_stepmatrix_t {
+    int      sm_numstates;
+    bool     sm_is_int;
+    union {
+        int*     sm_int_costs;
+        double*  sm_flt_costs;
+    };
+} mfl_stepmatrix_t;
 
 typedef struct mfl_bitset_t {
     int bts_nfields;
@@ -140,12 +150,13 @@ typedef struct {
     int                     n_iterations;
     int                     n_treelimit;
     bool                    autoincrease;
+    int                     maxtrees;
     int                     autoinc_incr;
     int                     n_ctypes;
     char*                   ctypes_cmd[MFL_OPT_MAX];
     mfl_parsimony_t*        ctype_setters;
     int                     n_usertypes;
-    char**                  usertypes;
+    mfl_stepmatrix_t*       usertypes;
     mfl_branch_swap_t       bswap_type;
     bool                    is_ratchet;
     int                     n_symbols;
@@ -178,15 +189,6 @@ typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a
 typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
-typedef struct mfl_stepmatrix_t {
-    int      sm_numstates;
-    union {
-        int*     sm_int_costs;
-        double*  sm_flt_costs;
-    };
-} mfl_stepmatrix_t;
-
-
 typedef struct mfl_datapartition_t {
     int part_n_characters;
     mfl_parsimony_t part_optimisation_method;
@@ -194,7 +196,6 @@ typedef struct mfl_datapartition_t {
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
     int part_weight;
-    //mfl_costs_t *part_costmatrix;;
     mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
@@ -220,19 +221,17 @@ typedef struct mfl_character_vector_t {
 
 
 typedef struct mfl_matrix_t {
-    int mat_num_taxa;
-    int mat_num_characters;
-    int mat_max_states;
+    int  mat_num_taxa;
+    int  mat_num_characters;
+    int  mat_max_states;
+    int* mat_included_characters;
     mfl_character_vector_t** mat_matrix;
 } mfl_matrix_t;
 
 
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
-    mfl_parsimony_t nd_parsim_method;  // The optimisation method applied to all characters in this datablock.
-    bool nd_has_inapplicables;                  // false: no inapplicables; true: has inapplicables.
-    bool nd_char_is_directed;                   // Character depends on tree rooting or not.
-    //mfl_costs_t *nd_costmatrix;                 // Cost matrix associated with these characters.
+    mfl_datapartition_t *nd_parent_partition;
     mfl_parsim_fn nd_downpass;                  // The downpass parsimony function.
     mfl_parsim_fn nd_uppass;                    // The uppass parsimony function.
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
@@ -316,6 +315,8 @@ typedef struct mfl_treebuffer_t {
  @discussion Contains the parameters of the tree search process.
  */
 typedef struct mfl_searchrec_t {
+    bool sr_abort_rep;
+    bool sr_abort_swapping;
     int  sr_num_taxa_included;
     int* sr_included_taxa;
     int  sr_num_chars_included;
@@ -328,6 +329,8 @@ typedef struct mfl_searchrec_t {
     mfl_uint sr_best_length;
     int  sr_num_trees_held_stepwise;
     bool sr_increase_treebuffer;
+    int  sr_autoinc_increment;
+    int  sr_maxtrees;
     long long int sr_rearrangement_counter;
     mfl_treebuffer_t* sr_treebuffer;
 } mfl_searchrec_t;
