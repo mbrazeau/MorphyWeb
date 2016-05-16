@@ -1399,9 +1399,19 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 int mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_handle_s* handle)
 {
     int i = 0;
+    int j = 0;
+    int count = 0;
     int numparts = handle->n_ctypes + handle->n_usertypes;
     
     // Count all the types being set.
+    for (i = 0; i < MFL_OPT_MAX; ++i) {
+        for (j = 0; j < handle->n_chars; ++j) {
+            if (m->mat_matrix[j]->cv_parsim_method == i) {
+                ++count;
+                j = handle->n_chars;
+            }
+        }
+    }
     
     return numparts;
 }
