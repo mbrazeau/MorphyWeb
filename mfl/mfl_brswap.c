@@ -37,9 +37,9 @@
 #include "morphy.h"
 
 
-void mfl_regrafting_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
+void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* searchrec)
 {
-    
+    // Traverse the target tree, attempting the reinsertion
 }
 
 
@@ -47,6 +47,8 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
 {
     // Traverse the starting tree, making the requisit prunings
 }
+
+
 
 bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
 {
