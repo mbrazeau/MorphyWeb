@@ -792,6 +792,7 @@ void mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes)
     mfl_initialise_nodearray(newtree, num_taxa, num_nodes);
     
     newtree->treet_num_taxa = num_taxa;
+    newtree->treet_num_nodes = num_nodes;
 }
 
 
@@ -1060,6 +1061,34 @@ mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees)
     newtrbf->tb_max_buffersize = trbufsize;
     
     return newtrbf;
+}
+
+
+mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
+{
+    assert(t);
+    int i = 0;
+    int numnodes = 0;
+    mfl_tree_t* trcopy = NULL;
+    trcopy = mfl_alloctree_with_nodes(t->treet_num_taxa);
+    mfl_node_t* p = NULL;
+    mfl_nodearray_t srcnds = t->treet_treenodes;
+    mfl_nodearray_t cpynds = trcopy->treet_treenodes;
+    
+    assert((numnodes = trcopy->treet_num_nodes) != 0);
+    for (i = 0; i < numnodes ; ++i) {
+        assert(srcnds[i]->nodet_index == cpynds[i]->nodet_index);
+        if (srcnds[i]->nodet_edge) {
+            cpynds[i]->nodet_edge = cpynds[srcnds[i]->nodet_edge->nodet_index];
+        }
+        if (srcnds[i]->nodet_next) {
+            cpynds[i]->nodet_next = cpynds[srcnds[i]->nodet_next->nodet_index];
+        }
+    }
+    
+    
+    // Copy safe variables
+    trcopy->treet_num_taxa = t->treet_num_taxa;
 }
 
 /*!
