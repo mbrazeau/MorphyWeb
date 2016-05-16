@@ -1010,7 +1010,7 @@ void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf,
                 addedlength = mfl_handle->autoinc_incr;
             }
             else {
-                addedlength = MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_DEFAULT;
+                addedlength = MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_AMOUNT;
             }
             mfl_resize_treebuffer(trbuf, addedlength);
         }
