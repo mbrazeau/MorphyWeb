@@ -75,6 +75,15 @@ bool mfl_set_searchtype(mfl_handle_s *mfl_struct, void *param_data)
     return true;
 }
 
+bool mfl_set_ctypes(mfl_handle_s* mfl_struct, void *param_data)
+{
+    // mfl_set_ctypes_array
+    if (!mfl_struct->n_chars){
+        throw mfl_exception(mfl_s2t(mfl_struct), "No input data");
+    }
+    return true;
+}
+
 bool mfl_set_numiterations(mfl_handle_s *mfl_struct, void *param_data)
 {
     /* what is the valid range for this param? */
