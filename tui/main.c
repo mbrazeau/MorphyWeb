@@ -262,15 +262,15 @@ void tui_test_newick_stuff()
     tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing2, 0);
     dbg_printf("Testing convert to newick\n");
     char *newick_string;
-    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, true);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, true);
     dbg_printf("The output newick string is: %s\n", newick_string);
     dbg_printf("Unrooting tree:\n");
     mfl_unroot_tree(tree_from_newick);
-    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, true);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, true);
     dbg_printf("The output newick string is (with polytomy): %s\n", newick_string);
     tree_from_newick =  mfl_convert_newick_to_mfl_tree_t(temp_example_newick_for_writing2, 0);
     mfl_unroot_tree(tree_from_newick);
-    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, 0, false);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(tree_from_newick, false);
     dbg_printf("The output newick string is (without polytomy): %s\n", newick_string);
     
     mfl_free_tree(tree_from_newick); // Some bug here
@@ -295,11 +295,11 @@ void tui_test_newick_stuff()
     
     //Print what's in the buffer
     dbg_printf("Trees in the buffer are:\n");
-    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[0], 0, true);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[0], true);
     dbg_printf("%s\n", newick_string);
-    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[1], 0, true);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[1], true);
     dbg_printf("%s\n", newick_string);
-    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[2], 0, true);
+    newick_string = mfl_convert_mfl_tree_t_to_newick(my_buffer->tb_savedtrees[2], true);
     dbg_printf("%s\n", newick_string);
 //
     //Cleaning
@@ -317,7 +317,7 @@ void tui_test_tree_copying(void)
     dbg_printf("The tree to be copied:\n %s\n", cpytarget);
     
     mfl_tree_t* cpytr = mfl_copy_tree_topology(tmplt);
-    copiedtr = mfl_convert_mfl_tree_t_to_newick(cpytr, 8, false);
+    copiedtr = mfl_convert_mfl_tree_t_to_newick(cpytr, false);
     dbg_printf("The copied tree:\n %s\n", copiedtr);
     
 }

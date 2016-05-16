@@ -600,7 +600,7 @@ char* mfl_get_newick_root_header(bool isrooted)
  the first node (polytomy = true) or the first edge (polytomy = false).
  @returns a character Newick string.
  */
-char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, bool root_polytomy)
+char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, bool root_polytomy)
 {
     char* newicktr_substr = NULL;
     char *newick_tree_out = NULL;
@@ -625,11 +625,11 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa, boo
     }
     
     
-    if(!num_taxa) {
+    if(!input_tree->treet_num_taxa) {
         num_taxa_local = mfl_get_num_active_taxa_in_tree(input_tree);
     }
     else {
-        num_taxa_local = num_taxa;
+        num_taxa_local = input_tree->treet_num_taxa;
     }
     
   

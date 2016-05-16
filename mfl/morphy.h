@@ -491,7 +491,7 @@ int         mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int &tip
 int         mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_taxa);
 int         mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start);
 char*       mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int &count);
-char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, int num_taxa_active, bool root_polytomy);
+char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, bool root_polytomy);
 
 void mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int *tips_length);
 void mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int* num_taxa);
