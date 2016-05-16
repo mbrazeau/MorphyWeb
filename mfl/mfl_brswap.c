@@ -36,6 +36,18 @@
 #include <stdio.h>
 #include "morphy.h"
 
+
+void mfl_regrafting_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
+{
+    
+}
+
+
+void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
+{
+    // Traverse the starting tree, making the requisit prunings
+}
+
 bool mfl_heuristic_search(mfl_handle_s *mfl_handle)
 {
     /* Eventually, this will parse the information in the handle and set up the 
