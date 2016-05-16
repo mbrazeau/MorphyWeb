@@ -405,6 +405,7 @@ int             mfl_get_numstates_from_matrix(char *inputmatrix);
 int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);
 bool            mfl_is_nexus_stop_position(char a);
+int             mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_gap_t gaprule);
 mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
 
 /* In mfl_starttree.c */

@@ -1382,6 +1382,8 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
+    dbg_printf("Num partitions implied by this matrix: %i\n", mfl_count_num_partitions_required(new_inmatrix, mfl_handle->gap_method));
+    
     /*int i;
     dbg_printf("Printing chartypes array:\n");
     for (i = 0; i < mfl_handle->n_chars; ++i) {
@@ -1396,24 +1398,42 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 }
 
 
-int mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_handle_s* handle)
+int mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_gap_t gaprule)
 {
     int i = 0;
-    int j = 0;
-    int count = 0;
-    int numparts = handle->n_ctypes + handle->n_usertypes;
     
-    // Count all the types being set.
+    int partitiontypes[MFL_OPT_MAX] = {0};
+    int numdataparts = 0;
+    
+    for (i = 0; i < m->mat_num_characters; ++i) {
+        if (partitiontypes[m->mat_matrix[i]->cv_parsim_method] == 3) {
+            continue;
+        }
+        if (m->mat_matrix[i]->cv_num_gaps > 1 && gaprule == MFL_GAP_INAPPLICABLE) {
+            partitiontypes[m->mat_matrix[i]->cv_parsim_method] |= 2;
+        }
+        partitiontypes[m->mat_matrix[i]->cv_parsim_method] |= 1;
+    }
+    
     for (i = 0; i < MFL_OPT_MAX; ++i) {
-        for (j = 0; j < handle->n_chars; ++j) {
-            if (m->mat_matrix[j]->cv_parsim_method == i) {
-                ++count;
-                j = handle->n_chars;
-            }
+        switch (partitiontypes[i]) {
+            case 0:
+                break;
+            case 1:
+                ++numdataparts;
+                break;
+            case 2:
+                ++numdataparts;
+                break;
+            case 3:
+                numdataparts += 2;
+                break;
+            default:
+                break;
         }
     }
     
-    return numparts;
+    return numdataparts;
 }
 
 mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
@@ -1436,7 +1456,7 @@ mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl
     int i = 0;
     int numparts = 0;
     
-    numparts = mfl_count_num_partitions_required(matrix, handle);
+    numparts = mfl_count_num_partitions_required(matrix, handle->gap_method);
     
     mfl_datapartition_t** dataparts = (mfl_datapartition_t**)malloc(numparts * sizeof(mfl_datapartition_t*));
     if (!dataparts) {
@@ -1455,26 +1475,17 @@ mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl
 
 }
 
+
 void mfl_setup_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
     
     mfl_datapartition_t** dataparts = mfl_create_data_partitions_array(matrix, handle);
-    // Allocate all of the partitions
+   
+    // 000 For not used
+    // 001 For normal type
+    // 010 For NA present
+    // 011 For both types used
     
-    // Count the number of characters of each type, incrementing the appropriate counter in the partition
-    
-    // Combinations to consider:
-    //      Basic ctypes, no inapplicables
-    //      Basic ctypes, each with inapplicables
-    //      Usertypes/models
-    //          The number of usertypes
-    //          The number of usertypes with inapplicables
-    //
-    // Ways of getting this information
-    //      Count it 'directly' from the matrix
-    //      Implied by the mfl_handle
-    
-    // Size the charstate arrays in the partition.
 }
 
 void mfl_destroy_partition_set(void)
