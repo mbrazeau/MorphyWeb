@@ -682,6 +682,7 @@ void mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes)
         nodearray[i]->nodet_bipart = mfl_bts_create_bitset(num_taxa);
         if (i < num_taxa) {
             nodearray[i]->nodet_tip = i + 1;
+            nodearray[i]->nodet_weight = 1;
             mfl_bts_setbit(nodearray[i]->nodet_bipart, 1, nodearray[i]->nodet_tip);
         }
         else {
