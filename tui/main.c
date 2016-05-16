@@ -309,6 +309,19 @@ void tui_test_newick_stuff()
     //TODO: clear the handle as well!
 }
 
+void tui_test_tree_copying(void)
+{
+    char cpytarget[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
+    char* copiedtr = NULL;
+    mfl_tree_t* tmplt = mfl_convert_newick_to_mfl_tree_t(cpytarget, 8);
+    dbg_printf("The tree to be copied:\n %s\n", cpytarget);
+    
+    mfl_tree_t* cpytr = mfl_copy_tree_topology(tmplt);
+    copiedtr = mfl_convert_mfl_tree_t_to_newick(cpytr, 8, false);
+    dbg_printf("The copied tree:\n %s\n", copiedtr);
+    
+}
+
 int main (int argc, char *argv[])
 {
     dbg_printf("\n\t****************************************\n\n");
@@ -339,6 +352,10 @@ int main (int argc, char *argv[])
     dbg_printf("Testing bipartition setting:\n");
     tui_test_bipartition_setting();
     dbg_printf("\nEnd bipartition test\n");
+    
+    dbg_printf("Testing tree copying:\n");
+    tui_test_tree_copying();
+    dbg_printf("\nEnd tree copy test\n");
     
     //-----
     
