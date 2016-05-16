@@ -1332,9 +1332,9 @@ void mfl_set_cv_chartypes(mfl_matrix_t* matrix, const mfl_handle_s* mfl_handle, 
 
 
 /*!
- Creates the array of character column vectors corresponding to the 
- transformation series of the input dataset, sets all character type values and 
- the pointers to the conversion rule for that character type. All conversion 
+ Creates the array of character column vectors corresponding to the
+ transformation series of the input dataset, sets all character type values and
+ the pointers to the conversion rule for that character type. All conversion
  rules are applied and the appropriate treatment of gaps as either missing data 
  or a (special) state
  @param mfl_handle (mfl_handle_s*) the analysis parameters set by the user 
@@ -1382,8 +1382,6 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
-    dbg_printf("Num partitions implied by this matrix: %i\n", mfl_count_num_partitions_required(new_inmatrix, mfl_handle->gap_method));
-    
     /*int i;
     dbg_printf("Printing chartypes array:\n");
     for (i = 0; i < mfl_handle->n_chars; ++i) {
@@ -1398,43 +1396,6 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 }
 
 
-int mfl_count_num_partitions_required(mfl_matrix_t* m, mfl_gap_t gaprule)
-{
-    int i = 0;
-    
-    int partitiontypes[MFL_OPT_MAX] = {0};
-    int numdataparts = 0;
-    
-    for (i = 0; i < m->mat_num_characters; ++i) {
-        if (partitiontypes[m->mat_matrix[i]->cv_parsim_method] == 3) {
-            continue;
-        }
-        if (m->mat_matrix[i]->cv_num_gaps > 1 && gaprule == MFL_GAP_INAPPLICABLE) {
-            partitiontypes[m->mat_matrix[i]->cv_parsim_method] |= 2;
-        }
-        partitiontypes[m->mat_matrix[i]->cv_parsim_method] |= 1;
-    }
-    
-    for (i = 0; i < MFL_OPT_MAX; ++i) {
-        switch (partitiontypes[i]) {
-            case 0:
-                break;
-            case 1:
-                ++numdataparts;
-                break;
-            case 2:
-                ++numdataparts;
-                break;
-            case 3:
-                numdataparts += 2;
-                break;
-            default:
-                break;
-        }
-    }
-    
-    return numdataparts;
-}
 
 mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
 {
@@ -1451,12 +1412,49 @@ mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
 }
 
 
+int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mfl_matrix_t* m, mfl_gap_t gaprule)
+{
+    int i = 0;
+    
+    int partitiontypes[MFL_OPT_MAX] = {0};
+    int numdataparts = 0;
+    
+    
+    for (i = 0; i < m->mat_num_characters; ++i) {
+        if (m->mat_matrix[i]->cv_num_gaps > 1 && gaprule == MFL_GAP_INAPPLICABLE) {
+            jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_winapplic += 1;
+        }
+        else {
+            jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_allapplic += 1;
+        }
+        
+        //partitiontypes[m->mat_matrix[i]->cv_parsim_method] |= 1;
+    }
+    
+    
+    numdataparts = 0;
+    for (i = 0; i < MFL_OPT_MAX; ++i) {
+        if (jntchars[i].jpt_num_allapplic) {
+            ++numdataparts;
+        }
+        if (jntchars[i].jpt_num_winapplic) {
+            ++numdataparts;
+        }
+    }
+    dbg_printf("Using the joint ctypes: %i\n", numdataparts);
+    
+    return numdataparts;
+}
+
+
 mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
     int i = 0;
     int numparts = 0;
+
+    mfl_joint_character_t jntchars[MFL_OPT_MAX];
     
-    numparts = mfl_count_num_partitions_required(matrix, handle->gap_method);
+    numparts = mfl_count_num_partitions_required(jntchars, matrix, handle->gap_method);
     
     mfl_datapartition_t** dataparts = (mfl_datapartition_t**)malloc(numparts * sizeof(mfl_datapartition_t*));
     if (!dataparts) {
@@ -1470,6 +1468,8 @@ mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl
         dataparts[i] = mfl_alloc_empty_datapartition_t();
     }
     
+    // Set up the dataparts; maybe leave out the submatrix temporarily, allowing
+    // that to be set up according to a list of included characters.
     
     return dataparts;
 
