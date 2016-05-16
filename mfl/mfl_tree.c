@@ -1071,7 +1071,6 @@ mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
     int numnodes = 0;
     mfl_tree_t* trcopy = NULL;
     trcopy = mfl_alloctree_with_nodes(t->treet_num_taxa);
-    mfl_node_t* p = NULL;
     mfl_nodearray_t srcnds = t->treet_treenodes;
     mfl_nodearray_t cpynds = trcopy->treet_treenodes;
     
@@ -1089,6 +1088,17 @@ mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
     
     // Copy safe variables
     trcopy->treet_num_taxa = t->treet_num_taxa;
+    assert(!(t->treet_start && t->treet_root));
+    if (t->treet_root) {
+        trcopy->treet_root = cpynds[t->treet_root->nodet_index];
+        trcopy->treet_start = NULL;
+    }
+    else {
+        trcopy->treet_start = cpynds[t->treet_start->nodet_index];
+        trcopy->treet_root = NULL;
+    }
+    
+    return trcopy;
 }
 
 /*!
