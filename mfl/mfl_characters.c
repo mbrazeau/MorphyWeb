@@ -1430,6 +1430,7 @@ mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
     return newdatapart;
 }
 
+
 mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
     int i = 0;
@@ -1461,6 +1462,17 @@ void mfl_setup_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handl
     // Allocate all of the partitions
     
     // Count the number of characters of each type, incrementing the appropriate counter in the partition
+    
+    // Combinations to consider:
+    //      Basic ctypes, no inapplicables
+    //      Basic ctypes, each with inapplicables
+    //      Usertypes/models
+    //          The number of usertypes
+    //          The number of usertypes with inapplicables
+    //
+    // Ways of getting this information
+    //      Count it 'directly' from the matrix
+    //      Implied by the mfl_handle
     
     // Size the charstate arrays in the partition.
 }

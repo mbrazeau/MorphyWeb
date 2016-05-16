@@ -80,9 +80,8 @@ void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* ha
         }
     }
     
-    
-    
-    // Values that will have to have been calculated before the search
+    /* Values that will have to have been calculated before the search but which
+       require some initialised values */
     if (!searchrec->sr_num_partitions) {
         searchrec->sr_num_partitions = 1;
     }
@@ -114,7 +113,7 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
     mfl_nodedata_t* ndata = NULL;
     
     for (i = 0; i < numparts; ++i) {
-        
+        // Stuff here.
     }
 }
 
