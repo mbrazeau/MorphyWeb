@@ -921,15 +921,15 @@ mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
     newmatrix->mat_num_characters = num_chars;
     
     
-    newmatrix->mat_matrix = (mfl_character_vector_t**)malloc(num_chars * sizeof(mfl_character_vector_t*));
-    if (!newmatrix->mat_matrix) {
+    newmatrix->mat_matrix = (mfl_character_vector_t**)mfl_malloc(num_chars * sizeof(mfl_character_vector_t*), 0, __FXN_NAME__);
+    /*if (!newmatrix->mat_matrix) {
         dbg_printf("ERROR in mfl_create_mfl_matrix(): unable to allocate memory for new matrix\n");
         free(newmatrix);
         return NULL;
     }
     else {
         memset(newmatrix->mat_matrix, 0, num_chars * sizeof(mfl_character_vector_t*));
-    }
+    }*/
     
     
     return newmatrix;
