@@ -20,10 +20,10 @@ void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition
 {
     int i = 0;
     
-    while ((++i * MFL_BTS_IN_BITSET) < setposition);
+    while ((++i * MORPHY_BTS_IN_BITSET) < setposition);
     --i;
     
-    bitset->bts_bitfields[i] |= (set_to << ((setposition - (i * MFL_BTS_IN_BITSET)) - 1));
+    bitset->bts_bitfields[i] |= (set_to << ((setposition - (i * MORPHY_BTS_IN_BITSET)) - 1));
 }
 
 
@@ -152,7 +152,7 @@ bool mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target)
 
 
 /*!
- @discussion Calculates the number of bitsets of size MFL_BTS_IN_BITSET required
+ @discussion Calculates the number of bitsets of size MORPHY_BTS_IN_BITSET required
  to accommodate bit fields wider than the machine's maximum integer width.
  @param n_minbits (int) the number of bits required by the bitfield (e.g. the 
  number of taxa in the dataset/trees for creating taxon bipartitions
@@ -162,8 +162,8 @@ int mfl_bts_calculate_n_bitfieds(int n_minbits)
 {
     int n_fields = 0;
     
-    n_fields = n_minbits / MFL_BTS_IN_BITSET;
-    if (n_minbits % MFL_BTS_IN_BITSET) {
+    n_fields = n_minbits / MORPHY_BTS_IN_BITSET;
+    if (n_minbits % MORPHY_BTS_IN_BITSET) {
         n_fields += 1;
     }
     

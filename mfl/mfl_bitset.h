@@ -15,7 +15,7 @@
 #include <limits.h>
 #include "morphy.h"
 
-//#define MFL_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
+//#define MORPHY_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
 //
 //typedef uint64_t mfl_bitfield_t;
 //
