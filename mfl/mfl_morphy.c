@@ -12,7 +12,7 @@ void* mfl_malloc(size_t size, int memsetval, const char* fn_name)
 {
     void *ret = malloc(size);
     if (!ret) {
-        dbg_eprintf("unable to allocate memory for call from", fn_name);
+        dbg_printf("Error in mfl_malloc(): unable to allocate memory for call from %s()\n\n", fn_name);
         return NULL;
     }
     else {
