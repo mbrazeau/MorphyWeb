@@ -1417,28 +1417,25 @@ int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mf
     int i = 0;
     int numdataparts = 0;
     
-    
     for (i = 0; i < m->mat_num_characters; ++i) {
         if (m->mat_matrix[i]->cv_num_gaps > 2 && gaprule == MFL_GAP_INAPPLICABLE) {
+            if (jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_winapplic == 0) {
+                jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_inapplic_part_num = numdataparts;
+                ++numdataparts;
+            }
+            m->mat_matrix[i]->cv_partition_destination = jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_inapplic_part_num;
             jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_winapplic += 1;
         }
         else {
+            if (jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_allapplic == 0) {
+                jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_applic_part_num = numdataparts;
+                ++numdataparts;
+            }
+            m->mat_matrix[i]->cv_partition_destination = jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_applic_part_num;
             jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_allapplic += 1;
         }
-        
-        //partitiontypes[m->mat_matrix[i]->cv_parsim_method] |= 1;
     }
     
-    
-    numdataparts = 0;
-    for (i = 0; i < MFL_OPT_MAX; ++i) {
-        if (jntchars[i].jpt_num_allapplic) {
-            ++numdataparts;
-        }
-        if (jntchars[i].jpt_num_winapplic) {
-            ++numdataparts;
-        }
-    }
     dbg_printf("Using the joint ctypes: %i\n", numdataparts);
     
     return numdataparts;
@@ -1553,13 +1550,12 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     
     dataparts->ptset_partitions = (mfl_datapartition_t**)mfl_malloc(numparts * sizeof(mfl_datapartition_t*), 0, __FXN_NAME__);
     
-    // Set up the dataparts; maybe leave out the submatrix temporarily, allowing
-    // that to be set up according to a list of included characters.
+    // Allocate the dataparts
     for (i = 0; i < numparts; ++i) {
         dataparts->ptset_partitions[i] = mfl_alloc_empty_datapartition_t();
     }
     
-    // OPTIMISATION: Can probably try to make cost matrix characters come last
+    // OPTIMISATION: Can probably try to make cost matrix characters come last out of all
     // Set the params for the partitions without inapplicables
     for (i = 0; i < MFL_OPT_MAX; ++i) {
         if (jntchars[i].jpt_num_allapplic) {

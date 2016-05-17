@@ -110,7 +110,9 @@ typedef struct mfl_stepmatrix_t {
 
 typedef struct mfl_joint_character_t {
     int jpt_num_allapplic;
+    int jpt_applic_part_num;
     int jpt_num_winapplic;
+    int jpt_inapplic_part_num;
 } mfl_joint_character_t;
 
 typedef struct mfl_bitset_t {
@@ -219,6 +221,7 @@ typedef struct mfl_character_vector_t {
     mfl_multicell_t cv_multistate_method;
     mfl_char2bit_fn cv_conversion_rule;
     int cv_num_states;
+    int cv_partition_destination;
     char** cv_character_cells;
     mfl_charstate* cv_chardata;
 } mfl_character_vector_t;
