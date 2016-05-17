@@ -43,7 +43,7 @@
 #ifdef MFY_DEBUG
 #include <stdio.h>
 #define dbg_printf(...) printf(__VA_ARGS__)
-#define dbg_eprintf(...) printf("ERROR in %s(), %s %s\n\n", __FUNCTION__, __VA_ARGS__)
+#define dbg_eprintf(...) printf("ERROR in %s(), %s\n\n", __FUNCTION__, __VA_ARGS__)
 #define dbg_linerr(...) printf("ERROR at line: %i in %s. %s\n\n", __LINE__, __FILE__, __VA_ARGS__)
 #define dbg_pfail(...) printf("== FAIL == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
 #define dbg_ppass(...) printf("== PASS == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
@@ -409,8 +409,18 @@ int             mfl_get_numstates_from_matrix(char *inputmatrix);
 int             mfl_read_nexus_type_int(char **current);
 void            mfl_skip_spaces(char **current);
 bool            mfl_is_nexus_stop_position(char a);
+mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void);
 int             mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mfl_matrix_t* m, mfl_gap_t gaprule);
+void            mfl_set_datapart_params_fitch(mfl_datapartition_t* d, bool has_inapplic);
+void            mfl_set_datapart_params_wagner(mfl_datapartition_t* d, bool has_inapplic);
+void            mfl_set_datapart_params_dollo(mfl_datapartition_t* d, bool has_inapplic, bool up);
+void            mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bool up);
+void            mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic);
+void            mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle);
+mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
+void            mfl_destroy_partition_set(mfl_partition_set_t* ptset);
 mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
+mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
 
 /* In mfl_starttree.c */
 
