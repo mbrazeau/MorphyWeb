@@ -1415,8 +1415,6 @@ mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
 int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mfl_matrix_t* m, mfl_gap_t gaprule)
 {
     int i = 0;
-    
-    int partitiontypes[MFL_OPT_MAX] = {0};
     int numdataparts = 0;
     
     
@@ -1446,6 +1444,7 @@ int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mf
     return numdataparts;
 }
 
+
 void mfl_set_datapart_params_fitch(mfl_datapartition_t* d, bool has_inapplic)
 {
     d->part_optimisation_method = MFL_OPT_FITCH;
@@ -1457,6 +1456,7 @@ void mfl_set_datapart_params_fitch(mfl_datapartition_t* d, bool has_inapplic)
         d->part_char_is_directed = false;
     }
 }
+
 
 void mfl_set_datapart_params_wagner(mfl_datapartition_t* d, bool has_inapplic)
 {
@@ -1470,6 +1470,7 @@ void mfl_set_datapart_params_wagner(mfl_datapartition_t* d, bool has_inapplic)
     }
 }
 
+
 void mfl_set_datapart_params_dollo(mfl_datapartition_t* d, bool has_inapplic, bool up)
 {
     if (up) {
@@ -1481,6 +1482,7 @@ void mfl_set_datapart_params_dollo(mfl_datapartition_t* d, bool has_inapplic, bo
     d->part_has_inapplicables = has_inapplic;
     d->part_char_is_directed = true;
 }
+
 
 void mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bool up)
 {
@@ -1494,18 +1496,54 @@ void mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bo
     d->part_char_is_directed = true;
 }
 
+
 void mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic)
 {
     d->part_optimisation_method = MFL_OPT_COST_MATRIX;
     d->part_has_inapplicables = has_inapplic;
 }
 
+
+void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle)
+{
+    switch (opt_t) {
+        case MFL_OPT_FITCH:
+            mfl_set_datapart_params_fitch(d, has_inapplic);
+            break;
+        case MFL_OPT_WAGNER:
+            mfl_set_datapart_params_wagner(d, has_inapplic);
+            break;
+        case MFL_OPT_DOLLO_UP:
+            mfl_set_datapart_params_dollo(d, has_inapplic, true);
+            break;
+        case MFL_OPT_DOLLO_DN:
+            mfl_set_datapart_params_dollo(d, has_inapplic, false);
+            break;
+        case MFL_OPT_IRREVERSIBLE_UP:
+            mfl_set_datapart_params_irrev(d, has_inapplic, true);
+            break;
+        case MFL_OPT_IRREVERSIBLE_DN:
+            mfl_set_datapart_params_irrev(d, has_inapplic, false);
+            break;
+        case MFL_OPT_COST_MATRIX:
+            mfl_set_datapart_params_costmatrx(d, handle, has_inapplic);
+            break;
+        case MFL_OPT_MAX:
+            dbg_eprintf("unsupported optimality type");
+            assert(0);
+        default:
+            break;
+    }
+}
+
+
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
     int i = 0;
+    int part_i = 0;
     int numparts = 0;
 
-    mfl_joint_character_t jntchars[MFL_OPT_MAX];
+    mfl_joint_character_t jntchars[MFL_OPT_MAX] = {{0}};
     
     numparts = mfl_count_num_partitions_required(jntchars, matrix, handle->gap_method);
     
@@ -1521,8 +1559,21 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
         dataparts->ptset_partitions[i] = mfl_alloc_empty_datapartition_t();
     }
     
+    // OPTIMISATION: Can probably try to make cost matrix characters come last
+    // Set the params for the partitions without inapplicables
     for (i = 0; i < MFL_OPT_MAX; ++i) {
-        // Stuff
+        if (jntchars[i].jpt_num_allapplic) {
+            mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, false, handle);
+            ++part_i;
+        }
+    }
+    
+    // Set the params for the partitions with inapplicables
+    for (i = 0; i < MFL_OPT_MAX; ++i) {
+        if (jntchars[i].jpt_num_winapplic) {
+            mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, true, handle);
+            ++part_i;
+        }
     }
     
     return dataparts;
