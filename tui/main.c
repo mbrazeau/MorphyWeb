@@ -208,7 +208,7 @@ void tui_test_bipartition_setting()
     
     mfl_set_bipartitions(t->treet_root);
     tui_partition_print_traversal(t->treet_root);
-    
+    mfl_free_tree(t);
 }
 
 
@@ -319,6 +319,10 @@ void tui_test_tree_copying(void)
     mfl_tree_t* cpytr = mfl_copy_tree_topology(tmplt);
     copiedtr = mfl_convert_mfl_tree_t_to_newick(cpytr, false);
     dbg_printf("The copied tree:\n %s\n", copiedtr);
+    
+    mfl_free_tree(cpytr);
+    mfl_free_tree(tmplt);
+    free(copiedtr);
     
 }
 
