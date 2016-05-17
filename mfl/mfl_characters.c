@@ -1446,8 +1446,61 @@ int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mf
     return numdataparts;
 }
 
+void mfl_set_datapart_params_fitch(mfl_datapartition_t* d, bool has_inapplic)
+{
+    d->part_optimisation_method = MFL_OPT_FITCH;
+    d->part_has_inapplicables = has_inapplic;
+    if (has_inapplic) {
+        d->part_char_is_directed = true;
+    }
+    else {
+        d->part_char_is_directed = false;
+    }
+}
 
-mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl_handle_s* handle)
+void mfl_set_datapart_params_wagner(mfl_datapartition_t* d, bool has_inapplic)
+{
+    d->part_optimisation_method = MFL_OPT_WAGNER;
+    d->part_has_inapplicables = has_inapplic;
+    if (has_inapplic) {
+        d->part_char_is_directed = true;
+    }
+    else {
+        d->part_char_is_directed = false;
+    }
+}
+
+void mfl_set_datapart_params_dollo(mfl_datapartition_t* d, bool has_inapplic, bool up)
+{
+    if (up) {
+        d->part_optimisation_method = MFL_OPT_DOLLO_UP;
+    }
+    else {
+        d->part_optimisation_method = MFL_OPT_DOLLO_DN;
+    }
+    d->part_has_inapplicables = has_inapplic;
+    d->part_char_is_directed = true;
+}
+
+void mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bool up)
+{
+    if (up) {
+        d->part_optimisation_method = MFL_OPT_IRREVERSIBLE_UP;
+    }
+    else {
+        d->part_optimisation_method = MFL_OPT_IRREVERSIBLE_DN;
+    }
+    d->part_has_inapplicables = has_inapplic;
+    d->part_char_is_directed = true;
+}
+
+void mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic)
+{
+    d->part_optimisation_method = MFL_OPT_COST_MATRIX;
+    d->part_has_inapplicables = has_inapplic;
+}
+
+mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
     int i = 0;
     int numparts = 0;
@@ -1456,39 +1509,28 @@ mfl_datapartition_t** mfl_create_data_partitions_array(mfl_matrix_t* matrix, mfl
     
     numparts = mfl_count_num_partitions_required(jntchars, matrix, handle->gap_method);
     
-    mfl_datapartition_t** dataparts = (mfl_datapartition_t**)malloc(numparts * sizeof(mfl_datapartition_t*));
-    if (!dataparts) {
-        dbg_eprintf("unable to allocate memory for datapartition");
-    }
-    else {
-        memset(dataparts, 0, numparts * sizeof(mfl_datapartition_t*));
-    }
+    mfl_partition_set_t* dataparts = (mfl_partition_set_t*)mfl_malloc(numparts * sizeof(mfl_partition_set_t), 0, __FXN_NAME__);
     
-    for (i = 0; i < numparts; ++i) {
-        dataparts[i] = mfl_alloc_empty_datapartition_t();
-    }
+    dataparts->ptset_n_parts = numparts;
+    
+    dataparts->ptset_partitions = (mfl_datapartition_t**)mfl_malloc(numparts * sizeof(mfl_datapartition_t*), 0, __FXN_NAME__);
     
     // Set up the dataparts; maybe leave out the submatrix temporarily, allowing
     // that to be set up according to a list of included characters.
+    for (i = 0; i < numparts; ++i) {
+        dataparts->ptset_partitions[i] = mfl_alloc_empty_datapartition_t();
+    }
+    
+    for (i = 0; i < MFL_OPT_MAX; ++i) {
+        // Stuff
+    }
     
     return dataparts;
 
 }
 
 
-void mfl_setup_partitions_for_analysis(mfl_matrix_t* matrix, mfl_handle_s* handle)
-{
-    
-    mfl_datapartition_t** dataparts = mfl_create_data_partitions_array(matrix, handle);
-   
-    // 000 For not used
-    // 001 For normal type
-    // 010 For NA present
-    // 011 For both types used
-    
-}
-
-void mfl_destroy_partition_set(void)
+void mfl_destroy_partition_set(mfl_partition_set_t* ptset)
 {
     
 }

@@ -208,7 +208,6 @@ typedef struct mfl_datapartition_t {
 
 typedef struct {
     int ptset_n_parts;
-    mfl_parsimony_t* ptset_parsimony_methods;
     mfl_datapartition_t** ptset_partitions;
 } mfl_partition_set_t;
 
