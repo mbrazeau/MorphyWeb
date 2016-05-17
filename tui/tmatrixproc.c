@@ -155,6 +155,8 @@ int tui_test_matrix_processing(mfl_handle_s *mfl_handle)
     
     tui_print_out_converted_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars, true);
     
+    mfl_partition_set_t* ptset = mfl_create_data_partitions_set(internmatrix, mfl_handle);
+    
     mfl_destroy_mfl_matrix(internmatrix, mfl_handle->n_taxa, mfl_handle->n_chars);
     dbg_printf("\nEnd test for matrix conversion\n\n");
     
