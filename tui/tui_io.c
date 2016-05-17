@@ -78,7 +78,7 @@ void tui_print_node_bipartition(mfl_node_t* n)
     mfl_bitfield_t bitfield = 1;
     
     for (i = 0; i < n->nodet_bipart->bts_nfields; ++i) {
-        for (j = 0; j < MFL_BTS_IN_BITSET; ++j) {
+        for (j = 0; j < MORPHY_BTS_IN_BITSET; ++j) {
             if (n->nodet_bipart->bts_bitfields[i] & (bitfield << j)) {
                 dbg_printf("*");
             }
