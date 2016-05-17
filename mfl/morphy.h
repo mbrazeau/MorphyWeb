@@ -74,7 +74,7 @@ using namespace std;
 #define MORPHY_NUM_VALID_NONALPHA  3
 #define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
 #define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)
-#define MFL_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
+#define MORPHY_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
 
 //Defaults
 #define MORPHY_DEFAULT_WEIGHT 1.0
@@ -82,7 +82,7 @@ using namespace std;
 #define MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_SWITCH false
 #define MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_AMOUNT 500
 #define MORPHY_DEFAULT_STEPWISE_HOLD 1
-#define MORPHY_DEFAULT_ADDITION_SEQUENCE_REPS 10
+#define MORPHY_DEFAULT_ADDITION_SEQUENCE_REPS 50
 #define MORPHY_DEFAULT_CHARACTER_INCLUDE true
 #define MORPHY_DEFAULT_MULTISTATE_HANDLE MFL_MULTSTATE_UNCERTAINTY
 #define MORPHY_DEFAULT_PARSIMONY_METHOD MFL_OPT_FITCH
@@ -547,3 +547,6 @@ void            mfl_set_bipartitions(mfl_node_t* n);
 
 /* in mfl_searchrec.c*/
 void mfl_initialise_searchrec(mfl_searchrec_t* searchrec);
+
+/* in mfl_morphy.c*/
+void*           mfl_malloc(size_t size, int memsetval, const char* fn_name);
