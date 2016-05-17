@@ -1419,7 +1419,7 @@ int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mf
     
     
     for (i = 0; i < m->mat_num_characters; ++i) {
-        if (m->mat_matrix[i]->cv_num_gaps > 1 && gaprule == MFL_GAP_INAPPLICABLE) {
+        if (m->mat_matrix[i]->cv_num_gaps > 2 && gaprule == MFL_GAP_INAPPLICABLE) {
             jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_winapplic += 1;
         }
         else {
@@ -1564,6 +1564,7 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     for (i = 0; i < MFL_OPT_MAX; ++i) {
         if (jntchars[i].jpt_num_allapplic) {
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, false, handle);
+            dataparts->ptset_partitions[part_i]->part_n_characters = jntchars[i].jpt_num_allapplic;
             ++part_i;
         }
     }
@@ -1572,6 +1573,7 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     for (i = 0; i < MFL_OPT_MAX; ++i) {
         if (jntchars[i].jpt_num_winapplic) {
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, true, handle);
+            dataparts->ptset_partitions[part_i]->part_n_characters = jntchars[i].jpt_num_winapplic;
             ++part_i;
         }
     }
