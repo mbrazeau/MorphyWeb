@@ -59,12 +59,42 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
     //      mfl_regrafting_traversal()
 }
 
+/*!
+ @discussion function for initialising the neigbhour rule counter
+ @param num_nodes (int) the number of nodes to get the clade sizes from.
+ */
+bool mfl_neighbour_rule_counter_init(int num_nodes)
+{
+    bool clade_counter[num_nodes];
+    int i = 0;
+
+    // Set all clades to 0 (not visited yet)
+    for (i=1; i <= num_nodes; ++i) {
+        clade_counter[i] = 0;
+    }
+    
+    return clade_counter;
+}
+
+/*!
+ @discussion function for appending the clade_counter
+ @param clade_counter (bool) an array of booleans.
+ @param clade_size_visited (int) the size of a clade visited.
+ */
+void mfl_neighbour_rule_counter_append(bool* clade_counter, int clade_size_visited)
+{
+    // Set the visited clade to 1
+    if(clade_counter[clade_size_visited-1] != 1) { //TG: the -1 is to start from origin (0)
+        clade_counter[clade_size_visited-1] = 1;
+    }
+}
+
 // TG: algorithmic node, will it be easier to do the whole algorithm as two nested traversal?
 // MDB: You don't need a pointer to the start node as a parameter because that is set within the tree struct itself. A num_taxa variable lives within an mfl_tree_t as well.
 mfl_treebuffer_t* algorithm_idea(mfl_tree_t* starttree, mfl_searchrec_t* searchrec/*, mfl_node_t *start, int* num_taxa*/)
 {
-    //Variables
-    int clade_counter = 0; //TG: this is the counter for applying the neigbhour rule: any subtree that is <= to clade_counter cannnot rebranch on the neigbhour edges.
+    // Clade counter //TG: this is the counter for applying the neigbhour rule: any subtree that is <= to clade_counter cannnot rebranch on the neigbhour edges.
+    bool clade_counter = mfl_neighbour_rule_counter_init(starttree->treet_num_nodes);
     int total_num_trees = 0;
     
     // MDB: You just need node pointers for this, not whole tree structs
