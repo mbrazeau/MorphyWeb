@@ -278,6 +278,13 @@ typedef struct mfl_node_t {
 typedef mfl_node_t ** mfl_nodearray_t;  // A pointer of pointers to nodes used in trees.
 
 
+typedef struct {
+    mfl_node_t* src1;
+    mfl_node_t* src2;
+    mfl_node_t* tgt1;
+    mfl_node_t* tgt2;
+} mfl_cliprec_t;
+
 typedef struct mfl_nodestack_t {    // Manages memory for unused nodes and avoid allocation on the fly or searches in the array.
     int nstk_numnodes;
     int nstk_maxsize;
@@ -341,6 +348,7 @@ typedef struct mfl_searchrec_t {
     int  sr_autoinc_increment;
     int  sr_maxtrees;
     long long int sr_rearrangement_counter;
+    mfl_node_t* sr_swap_entry;
     mfl_handle_s* sr_handle_ptr;
     mfl_tree_t* sr_swaping_on;
     mfl_treebuffer_t* sr_treebuffer;

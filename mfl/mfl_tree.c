@@ -733,10 +733,7 @@ void mfl_unroot_tree(mfl_tree_t *tree)
     mfl_node_t *p = NULL;
     mfl_node_t *q = NULL;
     
-    if (!tree->treet_root) {
-        dbg_printf("WARNING in mfl_unroot_tree(): attempt to deroot tree with no valid pointer to root\n");
-        return;
-    }
+    assert(tree->treet_root);
     
     q = tree->treet_root->nodet_next;
     p = tree->treet_root;
