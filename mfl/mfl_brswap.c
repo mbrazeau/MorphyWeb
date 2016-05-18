@@ -127,6 +127,10 @@ void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* sear
     // This might be where we will insert a condition to enforce the neighborhood rule
     mfl_regrafting_traversal(searchrec->sr_swap_entry->nodet_next->nodet_edge, src, searchrec);
     mfl_regrafting_traversal(searchrec->sr_swap_entry->nodet_next->nodet_next->nodet_edge, src, searchrec);
+    
+    if (searchrec->sr_swap_entry->nodet_edge) {
+        mfl_regrafting_traversal(searchrec->sr_swap_entry->nodet_edge, src, searchrec);
+    }
 }
 
 mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
@@ -214,7 +218,11 @@ void tui_spr_test_environment(void)
     
     mfl_handle_s* testhandle = mfl_t2s(mfl_create_handle());
     
-    char* cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,8)));";
+    char* cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
+    //char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
+    //char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,(4,5)));";
+    //char* cliptesttree = "temp_examp6=[&R] ((1,(2,(6,7))),(3,(4,5)));";
+    //char* cliptesttree = "temp_examp6=[&R] ((1,((2,8),(6,7))),(3,(4,5)));";
     mfl_tree_t* testree = mfl_convert_newick_to_mfl_tree_t(cliptesttree, 0);
     char* treedraw = mfl_drawtree(testree);
     dbg_printf("%s", treedraw);
