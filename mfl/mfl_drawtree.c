@@ -98,7 +98,7 @@ int mfl_drawtree_calculate_branchlength(int num_taxa)
     int num_units = 0;
     float branchlen;
     
-    branchlen = 3 * 63 / (num_taxa - 1);
+    branchlen = 3 * 63 / (2 * num_taxa - 1);
     
     if (branchlen < 1) {
         num_units = 1;

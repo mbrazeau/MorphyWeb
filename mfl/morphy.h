@@ -341,6 +341,8 @@ typedef struct mfl_searchrec_t {
     int  sr_autoinc_increment;
     int  sr_maxtrees;
     long long int sr_rearrangement_counter;
+    mfl_handle_s* sr_handle_ptr;
+    mfl_tree_t* sr_swaping_on;
     mfl_treebuffer_t* sr_treebuffer;
 } mfl_searchrec_t;
 
@@ -446,9 +448,8 @@ void            mfl_join_node_edges(mfl_node_t *node1, mfl_node_t *node2);
 void            mfl_make_node_available(mfl_node_t *node);
 void            mfl_safe_reset_node_params(mfl_node_t* node);
 bool            mfl_check_node_is_bottom(mfl_node_t *querynode);
-void            mfl_join_nodes(mfl_node_t *node1, mfl_node_t *node2);
 mfl_node_t*     mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top);
-void            mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_free_desendant_edge, mfl_node_t *tgt_branch_bottom);
+void            mfl_insert_branch(mfl_node_t *src, mfl_node_t *tgt);
 void            mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node);
 int             mfl_calculate_number_of_nodes_to_allocate(int num_taxa);
 mfl_node_t*     mfl_alloc_node(void);
@@ -558,7 +559,7 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 void            mfl_set_bipartitions(mfl_node_t* n);
 
 /* in mfl_searchrec.c*/
-void mfl_initialise_searchrec(mfl_searchrec_t* searchrec);
-
+void                mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
+mfl_searchrec_t*    mfl_create_searchrec(mfl_handle_s* handle);
 /* in mfl_morphy.c*/
 void*           mfl_malloc(size_t size, int memsetval, const char* fn_name);

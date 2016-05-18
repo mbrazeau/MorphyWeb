@@ -359,7 +359,11 @@ int main (int argc, char *argv[])
     
     dbg_printf("Testing tree copying:\n");
     tui_test_tree_copying();
-    dbg_printf("\nEnd tree copy test\n");
+    dbg_printf("\nEnd tree copy test\n\n");
+    
+    dbg_printf("Testing branchbreaking:\n");
+    tui_spr_test_environment();
+    dbg_printf("\nEnd bbreak test\n");
     
     //-----
     

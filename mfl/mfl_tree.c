@@ -324,39 +324,26 @@ mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_no
     return ptr_to_removed_branch;
 }
 
-
 /*!
  @discussion Inserts a ring with only one edge connection into a target tree.
- @note as above, there are likely to be changes to how this stuff is handled 
- in the future.
- @param src_bottom_node (mfl_node_t*) the source tree's root-ward ring node
- @param src_free_descendant_edge (mfl_node_t*) the ring node of the node cycle
- that is to be connected to the upper (rootward-directed) node of the target 
- tree
- @param tgt_branch_bottom (mfl_node_t*) the upper (rootward-directed) node 
- across the internode of the target tree where the node will be inserted.
+ @param src (mfl_node_t*) the base of the source node
+ @param tgt (mfl_node_t*) a node straddling the target destination.
  */
-void mfl_insert_branch(mfl_node_t *src_bottom_node, mfl_node_t *src_free_descendant_edge, mfl_node_t *tgt_branch_bottom)
+void mfl_insert_branch(mfl_node_t *src, mfl_node_t *tgt)
 {
-    mfl_node_t * tgt_branch_top = NULL;
-    tgt_branch_top = tgt_branch_bottom->nodet_edge;
-
-#ifdef MFY_DEBUG
-    if (!mfl_check_node_is_bottom(src_bottom_node)) {
-        dbg_printf("WARNING in mfl_insert_branch(): src_bottom_node has NULL nodet_isbottom\n");
-    }
-    if (!mfl_check_node_is_bottom(tgt_branch_bottom)) {
-        dbg_printf("WARNING in mfl_insert_branch(): tgt_branch_bottom has NULL nodet_isbottom\n");
-    }
-#endif
+    mfl_node_t* srcf = NULL;
+    mfl_node_t* tgt_opp = tgt->nodet_edge;
     
-    // Point the target branches to the source node
-    tgt_branch_bottom->nodet_edge   = src_free_descendant_edge;
-    tgt_branch_top->nodet_edge      = src_bottom_node;
+    assert(!src->nodet_next->nodet_edge || !src->nodet_next->nodet_next->nodet_edge);
     
-    // Point the source branches to the targe nodes
-    src_bottom_node->nodet_edge         = tgt_branch_top;
-    src_free_descendant_edge->nodet_edge = tgt_branch_top;
+    if (src->nodet_next->nodet_edge) {
+        srcf = src->nodet_next;
+    } else {
+        srcf = src->nodet_next;
+    }
+    
+    mfl_join_node_edges(src, tgt);
+    mfl_join_node_edges(srcf, tgt_opp);
 }
 
 

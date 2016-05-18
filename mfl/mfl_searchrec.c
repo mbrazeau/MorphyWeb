@@ -87,6 +87,15 @@ void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* ha
     }
 }
 
+mfl_searchrec_t* mfl_create_searchrec(mfl_handle_s* handle)
+{
+    
+    mfl_searchrec_t* newrec = (mfl_searchrec_t*)mfl_malloc(sizeof(mfl_searchrec_t), 0, __FXN_NAME__);
+    mfl_initialise_searchrec(newrec, handle);
+    
+    return newrec;
+}
+
 void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row)
 {
     int i = 0;
