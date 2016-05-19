@@ -327,6 +327,10 @@ typedef struct mfl_treebuffer_t {
     mfl_tree_t** tb_savedtrees;
 } mfl_treebuffer_t;
 
+typedef struct {
+    int nwl_max;
+    bool* nwl_weights_list;
+} mfl_nodeweights_t;
 
 /*!
  @discussion Contains the parameters of the tree search process.
@@ -348,6 +352,7 @@ typedef struct mfl_searchrec_t {
     bool sr_increase_treebuffer;
     int  sr_autoinc_increment;
     int  sr_maxtrees;
+    mfl_nodeweights_t* sr_nodweights;
     long long int sr_rearrangement_counter;
     mfl_node_t* sr_swap_entry;
     mfl_handle_s* sr_handle_ptr;

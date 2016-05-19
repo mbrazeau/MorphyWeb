@@ -163,6 +163,8 @@ void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* s
 
 void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec)
 {
+    int weight = 0;
+    
     mfl_node_t* tgt_opp = tgt->nodet_edge;
     
     // This might be where we will insert a condition to enforce the neighborhood rule
@@ -209,6 +211,7 @@ void mfl_restore_branching(mfl_cliprec_t* cliprec)
 void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
 {
     int i = 0;
+    int weightcount = 0;
     mfl_node_t* p = NULL;
     mfl_node_t* q = NULL;
     mfl_cliprec_t cliprec;
@@ -219,24 +222,71 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
     
     q = n->nodet_next;
     do {
-        if (q->nodet_edge) {
-            if (i < 2) {
-                mfl_pruning_traversal(q->nodet_edge, searchrec);
-                p = mfl_clip_branch(q->nodet_edge, &cliprec);
-            }
-            else {
-                p = mfl_clip_branch(n->nodet_edge , &cliprec);
-            }
-            mfl_regraft_subtree(p, cliprec.tgt1, searchrec);
-            mfl_restore_branching(&cliprec);
+        if (i < 2) {
+            mfl_pruning_traversal(q->nodet_edge, searchrec);
+            p = mfl_clip_branch(q->nodet_edge, &cliprec);
+            n->nodet_weight += q->nodet_edge->nodet_weight;
         }
+        else {
+            p = mfl_clip_branch(n->nodet_edge , &cliprec);
+        }
+        
+        mfl_regraft_subtree(p, cliprec.tgt1, searchrec);
+        mfl_restore_branching(&cliprec);
+
+        dbg_printf("src weight: %i\n", q->nodet_edge->nodet_weight);
         q = q->nodet_next;
         ++i;
     } while (i < 3);
     
+    //n->nodet_weight = weightcount;
+    dbg_printf("Weight: %i\n", n->nodet_weight);
+    
     return;
 }
 
+bool mfl_check_node_wt(int weight, mfl_nodeweights_t* ndweightlist)
+{
+    assert(!(weight > ndweightlist->nwl_max));
+    
+    if (ndweightlist->nwl_weights_list[weight-1]) {
+        dbg_printf("This weight has been seen before\n");
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void mfl_set_node_wt(bool value, int weight, mfl_nodeweights_t* ndweightlist)
+{
+    assert(!(weight > ndweightlist->nwl_max));
+    
+    ndweightlist->nwl_weights_list[weight-1] = value;
+}
+
+mfl_nodeweights_t* mfl_create_node_wt_list(int num_taxa)
+{
+    
+    int i = 0;
+    int num_weights = 0;
+    mfl_nodeweights_t* newnwl = (mfl_nodeweights_t*)mfl_malloc(sizeof(mfl_nodeweights_t), 0, __FXN_NAME__);
+    
+    num_weights = num_taxa - 3; // The number of useful weights in branch breaking
+    
+    newnwl->nwl_max = num_weights;
+    
+    newnwl->nwl_weights_list = (bool*)mfl_malloc(num_weights * sizeof(bool), 0, __FXN_NAME__);
+    
+    return newnwl;
+}
+
+
+void mfl_destroy_node_wt_list(mfl_nodeweights_t* nodewtlst)
+{
+    free(nodewtlst->nwl_weights_list);
+    free(nodewtlst);
+}
 
 void tui_spr_test_environment(void)
 {
@@ -265,12 +315,12 @@ void tui_spr_test_environment(void)
     mfl_unroot_tree(testree);
     
     if (testree->treet_root) {
-        searchrec->sr_swap_entry = testree->treet_treenodes[8];
+        searchrec->sr_swap_entry = testree->treet_root;
     } else {
         searchrec->sr_swap_entry = testree->treet_start;
     }
     
-    mfl_temp_nodeweight_set(searchrec->sr_swap_entry);
+    //mfl_temp_nodeweight_set(searchrec->sr_swap_entry);
     
     searchrec->sr_treebuffer = mfl_alloc_treebuffer(temp_max_trees);
     searchrec->sr_swaping_on = testree;
