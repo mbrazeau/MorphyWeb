@@ -262,7 +262,7 @@ void tui_spr_test_environment(void)
     
     mfl_searchrec_t* searchrec = mfl_create_searchrec(testhandle);
     
-    //mfl_unroot_tree(testree);
+    mfl_unroot_tree(testree);
     
     if (testree->treet_root) {
         searchrec->sr_swap_entry = testree->treet_treenodes[8];
