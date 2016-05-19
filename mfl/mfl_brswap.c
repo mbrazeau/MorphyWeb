@@ -97,17 +97,47 @@ void mfl_save_topology(mfl_tree_t* t, mfl_treebuffer_t* trbuf, mfl_searchrec_t* 
     mfl_append_tree_to_treebuffer(topolcopy, trbuf, searchrec->sr_handle_ptr);
 }
 
+void mfl_temp_rebranching(mfl_node_t* src, mfl_node_t* tgt, mfl_cliprec_t* regraft)
+{
+    regraft->tgt1 = tgt;
+    regraft->tgt2 = tgt->nodet_edge;
+    regraft->src1 = src;
+    
+    if (src->nodet_next->nodet_edge) {
+        regraft->src2 = src->nodet_next->nodet_next;
+    }
+    else {
+        regraft->src2 = src->nodet_next;
+        assert(!regraft->src2->nodet_edge);
+    }
+    
+    mfl_join_node_edges(regraft->src1, regraft->tgt1);
+    mfl_join_node_edges(regraft->src2, regraft->tgt2);
+}
+
+void mfl_undo_temp_rebranching(mfl_cliprec_t* regraft)
+{
+    regraft->src1->nodet_edge = NULL;
+    regraft->src2->nodet_edge = NULL;
+    mfl_join_node_edges(regraft->tgt1, regraft->tgt2);
+}
+
 void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* searchrec)
 {
     // Traverse the target tree, attempting the reinsertion
     
     mfl_node_t* p = n->nodet_next;
+    mfl_cliprec_t regraft;
     
     // Insert branch
+    mfl_temp_rebranching(src, n, &regraft);
     
     // Copy the tree, append it to the buffer
+    mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
     
     // Count the number of rearrangements
+    mfl_undo_temp_rebranching(&regraft);
+    
     
     ++searchrec->sr_rearrangement_counter;
     
@@ -133,12 +163,13 @@ void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* sear
     mfl_node_t* tgt_opp = tgt->nodet_edge;
     
     // This might be where we will insert a condition to enforce the neighborhood rule
-    mfl_regrafting_traversal(tgt, src, searchrec);
-    mfl_regrafting_traversal(tgt_opp, src, searchrec);
+    if (!tgt->nodet_tip) {
+        mfl_regrafting_traversal(tgt, src, searchrec);
+    }
     
-    /*if (searchrec->sr_swap_entry->nodet_edge) {
-        mfl_regrafting_traversal(searchrec->sr_swap_entry->nodet_edge, src, searchrec);
-    }*/
+    if (!tgt_opp->nodet_tip) {
+        mfl_regrafting_traversal(tgt_opp, src, searchrec);
+    }
 }
 
 mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
@@ -241,12 +272,15 @@ void tui_spr_test_environment(void)
     
     mfl_handle_s* testhandle = mfl_t2s(mfl_create_handle());
     
-    char* cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
-    //char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
+    //char* cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
+    //char* cliptesttree = "temp_examp6=[&R] ((1,2),3);";
+    char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
     //char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,(4,5)));";
     //char* cliptesttree = "temp_examp6=[&R] ((1,(2,(6,7))),(3,(4,5)));";
     //char* cliptesttree = "temp_examp6=[&R] ((1,((2,8),(6,7))),(3,(4,5)));";
+    
     mfl_tree_t* testree = mfl_convert_newick_to_mfl_tree_t(cliptesttree, 0);
+    
     char* treedraw = mfl_drawtree(testree);
     dbg_printf("%s", treedraw);
     
@@ -254,7 +288,7 @@ void tui_spr_test_environment(void)
     
     mfl_searchrec_t* searchrec = mfl_create_searchrec(testhandle);
     
-    //mfl_unroot_tree(testree);
+    mfl_unroot_tree(testree);
     
     if (testree->treet_root) {
         searchrec->sr_swap_entry = testree->treet_root;
@@ -273,6 +307,14 @@ void tui_spr_test_environment(void)
     mfl_subtree_pruning_and_regrafting(testree, searchrec);
     
     dbg_printf("\nNumber of rearrangements attempted for %i taxa: %lli\n", testree->treet_num_taxa, searchrec->sr_rearrangement_counter);
+    dbg_printf("\nAnd here are the trees:\n\n");
+    char* newicktr = NULL;
+    int i = 0;
+    for (i = 0; i < searchrec->sr_treebuffer->tb_num_trees; ++i) {
+        newicktr = mfl_convert_mfl_tree_t_to_newick(searchrec->sr_treebuffer->tb_savedtrees[i], 0);
+        dbg_printf("%s\n", newicktr);
+        free(newicktr);
+    }
     
     mfl_free_tree(testree);
 

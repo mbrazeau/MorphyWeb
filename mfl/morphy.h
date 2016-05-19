@@ -285,6 +285,7 @@ typedef struct {
     mfl_node_t* tgt2;
 } mfl_cliprec_t;
 
+
 typedef struct mfl_nodestack_t {    // Manages memory for unused nodes and avoid allocation on the fly or searches in the array.
     int nstk_numnodes;
     int nstk_maxsize;
