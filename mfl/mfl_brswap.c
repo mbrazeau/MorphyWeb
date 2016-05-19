@@ -210,34 +210,36 @@ void mfl_restore_branching(mfl_cliprec_t* cliprec)
 
 void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
 {
-    int i = 0;
     int weightcount = 0;
     mfl_node_t* p = NULL;
     mfl_node_t* q = NULL;
+    mfl_node_t* r = NULL;
     mfl_cliprec_t cliprec;
     
     if (n->nodet_tip) {
         return;
     }
     
-    q = n->nodet_next;
+    q = n;
+    
     do {
-        if (i < 2) {
-            mfl_pruning_traversal(q->nodet_edge, searchrec);
-            p = mfl_clip_branch(q->nodet_edge, &cliprec);
-            n->nodet_weight += q->nodet_edge->nodet_weight;
+        
+        r = q;
+        q = q->nodet_next;
+        
+        if (q == n) {
+            p = mfl_clip_branch(n->nodet_edge , &cliprec);
         }
         else {
-            p = mfl_clip_branch(n->nodet_edge , &cliprec);
+            mfl_pruning_traversal(q->nodet_edge, searchrec);
+            p = mfl_clip_branch(q->nodet_edge, &cliprec);
+            //n->nodet_weight += q->nodet_edge->nodet_weight;
         }
         
         mfl_regraft_subtree(p, cliprec.tgt1, searchrec);
         mfl_restore_branching(&cliprec);
-
-        dbg_printf("src weight: %i\n", q->nodet_edge->nodet_weight);
-        q = q->nodet_next;
-        ++i;
-    } while (i < 3);
+        
+    } while (q != n);
     
     //n->nodet_weight = weightcount;
     dbg_printf("Weight: %i\n", n->nodet_weight);
