@@ -7,23 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		512549C31CC43A04002C8B57 /* mfl_drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = 512549C21CC43A04002C8B57 /* mfl_drawtree.c */; settings = {ASSET_TAGS = (); }; };
-		513785D41CDB5792003D52D9 /* mfl_compare.c in Sources */ = {isa = PBXBuildFile; fileRef = 513785D31CDB5792003D52D9 /* mfl_compare.c */; settings = {ASSET_TAGS = (); }; };
-		5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8161CA1915100498FD0 /* mfyinterface.c */; settings = {ASSET_TAGS = (); }; };
+		512549C31CC43A04002C8B57 /* mfl_drawtree.c in Sources */ = {isa = PBXBuildFile; fileRef = 512549C21CC43A04002C8B57 /* mfl_drawtree.c */; };
+		513785D41CDB5792003D52D9 /* mfl_compare.c in Sources */ = {isa = PBXBuildFile; fileRef = 513785D31CDB5792003D52D9 /* mfl_compare.c */; };
+		5159B8171CA1915100498FD0 /* mfyinterface.c in Sources */ = {isa = PBXBuildFile; fileRef = 5159B8161CA1915100498FD0 /* mfyinterface.c */; };
 		516FAC6A1CC00862002590DB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 516FAC691CC00862002590DB /* main.cpp */; };
 		516FAC6F1CC00AE4002590DB /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 516FAC6E1CC00AE4002590DB /* gtest.framework */; };
-		51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F991CA19995009EEDF2 /* mfl_brswap.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA31CA27DFA009EEDF2 /* mfl_searchrec.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9D1CA27DFA009EEDF2 /* mfl_searchrec.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA41CA27DFA009EEDF2 /* mfl_newick.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */; settings = {ASSET_TAGS = (); }; };
-		51D40FA61CA27DFA009EEDF2 /* mfl_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */; settings = {ASSET_TAGS = (); }; };
-		51D7522E1CBD720E0003D21F /* tui_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D7522D1CBD720E0003D21F /* tui_utilities.c */; settings = {ASSET_TAGS = (); }; };
-		51D752311CBE78D80003D21F /* tui_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D752301CBE78D80003D21F /* tui_io.c */; settings = {ASSET_TAGS = (); }; };
-		51D752331CBEB7F40003D21F /* tmatrixproc.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D752321CBEB7F40003D21F /* tmatrixproc.c */; settings = {ASSET_TAGS = (); }; };
-		51E7015A1CEA840D00B3FEA8 /* mfl_morphy.c in Sources */ = {isa = PBXBuildFile; fileRef = 51E701581CEA840D00B3FEA8 /* mfl_morphy.c */; settings = {ASSET_TAGS = (); }; };
-		51F8F09C1CD09A6C0016CBC7 /* mfl_bitset.c in Sources */ = {isa = PBXBuildFile; fileRef = 51F8F09A1CD09A6C0016CBC7 /* mfl_bitset.c */; settings = {ASSET_TAGS = (); }; };
+		51D40F9A1CA19995009EEDF2 /* mfl_brswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F991CA19995009EEDF2 /* mfl_brswap.c */; };
+		51D40FA11CA27DFA009EEDF2 /* mfl_characters.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9B1CA27DFA009EEDF2 /* mfl_characters.c */; };
+		51D40FA21CA27DFA009EEDF2 /* mfl_evaluate.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9C1CA27DFA009EEDF2 /* mfl_evaluate.c */; };
+		51D40FA31CA27DFA009EEDF2 /* mfl_searchrec.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9D1CA27DFA009EEDF2 /* mfl_searchrec.c */; };
+		51D40FA41CA27DFA009EEDF2 /* mfl_newick.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9E1CA27DFA009EEDF2 /* mfl_newick.c */; };
+		51D40FA51CA27DFA009EEDF2 /* mfl_starttree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40F9F1CA27DFA009EEDF2 /* mfl_starttree.c */; };
+		51D40FA61CA27DFA009EEDF2 /* mfl_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D40FA01CA27DFA009EEDF2 /* mfl_tree.c */; };
+		51D7522E1CBD720E0003D21F /* tui_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D7522D1CBD720E0003D21F /* tui_utilities.c */; };
+		51D752311CBE78D80003D21F /* tui_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D752301CBE78D80003D21F /* tui_io.c */; };
+		51D752331CBEB7F40003D21F /* tmatrixproc.c in Sources */ = {isa = PBXBuildFile; fileRef = 51D752321CBEB7F40003D21F /* tmatrixproc.c */; };
+		51E7015A1CEA840D00B3FEA8 /* mfl_morphy.c in Sources */ = {isa = PBXBuildFile; fileRef = 51E701581CEA840D00B3FEA8 /* mfl_morphy.c */; };
+		51F8F09C1CD09A6C0016CBC7 /* mfl_bitset.c in Sources */ = {isa = PBXBuildFile; fileRef = 51F8F09A1CD09A6C0016CBC7 /* mfl_bitset.c */; };
 		8DD76FB00486AB0100D96B5E /* Morphy.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* Morphy.1 */; };
 		E117201F1631602A0021AAA7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E1ACBCA114A8BD34005BB9D5 /* main.c */; };
 /* End PBXBuildFile section */
