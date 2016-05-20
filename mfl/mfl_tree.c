@@ -788,8 +788,7 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
     
     mfl_tree_t *newtree = NULL;
     
-    newtree = (mfl_tree_t*)malloc(sizeof(mfl_tree_t));
-    memset(newtree, 0, sizeof(mfl_tree_t));
+    newtree = (mfl_tree_t*)mfl_malloc(sizeof(mfl_tree_t), 0, __FXN_NAME__);
     
     newtree->treet_treenodes = mfl_allocate_nodearray(num_taxa, num_nodes);
     
