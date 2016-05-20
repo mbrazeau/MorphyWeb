@@ -38,6 +38,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <ctype.h>
+#include <time.h>
 #include "mfl.h"
 
 #ifdef MFY_DEBUG
@@ -538,7 +539,15 @@ mfl_treebuffer_t *mfl_tree_from_newick_to_buffer(mfl_handle_s* mfl_handle);
 
 
 /* In mfl_brwap.c */
+inline void mfl_temp_rebranching(mfl_node_t* src, mfl_node_t* tgt, mfl_cliprec_t* regraft);
+inline void mfl_undo_temp_rebranching(mfl_cliprec_t* regraft);
+void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* searchrec);
+void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbor_rule);
 bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);
+inline mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec);
+inline void mfl_restore_branching(mfl_cliprec_t* cliprec);
+void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec);
+
 
 /* in mfyinterface.c*/
 void                    mfl_free_input_data(mfl_handle_s *mfl_struct);

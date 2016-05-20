@@ -60,45 +60,52 @@ void mfl_temp_nodeweight_set(mfl_node_t* n)
 }
 
 
-/*!
- @discussion function for initialising the neigbhour rule counter
- @param num_nodes (int) the number of nodes to get the clade sizes from.
- */
-bool mfl_neighbour_rule_counter_init(int num_nodes)
-{
-    bool clade_counter[num_nodes];
-    int i = 0;
-    
-    // Set all clades to 0 (not visited yet)
-    for (i=1; i <= num_nodes; ++i) {
-        clade_counter[i] = 0;
-    }
-    
-    return clade_counter;
-}
-
-/*!
- @discussion function for appending the clade_counter
- @param clade_counter (bool) an array of booleans.
- @param clade_size_visited (int) the size of a clade visited.
- */
-void mfl_neighbour_rule_counter_append(bool* clade_counter, int clade_size_visited)
-{
-    // Set the visited clade to 1
-    if(clade_counter[clade_size_visited-1] != 1) { //TG: the -1 is to start from origin (0)
-        clade_counter[clade_size_visited-1] = 1;
-    }
-}
-
-
 void mfl_save_topology(mfl_tree_t* t, mfl_treebuffer_t* trbuf, mfl_searchrec_t* searchrec)
 {
     mfl_tree_t* topolcopy = mfl_copy_tree_topology(t);
     mfl_append_tree_to_treebuffer(topolcopy, trbuf, searchrec->sr_handle_ptr);
 }
 
+bool mfl_check_node_wt(int weight, mfl_nodeweights_t* ndweightlist)
+{
+    assert(weight < ndweightlist->nwl_max);
+    
+    if (ndweightlist->nwl_weights_list[weight-1]) {
+        dbg_printf("This weight has been seen before\n");
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
-void mfl_temp_rebranching(mfl_node_t* src, mfl_node_t* tgt, mfl_cliprec_t* regraft)
+
+void mfl_set_node_wt(bool value, int weight, mfl_nodeweights_t* ndweightlist)
+{
+    assert(weight < ndweightlist->nwl_max);
+    
+    ndweightlist->nwl_weights_list[weight-1] = value;
+}
+
+
+mfl_nodeweights_t* mfl_create_node_wt_list(int num_taxa)
+{
+    
+    int i = 0;
+    int num_weights = 0;
+    mfl_nodeweights_t* newnwl = (mfl_nodeweights_t*)mfl_malloc(sizeof(mfl_nodeweights_t), 0, __FXN_NAME__);
+    
+    num_weights = num_taxa - 1; // The number of useful weights in branch breaking
+    
+    newnwl->nwl_max = num_weights;
+    
+    newnwl->nwl_weights_list = (bool*)mfl_malloc(num_weights * sizeof(bool), 0, __FXN_NAME__);
+    
+    return newnwl;
+}
+
+
+inline void mfl_temp_rebranching(mfl_node_t* src, mfl_node_t* tgt, mfl_cliprec_t* regraft)
 {
     regraft->tgt1 = tgt;
     regraft->tgt2 = tgt->nodet_edge;
@@ -117,7 +124,7 @@ void mfl_temp_rebranching(mfl_node_t* src, mfl_node_t* tgt, mfl_cliprec_t* regra
 }
 
 
-void mfl_undo_temp_rebranching(mfl_cliprec_t* regraft)
+inline void mfl_undo_temp_rebranching(mfl_cliprec_t* regraft)
 {
     regraft->src1->nodet_edge = NULL;
     regraft->src2->nodet_edge = NULL;
@@ -161,34 +168,59 @@ void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* s
     return;
 }
 
-void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec)
+void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbor_rule)
 {
-    int weight = 0;
-
     mfl_node_t* tgt_opp = tgt;
+    
     mfl_node_t* p = NULL;
+    mfl_node_t* q = NULL;
     
     do {
         
         if (!tgt_opp->nodet_tip) {
+            
             p = tgt_opp->nodet_next;
-            do {
-                mfl_regrafting_traversal(p->nodet_edge, src, searchrec);
-                p = p->nodet_next;
-            } while (p != tgt_opp);
+            
+            
+            if (neighbor_rule) {
+                
+                do {
+                    
+                    q = p->nodet_edge;
+                    
+                    if (!q->nodet_tip) {
+                        
+                        q = q->nodet_next;
+                        
+                        do {
+                            mfl_regrafting_traversal(q->nodet_edge, src, searchrec);
+                            q = q->nodet_next;
+                        } while (q != p->nodet_edge);
+                        
+                    }
+                    
+                    p = p->nodet_next;
+                    
+                } while (p != tgt_opp);
+                
+            } else {
+                
+                do {
+                    mfl_regrafting_traversal(p->nodet_edge, src, searchrec);
+                    p = p->nodet_next;
+                } while (p != tgt_opp);
+                
+            }
+            
         }
         
         tgt_opp = tgt_opp->nodet_edge;
         
-//        if (!tgt_opp->nodet_tip) {
-//            mfl_regrafting_traversal(tgt_opp, src, searchrec);
-//        }
-//        tgt_opp = tgt_opp->nodet_edge;
     } while (tgt_opp != tgt);
     
 }
 
-mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
+inline mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
 {
     mfl_node_t* retnode = NULL;
     
@@ -212,7 +244,7 @@ mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
 }
 
 
-void mfl_restore_branching(mfl_cliprec_t* cliprec)
+inline void mfl_restore_branching(mfl_cliprec_t* cliprec)
 {
     mfl_join_node_edges(cliprec->src1, cliprec->tgt1);
     mfl_join_node_edges(cliprec->src2, cliprec->tgt2);
@@ -224,6 +256,7 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
     mfl_node_t* p = NULL;
     mfl_node_t* q = NULL;
     mfl_cliprec_t cliprec;
+    bool neighbour_rule = false;
     
     if (n->nodet_tip) {
         return;
@@ -232,61 +265,27 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
     q = n;
     
     do {
+        
         q = q->nodet_next;
+        
         if (q == n) {
-            n->nodet_edge->nodet_weight = searchrec->sr_num_taxa_included - n->nodet_weight;
+            
             p = mfl_clip_branch(n->nodet_edge , &cliprec);
+            neighbour_rule = false;
+            
         }
         else {
             mfl_pruning_traversal(q->nodet_edge, searchrec);
             p = mfl_clip_branch(q->nodet_edge, &cliprec);
-            n->nodet_weight += q->nodet_edge->nodet_weight;
+            neighbour_rule = true;
         }
-        mfl_regraft_subtree(p, cliprec.tgt1, searchrec);
+    
+        mfl_regraft_subtree(p, cliprec.tgt1, searchrec, neighbour_rule);
         mfl_restore_branching(&cliprec);
         
     } while (q != n);
     
-    
-    dbg_printf("weight: %i\n", n->nodet_weight);
-    
     return;
-}
-
-bool mfl_check_node_wt(int weight, mfl_nodeweights_t* ndweightlist)
-{
-    assert(!(weight > ndweightlist->nwl_max));
-    
-    if (ndweightlist->nwl_weights_list[weight-1]) {
-        dbg_printf("This weight has been seen before\n");
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-void mfl_set_node_wt(bool value, int weight, mfl_nodeweights_t* ndweightlist)
-{
-    assert(!(weight > ndweightlist->nwl_max));
-    
-    ndweightlist->nwl_weights_list[weight-1] = value;
-}
-
-mfl_nodeweights_t* mfl_create_node_wt_list(int num_taxa)
-{
-    
-    int i = 0;
-    int num_weights = 0;
-    mfl_nodeweights_t* newnwl = (mfl_nodeweights_t*)mfl_malloc(sizeof(mfl_nodeweights_t), 0, __FXN_NAME__);
-    
-    num_weights = num_taxa - 3; // The number of useful weights in branch breaking
-    
-    newnwl->nwl_max = num_weights;
-    
-    newnwl->nwl_weights_list = (bool*)mfl_malloc(num_weights * sizeof(bool), 0, __FXN_NAME__);
-    
-    return newnwl;
 }
 
 
@@ -300,13 +299,13 @@ void tui_spr_test_environment(void)
 {
     // NOTE: This is a tui function and should be moved there.
     
-    int temp_max_trees = 1000;
+    int temp_max_trees = 50000;
     
     mfl_handle_s* testhandle = mfl_t2s(mfl_create_handle());
     
-    //char* cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
-    //char* cliptesttree = "temp_examp6=[&R] ((1,2),3);";
-    char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
+    char* cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
+    //char* cliptesttree = "tree1=[&R] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
+    //char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
     //char* cliptesttree = "temp_examp6=[&R] ((1,2),(3,(4,5)));";
     //char* cliptesttree = "temp_examp6=[&R] ((1,(2,(6,7))),(3,(4,5)));";
     //char* cliptesttree = "temp_examp6=[&R] ((1,((2,8),(6,7))),(3,(4,5)));";
@@ -328,18 +327,24 @@ void tui_spr_test_environment(void)
         searchrec->sr_swap_entry = testree->treet_start;
     }
     
-    //mfl_temp_nodeweight_set(searchrec->sr_swap_entry);
-    
     searchrec->sr_treebuffer = mfl_alloc_treebuffer(temp_max_trees);
     searchrec->sr_swaping_on = testree;
     searchrec->sr_handle_ptr = testhandle;
+    searchrec->sr_nodweights = mfl_create_node_wt_list(testree->treet_num_taxa);
     
     mfl_append_tree_to_treebuffer(testree, searchrec->sr_treebuffer, testhandle);
     
     //mfl_subtree_pruning_and_regrafting(testree, searchrec);
+    time_t before = 0;
+    time_t after = 0;
+    
+    before = clock();
     mfl_pruning_traversal(searchrec->sr_swap_entry, searchrec);
+    after = clock();
+    
     dbg_printf("\nNumber of rearrangements attempted for %i taxa: %lli\n", testree->treet_num_taxa, searchrec->sr_rearrangement_counter);
-    dbg_printf("\nAnd here are the trees:\n\n");
+    dbg_printf("\nAnd here are the trees:\n");
+    dbg_printf("Time: %f\n\n", (float)(after-before)/CLOCKS_PER_SEC);
     char* newicktr = NULL;
     int i = 0;
     for (i = 0; i < searchrec->sr_treebuffer->tb_num_trees; ++i) {
