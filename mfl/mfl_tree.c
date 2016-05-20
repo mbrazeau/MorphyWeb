@@ -448,7 +448,7 @@ void mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int n
     }
     
     for (i = 0; i < num_nodes; ++i) {
-        *(nodearray + i) = mfl_alloc_node();
+        *(nodearray + i) = (mfl_node_t*)mfl_malloc(sizeof(mfl_node_t), 0, __FXN_NAME__);//mfl_alloc_node();
     }
     
     /* The last spot in the array is a NULL pointer. This just provides a bit of
@@ -476,15 +476,7 @@ mfl_nodearray_t mfl_allocate_nodearray(int num_taxa, int num_nodes)
     
     // The +1 allows for a NULL pointer at then end of the array to (hopefully)
     // keep it read-safe.
-    new_nodearray = (mfl_node_t**)malloc( (num_nodes + 1) * sizeof(mfl_node_t*));
-    
-    if (!new_nodearray) {
-        dbg_printf("Error in mfl_allocate_node_array(int num_taxa, int num_nodes): failed to allocate new node array.\n");
-    }
-    else
-    {
-        memset(new_nodearray, 0, num_nodes * sizeof(mfl_node_t*));
-    }
+    new_nodearray = (mfl_node_t**)mfl_malloc((num_nodes + 1) * sizeof(mfl_node_t), 0, __FXN_NAME__);
     
     mfl_allocate_nodes_in_array(new_nodearray, num_nodes, num_taxa);
     
@@ -1065,10 +1057,12 @@ mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
     int numnodes = 0;
     mfl_tree_t* trcopy = NULL;
     trcopy = mfl_alloctree_with_nodes(t->treet_num_taxa);
+    
     mfl_nodearray_t srcnds = t->treet_treenodes;
     mfl_nodearray_t cpynds = trcopy->treet_treenodes;
     
     assert((numnodes = trcopy->treet_num_nodes) != 0);
+    
     for (i = 0; i < numnodes ; ++i) {
         assert(srcnds[i]->nodet_index == cpynds[i]->nodet_index);
         if (srcnds[i]->nodet_edge) {
@@ -1079,10 +1073,11 @@ mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
         }
     }
     
-    
     // Copy safe variables
     trcopy->treet_num_taxa = t->treet_num_taxa;
+    
     assert(!(t->treet_start && t->treet_root));
+    
     if (t->treet_root) {
         trcopy->treet_root = cpynds[t->treet_root->nodet_index];
         trcopy->treet_start = NULL;

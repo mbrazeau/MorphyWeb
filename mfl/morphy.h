@@ -49,7 +49,6 @@
 #define dbg_pfail(...) printf("== FAIL == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
 #define dbg_ppass(...) printf("== PASS == %s(): %s\n", __FUNCTION__, __VA_ARGS__)
 #define dbg_pcall(...) printf("\t\tCalled by %s()\n\n", __VA_ARGS__)
-#define __FXN_NAME__ (const char*)__FUNCTION__
 #else
 #define dbg_printf(...)
 #define dbg_eprintf(...)
@@ -61,12 +60,13 @@
 
 using namespace std;
 
+#define __FXN_NAME__ (const char*)__FUNCTION__
+
 /* 
  *
  * Definitions of some default values
  *
  */
-
 #define MORPHY_UINTMAX UINT64_MAX
 #define MORPHY_INAPPLICABLE_BITPOS ((mfl_charstate)1)
 #define MORPHY_IS_APPLICABLE (~MORPHY_INAPPLICABLE_BITPOS)
