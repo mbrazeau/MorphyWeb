@@ -287,6 +287,14 @@ typedef struct {
 } mfl_cliprec_t;
 
 
+typedef struct {
+    int ste_max_edges;
+    int ste_num_edges;
+    int ste_head;
+    mfl_node_t** ste_edges;
+} mfl_subtree_edges_t;
+
+
 typedef struct mfl_nodestack_t {    // Manages memory for unused nodes and avoid allocation on the fly or searches in the array.
     int nstk_numnodes;
     int nstk_maxsize;
