@@ -134,6 +134,6 @@ void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_parti
     
     for (i = 0; i < numtaxa; ++i) {
         // For each partition, copy into the downpass set of the tip
-        nds[i]->nodet_dataparts;
+        nds[i]->nodet_charstates;
     }
 }

@@ -270,9 +270,9 @@ typedef struct mfl_node_t {
     int nodet_minsteps;                         // Minimum number of transformations along branch represented by nodet_edge.
 	int nodet_maxsteps;                         // Maximum number of transformations along branch represented by nodet_edge.
     double nodet_mean_branchlen;                // Mean branch length.
-    long long int nodet_tree_index;             // Identity of the tree to which this node belongs.
+    long int nodet_tree_index;             // Identity of the tree to which this node belongs.
     int nodet_num_dat_partitions;
-    mfl_nodedata_t *nodet_dataparts;
+    mfl_nodedata_t *nodet_charstates;
 } mfl_node_t;
 
 
