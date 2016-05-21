@@ -473,7 +473,7 @@ void tui_spr_test_environment(void)
     cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
     cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
     cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
-    cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
+    //cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),3);";
     //cliptesttree = "temp_examp6=[&R] ((1,2),(3,(4,5)));";
