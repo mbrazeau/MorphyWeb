@@ -36,10 +36,9 @@
 #include <stdio.h>
 #include "morphy.h"
 
-void mfl_temp_nodeweight_set(mfl_node_t* n)
+void mfl_assign_nodeweights(mfl_node_t* n)
 {
     mfl_node_t *p = NULL;
-    int weightcount = 0;
     
     if (n->nodet_tip) {
         n->nodet_isbottom = true;
@@ -48,12 +47,11 @@ void mfl_temp_nodeweight_set(mfl_node_t* n)
     
     p = n->nodet_next;
     do {
-        mfl_temp_nodeweight_set(p->nodet_edge);
-        weightcount += p->nodet_edge->nodet_weight;
+        mfl_assign_nodeweights(p->nodet_edge);
+        n->nodet_weight += p->nodet_edge->nodet_weight;
         p = p->nodet_next;
     } while (p != n);
     
-    n->nodet_weight = weightcount;
     n->nodet_isbottom = true;
     
     return;
@@ -241,10 +239,8 @@ bool mfl_TBR_reroot(mfl_node_t* subtr, mfl_node_t* src, mfl_subtree_edges_t* ste
     }
     
     if (!stedges->ste_edges) {
-        
-        mfl_initialise_tbr_rerooting_record(subtr->nodet_weight, stedges);
-        
         if (!neighbour_rule) {
+            mfl_initialise_tbr_rerooting_record(subtr->nodet_weight, stedges);
             mfl_get_all_subtree_edges(subtr, stedges, start);
         }
         
@@ -328,7 +324,6 @@ void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t*
         mfl_regrafting_traversal(p->nodet_next->nodet_edge, src, searchrec);
     }
     
-    
     return;
 }
 
@@ -388,49 +383,53 @@ void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* sear
 
 void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
 {
+    mfl_node_t* src = NULL;
     mfl_node_t* p = NULL;
-    mfl_node_t* q = NULL;
     mfl_cliprec_t cliprec;
     bool neighbour_rule = false;
+    
+    n->nodet_edge->nodet_weight = searchrec->sr_num_taxa_included - n->nodet_weight;
+    
+    p = n;
+    
+    do {
+        
+        if (!p->nodet_tip) {
+            
+            src = mfl_clip_branch(p->nodet_edge , &cliprec);
+            
+            if (searchrec->sr_bswaptype == MFL_BST_SPR) {
+                // SPR
+                mfl_regraft_subtree(src, cliprec.tgt1, searchrec, neighbour_rule);
+            }
+            else if (searchrec->sr_bswaptype == MFL_BST_TBR) {
+                // TBR
+                mfl_TBReconnection(src, cliprec.tgt1, searchrec, neighbour_rule);
+            }
+            else {
+                dbg_eprintf("nice try, asshole");
+            }
+            mfl_restore_branching(&cliprec);
+        }
+        
+        neighbour_rule = true;
+        p = p->nodet_edge;
+        
+    } while (p != n);
+    
     
     if (n->nodet_tip) {
         return;
     }
     
-    q = n;
+    p = n->nodet_next;
     
     do {
         
-        q = q->nodet_next;
         
-        if (q == n) {
-            n->nodet_edge->nodet_weight = searchrec->sr_num_taxa_included - n->nodet_weight;
-            p = mfl_clip_branch(n->nodet_edge , &cliprec);
-            neighbour_rule = false;
-            
-        }
-        else {
-            mfl_pruning_traversal(q->nodet_edge, searchrec);
-            n->nodet_weight += q->nodet_edge->nodet_weight;
-            p = mfl_clip_branch(q->nodet_edge, &cliprec);
-            neighbour_rule = true;
-        }
-    
-        if (searchrec->sr_bswaptype == MFL_BST_SPR) {
-            // SPR
-            mfl_regraft_subtree(p, cliprec.tgt1, searchrec, neighbour_rule);
-        }
-        else if (searchrec->sr_bswaptype == MFL_BST_TBR) {
-            // TBR
-            mfl_TBReconnection(p, cliprec.tgt1, searchrec, neighbour_rule);
-        }
-        else {
-            dbg_eprintf("nice try, asshole");
-        }
-            
-        mfl_restore_branching(&cliprec);
-        
-    } while (q != n);
+        mfl_pruning_traversal(p->nodet_edge, searchrec);
+        p = p->nodet_next;
+    } while (p != n);
     
     return;
 }
@@ -454,14 +453,13 @@ void tui_spr_test_environment(void)
     
     cliptesttree = "tree1=[&R] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
     //cliptesttree = "tree1=[&R] (1,((2,(79,(80,((81,((82,88),(86,87))),(83,(84,85)))))),(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,(66,((89,90),((91,((92,98),(96,97))),(93,(94,(95,(99,100)))))))),77),60))));";
-    //cliptesttree = "temp_examp6=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
-    //cliptesttree = "tree_857 = [&R] (1,((4,(2,((6,(7,((8,9),(10,(11,12))))),3))),5));";
+    //cliptesttree = "594=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
+//    cliptesttree = "tree_857 = [&R] (1,((4,(2,((6,(7,((8,9),(10,(11,12))))),3))),5));";
     //cliptesttree = "tree_838 = [&R] ((((12,(((((3,2),6),7),(8,9)),10)),11),1),(4,5));";
     //cliptesttree = "tree_795 = [&R] (1,(((((7,11),(10,((2,((4,8),6)),3))),5),9),12));";
     //cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
-    //cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
-    //cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
     //cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
+    //cliptesttree = "fivethirty = [&R] (1,((2,((6,((7,4),((8,9),(10,(11,12))))),3)),5));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),3);";
     //cliptesttree = "temp_examp6=[&R] ((1,2),(3,(4,5)));";
@@ -493,12 +491,14 @@ void tui_spr_test_environment(void)
     searchrec->sr_swaping_on = testree;
     searchrec->sr_handle_ptr = testhandle;
     searchrec->sr_nodweights = mfl_create_node_wt_list(testree->treet_num_taxa);
-    searchrec->sr_bswaptype = MFL_BST_TBR;
+    //searchrec->sr_bswaptype = MFL_BST_SPR;
     
     mfl_append_tree_to_treebuffer(testree, searchrec->sr_treebuffer, testhandle);
     
     time_t before = 0;
     time_t after = 0;
+    
+    mfl_assign_nodeweights(searchrec->sr_swap_entry);
     
     before = clock();
     mfl_pruning_traversal(searchrec->sr_swap_entry, searchrec);
