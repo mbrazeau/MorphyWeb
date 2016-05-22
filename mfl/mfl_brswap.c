@@ -286,8 +286,8 @@ void mfl_TBReconnection(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searc
     do {
         // Perform all reinsertions
         mfl_regraft_subtree(src, tgt, searchrec, neighbour_rule);
-    } while (mfl_TBR_reroot(subtr, src, &stedges, &initial, neighbour_rule));
-    
+    }
+    while (mfl_TBR_reroot(subtr, src, &stedges, &initial, neighbour_rule));
     
     free(stedges.ste_edges);
 }
@@ -304,7 +304,7 @@ void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t*
     mfl_temp_rebranching(src, tgt, &regraft);
     
     // Copy the tree, append it to the buffer
-    //mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
+    mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
     
     // Count the number of rearrangements
     mfl_undo_temp_rebranching(&regraft);
@@ -458,7 +458,7 @@ void tui_spr_test_environment(void)
     //cliptesttree = "tree_838 = [&R] ((((12,(((((3,2),6),7),(8,9)),10)),11),1),(4,5));";
     //cliptesttree = "tree_795 = [&R] (1,(((((7,11),(10,((2,((4,8),6)),3))),5),9),12));";
     //cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
-    //cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
+    cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
     //cliptesttree = "fivethirty = [&R] (1,((2,((6,((7,4),((8,9),(10,(11,12))))),3)),5));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),3);";
