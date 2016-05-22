@@ -263,7 +263,6 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = mfl_traverse_newick_recursively(newick_position, nodearray, num_taxa);
             mfl_join_node_edges(node_ptr, new_child);
-            
         }
         if (isdigit(**newick_position)) {
             node_ptr = mfl_get_next_available_node(nodearray);
