@@ -168,7 +168,7 @@ mfl_handle_t mfl_create_handle()
 
     /* setup reasonable defaults */
     mfl_struct->n_ctypes = 1;
-    mfl_set_branchswap_t(mfl_struct, (void*)MFL_BST_SPR);
+    mfl_set_branchswap_t(mfl_struct, (void*)MFL_BST_TBR);
     mfl_set_collapse_value(mfl_struct, (void*)MFL_SC_MAX_LEN);
     mfl_set_treelimit(mfl_struct, (void*)MORPHY_DEFAULT_TREE_LIMIT);
     mfl_set_gapormissing(mfl_struct, (void*)MFL_GAP_INAPPLICABLE);
