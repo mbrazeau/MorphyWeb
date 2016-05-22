@@ -234,7 +234,7 @@ bool mfl_TBR_reroot(mfl_node_t* subtr, mfl_node_t* src, mfl_subtree_edges_t* ste
 {
     mfl_node_t* start = subtr;
     
-    if (subtr->nodet_weight < 3) {
+    if (subtr->nodet_tip) {
         return false;
     }
     
