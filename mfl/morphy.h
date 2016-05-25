@@ -305,6 +305,7 @@ typedef struct mfl_nodestack_t {    // Manages memory for unused nodes and avoid
 typedef struct mfl_tree_t {
 	mfl_nodearray_t treet_treenodes;        // The nodes of the tree. Never point these to another instance of mfl_tree.
 	mfl_node_t *treet_root;                 // Pointer to the root of the tree.
+    mfl_node_t treet_dummynode;
     mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
     mfl_nodestack_t* treet_nodestack;       // Unused nodes

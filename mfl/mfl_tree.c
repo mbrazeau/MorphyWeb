@@ -769,6 +769,7 @@ void mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes)
     
     newtree->treet_num_taxa = num_taxa;
     newtree->treet_num_nodes = num_nodes;
+    newtree->treet_dummynode.nodet_tip = -1;
 }
 
 
