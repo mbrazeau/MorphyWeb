@@ -238,6 +238,10 @@ bool mfl_TBR_reroot(mfl_node_t* subtr, mfl_node_t* src, mfl_subtree_edges_t* ste
         return false;
     }
     
+    if (!neighbour_rule) {
+        //return false;
+    }
+    
     if (!stedges->ste_edges) {
         if (!neighbour_rule) {
             mfl_initialise_tbr_rerooting_record(subtr->nodet_weight, stedges);
@@ -272,6 +276,19 @@ bool mfl_TBR_reroot(mfl_node_t* subtr, mfl_node_t* src, mfl_subtree_edges_t* ste
     return false;
 }
 
+void mfl_reinsertion_traversal(mfl_node_t* src, mfl_node_t* tgt)
+{
+    
+    // Reinsert tgt
+    
+    // Restore tgt connection (remove the src)
+    
+    if (tgt->nodet_edge == tgt) {
+        return;
+    }
+    
+    
+}
 
 void mfl_TBReconnection(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbour_rule)
 {
