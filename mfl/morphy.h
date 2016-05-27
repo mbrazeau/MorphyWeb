@@ -379,6 +379,11 @@ typedef struct mfl_island_data_t {
 } mfl_island_data_t;
 
 
+typedef struct {
+    int numentries;             //
+    int* edgetable;             //
+} mfl_edgetable_t;
+
 
 
 /*
@@ -497,6 +502,15 @@ void            mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
 void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
 mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
+mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips);
+void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
+bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
+void            mfl_free_edgetable(mfl_edgetable_t* edgetable);
+void            mfl_edgetable_traversal(mfl_node_t* start, mfl_edgetable_t* edgetable, int* node_counter, int* tip_counter, int* counter);
+
+
+void            tui_test_edgetables(void); // TESTING FUNCTION (SHOULD NOT BE HERE!)
+
 
 
 //
