@@ -286,43 +286,43 @@ mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 }
 
 
-/*!
- @discussion Removes a branch from a target tree and returns a pointer to the 
- base of the excised node.
- @note I think there can be some big changes to this function and to generally
- how we handle removal and reinsertion of branches.
- @param free_node_bottom (mfl_node_t*) pointer to the base of the internal node 
- ring to be removed and which connects the node to the target tree.
- @param free_node_top (mfl_node_t*) pointer to the 'upper' node ring that 
- connects the source branch to the target tree.
- @return pointer to the ring forming the base of the excised branch.
- */
-mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top)
-{
-    mfl_node_t * tgt_branch_upper = NULL;
-    mfl_node_t * tgt_branch_bottom = NULL;
-    mfl_node_t * ptr_to_removed_branch = NULL;
-    
-#ifdef MFY_DEBUG
-    if (!free_node_bottom->nodet_isbottom) {
-        dbg_printf("WARNING in mfl_remove_branch(): free_node_bottom has NULL nodet_isbottom\n");
-    }
-#endif
-    /*Put the business code in */
-    tgt_branch_bottom = free_node_bottom->nodet_edge;
-    tgt_branch_upper = free_node_top->nodet_edge;
-    
-    free_node_bottom->nodet_edge = NULL;
-    free_node_top->nodet_edge = NULL; // Removes pointers to the source tree
-    
-    tgt_branch_upper->nodet_edge = tgt_branch_bottom;
-    tgt_branch_bottom->nodet_edge = tgt_branch_upper;  // "Reconnects" the
-                                                       // "broken" source tree
-    
-    ptr_to_removed_branch = free_node_bottom;
-    
-    return ptr_to_removed_branch;
-}
+///*!
+// @discussion Removes a branch from a target tree and returns a pointer to the 
+// base of the excised node.
+// @note I think there can be some big changes to this function and to generally
+// how we handle removal and reinsertion of branches.
+// @param free_node_bottom (mfl_node_t*) pointer to the base of the internal node 
+// ring to be removed and which connects the node to the target tree.
+// @param free_node_top (mfl_node_t*) pointer to the 'upper' node ring that 
+// connects the source branch to the target tree.
+// @return pointer to the ring forming the base of the excised branch.
+// */
+//mfl_node_t * mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top)
+//{
+//    mfl_node_t * tgt_branch_upper = NULL;
+//    mfl_node_t * tgt_branch_bottom = NULL;
+//    mfl_node_t * ptr_to_removed_branch = NULL;
+//    
+//#ifdef MFY_DEBUG
+//    if (!free_node_bottom->nodet_isbottom) {
+//        dbg_printf("WARNING in mfl_remove_branch(): free_node_bottom has NULL nodet_isbottom\n");
+//    }
+//#endif
+//    /*Put the business code in */
+//    tgt_branch_bottom = free_node_bottom->nodet_edge;
+//    tgt_branch_upper = free_node_top->nodet_edge;
+//    
+//    free_node_bottom->nodet_edge = NULL;
+//    free_node_top->nodet_edge = NULL; // Removes pointers to the source tree
+//    
+//    tgt_branch_upper->nodet_edge = tgt_branch_bottom;
+//    tgt_branch_bottom->nodet_edge = tgt_branch_upper;  // "Reconnects" the
+//                                                       // "broken" source tree
+//    
+//    ptr_to_removed_branch = free_node_bottom;
+//    
+//    return ptr_to_removed_branch;
+//}
 
 /*!
  @discussion Inserts a ring with only one edge connection into a target tree.
