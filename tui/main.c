@@ -361,13 +361,13 @@ int main (int argc, char *argv[])
     tui_test_tree_copying();
     dbg_printf("\nEnd tree copy test\n\n");
     
-//    dbg_printf("Testing branchbreaking:\n");
-//    tui_spr_test_environment();
-//    dbg_printf("\nEnd bbreak test\n");
+    dbg_printf("Testing branchbreaking:\n");
+    tui_spr_test_environment();
+    dbg_printf("\nEnd bbreak test\n");
 
-    dbg_printf("Testing edge tables:\n");
-    tui_test_edgetables();
-    dbg_printf("\nEnd edge tables test\n");
+//    dbg_printf("Testing edge tables:\n");
+//    tui_test_edgetables();
+//    dbg_printf("\nEnd edge tables test\n");
 
     
     //-----
