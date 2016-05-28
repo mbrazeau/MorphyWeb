@@ -64,67 +64,7 @@ void mfl_save_topology(mfl_tree_t* t, mfl_treebuffer_t* trbuf, mfl_searchrec_t* 
     mfl_append_tree_to_treebuffer(topolcopy, trbuf, searchrec->sr_handle_ptr);
 }
 
-bool mfl_check_node_wt(int weight, mfl_nodeweights_t* ndweightlist)
-{
-    assert(weight < ndweightlist->nwl_max);
-    
-    if (ndweightlist->nwl_weights_list[weight-1]) {
-        dbg_printf("This weight has been seen before\n");
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 
-
-void mfl_set_node_wt(bool value, int weight, mfl_nodeweights_t* ndweightlist)
-{
-    assert(weight < ndweightlist->nwl_max);
-    
-    ndweightlist->nwl_weights_list[weight-1] = value;
-}
-
-
-mfl_nodeweights_t* mfl_create_node_wt_list(int num_taxa)
-{
-    
-    int i = 0;
-    int num_weights = 0;
-    mfl_nodeweights_t* newnwl = (mfl_nodeweights_t*)mfl_malloc(sizeof(mfl_nodeweights_t), 0, __FXN_NAME__);
-    
-    num_weights = num_taxa - 1; // The number of useful weights in branch breaking
-    
-    newnwl->nwl_max = num_weights;
-    
-    newnwl->nwl_weights_list = (bool*)mfl_malloc(num_weights * sizeof(bool), 0, __FXN_NAME__);
-    
-    return newnwl;
-}
-
-
-//inline mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
-//{
-//    mfl_node_t* retnode = NULL;
-//    
-//    cliprec->src1 = n->nodet_edge->nodet_next;
-//    cliprec->src2 = cliprec->src1->nodet_next;
-//    cliprec->tgt1 = cliprec->src1->nodet_edge;
-//    cliprec->tgt2 = cliprec->src2->nodet_edge;
-//    
-//    if (cliprec->src1->nodet_isbottom) {
-//        retnode = cliprec->src1;
-//    } else {
-//        retnode = cliprec->src2;
-//    }
-//    
-//    mfl_disconnect_node(cliprec->src1);
-//    mfl_disconnect_node(cliprec->src2);
-//    
-//    mfl_join_node_edges(cliprec->tgt1, cliprec->tgt2);
-//    
-//    return retnode;
-//}
 
 bool mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec)
 {
@@ -207,7 +147,7 @@ mfl_node_t* mfl_get_src_root(mfl_node_t *n)
     return p->nodet_edge;
 }
 
-void mfl_TBReconnect_traversal(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbour_rule)
+void mfl_TBReconnect_traversal(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool isbackswap)
 {
     mfl_node_t* p = NULL;
     
@@ -220,7 +160,7 @@ void mfl_TBReconnect_traversal(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t
     p = tgt->nodet_next;
     
     do {
-        mfl_TBReconnect_traversal(src, p->nodet_edge, searchrec, neighbour_rule);
+        mfl_TBReconnect_traversal(src, p->nodet_edge, searchrec, isbackswap);
         p = p->nodet_next;
     } while (p != tgt);
     
@@ -275,7 +215,7 @@ int mfl_get_all_subtree_edges(mfl_node_t* n, mfl_subtree_edges_t* steges, mfl_no
 }
 
 
-bool mfl_TBR_reroot(mfl_node_t* subtr, mfl_subtree_edges_t* stedges, mfl_cliprec_t* initial)
+bool mfl_reroot_subtree(mfl_node_t* subtr, mfl_subtree_edges_t* stedges, mfl_cliprec_t* initial)
 {
     mfl_node_t* start = subtr;
     
@@ -314,38 +254,6 @@ bool mfl_TBR_reroot(mfl_node_t* subtr, mfl_subtree_edges_t* stedges, mfl_cliprec
     return false;
 }
 
-void mfl_reinsertion_traversal(mfl_node_t* src, mfl_node_t* tgt)
-{
-    
-    // Reinsert tgt
-    
-    // Restore tgt connection (remove the src)
-    
-    if (tgt->nodet_edge == tgt) {
-        return;
-    }
-    
-    
-}
-
-void mfl_TBReconnection(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbour_rule)
-{
-    
-    mfl_cliprec_t initial = {0};
-    //mfl_cliprec_t newroot = {0};
-    mfl_node_t *subtr = NULL;
-    mfl_subtree_edges_t stedges = {0};
-    
-    subtr = mfl_get_src_root(src);
-    
-//    do {
-//        // Perform all reinsertions
-//        mfl_regraft_subtree(src, tgt, searchrec, neighbour_rule);
-//    }
-//    while (mfl_TBR_reroot(subtr, &stedges, &initial, neighbour_rule));
-    
-    free(stedges.ste_edges);
-}
 
 
 void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t* searchrec)
@@ -389,21 +297,22 @@ void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t*
 }
 
 
-void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbor_rule)
+void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool isbackswap)
 {
     
     mfl_node_t* p = NULL;
     mfl_node_t* q = NULL;
+    mfl_node_t* r = NULL;
     
     if (!tgt) {
         
-        if (!neighbor_rule) {
+        if (!isbackswap) {
             mfl_regrafting_traversal(tgt, src, searchrec);
         }
         return;
     }
     
-    if (neighbor_rule) {
+    if (isbackswap) {
         
         p = tgt;
         
@@ -416,8 +325,9 @@ void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* sear
                 
                 do {
                     if (!q->nodet_edge->nodet_tip) {
-                        mfl_regrafting_traversal(q->nodet_edge->nodet_next->nodet_edge, src, searchrec);
-                        mfl_regrafting_traversal(q->nodet_edge->nodet_next->nodet_next->nodet_edge, src, searchrec);
+                        r = q->nodet_edge;
+                        mfl_regrafting_traversal(r->nodet_next->nodet_edge, src, searchrec);
+                        mfl_regrafting_traversal(r->nodet_next->nodet_next->nodet_edge, src, searchrec);
                     }
                     q = q->nodet_next;
                 } while (q != p);
@@ -438,14 +348,9 @@ void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* sear
 }
 
 
-bool mfl_remove_subtree(mfl_node_t* subtr, mfl_cliprec_t* cliprec)
-{
-    
-}
-
 void mfl_break_branch(mfl_node_t* src, mfl_searchrec_t* searchrec)
 {
-    bool neighbour_rule = true;
+    bool isbackswap = true;
     mfl_cliprec_t srcrootinit = {0};
     mfl_cliprec_t clippoint = {0};
     mfl_subtree_edges_t stedges = {0};
@@ -453,21 +358,17 @@ void mfl_break_branch(mfl_node_t* src, mfl_searchrec_t* searchrec)
     
 
     if (mfl_clip_branch(src, &clippoint)) {
-        neighbour_rule = true;
+        isbackswap = true;
     }
     
     do {
-        // Perform all reinsertions
-        mfl_regraft_subtree(src, clippoint.tgt1, searchrec, neighbour_rule);
-        
-        // After the first pruning and reinsertion, set neighbour rule to false
-        neighbour_rule = false;
+        mfl_regraft_subtree(src, clippoint.tgt1, searchrec, isbackswap);
+        isbackswap = false;
     }
-    while (mfl_TBR_reroot(src, &stedges, &srcrootinit));
+    while (mfl_reroot_subtree(src, &stedges, &srcrootinit));
     
     mfl_restore_branching(&clippoint);
     
-    // Try the subtree everywhere according to the neighbour rule.
     free(stedges.ste_edges);
 }
 
@@ -490,13 +391,6 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
     
     mfl_break_branch(n, searchrec);
     
-}
-
-
-void mfl_destroy_node_wt_list(mfl_nodeweights_t* nodewtlst)
-{
-    free(nodewtlst->nwl_weights_list);
-    free(nodewtlst);
 }
 
 void tui_spr_test_environment(void)
@@ -548,7 +442,6 @@ void tui_spr_test_environment(void)
     searchrec->sr_treebuffer = mfl_alloc_treebuffer(temp_max_trees);
     searchrec->sr_swaping_on = testree;
     searchrec->sr_handle_ptr = testhandle;
-    searchrec->sr_nodweights = mfl_create_node_wt_list(testree->treet_num_taxa);
     //searchrec->sr_bswaptype = MFL_BST_SPR;
     
     mfl_append_tree_to_treebuffer(testree, searchrec->sr_treebuffer, testhandle);
