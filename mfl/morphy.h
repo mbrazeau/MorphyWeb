@@ -39,6 +39,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <time.h>
+#include <gsl/gsl_rng.h>
 #include "mfl.h"
 
 #ifdef MFY_DEBUG
@@ -176,6 +177,7 @@ typedef struct {
     int                     n_datatypes;
     mfl_datatype_t          datatypes[MFL_DATATYPE_MAX];
     mfl_add_sequence_t      addseq_type;
+    int                     reference_taxon;
     bool                    collapse_nolen;
     mfl_set_collapse_at_t   collapse_at;
     mfl_gap_t               gap_method;
@@ -266,6 +268,7 @@ typedef struct mfl_node_t {
     int col;
     int branchl_cdraw;
     bool nodet_isingroup;                       // Indicates if node is within the ingroup or not.
+    int nodet_advancement_index;
     int nodet_weight;                           // The number of tips of this node; tips are 1.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
@@ -275,7 +278,7 @@ typedef struct mfl_node_t {
     double nodet_mean_branchlen;                // Mean branch length.
     long int nodet_tree_index;             // Identity of the tree to which this node belongs.
     int nodet_num_dat_partitions;
-    mfl_nodedata_t *nodet_charstates;
+    mfl_nodedata_t **nodet_charstates;
 } mfl_node_t;
 
 
