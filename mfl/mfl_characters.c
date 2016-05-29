@@ -921,7 +921,7 @@ mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
     newmatrix->mat_num_characters = num_chars;
     
     
-    newmatrix->mat_matrix = (mfl_character_vector_t**)__MFL_MALLOC__(num_chars * sizeof(mfl_character_vector_t*), 0, __FXN_NAME__);
+    newmatrix->mat_matrix = (mfl_character_vector_t**)mfl_malloc(num_chars * sizeof(mfl_character_vector_t*), 0);
     /*if (!newmatrix->mat_matrix) {
         dbg_printf("ERROR in mfl_create_mfl_matrix(): unable to allocate memory for new matrix\n");
         free(newmatrix);
@@ -1383,9 +1383,7 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
     // TODO: This needs to be updated to be modified to function on user input. This is temporary default.
-    new_inmatrix->mat_included_characters = (bool*)__MFL_MALLOC__(new_inmatrix->mat_num_characters,
-                                                              true,
-                                                              __FXN_NAME__);
+    new_inmatrix->mat_included_characters = (bool*)mfl_malloc(new_inmatrix->mat_num_characters, true);
     
     /*int i;
     dbg_printf("Printing chartypes array:\n");
@@ -1570,8 +1568,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matri
     }
 }
 
-//TODO: Move this prototype
-int mfl_compare_dataparts_by_index(const void* p1, const void* p2);
+
 
 int mfl_compare_dataparts_by_index(const void* p1, const void* p2)
 {
@@ -1582,8 +1579,6 @@ int mfl_compare_dataparts_by_index(const void* p1, const void* p2)
     return (int)(p_1->part_index - p_2->part_index);
 }
 
-//TODO: Move this prototype
-int mfl_compare_dataparts_by_ctype(const void* p1, const void* p2);
 
 int mfl_compare_dataparts_by_ctype(const void* p1, const void* p2)
 {

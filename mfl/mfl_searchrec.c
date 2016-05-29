@@ -90,50 +90,8 @@ void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* ha
 mfl_searchrec_t* mfl_create_searchrec(mfl_handle_s* handle)
 {
     
-    mfl_searchrec_t* newrec = (mfl_searchrec_t*)__MFL_MALLOC__(sizeof(mfl_searchrec_t), 0, __FXN_NAME__);
+    mfl_searchrec_t* newrec = (mfl_searchrec_t*)mfl_malloc(sizeof(mfl_searchrec_t), 0);
     mfl_initialise_searchrec(newrec, handle);
     
     return newrec;
-}
-
-void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row)
-{
-    int i = 0;
-    int numchars = datapart->part_n_chars_max;
-    
-    for (i = 0; i < numchars; ++i) {
-        target[i] = datapart->part_matrix[i + row * numchars];
-    }
-}
-
-void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset)
-{
-    
-    
-    int i;
-    
-    assert(n->nodet_tip);
-    int rownumber = n->nodet_index;
-    
-    int numparts = partset->ptset_n_parts;
-    assert(n->nodet_num_dat_partitions == numparts);
-    
-    mfl_datapartition_t* datapart = NULL;
-    mfl_nodedata_t* ndata = NULL;
-    
-    for (i = 0; i < numparts; ++i) {
-        // Stuff here.
-    }
-}
-
-void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts)
-{
-    int i = 0;
-    int numtaxa = handle->n_taxa;
-    mfl_nodearray_t nds = t->treet_treenodes;
-    
-    for (i = 0; i < numtaxa; ++i) {
-        // For each partition, copy into the downpass set of the tip
-        nds[i]->nodet_charstates;
-    }
 }

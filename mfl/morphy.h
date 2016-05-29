@@ -448,6 +448,10 @@ void            mfl_set_datapart_params_dollo(mfl_datapartition_t* d, bool has_i
 void            mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bool up);
 void            mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic);
 void            mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle);
+void            mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matrix_t* m);
+void            mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int num_rows);
+int             mfl_compare_dataparts_by_ctype(const void* p1, const void* p2);
+int             mfl_compare_dataparts_by_index(const void* p1, const void* p2);
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
 void            mfl_destroy_partition_set(mfl_partition_set_t* ptset);
 mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
