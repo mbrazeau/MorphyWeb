@@ -1560,6 +1560,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matri
 {
     int i = 0;
     
+    
     for (i = 0; i < m->mat_num_characters; ++i) {
         if (m->mat_included_characters[i]) {
             mfl_copy_column_into_partition(ptset->ptset_partitions[m->mat_matrix[i]->cv_partition_destination],
@@ -1568,6 +1569,32 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matri
         }
     }
 }
+
+//TODO: Move this prototype
+int mfl_compare_dataparts_by_index(const void* p1, const void* p2);
+
+int mfl_compare_dataparts_by_index(const void* p1, const void* p2)
+{
+    
+    mfl_datapartition_t* p_1 = *(mfl_datapartition_t**)p1;
+    mfl_datapartition_t* p_2 = *(mfl_datapartition_t**)p2;
+    
+    return (int)(p_1->part_index - p_2->part_index);
+}
+
+//TODO: Move this prototype
+int mfl_compare_dataparts_by_ctype(const void* p1, const void* p2);
+
+int mfl_compare_dataparts_by_ctype(const void* p1, const void* p2)
+{
+    
+    mfl_datapartition_t* p_1 = *(mfl_datapartition_t**)p1;
+    mfl_datapartition_t* p_2 = *(mfl_datapartition_t**)p2;
+    
+    return (int)(p_1->part_optimisation_method - p_2->part_optimisation_method);
+}
+
+
 
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
@@ -1579,11 +1606,11 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     
     numparts = mfl_count_num_partitions_required(jntchars, matrix, handle->gap_method);
     
-    mfl_partition_set_t* dataparts = (mfl_partition_set_t*)__MFL_MALLOC__(numparts * sizeof(mfl_partition_set_t), 0, __FXN_NAME__);
+    mfl_partition_set_t* dataparts = (mfl_partition_set_t*)mfl_malloc(numparts * sizeof(mfl_partition_set_t), 0);
     
     dataparts->ptset_n_parts = numparts;
     
-    dataparts->ptset_partitions = (mfl_datapartition_t**)__MFL_MALLOC__(numparts * sizeof(mfl_datapartition_t*), 0, __FXN_NAME__);
+    dataparts->ptset_partitions = (mfl_datapartition_t**)mfl_malloc(numparts * sizeof(mfl_datapartition_t*), 0);
     
     // Allocate the dataparts
     for (i = 0; i < numparts; ++i) {
@@ -1597,6 +1624,7 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, false, handle);
             dataparts->ptset_partitions[part_i]->part_n_chars_max = jntchars[i].jpt_num_allapplic;
             dataparts->ptset_partitions[part_i]->part_char_indices = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
+            dataparts->ptset_partitions[part_i]->part_index = jntchars[i].jpt_applic_part_num;
             ++part_i;
         }
     }
@@ -1607,15 +1635,21 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, true, handle);
             dataparts->ptset_partitions[part_i]->part_n_chars_max = jntchars[i].jpt_num_winapplic;
             dataparts->ptset_partitions[part_i]->part_char_indices = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
+            dataparts->ptset_partitions[part_i]->part_index = jntchars[i].jpt_inapplic_part_num;
             ++part_i;
         }
     }
     
+    
     for (i = 0; i < dataparts->ptset_n_parts; ++i) {
-        dataparts->ptset_partitions[i]->part_matrix = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_max * sizeof(mfl_charstate), 0);
+        dataparts->ptset_partitions[i]->part_matrix = (mfl_charstate*)mfl_malloc((dataparts->ptset_partitions[i]->part_n_chars_max * matrix->mat_num_taxa)* sizeof(mfl_charstate), 0);
     }
     
+    qsort(dataparts->ptset_partitions, dataparts->ptset_n_parts, sizeof(mfl_datapartition_t*), &mfl_compare_dataparts_by_index);
+    
     mfl_populate_all_character_partitions(dataparts, matrix);
+    
+    qsort(dataparts->ptset_partitions, dataparts->ptset_n_parts, sizeof(mfl_datapartition_t*), &mfl_compare_dataparts_by_ctype);
     
     return dataparts;
 
