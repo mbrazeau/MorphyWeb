@@ -132,7 +132,9 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar, mfl_charstate rightchar,
     } while (!(big & newset));
     
     // Assign this new set to the parent set
-    *parentchar = newset;
+    if (parentchar) {
+        *parentchar = newset;
+    }
     
     return length_increment * weight;
 }
@@ -284,6 +286,60 @@ void mfl_preorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
     } while (p != parent);
     
     return;
+}
+
+
+int mfl_unordered_distance_APPLIC(mfl_charstate* t, const mfl_charstate* a, int* weights, int num_chars)
+{
+    int i = 0;
+    int d = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        if (!(t[i] & a[i])) {
+            d += weights[i];
+        }
+    }
+}
+
+
+int mfl_unordered_distance_INAPPLIC(mfl_charstate* t, const mfl_charstate* a, int* weights, int num_chars)
+{
+    int i = 0;
+    int d = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        if (!(t[i] & a[i])) {
+            if ((t[i] & MORPHY_IS_APPLICABLE) && (a[i] & MORPHY_IS_APPLICABLE)) {
+                d += weights[i];
+            }
+        }
+    }
+}
+
+int mfl_ordered_distance_APPLIC(mfl_charstate* t, const mfl_charstate* a, int* weights, int num_chars)
+{
+    int i = 0;
+    int d = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        if (!(t[i] & a[i])) {
+            d = mfl_wagner_stepcount(t[i], a[i], NULL, weights[i]);
+        }
+    }
+}
+
+int mfl_ordered_distance_INAPPLIC(mfl_charstate* t, const mfl_charstate* a, int* weights, int num_chars)
+{
+    int i = 0;
+    int d = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        if (!(t[i] & a[i])) {
+            if ((t[i] & MORPHY_IS_APPLICABLE) && (a[i] & MORPHY_IS_APPLICABLE)) {
+                d = mfl_wagner_stepcount(t[i], a[i], NULL, weights[i]);
+            }
+        }
+    }
 }
 
 
