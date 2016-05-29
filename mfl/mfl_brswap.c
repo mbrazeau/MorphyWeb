@@ -175,7 +175,7 @@ void mfl_initialise_tbr_rerooting_record(int node_weight, mfl_subtree_edges_t* s
     stedges->ste_max_edges = 2 * node_weight - 4;
     stedges->ste_num_edges = 0;
     stedges->ste_head = 0;
-    stedges->ste_edges = (mfl_node_t**)mfl_malloc(stedges->ste_max_edges * sizeof(mfl_node_t*), 0, __FXN_NAME__);
+    stedges->ste_edges = (mfl_node_t**)__MFL_MALLOC__(stedges->ste_max_edges * sizeof(mfl_node_t*), 0, __FXN_NAME__);
 }
 
 

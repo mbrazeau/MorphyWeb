@@ -61,6 +61,7 @@
 using namespace std;
 
 #define __FXN_NAME__ (const char*)__FUNCTION__
+#define mfl_malloc(size, memesetval) __MFL_MALLOC__(size, memesetval, __FXN_NAME__)
 
 /* 
  *
@@ -198,7 +199,9 @@ typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, m
 
 
 typedef struct mfl_datapartition_t {
-    int part_n_characters;
+    int part_index;
+    int part_n_chars_max;
+    int part_n_chars_included;
     mfl_parsimony_t part_optimisation_method;
     bool part_has_inapplicables;
     bool part_char_is_directed;
@@ -232,7 +235,7 @@ typedef struct mfl_matrix_t {
     int  mat_num_taxa;
     int  mat_num_characters;
     int  mat_max_states;
-    int* mat_included_characters;
+    bool* mat_included_characters;
     mfl_character_vector_t** mat_matrix;
 } mfl_matrix_t;
 
@@ -602,4 +605,4 @@ void            mfl_set_bipartitions(mfl_node_t* n);
 void                mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
 mfl_searchrec_t*    mfl_create_searchrec(mfl_handle_s* handle);
 /* in mfl_morphy.c*/
-void*           mfl_malloc(size_t size, int memsetval, const char* fn_name);
+void*           __MFL_MALLOC__(size_t size, int memsetval, const char* fn_name);

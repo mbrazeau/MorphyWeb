@@ -921,7 +921,7 @@ mfl_matrix_t* mfl_create_mfl_matrix(int num_taxa, int num_chars)
     newmatrix->mat_num_characters = num_chars;
     
     
-    newmatrix->mat_matrix = (mfl_character_vector_t**)mfl_malloc(num_chars * sizeof(mfl_character_vector_t*), 0, __FXN_NAME__);
+    newmatrix->mat_matrix = (mfl_character_vector_t**)__MFL_MALLOC__(num_chars * sizeof(mfl_character_vector_t*), 0, __FXN_NAME__);
     /*if (!newmatrix->mat_matrix) {
         dbg_printf("ERROR in mfl_create_mfl_matrix(): unable to allocate memory for new matrix\n");
         free(newmatrix);
@@ -1382,6 +1382,11 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     mfl_convert_all_characters_to_charstates(new_inmatrix, mfl_handle);
     
+    // TODO: This needs to be updated to be modified to function on user input. This is temporary default.
+    new_inmatrix->mat_included_characters = (bool*)__MFL_MALLOC__(new_inmatrix->mat_num_characters,
+                                                              true,
+                                                              __FXN_NAME__);
+    
     /*int i;
     dbg_printf("Printing chartypes array:\n");
     for (i = 0; i < mfl_handle->n_chars; ++i) {
@@ -1412,7 +1417,7 @@ mfl_datapartition_t* mfl_alloc_empty_datapartition_t(void)
 }
 
 
-int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mfl_matrix_t* m, mfl_gap_t gaprule)
+int mfl_count_num_partitions_required(mfl_joint_character_t* jntchars, mfl_matrix_t* m, mfl_gap_t gaprule)
 {
     int i = 0;
     int numdataparts = 0;
@@ -1423,7 +1428,9 @@ int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mf
                 jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_inapplic_part_num = numdataparts;
                 ++numdataparts;
             }
+            
             m->mat_matrix[i]->cv_partition_destination = jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_inapplic_part_num;
+            
             jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_winapplic += 1;
         }
         else {
@@ -1431,7 +1438,9 @@ int mfl_count_num_partitions_required(struct mfl_joint_character_t* jntchars, mf
                 jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_applic_part_num = numdataparts;
                 ++numdataparts;
             }
+            
             m->mat_matrix[i]->cv_partition_destination = jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_applic_part_num;
+            
             jntchars[m->mat_matrix[i]->cv_parsim_method].jpt_num_allapplic += 1;
         }
     }
@@ -1534,6 +1543,32 @@ void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool
 }
 
 
+void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int num_rows)
+{
+    int i = 0;
+    int n = 0;
+    
+    for (i = 0; i < num_rows; ++i) {
+        n = prt->part_n_chars_included;
+        prt->part_matrix[n + (i * prt->part_n_chars_max)] = cv->cv_chardata[i];
+    }
+    
+    ++prt->part_n_chars_included;
+}
+
+void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matrix_t* m)
+{
+    int i = 0;
+    
+    for (i = 0; i < m->mat_num_characters; ++i) {
+        if (m->mat_included_characters[i]) {
+            mfl_copy_column_into_partition(ptset->ptset_partitions[m->mat_matrix[i]->cv_partition_destination],
+                                           m->mat_matrix[i],
+                                           m->mat_num_taxa);
+        }
+    }
+}
+
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle)
 {
     int i = 0;
@@ -1544,11 +1579,11 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     
     numparts = mfl_count_num_partitions_required(jntchars, matrix, handle->gap_method);
     
-    mfl_partition_set_t* dataparts = (mfl_partition_set_t*)mfl_malloc(numparts * sizeof(mfl_partition_set_t), 0, __FXN_NAME__);
+    mfl_partition_set_t* dataparts = (mfl_partition_set_t*)__MFL_MALLOC__(numparts * sizeof(mfl_partition_set_t), 0, __FXN_NAME__);
     
     dataparts->ptset_n_parts = numparts;
     
-    dataparts->ptset_partitions = (mfl_datapartition_t**)mfl_malloc(numparts * sizeof(mfl_datapartition_t*), 0, __FXN_NAME__);
+    dataparts->ptset_partitions = (mfl_datapartition_t**)__MFL_MALLOC__(numparts * sizeof(mfl_datapartition_t*), 0, __FXN_NAME__);
     
     // Allocate the dataparts
     for (i = 0; i < numparts; ++i) {
@@ -1560,7 +1595,8 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     for (i = 0; i < MFL_OPT_MAX; ++i) {
         if (jntchars[i].jpt_num_allapplic) {
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, false, handle);
-            dataparts->ptset_partitions[part_i]->part_n_characters = jntchars[i].jpt_num_allapplic;
+            dataparts->ptset_partitions[part_i]->part_n_chars_max = jntchars[i].jpt_num_allapplic;
+            dataparts->ptset_partitions[part_i]->part_char_indices = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
             ++part_i;
         }
     }
@@ -1569,14 +1605,22 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     for (i = 0; i < MFL_OPT_MAX; ++i) {
         if (jntchars[i].jpt_num_winapplic) {
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, true, handle);
-            dataparts->ptset_partitions[part_i]->part_n_characters = jntchars[i].jpt_num_winapplic;
+            dataparts->ptset_partitions[part_i]->part_n_chars_max = jntchars[i].jpt_num_winapplic;
+            dataparts->ptset_partitions[part_i]->part_char_indices = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
             ++part_i;
         }
     }
     
+    for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+        dataparts->ptset_partitions[i]->part_matrix = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_max * sizeof(mfl_charstate), 0);
+    }
+    
+    mfl_populate_all_character_partitions(dataparts, matrix);
+    
     return dataparts;
 
 }
+
 
 
 void mfl_destroy_partition_set(mfl_partition_set_t* ptset)
