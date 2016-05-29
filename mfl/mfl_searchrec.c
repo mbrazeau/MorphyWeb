@@ -95,3 +95,18 @@ mfl_searchrec_t* mfl_create_searchrec(mfl_handle_s* handle)
     
     return newrec;
 }
+
+bool mfl_search_environment(mfl_handle_s* handle)
+{
+    bool ret = false;
+    
+    // Set up random number generator
+    
+    // Set up the searchrec
+    
+    // Enter the requested type of search
+    
+    // Append the resultant data to the handle
+    
+    return ret;
+}
