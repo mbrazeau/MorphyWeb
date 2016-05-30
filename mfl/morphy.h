@@ -179,6 +179,7 @@ typedef struct {
     int                     n_datatypes;
     mfl_datatype_t          datatypes[MFL_DATATYPE_MAX];
     mfl_add_sequence_t      addseq_type;
+    int                     n_to_hold;
     int                     reference_taxon;
     bool                    collapse_nolen;
     mfl_set_collapse_at_t   collapse_at;
@@ -295,6 +296,10 @@ typedef struct {
     mfl_node_t* tgt2;
 } mfl_cliprec_t;
 
+typedef struct {
+    int inrec_score;
+    mfl_node_t* inrec_site;
+} mfl_insertionrec_t;
 
 typedef struct {
     int ste_max_edges;
@@ -333,6 +338,8 @@ typedef struct mfl_tree_t {
 
 typedef struct mfl_nodeset_t {      // For outgroups or other clade constraints.
     int ns_num_taxa;
+    int ns_num_taxa_max;
+    
     mfl_nodearray_t ns_taxon_list;
 } mfl_nodeset_t;
 

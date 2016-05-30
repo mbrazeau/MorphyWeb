@@ -187,17 +187,50 @@ int* mfl_addition_sequence_generator(mfl_handle_s* handle, mfl_searchrec_t* sear
     }
 }
 
-
-void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_node_t* entrynode)
+void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch/*, something to act as a record of good tries*/)
 {
+    mfl_node_t* p = NULL;
     
+    if (!n->nodet_tip) {
+        p = n->nodet_next;
+        
+        do {
+            mfl_tryall_traversal(p->nodet_edge, newbranch);
+            p = p->nodet_next;
+        } while (p != n);
+    }
+    
+    // Insert branch
+    // Test the insertion
+    // If the insertion is shorter than the current length of thetree, store that inpoint
+    // If the buffer is full, check if there are any tries longer than this new try
+    //  If not, randomly select one of the trees to be discarded; dis
+    //
+}
+
+void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_t* searchrec)
+{
+    int max_edges = 2 * searchrec->sr_num_taxa_included - 2;
+    int num_stored_tries = 0;
+    mfl_nodearray_t kept_tries[max_edges];
+    
+    mfl_tree_t* newtree = mfl_alloctree_with_nodes(searchrec->sr_num_taxa_included);
 }
 
 
 bool mfl_generate_starting_trichotomy(mfl_tree_t* t, int* taxon_addition_sequence)
 {
     
+    // If there's an outgroup, take one outgroup and two ingroup taxa.
+    
+    // Else, just grab the first three from the addition sequence.
+    
+    // If there are any directed characters, then root the tree.
+    
+    // Calculate the length of this trichotomy. (Perhaps after return?)
+    
 }
+
 
 bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa)
 {
@@ -223,10 +256,13 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
     }
 }
 
-mfl_tree_t* mfl_get_start_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
+mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
+    mfl_treebuffer_t* holdbuffer1 = mfl_alloc_treebuffer(searchrec->sr_num_trees_held_stepwise);
+    mfl_treebuffer_t* holdbuffer2 = mfl_alloc_treebuffer(searchrec->sr_num_trees_held_stepwise);
+    
     int* taxon_addition_seq = mfl_addition_sequence_generator(handle, searchrec);
-    mfl_tree_t* starttree = mfl_alloctree_with_nodes(handle->n_taxa);
+    
     
     // Create a three-taxon tree (either according to add seq or honouring ingroup/outgroup partition)
     
@@ -236,5 +272,6 @@ mfl_tree_t* mfl_get_start_tree(mfl_partition_set_t* dataparts, mfl_handle_s* han
     //  Free int arrays
     //  Free nodesets
     
-    return starttree;
+    
+    return holdbuffer2;
 }

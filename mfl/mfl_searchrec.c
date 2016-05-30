@@ -56,6 +56,7 @@ void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* ha
     searchrec->sr_stepwise      = handle->addseq_type;
     searchrec->sr_searchtype    = handle->search_type;
     searchrec->sr_bswaptype     = handle->bswap_type;
+    searchrec->sr_num_trees_held_stepwise = handle->n_to_hold;
     
     if (handle->n_iterations) {
         searchrec->sr_num_reps_stepwise = handle->n_iterations;
