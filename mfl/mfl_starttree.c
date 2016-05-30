@@ -194,6 +194,35 @@ void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_node_t* entrynode)
 }
 
 
+bool mfl_generate_starting_trichotomy(mfl_tree_t* t, int* taxon_addition_sequence)
+{
+    
+}
+
+bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa)
+{
+    int i = 0;
+    
+    t->treet_outgroup_tips = (mfl_nodearray_t)mfl_malloc(num_outgroup_taxa * sizeof(mfl_node_t*), 0);
+    
+    if (!t->treet_outgroup_tips) {
+        return false;
+    }
+    
+    t->treet_num_og_tips = 0;
+    for (i = 0; i < num_outgroup_taxa; ++i) {
+        t->treet_outgroup_tips[i] = t->treet_treenodes[outgroup_taxa[i]];
+        ++t->treet_num_og_tips;
+    }
+    
+    if (t->treet_num_og_tips) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 mfl_tree_t* mfl_get_start_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
     int* taxon_addition_seq = mfl_addition_sequence_generator(handle, searchrec);
@@ -201,7 +230,11 @@ mfl_tree_t* mfl_get_start_tree(mfl_partition_set_t* dataparts, mfl_handle_s* han
     
     // Create a three-taxon tree (either according to add seq or honouring ingroup/outgroup partition)
     
-    //
+    // Begin adding branches to this tree, one at a time, trying all positions
+    
+    // Clean up resources:
+    //  Free int arrays
+    //  Free nodesets
     
     return starttree;
 }
