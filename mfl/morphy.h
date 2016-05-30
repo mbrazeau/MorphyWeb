@@ -606,11 +606,15 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 void            mfl_set_bipartitions(mfl_node_t* n);
 void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
 void            mfl_destroy_edgetable(mfl_edgetable_t* edgetable);
+void            mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference);
+int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
+void            mfl_add_nodesref_traversal(mfl_node_t* start, int* node_counter);
+void            mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
+
 bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
-void            mfl_edgetable_traversal(mfl_node_t* start, mfl_edgetable_t* edgetable, int* node_counter, int* tip_counter, int* counter);
 
-
-void            tui_test_edgetables(void); // TESTING FUNCTION (SHOULD NOT BE HERE!)
+void            tui_print_edgetable(mfl_edgetable_t* edgetable); //TODO: move this function to tui
+void            tui_test_edgetables(void); //TODO: move this function to tui
 
 /* in mfl_searchrec.c*/
 void                mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);

@@ -70,8 +70,6 @@ void mfl_set_bipartitions(mfl_node_t* n)
 //Allocate the memory to the edgetable
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips)
 {
-    int i = 0;
-    
     //Intialise the table
     mfl_edgetable_t* new_edgetable = NULL;
     
@@ -83,10 +81,6 @@ mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips)
     
     //malloc the size of the edge table
     new_edgetable->edgetable = (int*)mfl_malloc(new_edgetable->numentries * sizeof(int), 0);
-    
-//    for (i = 0; i < new_edgetable->numentries; ++i) {
-//        new_edgetable->edgetable[i] = i;
-//    }
     
     return new_edgetable;
 }
@@ -100,45 +94,100 @@ void mfl_destroy_edgetable(mfl_edgetable_t* edgetable)
     free(edgetable);
 }
 
-void mfl_edgetable_traversal(mfl_node_t* start, mfl_edgetable_t* edgetable, int* node_counter, int* counter)
+//Sets the edge reference in a node ring (arbitrarilly on the bottom node)
+void mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference)
 {
+    mfl_node_t* node_entry = node; //TG: minor suggestion here is to put this variable into the while loop. The idea is because this function will be called a lot, it'll save looking for the bottom 1/3rd of the time.
     
-    mfl_node_t* node = start;
     
-    if(node->nodet_tip != 0) {
-        // When node is a tip, always increment tip counter and print the tip.
-        edgetable->edgetable[*counter] = node->nodet_tip;
+    if(mfl_check_node_is_bottom(node)) {
+        node->nodet_edge_ref = reference;
     } else {
-        
-        // Increment node counter only when next is not a tip
-        if(node->nodet_next->nodet_tip ) {
-            ++*node_counter;
+        // Search for the bottom node
+        while (!mfl_check_node_is_bottom(node)) {
+            node = node->nodet_next;
+            //Stop if back to node entry!
+            assert(node != node_entry); //TG: thought using an assert here might be good.
         }
-        
-        edgetable->edgetable[*counter] = *node_counter;
+        node->nodet_edge_ref = reference;
     }
+}
+
+//Getting the node edge ref value node ring (stored in bottom node!)
+int mfl_get_edge_ref_from_ring(mfl_node_t* node)
+{
+    int node_reference = NULL;
+    mfl_node_t* node_entry = node; //TG: minor suggestion here is to put this variable into the while loop. The idea is because this function will be called a lot, it'll save looking for the bottom 1/3rd of the time.
     
-    ++*counter;
-    node = node->nodet_next;
-    
-    do {
-        mfl_edgetable_traversal(node->nodet_edge, edgetable, node_counter, counter);
-        
-        node = node->nodet_next;
-        
-    } while (node != start);
-    
+    if(mfl_check_node_is_bottom(node)) {
+        node_reference = node->nodet_edge_ref;
+        return node_reference;
+    } else {
+        // Search for the bottom node
+        while (!mfl_check_node_is_bottom(node)) {
+            node = node->nodet_next;
+            //Stop if back to node entry!
+            assert(node != node_entry); //TG: thought using an assert here might be good.
+        }
+        node_reference = node->nodet_edge_ref;
+        return node_reference;
+    }
+}
+
+
+void mfl_add_nodesref_traversal(mfl_node_t* start, int* node_counter)
+{
+    mfl_node_t* node = start;
+    // 1 - Traverse the tree until reaching a node ref that is not 0;
+//    while(mfl_get_edge_ref_from_ring(current_node) == 0);
+    // 2 - Post order set all node references and increment node_counter;
+//    mfl_set_edge_ref_in_ring(node, node_counter);
+//    ++*node_counter;
     
 }
 
 void mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree)
 {
     // variables before the traversal
+    int num_taxa = tree->treet_num_taxa;//TODO: Should be num taxa active!
+    int node_counter = num_taxa;
+    int node_reference = 0;
     int counter = 0;
-    int node_counter = tree->treet_num_taxa;     // node count starts at number of tips + 1
+    mfl_node_t* current_node = NULL;
+
+    // declare the first node with an entry at tip 1
+    current_node = tree->treet_treenodes[counter];
     
-    mfl_edgetable_traversal(tree->treet_start, edgetable, &counter, &node_counter);
+    // set the edge reference in the node ring
+    mfl_set_edge_ref_in_ring(current_node, node_counter);
     
+    // store this value in the edgetable
+    edgetable->edgetable[counter] = node_counter;
+    
+    //increment the counter
+    ++counter;
+    
+    for (counter; counter < edgetable->numentries; ++counter) {
+        // Get the next node in the array
+        current_node = tree->treet_treenodes[counter];
+        // Get the node ring reference
+        node_reference = mfl_get_edge_ref_from_ring(current_node);
+        
+        if(mfl_get_edge_ref_from_ring(current_node) != 0){
+            // store this value in the edgetable
+            edgetable->edgetable[counter] = node_reference;
+        } else {
+            // name the nodes in a post order traversal
+            mfl_add_nodesref_traversal(current_node, &node_counter);
+            // Get the node ring reference
+            node_reference = mfl_get_edge_ref_from_ring(current_node);
+            // Store this value in the edgetable
+            edgetable->edgetable[counter] = node_reference;
+        }
+
+        //increment the counter
+        ++counter;
+    }
 }
 
 
@@ -157,6 +206,15 @@ bool mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2)
     }
 }
 
+void tui_print_edgetable(mfl_edgetable_t* edgetable)
+{
+    int i = 0;
+    dbg_printf("Edge connects to tip/edge\n");
+    
+    for(i = 0; i < edgetable->numentries; ++i) {
+        dbg_printf("%i connects to %i\n", i, edgetable->edgetable[i]);
+    }
+}
 
 void tui_test_edgetables(void)
 {
@@ -174,24 +232,11 @@ void tui_test_edgetables(void)
     // Allocate the table
     mfl_edgetable_t* test_edgetable = mfl_initiate_edgetable_t(testree->treet_num_taxa);
     
-    test_edgetable->edgetable[0] = 8;
-    test_edgetable->edgetable[1] = 7;
-    test_edgetable->edgetable[3] = 9;
-    test_edgetable->edgetable[4] = 1;
-    test_edgetable->edgetable[5] = 6;
-    test_edgetable->edgetable[6] = 5;
-    test_edgetable->edgetable[7] = 1;
-    test_edgetable->edgetable[8] = 2;
-    
-    int i = 0;
-    int j = 9;
-    
-    for (i = 0; i < j; ++i) {
-        dbg_printf("%i is %i\n", i, test_edgetable->edgetable[i]);
-    }
-    
     //mfl_get_edgetable(test_edgetable, testree);
     
+    tui_print_edgetable(test_edgetable);
+    
+    free(test_edgetable);
     // Destroy the table
 //    mfl_destroy_edgetable(test_edgetable);
 }
