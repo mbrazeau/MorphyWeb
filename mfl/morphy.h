@@ -155,6 +155,8 @@ typedef struct {
     bool*                   included_taxa;
     int                     n_chars;
     bool*                   included_chars;
+    int                     n_outgroup_taxa;
+    int*                    outgroup_taxa;
     mfl_inputformat_t       input_format;
     mfl_search_t            search_type;
     int                     n_iterations;
@@ -182,6 +184,7 @@ typedef struct {
     mfl_set_collapse_at_t   collapse_at;
     mfl_gap_t               gap_method;
     mfl_resultant_data_s    *resultant_data;
+    unsigned long int       rseed;
 } mfl_handle_s;
 
 
@@ -313,6 +316,7 @@ typedef struct mfl_tree_t {
 	mfl_node_t *treet_root;                 // Pointer to the root of the tree.
     mfl_node_t treet_dummynode;
     mfl_node_t *treet_start;                // Starting node for operations on unrooted tree.
+    int treet_num_og_tips;
     mfl_nodearray_t treet_outgroup_tips;    // Pointers to the outgroup tips.
     mfl_nodestack_t* treet_nodestack;       // Unused nodes
     mfl_bitsetlist_t* treet_bipartitions;
@@ -327,10 +331,10 @@ typedef struct mfl_tree_t {
 } mfl_tree_t;
 
 
-typedef struct mfl_taxon_partition_t {      // For outgroups or other clade constraints.
-    int tp_num_taxa;
-    mfl_nodearray_t tp_taxon_list;
-} mfl_taxon_partition_t;
+typedef struct mfl_nodeset_t {      // For outgroups or other clade constraints.
+    int ns_num_taxa;
+    mfl_nodearray_t ns_taxon_list;
+} mfl_nodeset_t;
 
 
 typedef struct mfl_treebuffer_t {
@@ -368,6 +372,7 @@ typedef struct mfl_searchrec_t {
     mfl_handle_s* sr_handle_ptr;
     mfl_tree_t* sr_swaping_on;
     mfl_treebuffer_t* sr_treebuffer;
+    gsl_rng* sr_random_number;
 } mfl_searchrec_t;
 
 
