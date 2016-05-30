@@ -513,15 +513,6 @@ void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
 mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips);
-void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
-bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
-void            mfl_free_edgetable(mfl_edgetable_t* edgetable);
-void            mfl_edgetable_traversal(mfl_node_t* start, mfl_edgetable_t* edgetable, int* node_counter, int* tip_counter, int* counter);
-
-
-void            tui_test_edgetables(void); // TESTING FUNCTION (SHOULD NOT BE HERE!)
-
-
 
 //
 
@@ -613,6 +604,13 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 /* in mfl_compare.c*/
 void            mfl_set_bipartitions(mfl_node_t* n);
+void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
+void            mfl_destroy_edgetable(mfl_edgetable_t* edgetable);
+bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
+void            mfl_edgetable_traversal(mfl_node_t* start, mfl_edgetable_t* edgetable, int* node_counter, int* tip_counter, int* counter);
+
+
+void            tui_test_edgetables(void); // TESTING FUNCTION (SHOULD NOT BE HERE!)
 
 /* in mfl_searchrec.c*/
 void                mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
