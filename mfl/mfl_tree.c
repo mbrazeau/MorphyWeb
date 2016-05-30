@@ -325,25 +325,22 @@ mfl_node_t * mfl_get_next_available_node(mfl_nodearray_t nodearray)
 //}
 
 /*!
- @discussion Inserts a ring with only one edge connection into a target tree.
- @param src (mfl_node_t*) the base of the source node
+ @discussion Inserts source subtree with an edege pointing to a ring int a 
+ target edge.
+ @param src (mfl_node_t*) the root node of the source subtree
  @param tgt (mfl_node_t*) a node straddling the target destination.
  */
-void mfl_insert_branch(mfl_node_t *src, mfl_node_t *tgt)
+void mfl_insert_branch_with_ring_base(mfl_node_t *src, mfl_node_t *tgt)
 {
-    mfl_node_t* srcf = NULL;
     mfl_node_t* tgt_opp = tgt->nodet_edge;
+    mfl_node_t* srcb1 = src->nodet_edge->nodet_next;
+    mfl_node_t* srcb2 = srcb1->nodet_next;
     
-    assert(!src->nodet_next->nodet_edge || !src->nodet_next->nodet_next->nodet_edge);
+    assert(!srcb1->nodet_edge);
+    assert(!srcb2->nodet_edge);
     
-    if (src->nodet_next->nodet_edge) {
-        srcf = src->nodet_next;
-    } else {
-        srcf = src->nodet_next;
-    }
-    
-    mfl_join_node_edges(src, tgt);
-    mfl_join_node_edges(srcf, tgt_opp);
+    mfl_join_node_edges(srcb1, tgt);
+    mfl_join_node_edges(srcb2, tgt_opp);
 }
 
 
