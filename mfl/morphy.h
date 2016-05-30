@@ -495,7 +495,7 @@ void            mfl_make_node_available(mfl_node_t *node);
 void            mfl_safe_reset_node_params(mfl_node_t* node);
 bool            mfl_check_node_is_bottom(mfl_node_t *querynode);
 mfl_node_t*     mfl_remove_branch(mfl_node_t *free_node_bottom, mfl_node_t *free_node_top);
-void            mfl_insert_branch(mfl_node_t *src, mfl_node_t *tgt);
+void            mfl_insert_branch_with_ring_base(mfl_node_t *src, mfl_node_t *tgt);
 void            mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node);
 int             mfl_calculate_number_of_nodes_to_allocate(int num_taxa);
 mfl_node_t*     mfl_alloc_node(void);
