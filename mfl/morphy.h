@@ -274,6 +274,7 @@ typedef struct mfl_node_t {
     int nodet_advancement_index;
     int nodet_weight;                           // The number of tips of this node; tips are 1.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
+    int nodet_edge_ref;                         // Indicates the node number identifier for the edgetable (only when isbottom is true!).
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
 	int nodet_uppass_visited;                   // Indicates successful visit from an uppass traversal.
     int nodet_minsteps;                         // Minimum number of transformations along branch represented by nodet_edge.
