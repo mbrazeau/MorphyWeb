@@ -151,6 +151,27 @@ bool mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target)
 }
 
 
+int mfl_compare_bitsets(const void* set1, const void* set2)
+{
+    mfl_bitset_t* set_1 = *(mfl_bitset_t**)set1;
+    mfl_bitset_t* set_2 = *(mfl_bitset_t**)set2;
+    int i = 0;
+    int n_bitfields = set_1->bts_nfields;
+    
+    if (set_1->bts_nfields != set_2->bts_nfields) {
+        return set_1->bts_nfields - set_2->bts_nfields;
+    }
+    
+    for (i = n_bitfields-1; i >= 0; --i) {
+        if (set_1->bts_bitfields[i] != set_2->bts_bitfields[i]) {
+            return (int)(set_1->bts_bitfields[i] - set_2->bts_bitfields[i]);
+        }
+    }
+    
+    return 0;
+}
+
+
 /*!
  @discussion Calculates the number of bitsets of size MORPHY_BTS_IN_BITSET required
  to accommodate bit fields wider than the machine's maximum integer width.
