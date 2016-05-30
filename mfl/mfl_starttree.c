@@ -45,10 +45,22 @@
 
 
 typedef struct {
-    int as_num_to_hold;
-    mfl_node_t* as_newbranch;
-    mfl_nodearray_t as_optimal_sites;
-} mfl_stepwise_t;
+    int try_length;
+    mfl_node_t* try_site;
+} mfl_try_t;
+
+typedef struct {
+    int             stpadd_max_hold;
+    int             stpadd_shortest_try;
+    int             stpadd_longest_try;
+    mfl_node_t*     stpadd_newbranch;
+    mfl_node_t*     stpadd_lastnewbranch;
+    int             stpadd_num_held_old;
+    int             stpadd_num_held_new;
+    mfl_try_t**     stpadd_newtries;
+    mfl_try_t**     stpadd_oldtries;
+    
+} mfl_stepwise_addition_t;
 
 
 void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row)
@@ -187,7 +199,110 @@ int* mfl_addition_sequence_generator(mfl_handle_s* handle, mfl_searchrec_t* sear
     }
 }
 
-void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch/*, something to act as a record of good tries*/)
+int mfl_compare_tries_by_length(const void* t1, const void* t2)
+{
+    mfl_try_t* try1 = *(mfl_try_t**)t1;
+    mfl_try_t* try2 = *(mfl_try_t**)t2;
+    
+    return (int)(try1->try_length - try2->try_length);
+}
+
+void mfl_roll_back_addition(mfl_stepwise_addition_t* sarecord, int position)
+{
+    
+    // Excise last new branch, if necessary
+    
+    
+    
+    // Replace branch to its
+    //mfl_insert_branch_with_ring_base(sarecord->stpadd_lastnewbranch, sarecord->stpadd_oldtries[position]);
+    
+}
+
+void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mfl_stepwise_addition_t* sarec)
+{
+    int i = 0;
+    
+    sarec->stpadd_shortest_try = 0;
+    sarec->stpadd_longest_try = 0;
+    sarec->stpadd_lastnewbranch = sarec->stpadd_newbranch;
+    sarec->stpadd_newbranch = newbranch;
+    
+    for (i = 0; i < sarec->stpadd_num_held_new; ++i) {
+        sarec->stpadd_oldtries[i]->try_site = sarec->stpadd_newtries[i]->try_site;
+        sarec->stpadd_oldtries[i]->try_length = sarec->stpadd_newtries[i]->try_length;
+        sarec->stpadd_newtries[i]->try_site = NULL;
+        sarec->stpadd_newtries[i]->try_length = 0;
+    }
+    
+    sarec->stpadd_num_held_old = sarec->stpadd_num_held_new;
+    sarec->stpadd_num_held_new = 0;
+}
+
+bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, int length, mfl_searchrec_t* searchrec)
+{
+    assert(length);
+    bool ret = false;
+    int i = 0;
+    int num_equal = 0;
+    int discardrec = 0;
+    
+    if (sarecord->stpadd_num_held_new < sarecord->stpadd_max_hold) {
+        sarecord->stpadd_newtries[sarecord->stpadd_num_held_new]->try_site = tgt;
+        sarecord->stpadd_newtries[sarecord->stpadd_num_held_new]->try_length = length;
+        ++sarecord->stpadd_num_held_new;
+        ret = true;
+    }
+    else {
+        if (sarecord->stpadd_shortest_try < sarecord->stpadd_longest_try) {
+            sarecord->stpadd_newtries[sarecord->stpadd_num_held_new-1]->try_site = tgt;
+            sarecord->stpadd_newtries[sarecord->stpadd_num_held_new-1]->try_length = length;
+            ret = true;
+        }
+        else {
+            // Randomly choose a tree of equal length.
+            
+            // Count the number of equal tries.
+            for (i = 0; i < sarecord->stpadd_num_held_new; ++i) {
+                if (sarecord->stpadd_newtries[i]->try_length == length) {
+                    ++num_equal;
+                }
+            }
+            
+            // Choose one of these to discard
+            discardrec = gsl_rng_uniform_int(searchrec->sr_random_number, (unsigned long)num_equal);
+            
+            // If that includes the new try, just return
+            if (discardrec == i) {
+                return ret = false;
+            }
+            
+            // Otherwise, swap out the old try record info with the new site
+            num_equal = 0;
+            
+            // Find the try record.
+            for (i = 0; i < sarecord->stpadd_num_held_new; ++i) {
+                if (sarecord->stpadd_newtries[i]->try_length == length) {
+                    ++num_equal;
+                    if (num_equal == discardrec) {
+                        sarecord->stpadd_newtries[i]->try_site = tgt;
+                        i  = sarecord->stpadd_num_held_new;
+                    }
+                }
+            }
+            
+            ret = true;
+        }
+    }
+
+    qsort(sarecord->stpadd_newtries, sarecord->stpadd_num_held_new, sizeof(mfl_try_t*), &mfl_compare_tries_by_length);
+    sarecord->stpadd_longest_try = sarecord->stpadd_newtries[sarecord->stpadd_num_held_new-1]->try_length;
+    
+    return ret;
+}
+
+
+void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec)
 {
     mfl_node_t* p = NULL;
     
@@ -195,26 +310,37 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch/*, something to a
         p = n->nodet_next;
         
         do {
-            mfl_tryall_traversal(p->nodet_edge, newbranch);
+            mfl_tryall_traversal(p->nodet_edge, newbranch, sarecord, searchrec);
             p = p->nodet_next;
         } while (p != n);
     }
     
-    // Insert branch
-    // Test the insertion
-    // If the insertion is shorter than the current length of thetree, store that inpoint
-    // If the buffer is full, check if there are any tries longer than this new try
-    //  If not, randomly select one of the trees to be discarded; dis
-    //
+    // Try the insertion
+    // Try pushing it to the record
+    // Move on
 }
+
 
 void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_t* searchrec)
 {
-    int max_edges = 2 * searchrec->sr_num_taxa_included - 2;
-    int num_stored_tries = 0;
-    mfl_nodearray_t kept_tries[max_edges];
+    mfl_stepwise_addition_t stepaddrec = {0};
+    stepaddrec.stpadd_max_hold = searchrec->sr_num_trees_held_stepwise;
+    stepaddrec.stpadd_newtries = (mfl_try_t**)mfl_malloc(stepaddrec.stpadd_max_hold * sizeof(mfl_try_t*), 0);
+    stepaddrec.stpadd_oldtries = (mfl_try_t**)mfl_malloc(stepaddrec.stpadd_max_hold * sizeof(mfl_try_t*), 0);
+    // TODO: Probably need to set up a special try-setup function to allocate the remainig memory
     
-    mfl_tree_t* newtree = mfl_alloctree_with_nodes(searchrec->sr_num_taxa_included);
+    // Do
+    
+    // For each of the old insertion points;
+    //  Restore old branch to that point
+    //      Fetch next tip in addition sequence.
+    //      Put new tip in the addition sequence record
+    //
+    
+    // While tips are available
+    
+    free(stepaddrec.stpadd_newtries);
+    free(stepaddrec.stpadd_oldtries);
 }
 
 
