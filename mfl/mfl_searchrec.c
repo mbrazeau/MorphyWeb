@@ -96,17 +96,31 @@ mfl_searchrec_t* mfl_create_searchrec(mfl_handle_s* handle)
     return newrec;
 }
 
+unsigned long int mfl_rng_uniform_int(mfl_searchrec_t* searchrec, unsigned long int max)
+{
+    return gsl_rng_uniform_int(searchrec->sr_random_number, max);
+}
+
 bool mfl_search_environment(mfl_handle_s* handle)
 {
     bool ret = false;
+    mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
     
     // Set up random number generator
+    gsl_rng_env_setup();
+    gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
+    gsl_rng_set(r, handle->rseed);
     
     // Set up the searchrec
+    searchrec->sr_random_number = r;
+    
     
     // Enter the requested type of search
     
     // Append the resultant data to the handle
+    
+    // Clean up resources
+    gsl_rng_free(r);
     
     return ret;
 }
