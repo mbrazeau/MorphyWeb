@@ -57,6 +57,7 @@ int             tui_check_all_binary(mfl_tree_t *querytree, const int *verbose);
 int             tui_check_broken_tree(mfl_tree_t *t, int *verbose);
 void            tui_print_newick_recursive(mfl_node_t *start);
 void            tui_print_newick(mfl_node_t *n);
+void            tui_print_edgetable(mfl_edgetable_t* edgetable);
 
 /*  tui_io.c
  */

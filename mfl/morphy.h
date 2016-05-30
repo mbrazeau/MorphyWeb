@@ -275,6 +275,7 @@ typedef struct mfl_node_t {
     int nodet_advancement_index;
     int nodet_weight;                           // The number of tips of this node; tips are 1.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
+    int nodet_edge_ref;                         // Indicates the node number identifier for the edgetable (only when isbottom is true!).
     int nodet_downpass_visited;                 // Indicates successful visit from a downpass traversal.
 	int nodet_uppass_visited;                   // Indicates successful visit from an uppass traversal.
     int nodet_minsteps;                         // Minimum number of transformations along branch represented by nodet_edge.
@@ -519,15 +520,6 @@ void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
 mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips);
-void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
-bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
-void            mfl_free_edgetable(mfl_edgetable_t* edgetable);
-void            mfl_edgetable_traversal(mfl_node_t* start, mfl_edgetable_t* edgetable, int* node_counter, int* tip_counter, int* counter);
-
-
-void            tui_test_edgetables(void); // TESTING FUNCTION (SHOULD NOT BE HERE!)
-
-
 
 //
 
@@ -619,6 +611,17 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 /* in mfl_compare.c*/
 void            mfl_set_bipartitions(mfl_node_t* n);
+void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
+void            mfl_destroy_edgetable(mfl_edgetable_t* edgetable);
+void            mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference);
+int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
+void            mfl_add_nodesref_traversal(mfl_node_t* start, int* node_counter);
+void            mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
+
+bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
+
+void            tui_print_edgetable(mfl_edgetable_t* edgetable); //TODO: move this function to tui
+void            tui_test_edgetables(void); //TODO: move this function to tui
 
 /* in mfl_searchrec.c*/
 void                mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
