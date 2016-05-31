@@ -40,6 +40,7 @@ typedef enum tui_testcmd_t {
 void tui_print_out_converted_matrix(mfl_matrix_t *matrix, int num_taxa, int num_chars, bool printbits);
 void tui_test_tree_printing();
 void tui_spr_test_environment(void);
+void tui_test_addition_sequence(void);
 
 /*  tui_utilities.c
  */

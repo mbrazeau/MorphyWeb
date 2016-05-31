@@ -50,6 +50,11 @@ typedef struct {
 } mfl_try_t;
 
 typedef struct {
+    int             sptadd_num_added;
+    int             stpadd_num_toadd;
+    mfl_nodearray_t stpadd_addedtips;
+    mfl_nodearray_t stpadd_tipstoadd;
+    
     int             stpadd_max_hold;
     int             stpadd_shortest_try;
     int             stpadd_longest_try;
@@ -157,6 +162,40 @@ void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a)
     }
 }
 
+void mfl_push_tip_to_addseq_array(mfl_node_t* tip, mfl_stepwise_addition_t* sarec)
+{
+    sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = tip;
+    ++sarec->stpadd_num_toadd;
+}
+
+void mfl_set_random_addition_sequence(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
+{
+    int i = 0;
+    int numtips = t->treet_num_taxa;
+    int* addsequence = mfl_create_default_taxon_array(t->treet_num_taxa);
+    mfl_randomise_array(addsequence, numtips);
+    mfl_nodearray_t nds = t->treet_treenodes;
+    
+    for (i = numtips-1; i >= 0; --i) {
+        mfl_push_tip_to_addseq_array(nds[addsequence[i]], sarec);
+    }
+    
+    free(addsequence);
+}
+
+void mfl_set_addseq_as_is(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
+{
+    int *addsequence = mfl_create_default_taxon_array(t->treet_num_taxa);
+    int i = 0;
+    int numtips = t->treet_num_taxa;
+    mfl_nodearray_t nds = t->treet_treenodes;
+    
+    for (i = numtips-1; i >= 0; --i) {
+        mfl_push_tip_to_addseq_array(nds[addsequence[i]], sarec);
+    }
+    
+    free(addsequence);
+}
 
 void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* chardata /*some list of outgroup taxa*/)
 {
@@ -176,30 +215,35 @@ void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* charda
 }
 
 
-int* mfl_addition_sequence_generator(mfl_handle_s* handle, mfl_searchrec_t* searchrec)
+mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
-    int* addsequence = NULL;
+    mfl_stepwise_addition_t* sarec = (mfl_stepwise_addition_t*)mfl_malloc(sizeof(mfl_stepwise_addition_t), 0);
+    sarec->stpadd_tipstoadd = (mfl_nodearray_t)mfl_malloc(t->treet_num_taxa * sizeof(mfl_node_t*), 0);
+    sarec->stpadd_num_toadd = 0;
+    sarec->stpadd_addedtips = (mfl_nodearray_t)mfl_malloc(t->treet_num_taxa * sizeof(mfl_node_t*), 0);
+    sarec->sptadd_num_added = 0;
     
-    if (searchrec->sr_included_taxa) {
-        addsequence = (int*)mfl_malloc(searchrec->sr_num_taxa_included, 0);
-        memcpy(addsequence, searchrec->sr_included_taxa, searchrec->sr_num_taxa_included * sizeof(int));
-    }
-    else {
-        addsequence = mfl_create_default_taxon_array(handle->n_taxa);
-    }
+//    if (searchrec->sr_included_taxa) {
+//        addsequence = (int*)mfl_malloc(searchrec->sr_num_taxa_included, 0);
+//        memcpy(addsequence, searchrec->sr_included_taxa, searchrec->sr_num_taxa_included * sizeof(int));
+//    }
+//    else {
+//        addsequence = mfl_create_default_taxon_array(handle->n_taxa);
+//    }
     
     switch (handle->addseq_type) {
         case MFL_AST_ASIS:
-            return addsequence;
+            mfl_set_addseq_as_is(t, sarec);
+            return sarec;
         case MFL_AST_RANDOM:
-            mfl_randomise_array(addsequence, searchrec->sr_num_taxa_included);
-            return addsequence;
+            mfl_set_random_addition_sequence(t, sarec);
+            return sarec;
         case MFL_AST_SIMPLE:
             // mfl_order_array_by_advancement_index
-            return addsequence;
+            return sarec;
         // Do something here for cases that aren't yet handled.
         default:
-            return addsequence;
+            return sarec;
             break;
     }
 }
@@ -352,43 +396,61 @@ void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_
     free(stepaddrec.stpadd_oldtries);
 }
 
+mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
+{
+    --sarec->stpadd_num_toadd;
+    
+    sarec->stpadd_addedtips[sarec->sptadd_num_added] = sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd];
+    
+    sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = NULL;
+    
+    ++sarec->sptadd_num_added;
+    
+    return sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
+}
 
-mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, int* taxon_addition_sequence)
+mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
 {
     mfl_node_t* a = NULL;
     mfl_node_t* l = NULL;
     mfl_node_t* r = NULL;
-    mfl_node_t* ringn = NULL;
+    mfl_node_t* ringnd = NULL;
     
-    // if (there's an outgroup) {
-    // Take one outgroup and two ingroup taxa.
-    // a = outgroup 1
-    // l = ingroup 1
-    // r = ingroup 2
-    //}
-    // else
-    // just grab the first three from the addition sequence.
-    //{
-    a = t->treet_treenodes[taxon_addition_sequence[0]];
-    l = t->treet_treenodes[taxon_addition_sequence[1]];
-    r = t->treet_treenodes[taxon_addition_sequence[2]];
-    //}
+    a = mfl_get_next_terminal_in_addseq(sarec);
+    l = mfl_get_next_terminal_in_addseq(sarec);
+    r = mfl_get_next_terminal_in_addseq(sarec);
     
-    ringn = mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
+    ringnd = mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
     
-    mfl_join_node_edges(a, ringn);
-    mfl_join_node_edges(l, ringn->nodet_next);
-    mfl_join_node_edges(r, ringn->nodet_next->nodet_next);
+    mfl_join_node_edges(a, ringnd);
+    mfl_join_node_edges(l, ringnd->nodet_next);
+    mfl_join_node_edges(r, ringnd->nodet_next->nodet_next);
     
-    // Do this stuff after the return:
-    
-    // If there are any directed characters, then root the tree.
-    
-    // Calculate the length of this trichotomy. (Perhaps after return?)
-    
-    return ringn;
+    return ringnd;
 }
 
+void mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t)
+{
+    mfl_node_t* ring = mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
+    
+    mfl_join_node_edges(tip, ring->nodet_next);
+}
+
+void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
+{
+    mfl_node_t* startpoint = mfl_generate_starting_trichotomy(t, sarec);
+    
+    // Attach all remaining tips to a ringnode
+    int i = 0;
+    int unattached = sarec->stpadd_num_toadd;
+    
+    // Give all remaining tips a ring base so they can be inserted to the starttree
+    for (i = 0; i < unattached; ++i) {
+        mfl_append_tip_to_ringnode(sarec->stpadd_tipstoadd[i], t);
+    }
+    
+    t->treet_start = startpoint;
+}
 
 bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa)
 {
@@ -417,20 +479,21 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
 
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
-    mfl_treebuffer_t* holdbuffer1 = mfl_alloc_treebuffer(searchrec->sr_num_trees_held_stepwise);
-    mfl_treebuffer_t* holdbuffer2 = mfl_alloc_treebuffer(searchrec->sr_num_trees_held_stepwise);
+    mfl_treebuffer_t* starttrees;
     
-    int* taxon_addition_seq = mfl_addition_sequence_generator(handle, searchrec);
+    // Building stuff
+    mfl_tree_t* t = mfl_alloctree_with_nodes(searchrec->sr_num_taxa_included);
+    
+    mfl_stepwise_addition_t * sarec = mfl_generate_stepwise_addition(t, handle, searchrec);
+    
+    mfl_setup_tree_for_stepwise_addition(t, sarec);
+    
+    char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
+    dbg_printf("the starting trichotomy: %s\n", showtree);
+    free(showtree);
     
     
-    // Create a three-taxon tree (either according to add seq or honouring ingroup/outgroup partition)
+
     
-    // Begin adding branches to this tree, one at a time, trying all positions
-    
-    // Clean up resources:
-    //  Free int arrays
-    //  Free nodesets
-    
-    
-    return holdbuffer2;
+    return starttrees;
 }

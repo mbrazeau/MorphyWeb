@@ -343,6 +343,28 @@ void tui_test_nary_ring_creation(void)
     return;
 }
 
+void tui_test_addition_sequence(void)
+{
+    
+    int num_taxa = 5;
+    int num_chars = 0;
+    int num_og_tax = 0;
+    
+    char* matrix = NULL;
+    
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    // Setup the handle:
+    handle->n_taxa = num_taxa;
+    handle->n_chars = num_chars;
+    handle->n_outgroup_taxa = num_og_tax;
+    handle->addseq_type = MFL_AST_ASIS;
+    
+    mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
+    
+    mfl_get_start_trees(NULL, handle, searchrec);
+}
+
 int main (int argc, char *argv[])
 {
     dbg_printf("\n\t****************************************\n\n");
@@ -369,6 +391,9 @@ int main (int argc, char *argv[])
     tui_test_nary_ring_creation();
     dbg_printf("\nEnd n-ary ring test\n");
     
+    dbg_printf("Testing addition sequence:\n");
+    tui_test_addition_sequence();
+    dbg_printf("\nEnd addition sequence test\n");
     
     dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
@@ -387,9 +412,9 @@ int main (int argc, char *argv[])
     tui_spr_test_environment();
     dbg_printf("\nEnd bbreak test\n");
 
-//    dbg_printf("Testing edge tables:\n");
-//    tui_test_edgetables();
-//    dbg_printf("\nEnd edge tables test\n");
+    dbg_printf("Testing edge tables:\n");
+    tui_test_edgetables();
+    dbg_printf("\nEnd edge tables test\n");
 
     
     //-----

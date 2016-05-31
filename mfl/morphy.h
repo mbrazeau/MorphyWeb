@@ -523,6 +523,8 @@ void            mfl_assign_bottom_node(mfl_node_t* n);
 
 /* In mfl_starttree.c */
 
+mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+
 /* In mfl_drawtree.c*/
 char*   mfl_drawtree_create_virtual_grid(int num_taxa);
 void    mfl_put_character_in_cell(char const ch, int row, int col, char* grid);
