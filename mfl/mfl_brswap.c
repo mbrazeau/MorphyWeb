@@ -256,24 +256,28 @@ bool mfl_reroot_subtree(mfl_node_t* subtr, mfl_subtree_edges_t* stedges, mfl_cli
 
 
 
-void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t* searchrec)
+void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t* searchrec, int startdistance, int trav)
 {
     // Traverse the target tree, attempting the reinsertion
     
     mfl_node_t* p = NULL;
     mfl_cliprec_t regraft;
+
+    ++trav;
     
-    // Insert branch
-    //mfl_temp_rebranching(src, tgt, &regraft);
-    
-    // Copy the tree, append it to the buffer
-    //mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
-    
-    // Count the number of rearrangements
-    //mfl_undo_temp_rebranching(&regraft);
-    
-    
-    ++searchrec->sr_rearrangement_counter;
+    if (trav > startdistance) {
+        // Insert branch
+        //mfl_temp_rebranching(src, tgt, &regraft);
+        
+        // Copy the tree, append it to the buffer
+        //mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
+        
+        // Count the number of rearrangements
+        //mfl_undo_temp_rebranching(&regraft);
+        
+        
+        ++searchrec->sr_rearrangement_counter;
+    }
     
     if (!tgt) {
         return;
@@ -286,11 +290,11 @@ void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t*
     p = tgt->nodet_next;
     
     if (p->nodet_edge) {
-        mfl_regrafting_traversal(p->nodet_edge, src, searchrec);
+        mfl_regrafting_traversal(p->nodet_edge, src, searchrec, startdistance, trav);
     }
     
     if (p->nodet_edge) {
-        mfl_regrafting_traversal(p->nodet_next->nodet_edge, src, searchrec);
+        mfl_regrafting_traversal(p->nodet_next->nodet_edge, src, searchrec, startdistance, trav);
     }
     
     return;
@@ -303,45 +307,22 @@ void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* sear
     mfl_node_t* p = NULL;
     mfl_node_t* q = NULL;
     mfl_node_t* r = NULL;
-    
-    if (!tgt) {
-        
-        if (!isbackswap) {
-            mfl_regrafting_traversal(tgt, src, searchrec);
-        }
-        return;
-    }
+
+    int startdistance = 0;
+    int startskip = 1;
     
     if (isbackswap) {
-        
-        p = tgt;
-        
-        do {
-            q = p;
-            
-            if (!q->nodet_tip) {
-                
-                q = q->nodet_next;
-                
-                do {
-                    if (!q->nodet_edge->nodet_tip) {
-                        r = q->nodet_edge;
-                        mfl_regrafting_traversal(r->nodet_next->nodet_edge, src, searchrec);
-                        mfl_regrafting_traversal(r->nodet_next->nodet_next->nodet_edge, src, searchrec);
-                    }
-                    q = q->nodet_next;
-                } while (q != p);
-            }
-            
-            p = p->nodet_edge;
-        } while (p != tgt);
+        startdistance = 2;
+        startskip = 0;
+    }
+    
+    if (tgt) {
+        mfl_regrafting_traversal(tgt, src, searchrec, startdistance, 0);
+        mfl_regrafting_traversal(tgt->nodet_edge, src, searchrec, startdistance + startskip, 0);
     }
     else {
-        // Reattach everywhere, including original position
-        mfl_regrafting_traversal(tgt, src, searchrec);
-        if (!tgt->nodet_edge->nodet_tip) {
-            mfl_regrafting_traversal(tgt->nodet_edge->nodet_next->nodet_edge, src, searchrec);
-            mfl_regrafting_traversal(tgt->nodet_edge->nodet_next->nodet_next->nodet_edge, src, searchrec);
+        if (!isbackswap) {
+            mfl_regrafting_traversal(tgt, src, searchrec, 0, 1);
         }
     }
     
@@ -405,12 +386,12 @@ void tui_spr_test_environment(void)
     
     cliptesttree = "tree1=[&R] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
     //cliptesttree = "tree1=[&R] (1,((2,(79,(80,((81,((82,88),(86,87))),(83,(84,85)))))),(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,(66,((89,90),((91,((92,98),(96,97))),(93,(94,(95,(99,100)))))))),77),60))));";
-    cliptesttree = "594=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
+    //cliptesttree = "594=[&R] (((((1,4),5),3),2),(6,(7,((8,9),(10,(11,12))))));";
 //    cliptesttree = "tree_857 = [&R] (1,((4,(2,((6,(7,((8,9),(10,(11,12))))),3))),5));";
     //cliptesttree = "tree_838 = [&R] ((((12,(((((3,2),6),7),(8,9)),10)),11),1),(4,5));";
     //cliptesttree = "tree_795 = [&R] (1,(((((7,11),(10,((2,((4,8),6)),3))),5),9),12));";
     //cliptesttree = "temp_examp6=[&R] (1,(4,(5,(3,(2,(6,(7,(8,(9,(10,(11,12)))))))))));";
-    //cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
+    cliptesttree = "sixonefour = [&R] (1,(4,(5,(2,(6,(7,(8,(9,((10,3),(11,12))))))))));";
     //cliptesttree = "fivethirty = [&R] (1,((2,((6,((7,4),((8,9),(10,(11,12))))),3)),5));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
     //cliptesttree = "temp_examp6=[&R] ((1,2),3);";
