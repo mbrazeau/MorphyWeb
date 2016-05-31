@@ -298,11 +298,6 @@ typedef struct {
 } mfl_cliprec_t;
 
 typedef struct {
-    int inrec_score;
-    mfl_node_t* inrec_site;
-} mfl_insertionrec_t;
-
-typedef struct {
     int ste_max_edges;
     int ste_num_edges;
     int ste_head;
@@ -478,7 +473,8 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
 /* In mfl_tree.c */
 void            mfl_initialise_ring_node(mfl_node_t *bottom_node);
 void            mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2, mfl_nodearray_t nodes);
-mfl_node_t*     mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches, mfl_nodearray_t nodes);
+mfl_node_t*     mfl_make_new_n_ary_ring_node(int num_branches, mfl_nodestack_t* ndstk);
+void            mfl_dissolve_n_ary_ring(mfl_node_t* n, mfl_nodestack_t* ndstk);
 void            mfl_destroy_n_nary_ring(mfl_node_t *bottom_node);
 bool            mfl_check_is_in_ring(mfl_node_t *start);
 mfl_node_t*     mfl_insert_node_in_ring(mfl_node_t *ring_start, mfl_node_t *new_node);
