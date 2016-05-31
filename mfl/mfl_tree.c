@@ -578,37 +578,67 @@ void mfl_initialise_ring_node(mfl_node_t *bottom_node)
 }
 
 
-mfl_node_t *mfl_make_new_n_ary_ring_node(mfl_node_t *bottom_node, int num_branches, mfl_nodearray_t nodes)
+mfl_node_t *mfl_make_new_n_ary_ring_node(int num_branches, mfl_nodestack_t* ndstk)
 {
     int i = 0;
-    mfl_node_t *new_node = NULL;
-    mfl_node_t *node_p = NULL;
+    mfl_node_t* p = NULL;
+    mfl_node_t* r = NULL;
     
-    if (!mfl_node_is_available(bottom_node)) {
-        dbg_printf("Warning in function calling mfl_make_new_n_ary_ring_node(): selected node is unavailable. Return is NULL pointer.\n");
-        return NULL;
-    }
+    r = mfl_get_node_from_nodestack(ndstk);
+    p = r;
     
-    node_p = bottom_node;
+    do {
+        p->nodet_next = mfl_get_node_from_nodestack(ndstk);
+        p = p->nodet_next;
+        ++i;
+    } while (i < num_branches);
     
-    for (i = 0; i < num_branches; ++i) {
-        new_node = mfl_get_next_available_node(nodes);
-        node_p->nodet_next = new_node;
-        node_p = new_node;
-    }
+    p->nodet_next = r;
     
-    node_p->nodet_next = bottom_node;
+    return r;
+  
     
+    
+//    if (!mfl_node_is_available(bottom_node)) {
+//        dbg_printf("Warning in function calling mfl_make_new_n_ary_ring_node(): selected node is unavailable. Return is NULL pointer.\n");
+//        return NULL;
+//    }
+//    
+//    node_p = bottom_node;
+//    
+//    for (i = 0; i < num_branches; ++i) {
+//        new_node = mfl_get_next_available_node(nodes);
+//        node_p->nodet_next = new_node;
+//        node_p = new_node;
+//    }
+//    
+//    node_p->nodet_next = bottom_node;
+//    
+//
+//    if (!mfl_check_is_in_ring(bottom_node)) {
+//        bottom_node = NULL;
+//        dbg_printf("Warning in mfl_make_new_n_ary_ring_node(): did not succeed in making %i-branch ring. Returning NULL pointer\n", num_branches);
+//        return bottom_node;
+//    }
 
-    if (!mfl_check_is_in_ring(bottom_node)) {
-        bottom_node = NULL;
-        dbg_printf("Warning in mfl_make_new_n_ary_ring_node(): did not succeed in making %i-branch ring. Returning NULL pointer\n", num_branches);
-        return bottom_node;
-    }
-    
-    return bottom_node;
 }
 
+
+void mfl_dissolve_n_ary_ring(mfl_node_t* n, mfl_nodestack_t* ndstk)
+{
+    assert(n->nodet_next);
+    
+    mfl_node_t* p = n->nodet_next;
+    mfl_node_t* q = NULL;
+    
+    do {
+        q = p->nodet_next;
+        mfl_push_node_to_nodestack(p, ndstk);
+        p = q;
+    } while (p != n);
+    
+    mfl_push_node_to_nodestack(n, ndstk);
+}
 
 void mfl_destroy_n_nary_ring(mfl_node_t *bottom_node)
 {
@@ -632,18 +662,18 @@ void mfl_destroy_n_nary_ring(mfl_node_t *bottom_node)
 }
 
 
-void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2, mfl_nodearray_t nodes)
-{
-    if (!parent->nodet_next) {
-        mfl_make_new_n_ary_ring_node(parent, 2, nodes);
-    }
-    else {
-        dbg_printf("Warning in mfl_create_binary_fork(): parent node might be unavailable\n");
-    }
-    
-    mfl_join_node_edges(parent->nodet_next, child1);
-    mfl_join_node_edges(parent->nodet_next->nodet_next, child2);
-}
+//void mfl_create_binary_fork(mfl_node_t *parent, mfl_node_t *child1, mfl_node_t *child2, mfl_nodearray_t nodes)
+//{
+//    if (!parent->nodet_next) {
+//        mfl_make_new_n_ary_ring_node(parent, 2, nodes);
+//    }
+//    else {
+//        dbg_printf("Warning in mfl_create_binary_fork(): parent node might be unavailable\n");
+//    }
+//    
+//    mfl_join_node_edges(parent->nodet_next, child1);
+//    mfl_join_node_edges(parent->nodet_next->nodet_next, child2);
+//}
 
 
 void mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes)
@@ -671,8 +701,8 @@ void mfl_initialise_nodearray(mfl_tree_t* t, int num_taxa, int num_nodes)
 
 
 /*!
- Returns 0 if the node is binary, -1 if not defined (no branching) and otherwise 
- returns the number of branchings detected. 
+ Returns 0 if the node is not a match, -1 if not defined (no branching) and 
+ otherwise returns the number of branchings detected.
  @param querynode (mfl_node_t*) the base of the internal node being queried for 
  n-ariness
  @param test_n_branches (int) the expected number of descendant branches
@@ -690,10 +720,11 @@ int mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches)
         return -1;
     }
     
-    node_ptr = querynode;
+    node_ptr = querynode->nodet_next;
+    
     do {
-        node_ptr = node_ptr->nodet_next;
         ++num_branching;
+        node_ptr = node_ptr->nodet_next;
     } while (node_ptr != querynode);
     
     if (num_branching == test_n_branches) {
