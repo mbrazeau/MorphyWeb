@@ -326,6 +326,23 @@ void tui_test_tree_copying(void)
     
 }
 
+void tui_test_nary_ring_creation(void)
+{
+    int num_taxa = 10;
+    int num_desc = 2;
+    mfl_tree_t* t = mfl_alloctree_with_nodes(num_taxa);
+    
+    mfl_node_t* ring = mfl_make_new_n_ary_ring_node(num_desc, t->treet_nodestack);
+    
+    
+    dbg_printf("You made a ring with %i descendants\n", mfl_node_is_n_ary(ring, num_desc));
+    
+    dbg_printf("now put the node back:\n");
+    mfl_dissolve_n_ary_ring(ring, t->treet_nodestack);
+    
+    return;
+}
+
 int main (int argc, char *argv[])
 {
     dbg_printf("\n\t****************************************\n\n");
@@ -347,6 +364,11 @@ int main (int argc, char *argv[])
         dbg_printf("argv[0] == %s...\n\n", argv[0]);
         //exit(0);
     }
+    
+    dbg_printf("Testing the n-ary ring creation:\n");
+    tui_test_nary_ring_creation();
+    dbg_printf("\nEnd n-ary ring test\n");
+    
     
     dbg_printf("Testing the tree printing:\n");
     tui_test_tree_printing();
