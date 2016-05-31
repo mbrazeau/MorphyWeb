@@ -607,7 +607,7 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 /* in mfl_compare.c*/
 void            mfl_set_bipartitions(mfl_node_t* n);
-mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips);
+mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips, bool is_rooted);
 void            mfl_destroy_edgetable(mfl_edgetable_t* edgetable);
 void            mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference);
 int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
