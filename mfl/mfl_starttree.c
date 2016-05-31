@@ -73,6 +73,7 @@ void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapa
     }
 }
 
+
 void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset)
 {
     
@@ -93,6 +94,7 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
     }
 }
 
+
 void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts)
 {
     int i = 0;
@@ -104,6 +106,7 @@ void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_parti
         nds[i]->nodet_charstates;
     }
 }
+
 
 void mfl_randomise_array(int* array, int nelems)
 {
@@ -122,6 +125,7 @@ void mfl_randomise_array(int* array, int nelems)
     }
 }
 
+
 int* mfl_create_default_taxon_array(int num_taxa)
 {
     int i = 0;
@@ -133,7 +137,6 @@ int* mfl_create_default_taxon_array(int num_taxa)
     
     return taxa;
 }
-
 
 
 void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a)
@@ -154,6 +157,7 @@ void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a)
     }
 }
 
+
 void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* chardata /*some list of outgroup taxa*/)
 {
     // If there's a pre-defined outgroup
@@ -170,6 +174,7 @@ void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* charda
     // Now, sort the array by advancement index
     // *** Return the array of taxon numbers
 }
+
 
 int* mfl_addition_sequence_generator(mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
@@ -199,6 +204,7 @@ int* mfl_addition_sequence_generator(mfl_handle_s* handle, mfl_searchrec_t* sear
     }
 }
 
+
 int mfl_compare_tries_by_length(const void* t1, const void* t2)
 {
     mfl_try_t* try1 = *(mfl_try_t**)t1;
@@ -206,6 +212,7 @@ int mfl_compare_tries_by_length(const void* t1, const void* t2)
     
     return (int)(try1->try_length - try2->try_length);
 }
+
 
 void mfl_roll_back_addition(mfl_stepwise_addition_t* sarecord, int position)
 {
@@ -218,6 +225,7 @@ void mfl_roll_back_addition(mfl_stepwise_addition_t* sarecord, int position)
     //mfl_insert_branch_with_ring_base(sarecord->stpadd_lastnewbranch, sarecord->stpadd_oldtries[position]);
     
 }
+
 
 void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mfl_stepwise_addition_t* sarec)
 {
@@ -238,6 +246,7 @@ void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mf
     sarec->stpadd_num_held_old = sarec->stpadd_num_held_new;
     sarec->stpadd_num_held_new = 0;
 }
+
 
 bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, int length, mfl_searchrec_t* searchrec)
 {
@@ -286,7 +295,7 @@ bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, 
                     ++num_equal;
                     if (num_equal == discardrec) {
                         sarecord->stpadd_newtries[i]->try_site = tgt;
-                        i  = sarecord->stpadd_num_held_new;
+                        break;
                     }
                 }
             }
@@ -344,17 +353,40 @@ void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_
 }
 
 
-bool mfl_generate_starting_trichotomy(mfl_tree_t* t, int* taxon_addition_sequence)
+mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, int* taxon_addition_sequence)
 {
+    mfl_node_t* a = NULL;
+    mfl_node_t* l = NULL;
+    mfl_node_t* r = NULL;
+    mfl_node_t* ringn = NULL;
     
-    // If there's an outgroup, take one outgroup and two ingroup taxa.
+    // if (there's an outgroup) {
+    // Take one outgroup and two ingroup taxa.
+    // a = outgroup 1
+    // l = ingroup 1
+    // r = ingroup 2
+    //}
+    // else
+    // just grab the first three from the addition sequence.
+    //{
+    a = t->treet_treenodes[taxon_addition_sequence[0]];
+    l = t->treet_treenodes[taxon_addition_sequence[1]];
+    r = t->treet_treenodes[taxon_addition_sequence[2]];
+    //}
     
-    // Else, just grab the first three from the addition sequence.
+    ringn = mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
+    
+    mfl_join_node_edges(a, ringn);
+    mfl_join_node_edges(l, ringn->nodet_next);
+    mfl_join_node_edges(r, ringn->nodet_next->nodet_next);
+    
+    // Do this stuff after the return:
     
     // If there are any directed characters, then root the tree.
     
     // Calculate the length of this trichotomy. (Perhaps after return?)
     
+    return ringn;
 }
 
 
@@ -381,6 +413,7 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
         return false;
     }
 }
+
 
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
