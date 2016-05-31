@@ -519,7 +519,7 @@ void            mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
 void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
 mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
-mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips);
+void            mfl_assign_bottom_node(mfl_node_t* n);
 
 //
 
@@ -611,7 +611,7 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 /* in mfl_compare.c*/
 void            mfl_set_bipartitions(mfl_node_t* n);
-void            mfl_get_edge_table(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
+mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips);
 void            mfl_destroy_edgetable(mfl_edgetable_t* edgetable);
 void            mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference);
 int             mfl_get_edge_ref_from_ring(mfl_node_t* node);

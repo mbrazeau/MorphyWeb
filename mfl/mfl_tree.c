@@ -1108,3 +1108,26 @@ void mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees)
     
     free(oldtreebuf);
 }
+
+/*!
+ Traversal for assigning the true to the bottom node in node rings
+ */
+void mfl_assign_bottom_node(mfl_node_t* n)
+{
+    mfl_node_t *p = NULL;
+    
+    if (n->nodet_tip) {
+        n->nodet_isbottom = true;
+        return;
+    }
+    
+    p = n->nodet_next;
+    do {
+        mfl_assign_bottom_node(p->nodet_edge);
+        p = p->nodet_next;
+    } while (p != n);
+    
+    n->nodet_isbottom = true;
+    
+    return;
+}
