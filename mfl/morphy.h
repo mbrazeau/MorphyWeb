@@ -61,6 +61,8 @@
 
 using namespace std;
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define __FXN_NAME__ (const char*)__FUNCTION__
 #define mfl_malloc(size, memesetval) __MFL_MALLOC__(size, memesetval, __FXN_NAME__)
 
@@ -212,7 +214,11 @@ typedef struct mfl_datapartition_t {
     bool part_has_inapplicables;
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
-    int part_weight;
+    int* part_weights;
+    mfl_parsim_fn part_downpass_full;
+    mfl_parsim_fn part_downpass_partial;
+    mfl_parsim_fn part_uppass_full;
+    mfl_parsim_fn part_uppass_partial;
     mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
@@ -249,8 +255,10 @@ typedef struct mfl_matrix_t {
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
     mfl_datapartition_t *nd_parent_partition;
-    mfl_parsim_fn nd_downpass;                  // The downpass parsimony function.
-    mfl_parsim_fn nd_uppass;                    // The uppass parsimony function.
+    mfl_parsim_fn nd_downpass_full;                  // The downpass parsimony function.
+    mfl_parsim_fn nd_downpass_partial;
+    mfl_parsim_fn nd_uppass_full;                    // The uppass parsimony function.
+    mfl_parsim_fn nd_uppass_partial;
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
@@ -330,14 +338,6 @@ typedef struct mfl_tree_t {
 	char *treet_newick_format;              // The tree stored as a Newick format string.
 	int treet_index;                        // Identifier for the tree in the saved trees array.
 } mfl_tree_t;
-
-
-typedef struct mfl_nodeset_t {      // For outgroups or other clade constraints.
-    int ns_num_taxa;
-    int ns_num_taxa_max;
-    
-    mfl_nodearray_t ns_taxon_list;
-} mfl_nodeset_t;
 
 
 typedef struct mfl_treebuffer_t {
@@ -464,7 +464,7 @@ void            mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_i
 void            mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic);
 void            mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle);
 void            mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matrix_t* m);
-void            mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int num_rows);
+void            mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int index, int num_rows);
 int             mfl_compare_dataparts_by_ctype(const void* p1, const void* p2);
 int             mfl_compare_dataparts_by_index(const void* p1, const void* p2);
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
