@@ -1541,31 +1541,120 @@ void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool
 }
 
 
-void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int num_rows)
+mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, mfl_gap_t gapmethod, bool fullpass)
+{
+    mfl_parsim_fn ret = NULL;
+    
+    switch (parsim_type)
+    {
+        case MFL_OPT_FITCH:
+            //            if (gapmethod == MFL_GAP_INAPPLICABLE) {
+            //ret = &mfl_fitch_downpass_INAPPLICABLE;
+            //            }
+            //            else {
+            //                ret = &mfl_fitch_downpass_binary_node;
+            //            }
+            break;
+            
+            /*case MFL_OPT_WAGNER:
+             ret = mfl_wagner_downpass_binary_node;
+             break;
+             
+             case MFL_OPT_DOLLO:
+             ret = mfl_dollo_downpass_binary_node;
+             break;
+             
+             case MFL_OPT_IRREVERSIBLE:
+             ret = mfl_irreversible_downpass_binary_node;
+             break;
+             
+             case MFL_OPT_COST_MATRIX:
+             ret = mfl_costmatrix_downpass_binary_node;
+             break;*/
+            
+        default:
+            break;
+    }
+    
+    return  ret;
+}
+
+
+mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, mfl_gap_t gapmethod, bool fullpass)
+{
+    mfl_parsim_fn ret = NULL;
+    
+    switch (parsim_type)
+    {
+        case MFL_OPT_FITCH:
+            //ret = &mfl_fitch_uppass_binary_node;
+            break;
+            
+            /*case MFL_OPT_WAGNER:
+             ret = mfl_wagner_downpass_binary_node;
+             break;*/
+            
+            /*case MFL_OPT_DOLLO:
+             ret = mfl_dollo_downpass_binary_node;
+             break;*/
+            
+            /*case MFL_OPT_IRREVERSIBLE:
+             ret = mfl_irreversible_downpass_binary_node;
+             break;*/
+            
+            /*case MFL_OPT_COST_MATRIX:
+             ret = mfl_costmatrix_downpass_binary_node;
+             break;*/
+            
+        default:
+            break;
+    }
+    
+    return  ret;
+}
+
+
+void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int index, int num_rows)
 {
     int i = 0;
     int n = 0;
     
+    n = prt->part_n_chars_included;
+    
     for (i = 0; i < num_rows; ++i) {
-        n = prt->part_n_chars_included;
+        
         prt->part_matrix[n + (i * prt->part_n_chars_max)] = cv->cv_chardata[i];
     }
     
+    prt->part_char_indices[prt->part_n_chars_included] = index;
+    prt->part_weights[prt->part_n_chars_included]; // = the weight of the cv  ;
     ++prt->part_n_chars_included;
 }
 
-void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matrix_t* m)
+
+void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t gapmethod, mfl_matrix_t* m)
 {
     int i = 0;
-    
+    int j = 0;
+    int numparts = ptset->ptset_n_parts;
+    mfl_parsimony_t ptype;
     
     for (i = 0; i < m->mat_num_characters; ++i) {
         if (m->mat_included_characters[i]) {
             mfl_copy_column_into_partition(ptset->ptset_partitions[m->mat_matrix[i]->cv_partition_destination],
-                                           m->mat_matrix[i],
+                                           m->mat_matrix[i], i,
                                            m->mat_num_taxa);
         }
     }
+    
+    for (i = 0; i < numparts; ++i) {
+        ptype = ptset->ptset_partitions[i]->part_optimisation_method;
+        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, gapmethod, true);
+        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, gapmethod, false);
+        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_uppass_parsimony_fxn(ptype, gapmethod, true);
+        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, gapmethod, false);
+    }
+    
 }
 
 
@@ -1588,7 +1677,6 @@ int mfl_compare_dataparts_by_ctype(const void* p1, const void* p2)
     
     return (int)(p_1->part_optimisation_method - p_2->part_optimisation_method);
 }
-
 
 
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle)
@@ -1636,13 +1724,14 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     }
     
     
-    for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+    for (i = 0; i < numparts; ++i) {
         dataparts->ptset_partitions[i]->part_matrix = (mfl_charstate*)mfl_malloc((dataparts->ptset_partitions[i]->part_n_chars_max * matrix->mat_num_taxa)* sizeof(mfl_charstate), 0);
     }
     
+    
     qsort(dataparts->ptset_partitions, dataparts->ptset_n_parts, sizeof(mfl_datapartition_t*), &mfl_compare_dataparts_by_index);
     
-    mfl_populate_all_character_partitions(dataparts, matrix);
+    mfl_populate_all_character_partitions(dataparts, handle->gap_method, matrix);
     
     qsort(dataparts->ptset_partitions, dataparts->ptset_n_parts, sizeof(mfl_datapartition_t*), &mfl_compare_dataparts_by_ctype);
     
