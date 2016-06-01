@@ -108,7 +108,6 @@ bool mfl_search_environment(mfl_handle_s* handle)
     mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
     
     // Set up random number generator
-    gsl_rng_env_setup();
     gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(r, handle->rseed);
     
