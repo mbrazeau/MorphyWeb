@@ -204,7 +204,7 @@ typedef enum {
 //typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
-typedef void (*mfl_parsim_fn)(struct mfl_node_t* parent);       // Pointer for a function that performs parsimony calculations at a node.
+typedef void (*mfl_parsim_fn)(mfl_charstate* anc, mfl_charstate* left, mfl_charstate* right, struct mfl_datapartition_t* datapart, int* length);       // Pointer for a function that performs parsimony calculations at a node.
 typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
@@ -336,7 +336,7 @@ typedef struct mfl_tree_t {
     mfl_bitsetlist_t* treet_bipartitions;
     int treet_num_taxa;                     // Total number of terminals.
     int treet_num_nodes;
-    int treet_uw_parsimonylength;           // Unweighted number of steps under parsimony.
+    int treet_parsimonylength;           // Unweighted number of steps under parsimony.
     int treet_island_id;                    // An identification number for the parent start tree.
     int *treet_compressed_tree;             // The integer encoding of the tree for tree comparisons and saving memory
 	int *treet_comptree_holder;             // Holder for comparisons.
@@ -409,6 +409,11 @@ typedef struct {
  *
  */
 
+/* In mfl_evaluate.c */
+void mfl_fitch_downpass_binary_node(mfl_charstate* anc, mfl_charstate* left, mfl_charstate* right, mfl_datapartition_t* datapart, int* length);
+void mfl_fitch_downpass_INAPPLICABLE(mfl_node_t *node);
+void mfl_fitch_uppass_binary_node(mfl_node_t *node);
+
 /* In mfl_characters.c */
 
 //prob move these two to another file
@@ -466,13 +471,14 @@ void            mfl_set_datapart_params_fitch(mfl_datapartition_t* d, bool has_i
 void            mfl_set_datapart_params_wagner(mfl_datapartition_t* d, bool has_inapplic);
 void            mfl_set_datapart_params_dollo(mfl_datapartition_t* d, bool has_inapplic, bool up);
 void            mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bool up);
-void            mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic);
-void            mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle);
+void            mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, const mfl_handle_s* handle, bool has_inapplic);
+void            mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, const mfl_handle_s* handle);
 void            mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matrix_t* m);
 void            mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int intwt, int index, int num_rows);
 int             mfl_compare_dataparts_by_ctype(const void* p1, const void* p2);
 int             mfl_compare_dataparts_by_index(const void* p1, const void* p2);
-mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
+mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, const mfl_handle_s* handle);
+mfl_partition_set_t* mfl_generate_search_data(const mfl_handle_s* handle);
 void            mfl_destroy_partition_set(mfl_partition_set_t* ptset);
 mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
