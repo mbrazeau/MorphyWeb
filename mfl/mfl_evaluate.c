@@ -53,28 +53,25 @@
 //    return return_weight;
 //}
 
-void mfl_fitch_downpass_binary_node(mfl_node_t *node)
+void mfl_fitch_downpass_binary_node(mfl_charstate* anc, mfl_charstate* left, mfl_charstate* right, mfl_datapartition_t* datapart, int* length)
 {
     int i = 0;
-    mfl_node_t* lchild = NULL;
-    mfl_node_t* rchild = NULL;
-    lchild = node->nodet_next->nodet_edge;
-    rchild = node->nodet_next->nodet_next->nodet_edge;
-    mfl_charstate temp = NULL;
-//    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-//    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-//    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-//    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
-//    
-//    for (i = 0; i < num_chars; ++i) {
-//        if ((temp = leftchars[i] & rightchars[i])) {
-//            parentchars[i] = temp;
-//        }
-//        else {
-//            parentchars[i] = leftchars[i] | rightchars[i];
-//            /* Increment the length of the tree, and maxsteps*/
-//        }
-//    }
+    int* weights = datapart->part_int_weights;
+    int num_chars = datapart->part_n_chars_included;
+    mfl_charstate temp = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        if ((temp = left[i] & right[i])) {
+            anc[i] = temp;
+        }
+        else {
+            anc[i] = left[i] | right[i];
+            if (length) {
+                *length += weights[i];
+            }
+        }
+    }
+    
 }
 
 void mfl_fitch_downpass_INAPPLICABLE(mfl_node_t *node)
@@ -183,48 +180,37 @@ void mfl_wagner_downpass_binary_node(mfl_node_t *node)
 }
 
 
-
-
-void mfl_evaluate_downpass(mfl_node_t *node)
-{
-    int i = 0;
-    int num_dataparts;
-    mfl_parsim_fn evaluator;
-    
-    num_dataparts = node->nodet_num_dat_partitions;
-    
-    // For each data partition at the node, set the correct type and evaluation
-    for (i = 0; i < num_dataparts; ++i) {
-        evaluator = node->nodet_charstates[i]->nd_downpass_full;
-        evaluator(node);
-    }
-    
-    return;
-}
-
-void mfl_postorder_traversal(mfl_node_t *parent, mfl_searchrec_t *search_rec)
+void mfl_postorder_traversal(mfl_node_t *n, mfl_searchrec_t *search_rec)
 {
     int i = 0;
     int num_dataparts;
     mfl_node_t *p = NULL;
     mfl_parsim_fn evaluator;
+    mfl_node_t* left = n->nodet_next->nodet_edge;
+    mfl_node_t* right = n->nodet_next->nodet_next->nodet_edge;
     
-    if (parent->nodet_tip) {
+    if (n->nodet_tip) {
         return;
     }
     
-    p = parent;
+    p = n;
     do {
         p = p->nodet_next;
         mfl_postorder_traversal(p->nodet_edge, search_rec);
-    } while (p != parent);
+    } while (p != n);
     
-    num_dataparts = parent->nodet_num_dat_partitions;
+    num_dataparts = n->nodet_num_dat_partitions;
     
     // For each data partition at the node, set the correct type and evaluation
     for (i = 0; i < num_dataparts; ++i) {
-        evaluator = parent->nodet_charstates[i]->nd_downpass_full;
-        evaluator(parent);
+        evaluator = n->nodet_charstates[i]->nd_downpass_full;
+        evaluator(
+                  n->nodet_charstates[i]->nd_prelim_set,
+                  left->nodet_charstates[i]->nd_prelim_set,
+                  right->nodet_charstates[i]->nd_prelim_set,
+                  n->nodet_charstates[i]->nd_parent_partition,
+                  &search_rec->sr_swaping_on->treet_parsimonylength
+                  );
     }
     
     return;
@@ -252,7 +238,7 @@ void mfl_postorder_traversal_full(mfl_node_t *parent, mfl_searchrec_t *search_re
     // For each data partition at the node, set the correct type and evaluation
     for (i = 0; i < num_dataparts; ++i) {
         evaluator = parent->nodet_charstates[i]->nd_downpass_full;
-        evaluator(parent);
+        //evaluator(parent);
     }
     
     return;

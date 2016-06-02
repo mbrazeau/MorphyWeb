@@ -1518,14 +1518,14 @@ void mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_inapplic, bo
 }
 
 
-void mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic)
+void mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, const mfl_handle_s* handle, bool has_inapplic)
 {
     d->part_optimisation_method = MFL_OPT_COST_MATRIX;
     d->part_has_inapplicables = has_inapplic;
 }
 
 
-void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle)
+void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, const mfl_handle_s* handle)
 {
     switch (opt_t) {
         case MFL_OPT_FITCH:
@@ -1558,19 +1558,20 @@ void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool
 }
 
 
-mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, mfl_gap_t gapmethod, bool fullpass)
+mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass)
 {
     mfl_parsim_fn ret = NULL;
     
     switch (parsim_type)
     {
         case MFL_OPT_FITCH:
-            //            if (gapmethod == MFL_GAP_INAPPLICABLE) {
-            //ret = &mfl_fitch_downpass_INAPPLICABLE;
-            //            }
-            //            else {
-            //                ret = &mfl_fitch_downpass_binary_node;
-            //            }
+            if (gapasinapplic) {
+                // TODO: Fix this before doing any work on inapplicable characters
+                //ret = &mfl_fitch_downpass_INAPPLICABLE;
+            }
+            else {
+                ret = &mfl_fitch_downpass_binary_node;
+            }
             break;
             
             /*case MFL_OPT_WAGNER:
@@ -1597,7 +1598,7 @@ mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, mfl_
 }
 
 
-mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, mfl_gap_t gapmethod, bool fullpass)
+mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass)
 {
     mfl_parsim_fn ret = NULL;
     
@@ -1655,6 +1656,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
     int i = 0;
     int j = 0;
     int numparts = ptset->ptset_n_parts;
+    bool inapplicable = false;
     mfl_parsimony_t ptype;
     
     for (i = 0; i < m->mat_num_characters; ++i) {
@@ -1666,11 +1668,17 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
     }
     
     for (i = 0; i < numparts; ++i) {
+        inapplicable = false;
         ptype = ptset->ptset_partitions[i]->part_optimisation_method;
-        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, gapmethod, true);
-        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, gapmethod, false);
-        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_uppass_parsimony_fxn(ptype, gapmethod, true);
-        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, gapmethod, false);
+        if (ptset->ptset_partitions[i]->part_has_inapplicables) {
+            if (gapmethod == MFL_GAP_INAPPLICABLE) {
+                inapplicable = true;
+            }
+        }
+        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, true);
+        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, false);
+        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, true);
+        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, false);
     }
     
 }
@@ -1693,11 +1701,26 @@ int mfl_compare_dataparts_by_ctype(const void* p1, const void* p2)
     mfl_datapartition_t* p_1 = *(mfl_datapartition_t**)p1;
     mfl_datapartition_t* p_2 = *(mfl_datapartition_t**)p2;
     
-    return (int)(p_1->part_optimisation_method - p_2->part_optimisation_method);
+    if (p_1->part_optimisation_method == p_2->part_optimisation_method) {
+        if (p_1->part_has_inapplicables || p_2->part_has_inapplicables) {
+            if (p_1->part_has_inapplicables) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
+        else {
+            return 0;
+        }
+    }
+    else {
+        return (int)(p_1->part_optimisation_method - p_2->part_optimisation_method);
+    }
 }
 
 
-mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle)
+mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, const mfl_handle_s* handle)
 {
     int i = 0;
     int part_i = 0;
@@ -1758,7 +1781,11 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
 
 }
 
-
+mfl_partition_set_t* mfl_generate_search_data(const mfl_handle_s* handle)
+{
+    mfl_matrix_t* intmatrix = mfl_create_internal_data_matrix(handle);
+    return mfl_create_data_partitions_set(intmatrix, handle);
+}
 
 void mfl_destroy_partition_set(mfl_partition_set_t* ptset)
 {

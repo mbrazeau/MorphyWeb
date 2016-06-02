@@ -347,10 +347,14 @@ void tui_test_addition_sequence(void)
 {
     
     int num_taxa = 5;
-    int num_chars = 0;
+    int num_chars = 4;
     int num_og_tax = 0;
     
-    char* matrix = NULL;
+    char matrix[] = "-000"
+                    "-000"
+                    "-405"
+                    "3000"
+                    "1000";
     
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
     
@@ -358,11 +362,17 @@ void tui_test_addition_sequence(void)
     handle->n_taxa = num_taxa;
     handle->n_chars = num_chars;
     handle->n_outgroup_taxa = num_og_tax;
+    handle->n_to_hold = 3;
+    handle->input_data = matrix;
     handle->addseq_type = MFL_AST_ASIS;
+//    handle->addseq_type = MFL_AST_RANDOM;
     
     mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
+    mfl_partition_set_t* dataparts = mfl_generate_search_data(handle);
     
-    mfl_get_start_trees(NULL, handle, searchrec);
+    //tui_print_out_converted_matrix(<#mfl_matrix_t *matrix#>, <#int num_taxa#>, <#int num_chars#>, <#bool printbits#>)
+    
+    mfl_get_start_trees(dataparts, handle, searchrec);
 }
 
 int main (int argc, char *argv[])

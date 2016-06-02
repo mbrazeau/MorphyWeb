@@ -84,8 +84,6 @@ void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapa
 
 void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset)
 {
-    
-    
     int i;
     
     assert(n->nodet_tip);
@@ -94,11 +92,13 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
     int numparts = partset->ptset_n_parts;
     assert(n->nodet_num_dat_partitions == numparts);
     
-    mfl_datapartition_t* datapart = NULL;
-    mfl_nodedata_t* ndata = NULL;
-    
     for (i = 0; i < numparts; ++i) {
         // Stuff here.
+        mfl_copy_row_from_partition_into_nodedata(
+                                                  n->nodet_charstates[i]->nd_prelim_set,
+                                                  partset->ptset_partitions[i],
+                                                  rownumber
+                                                  );
     }
 }
 
@@ -111,7 +111,7 @@ void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_parti
     
     for (i = 0; i < numtaxa; ++i) {
         // For each partition, copy into the downpass set of the tip
-        nds[i]->nodet_charstates;
+        mfl_copy_from_all_partitions_into_tip_nodedata(nds[i], parts);
     }
 }
 
@@ -513,12 +513,55 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
     }
 }
 
+
+// Functions for allocating nodal data
+void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool bottom)
+{
+    int i = 0;
+    int numparts = dataparts->ptset_n_parts;
+    
+    node->nodet_num_dat_partitions = dataparts->ptset_n_parts;
+    
+    node->nodet_charstates = (mfl_nodedata_t**)mfl_malloc(node->nodet_num_dat_partitions * sizeof(mfl_nodedata_t*), 0);
+    
+    for (i = 0; i < numparts; ++i) {
+        node->nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
+        node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        
+        if (bottom) {
+            node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+            node->nodet_charstates[i]->nd_subtree_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        }
+    }
+}
+
+mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
+{
+    int i = 0;
+    bool bottom = false;
+    
+    mfl_tree_t* t = mfl_alloctree_with_nodes(searchrec->sr_num_taxa_included);
+    
+    for (i = 0; i < searchrec->sr_num_taxa_included; ++i) {
+        bottom = false;
+        if (t->treet_treenodes[i]->nodet_tip) { // Just in case this ever gets used to allocate memory for ring nodes.
+            bottom = true;
+        }
+        mfl_setup_nodedata(t->treet_treenodes[i], dataparts, bottom);
+    }
+    
+    mfl_apply_characters_to_tips(t, handle, dataparts);
+
+    return t;
+}
+
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
     mfl_treebuffer_t* starttrees;
     
     // Building stuff
-    mfl_tree_t* t = mfl_alloctree_with_nodes(searchrec->sr_num_taxa_included);
+    mfl_tree_t* t = mfl_generate_new_starting_tree(dataparts, handle, searchrec);
     
     mfl_stepwise_addition_t * sarec = mfl_generate_stepwise_addition(t, handle, searchrec);
     
