@@ -79,10 +79,11 @@ mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips, bool is_rooted)
     new_edgetable->num_tips = num_tips;
     
     //add the number of entries
-    new_edgetable->numentries = ( 2 * num_tips - 2);
     if(!is_rooted) {
+        new_edgetable->numentries = ( 2 * num_tips - 2);
         new_edgetable->num_nodes = num_tips - 2;
     } else {
+        new_edgetable->numentries = ( 2 * num_tips - 1);
         new_edgetable->num_nodes = num_tips - 1;
     }
     
@@ -168,92 +169,66 @@ int mfl_get_edge_ref_from_ring(mfl_node_t* node)
     return node_reference;
 }
 
-
-void mfl_add_nodesref_traversal(mfl_node_t* start, int* node_counter, mfl_edgetable_t* edgetable)
-{
-    int num_tips = edgetable->num_tips;
-    mfl_node_t* node = start;
-    if (node->nodet_tip != 0) {
-        return;
-    }
-    node = node->nodet_next;
-    
-    do {
-        
-        if(!node->nodet_edge) {
-            mfl_add_nodesref_traversal(node->nodet_next->nodet_edge, node_counter, edgetable);
-        } else {
-            mfl_add_nodesref_traversal(node->nodet_edge, node_counter, edgetable);
-        }
-        
-        if(mfl_get_edge_ref_from_ring(node) == 0) {
-            ++*node_counter;
-            mfl_set_edge_ref_in_ring(node, *node_counter);
-            edgetable->edge_nodes[*node_counter - edgetable->num_tips] = mfl_find_bottom_node_in_ring(node);
-        }
-        
-        node = node->nodet_next;
-    } while (node != start);
-
-}
-
 void mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree)
 {
     // variables before the traversal
-    mfl_node_t* dummy_test_node = NULL;
     int node_counter = edgetable->num_tips;
     int node_reference = 0;
     int counter = 0;
     mfl_node_t* current_node = NULL;
+    mfl_node_t* target_node = NULL;
     
     // Set the tips in the edgetable
     mfl_get_edgetable_tips(edgetable, tree);
-    
-    // Do the first tip
-    current_node = edgetable->edge_tips[counter];
-    mfl_set_edge_ref_in_ring(current_node->nodet_edge, node_counter);
-    edgetable->edgetable[counter] = node_counter;
-    edgetable->edge_nodes[counter] = mfl_find_bottom_node_in_ring(current_node->nodet_edge);
-    ++counter;
-    
-    // Loop through the other tips
-    for (counter; counter < edgetable->num_tips; ++ counter) {
+
+    // Go through the tips
+    for (counter; counter < edgetable->num_tips; ++counter) {
         current_node = edgetable->edge_tips[counter];
         node_reference = mfl_get_edge_ref_from_ring(current_node->nodet_edge);
         
         if(node_reference != 0) {
             edgetable->edgetable[counter] = node_reference;
         } else {
-            mfl_add_nodesref_traversal(current_node->nodet_edge, &node_counter, edgetable);
-            node_reference = mfl_get_edge_ref_from_ring(current_node->nodet_edge);
-            edgetable->edgetable[counter] = node_reference;
+            // Set the node number linking to the tip
+            mfl_set_edge_ref_in_ring(current_node->nodet_edge, node_counter);
+            edgetable->edgetable[counter] = node_counter;
+            edgetable->edge_nodes[node_counter - edgetable->num_tips] = mfl_find_bottom_node_in_ring(current_node->nodet_edge);
+            ++node_counter;
         }
     }
     
-    //TODO: There's a weird behaviour of the edgetable->edge_tips that gets filled past his capacity
-    //Maybe link to the general problem of mallocing node_t (mallocs always more!)
-    
-
-    // Then loop through the nodes
+    // Go through the nodes
     for (counter; counter < edgetable->numentries ; ++ counter) {
-        current_node = edgetable->edge_nodes[counter-edgetable->num_tips];
-        // Condition if node is the root
+        current_node = edgetable->edge_nodes[counter - edgetable->num_tips];
+        
+        // Select the node to target (usually node_edge but not if root is current node or for some nodes in unrooted trees)
         if(!current_node->nodet_edge) {
-            node_reference = mfl_get_edge_ref_from_ring(current_node);
+            // Edge is null, root points to itself
+            target_node = current_node;
         } else {
-            // Condition if node is not the root
             if(!current_node->nodet_edge->nodet_tip) {
-                node_reference = mfl_get_edge_ref_from_ring(current_node->nodet_edge);
+                target_node = current_node->nodet_edge;
             } else {
-                // Conditions if tree is unrooted
                 if(!current_node->nodet_next->nodet_edge->nodet_tip) {
-                    node_reference = mfl_get_edge_ref_from_ring(current_node->nodet_next->nodet_edge);
+                    target_node = current_node->nodet_next->nodet_edge;
                 } else {
-                    node_reference = mfl_get_edge_ref_from_ring(current_node->nodet_next->nodet_next->nodet_edge);
+                    target_node = current_node->nodet_next->nodet_next->nodet_edge;
                 }
             }
         }
-        edgetable->edgetable[counter] = node_reference;
+        
+        node_reference = mfl_get_edge_ref_from_ring(target_node);
+        
+        
+        if(node_reference != 0) {
+            edgetable->edgetable[counter] = node_reference;
+        } else {
+            // Set the node number linking tot the node
+            mfl_set_edge_ref_in_ring(target_node, node_counter);
+            edgetable->edgetable[counter] = node_counter;
+            edgetable->edge_nodes[node_counter - edgetable->num_tips] = mfl_find_bottom_node_in_ring(target_node);
+            ++node_counter;
+        }
     }
 }
 
@@ -289,11 +264,17 @@ void tui_test_edgetables(void)
 {
     char* cliptesttree = NULL;
     
-    //cliptesttree = "temp_examp6=[&R] ((1,2),(3,4));";
-    //cliptesttree = "temp_examp6=[&R] ((1,2),(3,(4,5)));";
-    //cliptesttree = "temp_examp6=[&R] (1,(2,(3,(4,(5,6)))));";
-    //cliptesttree = "temp_examp6=[&R] (5,(4,(3,(2,1))));";
-    //cliptesttree = "temp_examp6=[&R] ((1,(2,(6,7))),(3,(4,5)));";
+    //cliptesttree = "temp_examp6=[&U] ((1,2),(3,4));";
+    //cliptesttree = "temp_examp6=[&U] ((1,2),(3,(4,5)));";
+    //cliptesttree = "temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
+    //cliptesttree = "temp_examp6=[&U] (5,(4,(3,(2,1))));";
+    //cliptesttree = "temp_examp6=[&U] ((1,(2,(6,7))),(3,(4,5)));";
+    //cliptesttree = "equal_test=[&U] ((1,(2,3)), (4,(5,6)));";
+    //cliptesttree = "equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
+    //cliptesttree = "equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
+    //cliptesttree = "equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
+    //cliptesttree = "equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
+    cliptesttree = "tree1=[&U] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
     
     mfl_edgetable_t* test_edgetable = NULL;
     mfl_tree_t* testree = mfl_convert_newick_to_mfl_tree_t(cliptesttree, 0);
@@ -310,7 +291,7 @@ void tui_test_edgetables(void)
 
     tui_print_edgetable(test_edgetable);
 //    
-//    free(test_edgetable);
+    free(test_edgetable);
     // Destroy the table
 //    mfl_destroy_edgetable(test_edgetable);
 }

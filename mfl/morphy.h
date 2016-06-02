@@ -630,7 +630,6 @@ void            mfl_destroy_edgetable(mfl_edgetable_t* edgetable);
 mfl_node_t*     mfl_find_bottom_node_in_ring(mfl_node_t* node);
 void            mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference);
 int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
-void            mfl_add_nodesref_traversal(mfl_node_t* start, int* node_counter, mfl_edgetable_t* edgetable);
 void            mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
 
 bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
