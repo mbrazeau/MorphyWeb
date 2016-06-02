@@ -178,6 +178,8 @@ typedef struct {
     char*                   input_data;
     int                     n_input_newick_trees;
     char**                  input_newick_trees;
+    int*                    int_weights;
+    double*                 real_weights;
     int                     n_datatypes;
     mfl_datatype_t          datatypes[MFL_DATATYPE_MAX];
     mfl_add_sequence_t      addseq_type;
@@ -214,7 +216,8 @@ typedef struct mfl_datapartition_t {
     bool part_has_inapplicables;
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
-    int* part_weights;
+    int* part_int_weights;
+    double* part_real_weights;
     mfl_parsim_fn part_downpass_full;
     mfl_parsim_fn part_downpass_partial;
     mfl_parsim_fn part_uppass_full;
@@ -248,6 +251,8 @@ typedef struct mfl_matrix_t {
     int  mat_num_characters;
     int  mat_max_states;
     bool* mat_included_characters;
+    int* mat_int_weights;
+    double* mat_real_weights;
     mfl_character_vector_t** mat_matrix;
 } mfl_matrix_t;
 
@@ -464,7 +469,7 @@ void            mfl_set_datapart_params_irrev(mfl_datapartition_t* d, bool has_i
 void            mfl_set_datapart_params_costmatrx(mfl_datapartition_t* d, mfl_handle_s* handle, bool has_inapplic);
 void            mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool has_inapplic, mfl_handle_s* handle);
 void            mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_matrix_t* m);
-void            mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int index, int num_rows);
+void            mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int intwt, int index, int num_rows);
 int             mfl_compare_dataparts_by_ctype(const void* p1, const void* p2);
 int             mfl_compare_dataparts_by_index(const void* p1, const void* p2);
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
