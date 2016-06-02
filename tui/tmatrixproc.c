@@ -163,4 +163,5 @@ int tui_test_matrix_processing(mfl_handle_s *mfl_handle)
     
     // Print the contents of the data matrix.
     
+    return 0;
 }

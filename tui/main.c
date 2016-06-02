@@ -51,8 +51,8 @@ int tui_build_destroy_tree_from_binary_newick(mfl_handle_t *mfl_handle, char *in
 
 int tui_getting_numstates_test(void)
 {
-    int num_taxa = 5;
-    int num_chars = 16;
+    //int num_taxa = 5;
+    //int num_chars = 16;
     int num_states = 0;
     
     /*Too many states test. */
@@ -93,9 +93,11 @@ int tui_getting_numstates_test(void)
     else if (num_states != MORPHY_MAX_STATE_NUMBER){
         dbg_printf("ERROR in call to mfl_get_numstates_from_matrix():by %s, line: %i", __FILE__, __LINE__);
         dbg_printf("\t Input states does not match max states or function failed to count correct number of states\n");
+        return 1;
     }
     else {
         dbg_printf("== PASSED == %s, line: %i just enough states check\n", __FILE__, __LINE__);
+        return 0;
     }
 
     
@@ -104,17 +106,16 @@ int tui_getting_numstates_test(void)
 
 void tui_test_character_stuff(void)
 {
-    int i = 0;
     int num_taxa = 0;
     int num_chars = 0;
-    char subcmd1[] = "ExSet * Exclude= 1-5 8 17;";
-    char subcmd2[] = "Exclude = 1-5, 8 17;";
-    char subcmd3[] = "18-51 100";
-    char subcmd4[] = "10-15 2-6";
+    //char subcmd1[] = "ExSet * Exclude= 1-5 8 17;";
+    //char subcmd2[] = "Exclude = 1-5, 8 17;";
+    //char subcmd3[] = "18-51 100";
+    //char subcmd4[] = "10-15 2-6";
     
     //                        1111111
     //               1234567890123456
-    char *matrix =  "120{12}000-000??001"
+    char *matrix =  (char*)"120{12}000-000??001"
     "3001110001101120"
     "00(12?3)000?110010030"
     "{123}0(24)0001110010030;";
@@ -231,17 +232,14 @@ void tui_test_newick_stuff()
     
     char temp_example_newick_for_writing1[] = "temp_examp1=[&U] (2,((3,4),(5,1)));";
     char temp_example_newick_for_writing2[] = "temp_examp2=[&R] (2,(6,((3,4),(5,1))));";
-    char temp_example_newick_for_writing3[] = "temp_examp3=[&R] (2,(6,((3,4),5),1));";
+    //char temp_example_newick_for_writing3[] = "temp_examp3=[&R] (2,(6,((3,4),5),1));";
     char temp_example_newick_for_writing4[] = "temp_examp4=[&U] (2,((3,4),(5,20),1));"; // Polytomy and multi-digit tip number not in sequence
     char temp_example_newick_for_writing5[] = "temp_examp5=[&R] (((((1,4),5),3),2),6);";
     char temp_example_newick_for_writing6[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
-    char temp_example_newick_for_writing7[] = "temp_examp7=[&U] ((1000,856),(2,3),(56,4));";
-    char temp_example_newick_for_writing8[] = "temp_examp8=[&R] (1,(2,(3,(4,5))));";
+    //char temp_example_newick_for_writing7[] = "temp_examp7=[&U] ((1000,856),(2,3),(56,4));";
+    //char temp_example_newick_for_writing8[] = "temp_examp8=[&R] (1,(2,(3,(4,5))));";
     
     char *sample_newick = NULL;
-    
-    int num_taxa = 0;
-    int num_nodes = 0;
     
     mfl_tree_t *tree_from_newick = NULL;
     

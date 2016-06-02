@@ -509,6 +509,9 @@ mfl_partition_set_t* mfl_generate_search_data(const mfl_handle_s* handle);
 void            mfl_destroy_partition_set(mfl_partition_set_t* ptset);
 mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
+mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
+mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
+void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t gapmethod, mfl_matrix_t* m);
 
 /* In mfl_starttree.c */
 
@@ -567,7 +570,6 @@ void            mfl_assign_bottom_node(mfl_node_t* n);
 
 void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
 void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset);
-
 void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts);
 void mfl_randomise_array(int* array, int nelems);
 int* mfl_create_default_taxon_array(int num_taxa);
@@ -595,6 +597,7 @@ void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t
 bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa);
 mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec);
 
 
 /* In mfl_drawtree.c*/
@@ -627,7 +630,6 @@ int         mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int &num_t
 int         mfl_number_of_characters_in_newick(int num_taxa, mfl_node_t *start);
 char*       mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int &count);
 char*       mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, bool root_polytomy);
-
 void mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int *tips_length);
 void mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int* num_taxa);
 void mfl_traverse_tree_to_print_newick_char_recursive(mfl_node_t *start, char *newick_tree_out, int* count);

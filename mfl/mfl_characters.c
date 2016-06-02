@@ -1654,7 +1654,7 @@ void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vect
 void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t gapmethod, mfl_matrix_t* m)
 {
     int i = 0;
-    int j = 0;
+    //int j = 0;
     int numparts = ptset->ptset_n_parts;
     bool inapplicable = false;
     mfl_parsimony_t ptype;

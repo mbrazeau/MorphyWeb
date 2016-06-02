@@ -245,10 +245,7 @@ mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handl
     sarec->stpadd_max_hold = hold;
     
     
-    
-    
     // Set the terminal node addition sequence in the SA record.
-    
     switch (handle->addseq_type) {
         case MFL_AST_ASIS:
             mfl_set_addseq_as_is(t, sarec);
@@ -585,7 +582,12 @@ mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_h
 
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
-    mfl_treebuffer_t* starttrees;
+    
+    int num_trees = MORPHY_DEFAULT_TREE_LIMIT;
+    if (handle->maxtrees) {
+        num_trees = handle->maxtrees;
+    }
+    mfl_treebuffer_t* starttrees = mfl_alloc_treebuffer(num_trees);
     
     // Building stuff
     mfl_tree_t* t = mfl_generate_new_starting_tree(dataparts, handle, searchrec);
