@@ -446,7 +446,59 @@ mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
     return sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
 }
 
-mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
+
+void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool bottom)
+{
+    int i = 0;
+    int numparts = dataparts->ptset_n_parts;
+    
+    node->nodet_num_dat_partitions = dataparts->ptset_n_parts;
+    
+    node->nodet_charstates = (mfl_nodedata_t**)mfl_malloc(node->nodet_num_dat_partitions * sizeof(mfl_nodedata_t*), 0);
+    
+    for (i = 0; i < numparts; ++i) {
+        node->nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
+        node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        
+        if (bottom) {
+            node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+            node->nodet_charstates[i]->nd_subtree_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        }
+    }
+}
+
+void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, int num_parts)
+{
+    int i = 0;
+    
+    for (i = 0; i < num_parts; ++i) {
+        ringmmber->nodet_charstates[i]->nd_final_set = ringbase->nodet_charstates[i]->nd_final_set;
+        ringmmber->nodet_charstates[i]->nd_subtree_final_set = ringbase->nodet_charstates[i]->nd_subtree_final_set;
+    }
+    
+}
+
+mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts)
+{
+    mfl_node_t* p = NULL;
+    int i = 0;
+    
+    mfl_node_t* ring = mfl_make_new_n_ary_ring_node(num_branches, ndstk);
+    
+    p = ring;
+    mfl_setup_nodedata(p, dataparts, true);
+    p = p->nodet_next;
+    do {
+        mfl_setup_nodedata(p, dataparts, false);
+        mfl_connect_uppass_sets(p, ring, dataparts->ptset_n_parts);
+        p = p->nodet_next;
+    } while (p != ring);
+    
+    return ring;
+}
+
+mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts)
 {
     mfl_node_t* a = NULL;
     mfl_node_t* l = NULL;
@@ -457,7 +509,7 @@ mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_additio
     l = mfl_get_next_terminal_in_addseq(sarec);
     r = mfl_get_next_terminal_in_addseq(sarec);
     
-    ringnd = mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
+    ringnd = mfl_make_n_ary_ring_with_nodedata(2, t->treet_nodestack, dataparts);//mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
     
     mfl_join_node_edges(a, ringnd);
     mfl_join_node_edges(l, ringnd->nodet_next);
@@ -466,16 +518,18 @@ mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_additio
     return ringnd;
 }
 
-void mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t)
+void mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
-    mfl_node_t* ring = mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
+    mfl_node_t* ring = mfl_make_n_ary_ring_with_nodedata(2, t->treet_nodestack, dataparts);//mfl_make_new_n_ary_ring_node(2, t->treet_nodestack);
     
     mfl_join_node_edges(tip, ring->nodet_next);
 }
 
-void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
+
+
+void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts)
 {
-    mfl_node_t* startpoint = mfl_generate_starting_trichotomy(t, sarec);
+    mfl_node_t* startpoint = mfl_generate_starting_trichotomy(t, sarec, dataparts);
     
     // Attach all remaining tips to a ringnode
     int i = 0;
@@ -483,7 +537,7 @@ void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t
     
     // Give all remaining tips a ring base so they can be inserted to the starttree
     for (i = 0; i < unattached; ++i) {
-        mfl_append_tip_to_ringnode(sarec->stpadd_tipstoadd[i], t);
+        mfl_append_tip_to_ringnode(sarec->stpadd_tipstoadd[i], t, dataparts);
     }
     
     t->treet_start = startpoint;
@@ -510,29 +564,6 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
     }
     else {
         return false;
-    }
-}
-
-
-// Functions for allocating nodal data
-void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool bottom)
-{
-    int i = 0;
-    int numparts = dataparts->ptset_n_parts;
-    
-    node->nodet_num_dat_partitions = dataparts->ptset_n_parts;
-    
-    node->nodet_charstates = (mfl_nodedata_t**)mfl_malloc(node->nodet_num_dat_partitions * sizeof(mfl_nodedata_t*), 0);
-    
-    for (i = 0; i < numparts; ++i) {
-        node->nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
-        node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-        node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-        
-        if (bottom) {
-            node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-            node->nodet_charstates[i]->nd_subtree_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-        }
     }
 }
 
@@ -565,14 +596,12 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     
     mfl_stepwise_addition_t * sarec = mfl_generate_stepwise_addition(t, handle, searchrec);
     
-    mfl_setup_tree_for_stepwise_addition(t, sarec);
+    mfl_setup_tree_for_stepwise_addition(t, sarec, dataparts);
     
     char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
     dbg_printf("the starting trichotomy: %s\n", showtree);
     free(showtree);
     
-    
-
     
     return starttrees;
 }
