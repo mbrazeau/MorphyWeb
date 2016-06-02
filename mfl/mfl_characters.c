@@ -1343,6 +1343,7 @@ void mfl_set_cv_chartypes(mfl_matrix_t* matrix, const mfl_handle_s* mfl_handle, 
  */
 mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
 {
+    int i = 0;
     int num_states = 0;
     char* input_chardata = NULL;
     mfl_parsimony_t* chartypes = NULL;
@@ -1384,6 +1385,22 @@ mfl_matrix_t* mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle)
     
     // TODO: This needs to be updated to be modified to function on user input. This is temporary default.
     new_inmatrix->mat_included_characters = (bool*)mfl_malloc(new_inmatrix->mat_num_characters, true);
+    
+    
+    if (!mfl_handle->int_weights) {
+        if (!mfl_handle->real_weights) {
+            new_inmatrix->mat_int_weights = (int*)mfl_malloc(new_inmatrix->mat_num_characters * sizeof(int), 0);
+            for (i = 0; i < new_inmatrix->mat_num_characters; ++i) {
+                new_inmatrix->mat_int_weights[i] = (int)MORPHY_DEFAULT_WEIGHT;
+            }
+        }
+        else {
+            new_inmatrix->mat_real_weights = mfl_handle->real_weights;
+        }
+    }
+    else {
+        new_inmatrix->mat_int_weights = mfl_handle->int_weights;
+    }
     
     /*int i;
     dbg_printf("Printing chartypes array:\n");
@@ -1614,7 +1631,7 @@ mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, mfl_ga
 }
 
 
-void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int index, int num_rows)
+void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int intwt, int index, int num_rows)
 {
     int i = 0;
     int n = 0;
@@ -1627,7 +1644,8 @@ void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vect
     }
     
     prt->part_char_indices[prt->part_n_chars_included] = index;
-    prt->part_weights[prt->part_n_chars_included]; // = the weight of the cv  ;
+    // TODO: some more elegant way of handling weights, especially where real values might be used.
+    prt->part_int_weights[prt->part_n_chars_included] = intwt;
     ++prt->part_n_chars_included;
 }
 
@@ -1642,7 +1660,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
     for (i = 0; i < m->mat_num_characters; ++i) {
         if (m->mat_included_characters[i]) {
             mfl_copy_column_into_partition(ptset->ptset_partitions[m->mat_matrix[i]->cv_partition_destination],
-                                           m->mat_matrix[i], i,
+                                           m->mat_matrix[i], m->mat_int_weights[i], i,
                                            m->mat_num_taxa);
         }
     }
@@ -1725,6 +1743,7 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
     
     
     for (i = 0; i < numparts; ++i) {
+        dataparts->ptset_partitions[i]->part_int_weights = (int*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_max * sizeof(int), 0);
         dataparts->ptset_partitions[i]->part_matrix = (mfl_charstate*)mfl_malloc((dataparts->ptset_partitions[i]->part_n_chars_max * matrix->mat_num_taxa)* sizeof(mfl_charstate), 0);
     }
     
