@@ -355,6 +355,33 @@ typedef struct mfl_treebuffer_t {
     mfl_tree_t** tb_savedtrees;
 } mfl_treebuffer_t;
 
+typedef struct {
+    int try_length;
+    mfl_node_t* try_site;
+} mfl_try_t;
+
+typedef struct {
+    int             sptadd_num_added;
+    int             stpadd_num_toadd;
+    mfl_nodearray_t stpadd_addedtips;
+    mfl_nodearray_t stpadd_tipstoadd;
+    int             stpadd_max_hold;
+    
+    mfl_nodearray_t* stpadd_holdthreads;    // The stepwise addition sites for the last tree in thread i
+    int**           stpadd_thread_ids;      // The thread ids for the ancestral topology of the current topology
+    
+    int             stpadd_shortest_try;
+    int             stpadd_longest_try;
+    mfl_node_t*     stpadd_newbranch;
+    mfl_node_t*     stpadd_lastnewbranch;
+    int             stpadd_num_held_old;
+    int             stpadd_num_held_new;
+    mfl_try_t**     stpadd_newtries;
+    mfl_try_t**     stpadd_oldtries;
+    
+} mfl_stepwise_addition_t;
+
+
 /*!
  @discussion Contains the parameters of the tree search process.
  */
@@ -538,7 +565,37 @@ void            mfl_assign_bottom_node(mfl_node_t* n);
 
 /* In mfl_starttree.c */
 
+void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
+void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset);
+
+void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts);
+void mfl_randomise_array(int* array, int nelems);
+int* mfl_create_default_taxon_array(int num_taxa);
+void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a);
+void mfl_push_tip_to_addseq_array(mfl_node_t* tip, mfl_stepwise_addition_t* sarec);
+void mfl_set_random_addition_sequence(mfl_tree_t* t, mfl_stepwise_addition_t* sarec);
+void mfl_set_addseq_as_is(mfl_tree_t* t, mfl_stepwise_addition_t* sarec);
+void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* chardata /*some list of outgroup taxa*/);
+int mfl_compare_holdthreads(mfl_nodearray_t thread1, mfl_nodearray_t thread2, int n);
+mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+int mfl_compare_tries_by_length(const void* t1, const void* t2);
+void mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps);
+void mfl_restore_addition_to_last_step(mfl_stepwise_addition_t* sarecord, int head);
+void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mfl_stepwise_addition_t* sarec);
+bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, int length, mfl_searchrec_t* searchrec);
+void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec);
+void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_t* searchrec);
+mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec);
+void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool bottom);
+void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, int num_parts);
+mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts);
+mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts);
+void mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t, mfl_partition_set_t* dataparts);
+void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts);
+bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa);
+mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+
 
 /* In mfl_drawtree.c*/
 char*   mfl_drawtree_create_virtual_grid(int num_taxa);
@@ -583,15 +640,26 @@ mfl_treebuffer_t *mfl_tree_from_newick_to_buffer(mfl_handle_s* mfl_handle);
 
 
 /* In mfl_brwap.c */
+void mfl_save_topology(mfl_tree_t* t, mfl_treebuffer_t* trbuf, mfl_searchrec_t* searchrec);
+bool mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec);
+bool mfl_restore_branching(mfl_cliprec_t* cliprec);
 inline void mfl_temp_rebranching(mfl_node_t* src, mfl_node_t* tgt, mfl_cliprec_t* regraft);
 inline void mfl_undo_temp_rebranching(mfl_cliprec_t* regraft);
-void mfl_regrafting_traversal(mfl_node_t* n, mfl_node_t* src, mfl_searchrec_t* searchrec, int startdistance, int trav);
-void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool neighbor_rule);
-bool    mfl_heuristic_search(mfl_handle_s *mfl_handle);
-//inline mfl_node_t* mfl_clip_branch(mfl_node_t* n, mfl_cliprec_t* cliprec);
-//inline void mfl_restore_branching(mfl_cliprec_t* cliprec);
-void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec);
+mfl_node_t* mfl_get_src_root(mfl_node_t *n);
 
+void mfl_TBReconnect_traversal(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool isbackswap);
+void mfl_initialise_tbr_rerooting_record(int node_weight, mfl_subtree_edges_t* stedges);
+void mfl_push_edge_ref_to_record(mfl_node_t* edge, mfl_subtree_edges_t* steges);
+int mfl_get_all_subtree_edges(mfl_node_t* n, mfl_subtree_edges_t* steges, mfl_node_t* start);
+bool mfl_reroot_subtree(mfl_node_t* subtr, mfl_subtree_edges_t* stedges, mfl_cliprec_t* initial);
+void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t* searchrec, int startdistance, int trav);
+void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool isbackswap);
+void mfl_break_branch(mfl_node_t* src, mfl_searchrec_t* searchrec);
+void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec);
+void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t* searchrec, int startdistance, int trav);
+void mfl_regraft_subtree(mfl_node_t* src, mfl_node_t* tgt, mfl_searchrec_t* searchrec, bool isbackswap);
+void mfl_break_branch(mfl_node_t* src, mfl_searchrec_t* searchrec);
+bool mfl_heuristic_search(mfl_handle_s *mfl_handle);
 
 /* in mfyinterface.c*/
 void                    mfl_free_input_data(mfl_handle_s *mfl_struct);
@@ -618,11 +686,15 @@ bool            mfl_bts_AND(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t
 bool            mfl_bts_OR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target);
 bool            mfl_bts_XOR(mfl_bitset_t* set1, mfl_bitset_t* set2, mfl_bitset_t* target);
 bool            mfl_bts_COMPLEMENT(mfl_bitset_t* bitset, mfl_bitset_t* target);
+int             mfl_compare_bitsets(const void* set1, const void* set2);
 int             mfl_bts_calculate_n_bitfieds(int n_minbits);
 mfl_bitset_t*   mfl_bts_create_bitset(int n_minbits);
 bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 /* in mfl_compare.c*/
+mfl_partition_set_t* mfl_create_bipartition_set(int num_taxa);
+void mfl_destroy_bipartition_set(mfl_partition_set_t* bptset);
+
 void            mfl_set_bipartitions(mfl_node_t* n);
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips, bool is_rooted);
 void            mfl_get_edgetable_tips(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
@@ -638,7 +710,14 @@ void            tui_print_edgetable(mfl_edgetable_t* edgetable); //TODO: move th
 void            tui_test_edgetables(void); //TODO: move this function to tui
 
 /* in mfl_searchrec.c*/
-void                mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
+/* temporary place for prototypes */
+void            mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
+void            mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
+void            mfl_copy_from_all_partitions_into_node_data(mfl_node_t* n, mfl_partition_set_t* partset);
+void            mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts);
+unsigned long int mfl_rng_uniform_int(mfl_searchrec_t* searchrec, unsigned long int max);
+bool            mfl_search_environment(mfl_handle_s* handle);
 mfl_searchrec_t*    mfl_create_searchrec(mfl_handle_s* handle);
+
 /* in mfl_morphy.c*/
 void*           __MFL_MALLOC__(size_t size, int memsetval, const char* fn_name);

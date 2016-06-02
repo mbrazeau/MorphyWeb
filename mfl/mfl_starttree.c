@@ -44,31 +44,7 @@
     // Outgroup specification
 
 
-typedef struct {
-    int try_length;
-    mfl_node_t* try_site;
-} mfl_try_t;
 
-typedef struct {
-    int             sptadd_num_added;
-    int             stpadd_num_toadd;
-    mfl_nodearray_t stpadd_addedtips;
-    mfl_nodearray_t stpadd_tipstoadd;
-    int             stpadd_max_hold;
-    
-    mfl_nodearray_t* stpadd_holdthreads;    // The stepwise addition sites for the last tree in thread i
-    int**           stpadd_thread_ids;      // The thread ids for the ancestral topology of the current topology
-    
-    int             stpadd_shortest_try;
-    int             stpadd_longest_try;
-    mfl_node_t*     stpadd_newbranch;
-    mfl_node_t*     stpadd_lastnewbranch;
-    int             stpadd_num_held_old;
-    int             stpadd_num_held_new;
-    mfl_try_t**     stpadd_newtries;
-    mfl_try_t**     stpadd_oldtries;
-    
-} mfl_stepwise_addition_t;
 
 
 void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row)
@@ -151,7 +127,7 @@ void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a)
 {
     int i = 0;
     int j = 0;
-    int ai = 0;
+    //int ai = 0;
     
     assert(t->nodet_num_dat_partitions == a->nodet_num_dat_partitions);
     int num_partitions = t->nodet_num_dat_partitions;
@@ -165,11 +141,13 @@ void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a)
     }
 }
 
+
 void mfl_push_tip_to_addseq_array(mfl_node_t* tip, mfl_stepwise_addition_t* sarec)
 {
     sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = tip;
     ++sarec->stpadd_num_toadd;
 }
+
 
 void mfl_set_random_addition_sequence(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
 {
@@ -186,6 +164,7 @@ void mfl_set_random_addition_sequence(mfl_tree_t* t, mfl_stepwise_addition_t* sa
     free(addsequence);
 }
 
+
 void mfl_set_addseq_as_is(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
 {
     int *addsequence = mfl_create_default_taxon_array(t->treet_num_taxa);
@@ -199,6 +178,7 @@ void mfl_set_addseq_as_is(mfl_tree_t* t, mfl_stepwise_addition_t* sarec)
     
     free(addsequence);
 }
+
 
 void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* chardata /*some list of outgroup taxa*/)
 {
@@ -217,6 +197,7 @@ void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* charda
     // *** Return the array of taxon numbers
 }
 
+
 int mfl_compare_holdthreads(mfl_nodearray_t thread1, mfl_nodearray_t thread2, int n)
 {
     int i = n;
@@ -227,16 +208,20 @@ int mfl_compare_holdthreads(mfl_nodearray_t thread1, mfl_nodearray_t thread2, in
         }
         --i;
     } while (i);
+    
+    // TODO: This is temporary
+    return -1;
 }
+
 
 void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec)
 {
-    int i = 0;
     
     free(sarec->stpadd_addedtips);
     free(sarec->stpadd_tipstoadd);
     free(sarec);
 }
+
 
 mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
@@ -280,6 +265,7 @@ mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handl
             break;
     }
 }
+
 
 
 int mfl_compare_tries_by_length(const void* t1, const void* t2)
@@ -402,6 +388,7 @@ bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, 
     return ret;
 }
 
+
 void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec)
 {
     mfl_node_t* p = NULL;
@@ -432,6 +419,7 @@ void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_
     
     
 }
+
 
 mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
 {
@@ -468,6 +456,7 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
     }
 }
 
+
 void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, int num_parts)
 {
     int i = 0;
@@ -478,6 +467,7 @@ void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, 
     }
     
 }
+
 
 mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts)
 {
@@ -498,6 +488,7 @@ mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t*
     return ring;
 }
 
+
 mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts)
 {
     mfl_node_t* a = NULL;
@@ -517,6 +508,7 @@ mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_additio
     
     return ringnd;
 }
+
 
 void mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
@@ -543,6 +535,8 @@ void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t
     t->treet_start = startpoint;
 }
 
+
+
 bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa)
 {
     int i = 0;
@@ -567,6 +561,7 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
     }
 }
 
+
 mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
     int i = 0;
@@ -586,6 +581,7 @@ mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_h
 
     return t;
 }
+
 
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {

@@ -33,11 +33,11 @@
 
 int tui_build_destroy_tree_from_binary_newick(mfl_handle_t *mfl_handle, char *input_newick)
 {
-    int num_taxa = 0;
+    //int num_taxa = 0;
     
     if (!mfl_handle && !input_newick) {
         
-        input_newick = "((( (1,4) ( (5,) (2,6), 3))));";
+        input_newick = (char*)"((( (1,4) ( (5,) (2,6), 3))));";
         
     }
 }
@@ -49,7 +49,7 @@ int tui_build_destroy_tree_from_binary_newick(mfl_handle_t *mfl_handle, char *in
  */
 
 
-int tui_getting_numstates_test()
+int tui_getting_numstates_test(void)
 {
     int num_taxa = 5;
     int num_chars = 16;
@@ -102,7 +102,7 @@ int tui_getting_numstates_test()
 }
 
 
-void tui_test_character_stuff()
+void tui_test_character_stuff(void)
 {
     int i = 0;
     int num_taxa = 0;
@@ -309,6 +309,7 @@ void tui_test_newick_stuff()
     //TODO: clear the handle as well!
 }
 
+
 void tui_test_tree_copying(void)
 {
     char cpytarget[] = "temp_examp6=[&R] (((((1,4),5),3),2),6,(7,8));";
@@ -325,6 +326,7 @@ void tui_test_tree_copying(void)
     free(copiedtr);
     
 }
+
 
 void tui_test_nary_ring_creation(void)
 {
@@ -343,6 +345,7 @@ void tui_test_nary_ring_creation(void)
     return;
 }
 
+
 void tui_test_addition_sequence(void)
 {
     
@@ -350,11 +353,11 @@ void tui_test_addition_sequence(void)
     int num_chars = 4;
     int num_og_tax = 0;
     
-    char matrix[] = "-000"
-                    "-000"
-                    "-405"
+    char matrix[] = "0000"
+                    "0000"
+                    "0405"
                     "3000"
-                    "1000";
+                    "1000;";
     
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
     
