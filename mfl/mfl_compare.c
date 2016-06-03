@@ -239,7 +239,7 @@ bool mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2)
         return false;
     }
     
-    if (!memcmp(t1, t2, t1->numentries * sizeof(int))) {
+    if (!memcmp(t1->edgetable, t2->edgetable, t1->numentries * sizeof(int))) {
         return true; // memcmp returns 0 if there's a match
     }
     else {
@@ -261,37 +261,64 @@ void tui_print_edgetable(mfl_edgetable_t* edgetable)
 
 void tui_test_edgetables(void)
 {
-    char* cliptesttree = NULL;
+    char* cliptesttree1 = NULL;
+    char* cliptesttree2 = NULL;
+    bool compare = false;
     
     //cliptesttree = "temp_examp6=[&U] ((1,2),(3,4));";
     //cliptesttree = "temp_examp6=[&U] ((1,2),(3,(4,5)));";
     //cliptesttree = "temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
     //cliptesttree = "temp_examp6=[&U] (5,(4,(3,(2,1))));";
     //cliptesttree = "temp_examp6=[&U] ((1,(2,(6,7))),(3,(4,5)));";
-    //cliptesttree = "equal_test=[&U] ((1,(2,3)), (4,(5,6)));";
+    cliptesttree1 = "equal_test=[&U] ((1,(2,3)), (4,(5,6)));";
     //cliptesttree = "equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
-    //cliptesttree = "equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
-    //cliptesttree = "equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
+    //cliptesttree1 = "equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
+    cliptesttree2 = "equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
     //cliptesttree = "equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
-    cliptesttree = (char*)"tree1=[&U] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
+    //cliptesttree = (char*)"tree1=[&U] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
     
-    mfl_edgetable_t* test_edgetable = NULL;
-    mfl_tree_t* testree = mfl_convert_newick_to_mfl_tree_t(cliptesttree, 0);
+    mfl_edgetable_t* test_edgetable1 = NULL;
+    mfl_edgetable_t* test_edgetable2 = NULL;
+    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 0);
+    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 0);
     
-    if(!testree->treet_root) {
-        mfl_assign_bottom_node(testree->treet_start);
-        test_edgetable = mfl_initiate_edgetable_t(testree->treet_num_taxa, 0);
+    if(!testree1->treet_root) {
+        mfl_assign_bottom_node(testree1->treet_start);
+        test_edgetable1 = mfl_initiate_edgetable_t(testree1->treet_num_taxa, 0);
     } else {
-        mfl_assign_bottom_node(testree->treet_root);
-        test_edgetable = mfl_initiate_edgetable_t(testree->treet_num_taxa, 1);
+        mfl_assign_bottom_node(testree1->treet_root);
+        test_edgetable1 = mfl_initiate_edgetable_t(testree1->treet_num_taxa, 1);
     }
     
-    mfl_get_edgetable(test_edgetable, testree);
+    if(!testree2->treet_root) {
+        mfl_assign_bottom_node(testree2->treet_start);
+        test_edgetable2 = mfl_initiate_edgetable_t(testree2->treet_num_taxa, 0);
+    } else {
+        mfl_assign_bottom_node(testree2->treet_root);
+        test_edgetable2 = mfl_initiate_edgetable_t(testree2->treet_num_taxa, 1);
+    }
+    
+    
+    mfl_get_edgetable(test_edgetable1, testree1);
+    mfl_get_edgetable(test_edgetable2, testree2);
 
-    tui_print_edgetable(test_edgetable);
+    tui_print_edgetable(test_edgetable1);
+    tui_print_edgetable(test_edgetable2);
+    
+    compare = mfl_compare_edge_tables(test_edgetable1, test_edgetable2);
+    if(compare == true){
+        dbg_printf("Trees are the same!\n");
+    } else {
+        dbg_printf("Trees are different!\n");
+    }
+
+    
 //    
 //free(test_edgetable);
+    mfl_destroy_edgetable(test_edgetable2);
+    mfl_free_tree(testree2);
+
     // Destroy the table
-    mfl_destroy_edgetable(test_edgetable);
-    mfl_free_tree(testree);
+    mfl_destroy_edgetable(test_edgetable1);
+    mfl_free_tree(testree1);
 }
