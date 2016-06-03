@@ -607,11 +607,13 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, bool root_polytom
     int newick_string_length = 0;
     int num_taxa_local = 0;
     int count = 0;
+    bool wasrooted = false;
     
     // Adding starting with the root command
     
     if (input_tree->treet_root) {
         root_command = mfl_get_newick_root_header(true);
+        wasrooted = true;
     } else {
         root_command = mfl_get_newick_root_header(false);
         
@@ -655,7 +657,9 @@ char* mfl_convert_mfl_tree_t_to_newick(mfl_tree_t *input_tree, bool root_polytom
     mfl_concatenate_newick_elements(newick_tree_out, newicktr_substr, root_command);
 
     
-    mfl_unroot_tree(input_tree);
+    if (!wasrooted) {
+        mfl_unroot_tree(input_tree);
+    }
     
     return newick_tree_out;
 
