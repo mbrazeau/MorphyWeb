@@ -77,13 +77,7 @@ int mfl_calculate_number_of_nodes_to_allocate(int num_taxa)
  */
 bool mfl_check_node_is_bottom(mfl_node_t *querynode)
 {
-    bool is_bottom = 0;
-    
-    if (querynode->nodet_isbottom) {
-        is_bottom = 1;
-    }
-    
-    return is_bottom;
+    return querynode->nodet_isbottom;
 }
 
 
