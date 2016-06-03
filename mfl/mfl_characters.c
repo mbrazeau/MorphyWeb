@@ -1668,6 +1668,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
     }
     
     for (i = 0; i < numparts; ++i) {
+        
         inapplicable = false;
         ptype = ptset->ptset_partitions[i]->part_optimisation_method;
         if (ptset->ptset_partitions[i]->part_has_inapplicables) {
@@ -1677,8 +1678,8 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
         }
         ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, true);
         ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, false);
-        ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, true);
-        ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, false);
+        ptset->ptset_partitions[i]->part_uppass_full = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, true);
+        ptset->ptset_partitions[i]->part_uppass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, false);
     }
     
 }

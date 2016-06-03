@@ -447,6 +447,10 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         
         node->nodet_charstates[i]->nd_parent_partition = dataparts->ptset_partitions[i];
+        node->nodet_charstates[i]->nd_downpass_full = dataparts->ptset_partitions[i]->part_downpass_full;
+//        node->nodet_charstates[i]->
+//        node->nodet_charstates[i]->
+//        node->nodet_charstates[i]->
         
         if (bottom) {
             node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
@@ -512,6 +516,24 @@ void mfl_setup_internal_nodedata_in_assembled_tree(mfl_node_t* n, mfl_partition_
     
 }
 
+// TODO: Incorporate this function (conditionally) into any rerooting function
+void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
+{
+    assert(t->treet_root);
+    int i = 0;
+    
+    mfl_join_node_edges(&t->treet_dummynode, t->treet_root);
+    
+    t->treet_dummynode.nodet_charstates = (mfl_nodedata_t**)mfl_malloc(dataparts->ptset_n_parts * sizeof(mfl_nodedata_t*), 0);
+    for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+        t->treet_dummynode.nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
+        
+        if (!dataparts->ptset_partitions[i]->part_has_inapplicables) {
+            t->treet_dummynode.nodet_charstates[i]->nd_final_set = t->treet_root->nodet_charstates[i]->nd_prelim_set;
+        }
+    }
+}
+
 void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
     int i = 0;
@@ -535,6 +557,12 @@ void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dat
     }
     
     mfl_setup_internal_nodedata_in_assembled_tree(entry, dataparts);
+    
+    // Conditional rooting business
+    
+    
+    // TODO: Centralise this process
+    mfl_setup_starttree_root(t, dataparts);
     
     mfl_apply_characters_to_tips(t, dataparts);
 }

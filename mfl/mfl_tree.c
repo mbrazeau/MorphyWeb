@@ -764,6 +764,7 @@ void mfl_unroot_tree(mfl_tree_t *tree)
     }
     else {
         // The root is polychotomous, perform polychotomous unrooting
+        // TODO: Complete polychotomous rooting
         p->nodet_next = q;
     }
     
@@ -881,11 +882,7 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
     int num_branches = 2;
     mfl_node_t *root_node = NULL;
     mfl_node_t *n = NULL;
-    mfl_nodearray_t nds = input_tree->treet_treenodes; // This is an optimisation trick, more than anything.
-                                                       // Because this dereferencing operation is done a bunch
-                                                       // of times in this function, we can just store the address
-                                                       // of treet_treenodes in a local variable do avoid multiple
-                                                       // dereferences
+    mfl_nodearray_t nds = input_tree->treet_treenodes;
     
     //The tree must not be rooted!
     if (input_tree->treet_root){
@@ -915,25 +912,6 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
         
         i = 0; // Resent i to 0 in case we try to use it again.
         
-        //Generate the two other nodes in the new root ring and pointing them to themselves
-        /*mfl_node_t *root_ring_node_left;
-        root_ring_node_left = mfl_get_next_available_node(input_tree->treet_treenodes);
-        root_ring_node_left->nodet_next = root_ring_node_left;
-        mfl_node_t *root_ring_node_right;
-        root_ring_node_right = mfl_get_next_available_node(input_tree->treet_treenodes);
-        root_ring_node_right->nodet_next = root_ring_node_right;*/
-
-        
-        //Generate the root node ring
-        //mfl_make_ring(root_node, root_ring_node_left, root_ring_node_right); // bottom is pointing to NULL (root), left is pointing to target_node and right is pointing to target_node->edge
-        
-        
-        //Check if node is ring //TG: this part might be over kill since mfl_make_ring is supose to work smoothly. Just to be sure though.
-        /*
-         MDB: Yep. This is a debugging check and will slow execution down quite a bit if rootings/
-         rerootings are done often enough. If you're going to add these kinds of checks, I'd
-         put them inside conditional debug statements, like so: */
-        
 #ifdef MFY_DEBUG
         bool check_ring;
         check_ring = mfl_check_is_in_ring(root_node);
@@ -955,14 +933,6 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
         //Point the tree root to the root_node
         input_tree->treet_root = root_node;
         
-        /*
-         *  TG: It's probably safe to add a broken tree checker here no?
-         *  MDB: TUI functions aren't exported to the library. They're for testing only.
-         *  Given that rooting and unrooting might be performed many times during the search,
-         *  I woudld not want to add the complete tree-check routine to the mix. If we did
-         *  add it here, we should put it within conditional compilation statements so that 
-         *  it's not included in the release builds.
-         */
     }
 }
 

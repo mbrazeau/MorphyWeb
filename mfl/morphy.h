@@ -204,7 +204,7 @@ typedef enum {
 //typedef long double *mfl_costs_t;       // A matrix of transition costs.
 
 
-typedef void (*mfl_parsim_fn)(mfl_charstate* anc, mfl_charstate* left, mfl_charstate* right, struct mfl_datapartition_t* datapart, int* length);       // Pointer for a function that performs parsimony calculations at a node.
+typedef void (*mfl_parsim_fn)(struct mfl_nodedata_t* n, struct mfl_nodedata_t* left, struct mfl_nodedata_t* right, struct mfl_nodedata_t* anc, struct mfl_datapartition_t* datapart, int* length);       // Pointer for a function that performs parsimony calculations at a node.
 typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
@@ -437,11 +437,11 @@ typedef struct {
  */
 
 /* In mfl_evaluate.c */
-void mfl_fitch_downpass_binary_node(mfl_charstate* anc, mfl_charstate* left, mfl_charstate* right, mfl_datapartition_t* datapart, int* length);
+void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length);
 void mfl_fitch_downpass_INAPPLICABLE(mfl_node_t *node);
-void mfl_fitch_uppass_binary_node(mfl_node_t *node);
+void mfl_fitch_uppass_binary_node(mfl_charstate* n, mfl_charstate* left, mfl_charstate* right, mfl_charstate* dummy, mfl_datapartition_t* datapart, int* length);
 
-void mfl_postorder_traversal(mfl_node_t *n, mfl_searchrec_t *search_rec, int* length);
+void mfl_postorder_traversal(mfl_node_t *n, int* length);
 
 /* In mfl_characters.c */
 
