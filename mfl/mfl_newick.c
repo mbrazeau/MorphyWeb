@@ -397,7 +397,6 @@ void mfl_traverse_tree_to_get_tip_char_length(mfl_node_t *start, int *tips_lengt
  Traverse a mfl_tree_t to get the number of tips in the tree.
  @param start a mfl_node_t pointer to the starting node in the tree.
  @param num_taxa an integer counter for the number of tips (ideally set to 0).
- @returns the updated num_taxa counter.
  */
 void mfl_traverse_mfl_tree_t_number_of_taxa(mfl_node_t *start, int* num_taxa)
 {
@@ -593,8 +592,6 @@ char* mfl_get_newick_root_header(bool isrooted)
 /*!
  Converts an input mfl_tree_t into a newick character string
  @param input_tree (mfl_tree_t*) a pointer to the mfl_tree_t object to convert.
- @param num_taxa (int) the active number of taxa in the tree. Can be set to 0 to
- be infered.
  @param root_polytomy (bool) if the tree is unrooted, whether arbitrarily root 
  the first node (polytomy = true) or the first edge (polytomy = false).
  @returns a character Newick string.

@@ -350,6 +350,8 @@ void mfl_pruning_traversal(mfl_node_t* n, mfl_searchrec_t* searchrec)
     
 }
 
+// TODO: Move this prototype out to the tui along with the function
+void tui_spr_test_environment(void);
 void tui_spr_test_environment(void)
 {
     // NOTE: This is a tui function and should be moved there.

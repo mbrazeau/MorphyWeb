@@ -242,6 +242,7 @@ typedef struct mfl_character_vector_t {
     int cv_num_states;
     int cv_partition_destination;
     char** cv_character_cells;
+    mfl_charstate* cv_activestates; // Records whether a state has appeared at least once on the tree
     mfl_charstate* cv_chardata;
 } mfl_character_vector_t;
 
@@ -681,6 +682,14 @@ bool                    mfl_set_collapse(mfl_handle_s *mfl_struct, void *param_d
 bool                    mfl_set_collapse_value(mfl_handle_s *mfl_struct, void *param_data);
 bool                    mfl_set_gapormissing(mfl_handle_s *mfl_struct, void *param_data);
 bool                    mfl_set_parameter(mfl_handle_t *mfl_handle, mfl_param_t param_type, void *param_data);
+bool mfl_set_ctypes(mfl_handle_s* mfl_struct, void *param_data);
+void* mfl_get_addseq_t(mfl_handle_s *mfl_struct);
+int mfl_get_island_count(mfl_handle_s *mfl_struct);
+int mfl_get_island_size(mfl_handle_s *mfl_struct, int island_number);
+int mfl_get_island_length(mfl_handle_s *mfl_struct, int island_number);
+long mfl_get_num_rearrangements(mfl_handle_s *mfl_struct);
+int mfl_get_num_savedtrees(mfl_handle_s *mfl_struct);
+int mfl_get_shortest_treelen(mfl_handle_s *mfl_struct);
 mfl_resultant_data_s*   mfl_morphy_controller(mfl_handle_s *mfl_handle);
 mfl_handle_t            mfl_s2t(mfl_handle_s *mfl_handle);
 mfl_handle_s*           mfl_t2s(mfl_handle_t mfl_handle);

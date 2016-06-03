@@ -265,16 +265,16 @@ void tui_test_edgetables(void)
     char* cliptesttree2 = NULL;
     bool compare = false;
     
-    //cliptesttree = "temp_examp6=[&U] ((1,2),(3,4));";
-    //cliptesttree = "temp_examp6=[&U] ((1,2),(3,(4,5)));";
-    //cliptesttree = "temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
-    //cliptesttree = "temp_examp6=[&U] (5,(4,(3,(2,1))));";
-    //cliptesttree = "temp_examp6=[&U] ((1,(2,(6,7))),(3,(4,5)));";
-    cliptesttree1 = "equal_test=[&U] ((1,(2,3)), (4,(5,6)));";
-    //cliptesttree = "equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
-    //cliptesttree1 = "equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
-    cliptesttree2 = "equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
-    //cliptesttree = "equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
+    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,4));";
+    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,(4,5)));";
+    //cliptesttree = (char*)"temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
+    //cliptesttree = (char*)"temp_examp6=[&U] (5,(4,(3,(2,1))));";
+    //cliptesttree = (char*)"temp_examp6=[&U] ((1,(2,(6,7))),(3,(4,5)));";
+    cliptesttree1 = (char*)"equal_test=[&U] ((1,(2,3)), (4,(5,6)));";
+    //cliptesttree = (char*)"equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
+    //cliptesttree1 = (char*)"equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
+    cliptesttree2 = (char*)"equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
+    //cliptesttree = (char*)"equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
     //cliptesttree = (char*)"tree1=[&U] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
     
     mfl_edgetable_t* test_edgetable1 = NULL;

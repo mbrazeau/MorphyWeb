@@ -102,29 +102,27 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
     }
 }
 
-void mfl_fitch_downpass_INAPPLICABLE(mfl_node_t *node)
+void mfl_fitch_downpass_inapplicables(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length)
 {
     int i = 0;
-    mfl_node_t* lchild = NULL;
-    mfl_node_t* rchild = NULL;
-    lchild = node->nodet_next->nodet_edge;
-    rchild = node->nodet_next->nodet_next->nodet_edge;
-    mfl_charstate temp = NULL;
+    int* weights = datapart->part_int_weights;
+    int num_chars = datapart->part_n_chars_included;
+    mfl_charstate* n = n_nd->nd_prelim_set;
+    mfl_charstate* left = left_nd->nd_prelim_set;
+    mfl_charstate* right = right_nd->nd_prelim_set;
+    mfl_charstate temp = 0;
     
-    //    mfl_charstate* parentchars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    //    mfl_charstate* leftchars   = lchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    //    mfl_charstate* rightchars  = rchild->nodet_dataparts[MFL_OPT_FITCH]->nd_prelim_set;
-    //    int num_chars = node->nodet_dataparts[MFL_OPT_FITCH]->nd_n_characters;
-    //
-    //    for (i = 0; i < num_chars; ++i) {
-    //        if ((temp = leftchars[i] & rightchars[i])) {
-    //            parentchars[i] = temp;
-    //        }
-    //        else {
-    //            parentchars[i] = leftchars[i] | rightchars[i];
-    //            /* Increment the length of the tree, and maxsteps*/
-    //        }
-    //    }
+    for (i = 0; i < num_chars; ++i) {
+        if ((temp = left[i] & right[i])) {
+            n[i] = temp;
+        }
+        else {
+            n[i] = left[i] | right[i];
+            if (length) {
+                *length += weights[i];
+            }
+        }
+    }
 }
 
 inline int mfl_wagner_stepcount(mfl_charstate leftchar, mfl_charstate rightchar, mfl_charstate* parentchar, int weight)
