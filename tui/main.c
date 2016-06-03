@@ -343,6 +343,43 @@ void tui_test_nary_ring_creation(void)
     return;
 }
 
+void tui_test_basic_character_optimisation(void)
+{
+    int num_taxa = 5;
+    int num_chars = 4;
+    int num_og_tax = 0;
+    
+    char matrix[] = "0000"
+                    "-000"
+                    "1100"
+                    "1111"
+                    "1112;";
+    
+    char* testnewick = (char*)"ttree6 = [&R](1,(2,(3,(4,5))));";
+    
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    // Setup the handle:
+    handle->n_taxa = num_taxa;
+    handle->n_chars = num_chars;
+    handle->n_outgroup_taxa = num_og_tax;
+    handle->n_to_hold = 3;
+    handle->input_data = matrix;
+    handle->addseq_type = MFL_AST_ASIS;
+    handle->gap_method = MFL_GAP_MISSING_DATA;
+    //    handle->addseq_type = MFL_AST_RANDOM;
+    
+    mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
+    mfl_partition_set_t* dataparts = mfl_generate_search_data(handle);
+    
+    mfl_tree_t* testtree = mfl_convert_newick_to_mfl_tree_t(testnewick, num_taxa);
+    
+    mfl_setup_input_tree_with_node_data(testtree, dataparts);
+    
+    tui_check_broken_tree(testtree, false);
+    mfl_postorder_traversal(testtree->treet_root, searchrec, &testtree->treet_parsimonylength);
+    
+}
 
 void tui_test_addition_sequence(void)
 {
@@ -351,9 +388,9 @@ void tui_test_addition_sequence(void)
     int num_chars = 4;
     int num_og_tax = 0;
     
-    char matrix[] = "0000"
-                    "0000"
-                    "0405"
+    char matrix[] = "-000"
+                    "-000"
+                    "-405"
                     "3000"
                     "1000;";
     
@@ -401,6 +438,10 @@ int main (int argc, char *argv[])
     dbg_printf("Testing the n-ary ring creation:\n");
     tui_test_nary_ring_creation();
     dbg_printf("\nEnd n-ary ring test\n");
+
+    dbg_printf("Testing character optimisation (yay!):\n");
+    tui_test_basic_character_optimisation();
+    dbg_printf("\nEnd character optimisation test\n");
     
     dbg_printf("Testing addition sequence:\n");
     tui_test_addition_sequence();

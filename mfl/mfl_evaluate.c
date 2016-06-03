@@ -56,6 +56,7 @@
 void mfl_fitch_downpass_binary_node(mfl_charstate* anc, mfl_charstate* left, mfl_charstate* right, mfl_datapartition_t* datapart, int* length)
 {
     int i = 0;
+    // TODO: Sort out assignment of weights array
     int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate temp = 0;
@@ -180,36 +181,39 @@ void mfl_wagner_downpass_binary_node(mfl_node_t *node)
 }
 
 
-void mfl_postorder_traversal(mfl_node_t *n, mfl_searchrec_t *search_rec)
+void mfl_postorder_traversal(mfl_node_t *n, mfl_searchrec_t *search_rec, int* length)
 {
     int i = 0;
     int num_dataparts;
     mfl_node_t *p = NULL;
     mfl_parsim_fn evaluator;
-    mfl_node_t* left = n->nodet_next->nodet_edge;
-    mfl_node_t* right = n->nodet_next->nodet_next->nodet_edge;
+    mfl_node_t* left;
+    mfl_node_t* right;
     
     if (n->nodet_tip) {
         return;
     }
     
-    p = n;
+    left = n->nodet_next->nodet_edge;
+    right = n->nodet_next->nodet_next->nodet_edge;
+    
+    p = n->nodet_next;
     do {
+        mfl_postorder_traversal(p->nodet_edge, search_rec, length);
         p = p->nodet_next;
-        mfl_postorder_traversal(p->nodet_edge, search_rec);
     } while (p != n);
     
     num_dataparts = n->nodet_num_dat_partitions;
     
     // For each data partition at the node, set the correct type and evaluation
     for (i = 0; i < num_dataparts; ++i) {
-        evaluator = n->nodet_charstates[i]->nd_downpass_full;
+        evaluator = &mfl_fitch_downpass_binary_node; //n->nodet_charstates[i]->nd_downpass_full;
         evaluator(
                   n->nodet_charstates[i]->nd_prelim_set,
                   left->nodet_charstates[i]->nd_prelim_set,
                   right->nodet_charstates[i]->nd_prelim_set,
                   n->nodet_charstates[i]->nd_parent_partition,
-                  &search_rec->sr_swaping_on->treet_parsimonylength
+                  length
                   );
     }
     

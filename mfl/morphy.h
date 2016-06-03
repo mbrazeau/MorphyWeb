@@ -441,6 +441,8 @@ void mfl_fitch_downpass_binary_node(mfl_charstate* anc, mfl_charstate* left, mfl
 void mfl_fitch_downpass_INAPPLICABLE(mfl_node_t *node);
 void mfl_fitch_uppass_binary_node(mfl_node_t *node);
 
+void mfl_postorder_traversal(mfl_node_t *n, mfl_searchrec_t *search_rec, int* length);
+
 /* In mfl_characters.c */
 
 //prob move these two to another file
@@ -512,8 +514,6 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_ha
 mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
 mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
 void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t gapmethod, mfl_matrix_t* m);
-
-/* In mfl_starttree.c */
 
 /* In mfl_tree.c */
 void            mfl_initialise_ring_node(mfl_node_t *bottom_node);
@@ -598,6 +598,9 @@ bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa
 mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
 void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec);
+void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dataparts);
+void mfl_setup_internal_nodedata_in_assembled_tree(mfl_node_t* n, mfl_partition_set_t* dataparts);
+void mfl_setup_ringnode_data(mfl_node_t* ringentry, mfl_partition_set_t* dataparts);
 
 
 /* In mfl_drawtree.c*/
@@ -716,7 +719,7 @@ void            tui_test_edgetables(void); //TODO: move this function to tui
 void            mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
 void            mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
 void            mfl_copy_from_all_partitions_into_node_data(mfl_node_t* n, mfl_partition_set_t* partset);
-void            mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts);
+void            mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_partition_set_t* parts);
 unsigned long int mfl_rng_uniform_int(mfl_searchrec_t* searchrec, unsigned long int max);
 bool            mfl_search_environment(mfl_handle_s* handle);
 mfl_searchrec_t*    mfl_create_searchrec(mfl_handle_s* handle);

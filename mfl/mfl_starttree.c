@@ -79,10 +79,10 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
 }
 
 
-void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts)
+void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_partition_set_t* parts)
 {
     int i = 0;
-    int numtaxa = handle->n_taxa;
+    int numtaxa = t->treet_num_taxa;
     mfl_nodearray_t nds = t->treet_treenodes;
     
     for (i = 0; i < numtaxa; ++i) {
@@ -446,6 +446,8 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         
+        node->nodet_charstates[i]->nd_parent_partition = dataparts->ptset_partitions[i];
+        
         if (bottom) {
             node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
             node->nodet_charstates[i]->nd_subtree_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
@@ -466,25 +468,76 @@ void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, 
 }
 
 
-mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts)
+void mfl_setup_ringnode_data(mfl_node_t* ringentry, mfl_partition_set_t* dataparts)
 {
     mfl_node_t* p = NULL;
-    int i = 0;
     
-    mfl_node_t* ring = mfl_make_new_n_ary_ring_node(num_branches, ndstk);
-    
-    p = ring;
+    p = ringentry;
     mfl_setup_nodedata(p, dataparts, true);
+    
     p = p->nodet_next;
     do {
         mfl_setup_nodedata(p, dataparts, false);
-        mfl_connect_uppass_sets(p, ring, dataparts->ptset_n_parts);
+        mfl_connect_uppass_sets(p, ringentry, dataparts->ptset_n_parts);
         p = p->nodet_next;
-    } while (p != ring);
+    } while (p != ringentry);
+}
+
+mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts)
+{
+    
+    mfl_node_t* ring = mfl_make_new_n_ary_ring_node(num_branches, ndstk);
+
+    mfl_setup_ringnode_data(ring, dataparts);
     
     return ring;
 }
 
+
+void mfl_setup_internal_nodedata_in_assembled_tree(mfl_node_t* n, mfl_partition_set_t* dataparts)
+{
+    mfl_node_t* p = NULL;
+    
+    if (n->nodet_tip) {
+        return;
+    }
+    
+    p = n->nodet_next;
+    do {
+        mfl_setup_internal_nodedata_in_assembled_tree(p->nodet_edge, dataparts);
+        p = p->nodet_next;
+    } while (p != n);
+    
+    mfl_setup_ringnode_data(n, dataparts);
+    
+}
+
+void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dataparts)
+{
+    int i = 0;
+    bool bottom = false;
+    int num_taxa = t->treet_num_taxa;
+    mfl_node_t* entry;
+    
+    for (i = 0; i < num_taxa; ++i) {
+        bottom = false;
+        if (t->treet_treenodes[i]->nodet_tip) { // Just in case this ever gets used to allocate memory for ring nodes.
+            bottom = true;
+        }
+        mfl_setup_nodedata(t->treet_treenodes[i], dataparts, bottom);
+    }
+    
+    if (t->treet_root) {
+        entry = t->treet_root;
+    }
+    else {
+        entry = t->treet_start;
+    }
+    
+    mfl_setup_internal_nodedata_in_assembled_tree(entry, dataparts);
+    
+    mfl_apply_characters_to_tips(t, dataparts);
+}
 
 mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts)
 {
@@ -574,7 +627,7 @@ mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_h
         mfl_setup_nodedata(t->treet_treenodes[i], dataparts, bottom);
     }
     
-    mfl_apply_characters_to_tips(t, handle, dataparts);
+    mfl_apply_characters_to_tips(t, dataparts);
 
     return t;
 }
