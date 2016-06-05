@@ -1567,7 +1567,7 @@ mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool
         case MFL_OPT_FITCH:
             if (gapasinapplic) {
                 // TODO: Fix this before doing any work on inapplicable characters
-                //ret = &mfl_fitch_downpass_INAPPLICABLE;
+                ret = &mfl_fitch_downpass_inapplicables;
             }
             else {
                 ret = &mfl_fitch_downpass_binary_node;
@@ -1605,7 +1605,13 @@ mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool g
     switch (parsim_type)
     {
         case MFL_OPT_FITCH:
-            //ret = &mfl_fitch_uppass_binary_node;
+            if (gapasinapplic) {
+                // TODO: Fix this before doing any work on inapplicable characters
+                ret = &mfl_fitch_uppass_inapplicables;
+            }
+            else {
+                ret = &mfl_fitch_uppass_binary_node;
+            }
             break;
             
             /*case MFL_OPT_WAGNER:

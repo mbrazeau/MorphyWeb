@@ -58,17 +58,17 @@ void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_n
     int i = 0;
     int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
-    mfl_charstate* n = n_nd->nd_prelim_set;
+    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
     mfl_charstate temp = 0;
     
     for (i = 0; i < num_chars; ++i) {
         if ((temp = left[i] & right[i])) {
-            n[i] = temp;
+            n_prelim[i] = temp;
         }
         else {
-            n[i] = left[i] | right[i];
+            n_prelim[i] = left[i] | right[i];
             if (length) {
                 *length += weights[i];
             }
@@ -86,8 +86,6 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
     mfl_charstate* rt_char = right_nd->nd_prelim_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
     
-    mfl_charstate temp = 0;
-    
     for (i = 0; i < num_chars; ++i) {
         if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
             n_final[i] = anc_char[i] & n_prelim[i];
@@ -99,30 +97,153 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
                 n_final[i] = n_prelim[i] | anc_char[i];
             }
         }
+        
+        assert(n_final[i]);
     }
 }
 
-void mfl_fitch_downpass_inapplicables(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length)
+void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
+                                      mfl_nodedata_t*       left_nd,
+                                      mfl_nodedata_t*       right_nd,
+                                      mfl_nodedata_t*       dummy,
+                                      mfl_datapartition_t*  datapart,
+                                      int*                  length)
 {
     int i = 0;
-    int* weights = datapart->part_int_weights;
+    //int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
-    mfl_charstate* n = n_nd->nd_prelim_set;
+    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
     mfl_charstate temp = 0;
+    //mfl_charstate* actives = datapart->part_activestates;
     
     for (i = 0; i < num_chars; ++i) {
+        
         if ((temp = left[i] & right[i])) {
-            n[i] = temp;
+            
+            if ((left[i] & MORPHY_INAPPLICABLE_BITPOS) && (right[i] & MORPHY_INAPPLICABLE_BITPOS)) {
+                n_prelim[i] = (left[i] & right[i]) | MORPHY_INAPPLICABLE_BITPOS;
+            }
+            else {
+              n_prelim[i] = temp;
+            }
         }
         else {
-            n[i] = left[i] | right[i];
-            if (length) {
-                *length += weights[i];
+            
+            n_prelim[i] = left[i] | right[i];
+            
+            if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
+                n_prelim[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
+            }
+        }
+        
+        // Set all states active on this node so that the optimisation shortcut "knows" whether the state occurs upwards of this view.
+    }
+    
+}
+
+
+void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
+                                    mfl_nodedata_t*       left_nd,
+                                    mfl_nodedata_t*       right_nd,
+                                    mfl_nodedata_t*       anc_nd,
+                                    mfl_datapartition_t*  datapart,
+                                    int*                  length)
+{
+    int i = 0;
+    int num_chars = datapart->part_n_chars_included;
+    //int* weights = datapart->part_int_weights;
+    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+    mfl_charstate* n_final = n_nd->nd_final_set;
+    mfl_charstate* lft_char = left_nd->nd_prelim_set;
+    mfl_charstate* rt_char = right_nd->nd_prelim_set;
+    mfl_charstate* anc_char = anc_nd->nd_final_set;
+    //mfl_charstate* actives = datapart->part_activestates;
+    
+    mfl_charstate temp = 0;
+    
+    for (i = 0; i < num_chars; ++i) {
+        
+        if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+            // If either descendant has inapplicables, set the finals to the inapplicable token
+            if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+            }
+            else {
+                n_final[i] = n_prelim[i];
+            }
+        }
+        else {
+            if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
+                n_final[i] = anc_char[i] & n_prelim[i];
+            }
+            else {
+                
+                if ((lft_char[i] == MORPHY_INAPPLICABLE_BITPOS) && (rt_char[i] == MORPHY_INAPPLICABLE_BITPOS)) {
+                    n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+                }
+                else {
+                    if ((temp = anc_char[i] & (lft_char[i] | rt_char[i]))) {
+                        n_final[i] = (temp | n_prelim[i]) & MORPHY_IS_APPLICABLE;
+                    }
+                    else {
+                        if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                            temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                        }
+                        else {
+                            temp = n_prelim[i];
+                        }
+                        n_final[i] = (temp | anc_char[i]) & MORPHY_IS_APPLICABLE; // Possibly don't need this right-most operation
+                    }
+                }
+            }
+        }
+        
+        // Count the length if needed.
+        if (length) {
+            if (n_final[i] != anc_char[i]) {
+                /* if (n_final[i] & actives[i]) {
+                    length += weights[i];
+                 }
+                 */
+            }
+        }
+        
+        
+        assert(n_final[i]);
+    }
+}
+
+void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts)
+{
+    
+    int i = 0;
+    int j = 0;
+    
+    // TODO: This function can be optimised considerably by diminishing the amount of repeated indirection calls, but test it first.
+    
+    for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+        if (dataparts->ptset_partitions[i]->part_has_inapplicables) {
+            // Do inapplicable root optimisation
+            for (j = 0; j < dataparts->ptset_partitions[i]->part_n_chars_included; ++j) {
+                if (rootnode->nodet_charstates[i]->nd_prelim_set[j] & MORPHY_IS_APPLICABLE) {
+                    dummyroot->nodet_charstates[i]->nd_final_set[j] = rootnode->nodet_charstates[i]->nd_prelim_set[j] & MORPHY_IS_APPLICABLE;
+                }
+                else {
+                    dummyroot->nodet_charstates[i]->nd_final_set[j] = MORPHY_INAPPLICABLE_BITPOS;
+                }
+            }
+            
+        }
+        else {
+            // Do regular root optimisation
+            for (j = 0; j < dataparts->ptset_partitions[i]->part_n_chars_included; ++j) {
+                dummyroot->nodet_charstates[i]->nd_final_set[j] = rootnode->nodet_charstates[i]->nd_prelim_set[j];
             }
         }
     }
+    
 }
 
 inline int mfl_wagner_stepcount(mfl_charstate leftchar, mfl_charstate rightchar, mfl_charstate* parentchar, int weight)
@@ -242,12 +363,6 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     left = n->nodet_next->nodet_edge;
     right = n->nodet_next->nodet_next->nodet_edge;
     
-    p = n->nodet_next;
-    do {
-        mfl_preorder_traversal(p->nodet_edge, length);
-        p = p->nodet_next;
-    } while (p != n);
-    
     num_dataparts = n->nodet_num_dat_partitions;
     
     // For each data partition at the node, set the correct type and evaluation
@@ -263,16 +378,23 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
                   );
     }
     
+    p = n->nodet_next;
+    do {
+        mfl_preorder_traversal(p->nodet_edge, length);
+        p = p->nodet_next;
+    } while (p != n);
+    
     return;
 }
 
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
+    // TODO: finish this function
     // check is rooted; if not do the fucking root;
     
     mfl_postorder_traversal(t->treet_root, &t->treet_parsimonylength);
     
-    // Do any ancestor node updates required
+    mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
     
     mfl_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
 }

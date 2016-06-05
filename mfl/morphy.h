@@ -223,6 +223,7 @@ typedef struct mfl_datapartition_t {
     mfl_parsim_fn part_uppass_full;
     mfl_parsim_fn part_uppass_partial;
     mfl_stepmatrix_t* part_stepmatrix;
+    mfl_charstate *part_activestates;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 
@@ -269,6 +270,7 @@ typedef struct mfl_nodedata_t {
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
     mfl_charstate *nd_subtree_final_set;        // The final uppass set of the subtree when the tree is broken.
+    mfl_charstate *nd_subtree_activestates;
 } mfl_nodedata_t;
 
 
@@ -439,10 +441,12 @@ typedef struct {
 
 /* In mfl_evaluate.c */
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length);
-void mfl_fitch_downpass_INAPPLICABLE(mfl_node_t *node);
-void mfl_fitch_uppass_binary_node(mfl_charstate* n, mfl_charstate* left, mfl_charstate* right, mfl_charstate* dummy, mfl_datapartition_t* datapart, int* length);
-
+void mfl_fitch_downpass_inapplicables(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd,  mfl_nodedata_t* dummy, mfl_datapartition_t*  datapart,int* length);
+void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
+void mfl_fitch_uppass_inapplicables(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
+void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts);
 void mfl_postorder_traversal(mfl_node_t *n, int* length);
+void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts);
 
 /* In mfl_characters.c */
 

@@ -448,7 +448,7 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         
         node->nodet_charstates[i]->nd_parent_partition = dataparts->ptset_partitions[i];
         node->nodet_charstates[i]->nd_downpass_full = dataparts->ptset_partitions[i]->part_downpass_full;
-//        node->nodet_charstates[i]->
+        node->nodet_charstates[i]->nd_uppass_full = dataparts->ptset_partitions[i]->part_uppass_full;
 //        node->nodet_charstates[i]->
 //        node->nodet_charstates[i]->
         
@@ -527,10 +527,7 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
     t->treet_dummynode.nodet_charstates = (mfl_nodedata_t**)mfl_malloc(dataparts->ptset_n_parts * sizeof(mfl_nodedata_t*), 0);
     for (i = 0; i < dataparts->ptset_n_parts; ++i) {
         t->treet_dummynode.nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
-        
-        if (!dataparts->ptset_partitions[i]->part_has_inapplicables) {
-            t->treet_dummynode.nodet_charstates[i]->nd_final_set = t->treet_root->nodet_charstates[i]->nd_prelim_set;
-        }
+        t->treet_dummynode.nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
     }
 }
 
