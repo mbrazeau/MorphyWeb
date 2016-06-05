@@ -339,7 +339,7 @@ void tui_test_basic_character_optimisation(void)
     int num_og_tax = 0;
                    //.........111
                    //123456789012
-    char matrix[] = "101112221101;";
+    char matrix[] = "11--?10000--;";//"11---1----11;"; //"01?????1--11;"
     
     char* testnewick = (char*)"UNTITLED = [&R] ((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
     
@@ -358,7 +358,7 @@ void tui_test_basic_character_optimisation(void)
     handle->n_to_hold = 3;
     handle->input_data = matrix;
     handle->addseq_type = MFL_AST_ASIS;
-    handle->gap_method = MFL_GAP_MISSING_DATA;
+    //handle->gap_method = MFL_GAP_MISSING_DATA;
     //    handle->addseq_type = MFL_AST_RANDOM;
     
     mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
