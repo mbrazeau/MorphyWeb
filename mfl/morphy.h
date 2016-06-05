@@ -74,7 +74,7 @@ using namespace std;
 #define MORPHY_UINTMAX UINT64_MAX
 #define MORPHY_INAPPLICABLE_BITPOS ((mfl_charstate)1)
 #define MORPHY_IS_APPLICABLE (~MORPHY_INAPPLICABLE_BITPOS)
-#define MORPHY_MISSING_DATA_BITWISE (~1)
+#define MORPHY_MISSING_DATA_BITWISE (~0)
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
 #define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
