@@ -215,7 +215,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             
             actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
             if (actives[i] & 2) {
-                ;
+                //;
             }
         }
         
@@ -290,10 +290,12 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
         
         if (lft_char[i] & rt_char[i]) {
             // Place this so that it won't appear on an ambiguity
-            actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+            if (n_prelim[i] == (n_prelim[i] & -n_prelim[i])) {
+                actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+            }
         }
-        if (actives[i] & 2) {
-            ;
+        if (actives[i] & 4) {
+            //;
         }
         assert(n_final[i]);
     }
