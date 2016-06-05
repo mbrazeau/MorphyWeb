@@ -89,12 +89,24 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
     for (i = 0; i < num_chars; ++i) {
         if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
             n_final[i] = anc_char[i] & n_prelim[i];
+#ifdef MFY_DEBUG
+            if (length) {
+                if (!(lft_char[i] & rt_char[i])) {
+                    *length = *length + 1;
+                }
+            }
+#endif
         }
         else {
             if (lft_char[i] & rt_char[i]) {
                 n_final[i] = ( n_prelim[i] | ( anc_char[i] & (lft_char[i] | rt_char[i])));
             } else {
                 n_final[i] = n_prelim[i] | anc_char[i];
+#ifdef MFY_DEBUG
+                if (length) {
+                    *length = *length + 1;
+                }
+#endif
             }
         }
         
@@ -393,10 +405,15 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     // check is rooted; if not do the fucking root;
     
     mfl_postorder_traversal(t->treet_root, &t->treet_parsimonylength);
+    dbg_printf("\nHere's the length after the downpass: %i\n", t->treet_parsimonylength);
     
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
     
+    dbg_printf("\nResetting length to 0 before uppass\n");
+    t->treet_parsimonylength = 0;
+    
     mfl_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
+    dbg_printf("\nHere's the length after the uppass: %i\n", t->treet_parsimonylength);
 }
 
 void mfl_preorder_traversal_partial(mfl_node_t *parent, mfl_searchrec_t *search_rec)
