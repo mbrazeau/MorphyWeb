@@ -80,11 +80,30 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
 {
     int i = 0;
     int num_chars = datapart->part_n_chars_included;
+    mfl_charstate* lft_char = NULL;
+    mfl_charstate* rt_char = NULL;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
-    mfl_charstate* lft_char = left_nd->nd_prelim_set;
-    mfl_charstate* rt_char = right_nd->nd_prelim_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
+    
+    if (!left_nd) {
+        assert(!right_nd);
+        for (i = 0; i < num_chars; ++i) {
+            
+            if (n_prelim[i] & anc_char[i]) {
+                n_final[i] = n_prelim[i] & anc_char[i];
+            }
+            else {
+                n_final[i] = n_prelim[i];
+            }
+        
+        }
+        
+        return;
+    }
+    
+    lft_char = left_nd->nd_prelim_set;
+    rt_char = right_nd->nd_prelim_set;
     
     for (i = 0; i < num_chars; ++i) {
         if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
@@ -163,66 +182,119 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                                     mfl_datapartition_t*  datapart,
                                     int*                  length)
 {
+
+    int* weights = datapart->part_int_weights;
     int i = 0;
     int num_chars = datapart->part_n_chars_included;
-    //int* weights = datapart->part_int_weights;
+    mfl_charstate* lft_char = NULL;
+    mfl_charstate* rt_char = NULL;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
-    mfl_charstate* lft_char = left_nd->nd_prelim_set;
-    mfl_charstate* rt_char = right_nd->nd_prelim_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
-    //mfl_charstate* actives = datapart->part_activestates;
-    
+    mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate temp = 0;
+    
+    if (!left_nd) {
+        assert(!right_nd);
+        for (i = 0; i < num_chars; ++i) {
+            
+            if (n_prelim[i] & anc_char[i]) {
+                n_final[i] = n_prelim[i] & anc_char[i];
+            }
+            else {
+                n_final[i] = n_prelim[i];
+            }
+            
+            if (length) {
+                if (n_final[i] != anc_char[i]) {
+                    if (n_final[i] & actives[i]) {
+                        *length += weights[i];
+                    }
+                }
+            }
+            
+            actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+            if (actives[i] & 2) {
+                ;
+            }
+        }
+        
+        return;
+    }
+    
+    lft_char = left_nd->nd_prelim_set;
+    rt_char = right_nd->nd_prelim_set;
+    
     
     for (i = 0; i < num_chars; ++i) {
         
         if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+            
             // If either descendant has inapplicables, set the finals to the inapplicable token
             if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else {
                 n_final[i] = n_prelim[i];
+                
+                if (length) {
+                    if (lft_char[i] & rt_char[i]) {
+                        if (n_final[i] & actives[i]) {
+                            *length += weights[i];
+                        }
+                    }
+                }
             }
+
         }
         else {
+            
             if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
                 n_final[i] = anc_char[i] & n_prelim[i];
             }
             else {
-                
                 if ((lft_char[i] == MORPHY_INAPPLICABLE_BITPOS) && (rt_char[i] == MORPHY_INAPPLICABLE_BITPOS)) {
                     n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
                 }
                 else {
                     if ((temp = anc_char[i] & (lft_char[i] | rt_char[i]))) {
                         n_final[i] = (temp | n_prelim[i]) & MORPHY_IS_APPLICABLE;
+                        if (lft_char[i] & rt_char[i]) {
+                            n_final[i] = lft_char[i] & rt_char[i];
+                            
+                            if (length) {
+                                if (!(n_final[i] & anc_char[i])) {
+                                    if (n_final[i] & actives[i]) {
+                                        *length += weights[i];
+                                    }
+                                }
+                            }
+                        }
+                        
                     }
                     else {
+                        
                         if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
                             temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                            n_final[i] = (temp | anc_char[i]) & MORPHY_IS_APPLICABLE; // Possibly don't need this right-most operation
                         }
                         else {
-                            temp = n_prelim[i];
+                            n_final[i] = n_prelim[i];
                         }
-                        n_final[i] = (temp | anc_char[i]) & MORPHY_IS_APPLICABLE; // Possibly don't need this right-most operation
+                        
+
                     }
                 }
             }
         }
         
-        // Count the length if needed.
-        if (length) {
-            if (n_final[i] != anc_char[i]) {
-                /* if (n_final[i] & actives[i]) {
-                    length += weights[i];
-                 }
-                 */
-            }
+        if (lft_char[i] & rt_char[i]) {
+            // Place this so that it won't appear on an ambiguity
+            actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
         }
-        
-        
+        if (actives[i] & 2) {
+            ;
+        }
         assert(n_final[i]);
     }
 }
@@ -368,26 +440,43 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     mfl_node_t* left;
     mfl_node_t* right;
     
-    if (n->nodet_tip) {
-        return;
-    }
-    
-    left = n->nodet_next->nodet_edge;
-    right = n->nodet_next->nodet_next->nodet_edge;
-    
     num_dataparts = n->nodet_num_dat_partitions;
+    
+    if (!n->nodet_tip) {
+        left = n->nodet_next->nodet_edge;
+        right = n->nodet_next->nodet_next->nodet_edge;
+    }
     
     // For each data partition at the node, set the correct type and evaluation
     for (i = 0; i < num_dataparts; ++i) {
         evaluator = n->nodet_charstates[i]->nd_uppass_full;
-        evaluator(
-                  n->nodet_charstates[i],
-                  left->nodet_charstates[i],
-                  right->nodet_charstates[i],
-                  n->nodet_edge->nodet_charstates[i],
-                  n->nodet_charstates[i]->nd_parent_partition,
-                  length
-                  );
+        
+        if (n->nodet_tip) {
+            evaluator(
+                      n->nodet_charstates[i],
+                      NULL,
+                      NULL,
+                      n->nodet_edge->nodet_charstates[i],
+                      n->nodet_charstates[i]->nd_parent_partition,
+                      length
+                      );
+        }
+        else {
+            evaluator(
+                      n->nodet_charstates[i],
+                      left->nodet_charstates[i],
+                      right->nodet_charstates[i],
+                      n->nodet_edge->nodet_charstates[i],
+                      n->nodet_charstates[i]->nd_parent_partition,
+                      length
+                      );
+        }
+        
+        
+    }
+    
+    if (n->nodet_tip) {
+        return;
     }
     
     p = n->nodet_next;
