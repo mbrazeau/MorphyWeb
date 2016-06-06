@@ -214,9 +214,6 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
             
             actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
-            if (actives[i] & 2) {
-                //;
-            }
         }
         
         return;
@@ -257,15 +254,16 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
                 }
                 else {
+                    
                     if ((temp = anc_char[i] & (lft_char[i] | rt_char[i]))) {
                         
                         n_final[i] = (temp | n_prelim[i]) & MORPHY_IS_APPLICABLE;
                         
                         if ((lft_char[i] & rt_char[i]) & MORPHY_IS_APPLICABLE) {
-                            n_final[i] = lft_char[i] & rt_char[i];
-                            
+                            n_final[i] = lft_char[i] & rt_char[i] & MORPHY_IS_APPLICABLE;
+
                             if (length) {
-                                if (!(n_final[i] & anc_char[i])) {
+                                if (n_final[i] != anc_char[i]) {
                                     if (n_final[i] & actives[i]) {
                                         *length += weights[i];
                                     }
@@ -288,22 +286,19 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
 
                         if (length) {
                             if (n_final[i] != anc_char[i]) {
-//                                if (lft_char[i] & rt_char[i]) {
-//                                    if (n_final[i] & actives[i]) {
-//                                        *length += weights[i];
-//                                    }
-//                                }
                                 if (!(n_final[i] & anc_char[i])) {
-                                    if (n_final[i] & actives[i]) {
-                                        *length += weights[i];
+                                    if (lft_char[i] & rt_char[i]) {
+                                        if (n_final[i] & actives[i]) {
+                                            *length += weights[i];
+                                        }
+                                    }
+                                    else if (n_prelim[i] != n_final[i]) {
+                                        if (n_final[i] & actives[i]) {
+                                            *length += weights[i];
+                                        }
                                     }
                                 }
                             }
-//                            if (!(n_final[i] & anc_char[i])) {
-//                                if (n_final[i] & actives[i]) {
-//                                    *length += weights[i];
-//                                }
-//                            }
                         }
                     }
                 }
@@ -312,12 +307,9 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
         
         if (lft_char[i] & rt_char[i]) {
             // Place this so that it won't appear on an ambiguity
-            if (n_prelim[i] == (n_prelim[i] & -n_prelim[i])) {
+            if (n_final[i] == (n_final[i] & -n_final[i])) {
                 actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
             }
-        }
-        if (actives[i] & 4) {
-            //;
         }
         assert(n_final[i]);
     }
