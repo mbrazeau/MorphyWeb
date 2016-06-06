@@ -1681,7 +1681,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
             if (gapmethod == MFL_GAP_INAPPLICABLE) {
                 inapplicable = true;
             }
-            ptset->ptset_partitions[i]->part_activestates = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included, 0);
+            ptset->ptset_partitions[i]->part_activestates = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         }
         ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, true);
         ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, false);
