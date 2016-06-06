@@ -111,6 +111,7 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
 #ifdef MFY_DEBUG
             if (length) {
                 if (!(lft_char[i] & rt_char[i])) {
+                    //TODO: Change this to weights
                     *length = *length + 1;
                 }
             }
@@ -123,6 +124,7 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
                 n_final[i] = n_prelim[i] | anc_char[i];
 #ifdef MFY_DEBUG
                 if (length) {
+                    //TODO: Change this to weights
                     *length = *length + 1;
                 }
 #endif
@@ -200,20 +202,28 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             
             if (n_prelim[i] & anc_char[i]) {
                 n_final[i] = n_prelim[i] & anc_char[i];
+                assert(n_final[i]);
             }
             else {
                 n_final[i] = n_prelim[i];
+                assert(n_final[i]);
             }
             
             if (length) {
-                if (n_final[i] != (anc_char[i] & MORPHY_IS_APPLICABLE)) {
-                    if (n_final[i] & actives[i]) {
-                        *length += weights[i];
+                if ((n_final[i] & anc_char[i]) != anc_char[i]) {
+                    if (n_final[i] == (n_final[i] & -n_final[i])) {
+                        if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
+                            if (n_final[i] & actives[i]) {
+                                *length += weights[i];
+                            }
+                        }
                     }
                 }
             }
             
-            actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+            if (n_prelim[i] != MORPHY_MISSING_DATA_BITWISE) {
+                actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+            }
         }
         
         return;
@@ -222,94 +232,110 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
     lft_char = left_nd->nd_prelim_set;
     rt_char = right_nd->nd_prelim_set;
     
+    assert(lft_char);
+    assert(rt_char);
     
     for (i = 0; i < num_chars; ++i) {
         
         if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
-            
-            // If either descendant has inapplicables, set the finals to the inapplicable token
+
             if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
-                n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
-            }
-            else {
-                n_final[i] = n_prelim[i];
-                
-                if (length) {
-                    if (lft_char[i] & rt_char[i]) {
-                        if (n_final[i] & actives[i]) {
-                            *length += weights[i];
-                        }
+                if ((lft_char[i] & MORPHY_IS_APPLICABLE) && (rt_char[i] & MORPHY_IS_APPLICABLE)) {
+                    
+                    // If the intersection of applicable states exists, create it. Otherwise, union.
+                    
+                    if (((temp = (lft_char[i] & MORPHY_IS_APPLICABLE) & (rt_char[i] & MORPHY_IS_APPLICABLE)))) {
+                        n_final[i] = temp;
+                    } else {
+                        n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                     }
+                    
+                }
+                else {
+                    n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
                 }
             }
-
+            else {
+                n_final[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
+                assert(!(n_final[i] & MORPHY_INAPPLICABLE_BITPOS));
+            }
         }
         else {
             
             if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
                 n_final[i] = anc_char[i] & n_prelim[i];
+                assert(n_final[i]);
             }
             else {
-                if ((lft_char[i] == MORPHY_INAPPLICABLE_BITPOS) && (rt_char[i] == MORPHY_INAPPLICABLE_BITPOS)) {
-                    n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
-                }
-                else {
+                
+                if ((lft_char[i] & rt_char[i]) & MORPHY_IS_APPLICABLE) {
                     
-                    if ((temp = anc_char[i] & (lft_char[i] | rt_char[i]))) {
-                        
-                        n_final[i] = (temp | n_prelim[i]) & MORPHY_IS_APPLICABLE;
-                        
-                        if ((lft_char[i] & rt_char[i]) & MORPHY_IS_APPLICABLE) {
-                            n_final[i] = lft_char[i] & rt_char[i] & MORPHY_IS_APPLICABLE;
-
-                            if (length) {
-                                if (n_final[i] != anc_char[i]) {
-                                    if (n_final[i] & actives[i]) {
-                                        *length += weights[i];
-                                    }
-                                }
-                            }
-                        }
-                        
+                    if ((lft_char[i] & rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                        n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                     }
                     else {
-                        
-                        if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                            temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
-                            n_final[i] = (temp | anc_char[i]);
-                        }
-                        else {
-                            n_final[i] = n_prelim[i];
-                        }
-                        
+                        n_final[i] = ( n_prelim[i] | (anc_char[i] & (lft_char[i] | rt_char[i])));
                         n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
-
-                        if (length) {
-                            if (n_final[i] != anc_char[i]) {
-                                if (!(n_final[i] & anc_char[i])) {
-                                    if (lft_char[i] & rt_char[i]) {
-                                        if (n_final[i] & actives[i]) {
-                                            *length += weights[i];
-                                        }
-                                    }
-                                    else if (n_prelim[i] != n_final[i]) {
-                                        if (n_final[i] & actives[i]) {
-                                            *length += weights[i];
-                                        }
-                                    }
-                                }
+                        assert(n_final[i]);
+                    }
+                
+                } else {
+                    
+                    if ((lft_char[i] | rt_char[i]) == MORPHY_INAPPLICABLE_BITPOS) {
+                        n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+                    }
+                    else {
+                        if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                            
+                            if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
+                                n_final[i] = temp;
+                            }
+                            else {
+                                n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                             }
                         }
+                        else {
+                            
+                            n_final[i] = (n_prelim[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
+                        }
+                        
                     }
+                    
+                    assert(n_final[i]);
                 }
             }
         }
         
-        if (lft_char[i] & rt_char[i]) {
+        if (length) {
+            if ((n_final[i] & anc_char[i]) != anc_char[i]) {
+                if (n_final[i] == (n_final[i] & -n_final[i])) {
+                    //if (n_prelim[i] != n_final[i]) {
+                        if (n_final[i] & actives[i]) {
+                            *length += weights[i];
+                        }
+                    //}
+                }
+            }
+        }
+        
+        //if (lft_char[i] & rt_char[i]) {
             // Place this so that it won't appear on an ambiguity
-            if (n_final[i] == (n_final[i] & -n_final[i])) {
+        int x = n_final[i];
+        x = x & -x;
+        
+        if (n_final[i] == 14) {
+            dbg_printf("Man...\n");
+        }
+        
+        if (n_final[i] == x ) {
+            if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
                 actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
             }
+        }
+        
+        //}
+        if (actives[i] & 8) {
+            dbg_printf("WTF mang?\n");
         }
         assert(n_final[i]);
     }
@@ -511,12 +537,15 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     
     mfl_postorder_traversal(t->treet_root, &t->treet_parsimonylength);
     dbg_printf("\nHere's the length after the downpass: %i\n", t->treet_parsimonylength);
+    tui_check_broken_tree(t, false);
     
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
+    tui_check_broken_tree(t, false);
     
     dbg_printf("\nResetting length to 0 before uppass\n");
     t->treet_parsimonylength = 0;
     
+    tui_check_broken_tree(t, false);
     mfl_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
     dbg_printf("\nHere's the length after the uppass: %i\n", t->treet_parsimonylength);
 }

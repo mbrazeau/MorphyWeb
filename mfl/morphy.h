@@ -74,7 +74,7 @@ using namespace std;
 #define MORPHY_UINTMAX UINT64_MAX
 #define MORPHY_INAPPLICABLE_BITPOS ((mfl_charstate)1)
 #define MORPHY_IS_APPLICABLE (~MORPHY_INAPPLICABLE_BITPOS)
-#define MORPHY_MISSING_DATA_BITWISE (~1)
+#define MORPHY_MISSING_DATA_BITWISE (~0)
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
 #define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
@@ -98,6 +98,7 @@ using namespace std;
  * Data type definitions
  *
  */
+
 
 typedef uint64_t mfl_uint;
 typedef mfl_uint mfl_charstate; // Each character state is represented by a single unsigned 64-bit integer. Thus, one character may have 64 possible states.
@@ -438,6 +439,8 @@ typedef struct {
  * Prototypes for all functions in the Morphy Function Library
  *
  */
+
+int             tui_check_broken_tree(mfl_tree_t *t, int *verbose);
 
 /* In mfl_evaluate.c */
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length);
