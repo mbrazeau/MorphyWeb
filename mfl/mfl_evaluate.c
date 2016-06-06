@@ -206,7 +206,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
             
             if (length) {
-                if (n_final[i] != anc_char[i]) {
+                if (n_final[i] != (anc_char[i] & MORPHY_IS_APPLICABLE)) {
                     if (n_final[i] & actives[i]) {
                         *length += weights[i];
                     }
@@ -258,8 +258,10 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 }
                 else {
                     if ((temp = anc_char[i] & (lft_char[i] | rt_char[i]))) {
+                        
                         n_final[i] = (temp | n_prelim[i]) & MORPHY_IS_APPLICABLE;
-                        if (lft_char[i] & rt_char[i]) {
+                        
+                        if ((lft_char[i] & rt_char[i]) & MORPHY_IS_APPLICABLE) {
                             n_final[i] = lft_char[i] & rt_char[i];
                             
                             if (length) {
@@ -276,13 +278,21 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                         
                         if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
                             temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
-                            n_final[i] = (temp | anc_char[i]) & MORPHY_IS_APPLICABLE; // Possibly don't need this right-most operation
+                            n_final[i] = (temp | anc_char[i]); // Possibly don't need this right-most operation
                         }
                         else {
                             n_final[i] = n_prelim[i];
                         }
                         
+                        n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
 
+                        if (length) {
+                            if (!(n_final[i] & anc_char[i])) {
+                                if (n_final[i] & actives[i]) {
+                                    *length += weights[i];
+                                }
+                            }
+                        }
                     }
                 }
             }
