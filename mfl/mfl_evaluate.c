@@ -159,10 +159,10 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
             if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
                 
                 if (temp & MORPHY_IS_APPLICABLE) {
-                    n_prelim[i] = temp & MORPHY_IS_APPLICABLE;
+                    n_prelim[i] = temp;// & MORPHY_IS_APPLICABLE;
                 }
                 else {
-                    n_prelim[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+                    n_prelim[i] = (left[i] | right[i]);// & MORPHY_IS_APPLICABLE;
                 }
             }
             else {
@@ -470,6 +470,9 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
     num_dataparts = n->nodet_num_dat_partitions;
     
     // For each data partition at the node, set the correct type and evaluation
+    if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 5) {
+        dbg_printf("break\n");
+    }
     for (i = 0; i < num_dataparts; ++i) {
         evaluator = n->nodet_charstates[i]->nd_downpass_full;
         evaluator(
@@ -517,7 +520,7 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
                       );
         }
         else {
-            if (n->nodet_index == 30) {
+            if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 6) {
                 dbg_printf("break\n");
             }
             evaluator(
