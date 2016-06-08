@@ -152,31 +152,29 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
     //mfl_charstate* actives = datapart->part_activestates;
     
     for (i = 0; i < num_chars; ++i) {
+
         
-        if ((temp = (left[i] & right[i])) & MORPHY_IS_APPLICABLE) {
+        if ((temp =  left[i] & right[i])) {
             
-            n_prelim[i] = temp;
+            if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
+                
+                if (temp & MORPHY_IS_APPLICABLE) {
+                    n_prelim[i] = temp & MORPHY_IS_APPLICABLE;
+                }
+                else {
+                    n_prelim[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+                }
+            }
+            else {
+                n_prelim[i] = MORPHY_INAPPLICABLE_BITPOS;
+            }
             assert(n_prelim[i]);
         }
         else {
             
-            n_prelim[i] = left[i] | right[i];
-            
-            if ((temp = left[i] & right[i])) {
-                // Check for applicables
-                if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
-                    n_prelim[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
-                    assert(n_prelim[i]);
-                } else {
-                    n_prelim[i] = MORPHY_INAPPLICABLE_BITPOS;
-                    assert(n_prelim[i]);
-                }
-            }
-//            else {
-//                n_prelim[i] = n_prelim;
-//                assert(n_prelim[i]);
-//            }
-            
+            n_prelim[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+
+            assert(n_prelim[i]);
         }
         
         // Set all states active on this node so that the optimisation shortcut "knows" whether the state occurs upwards of this view.
@@ -215,6 +213,10 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             else {
                 n_final[i] = n_prelim[i];
                 assert(n_final[i]);
+            }
+            
+            if (n_prelim[i] == 8) {
+                dbg_printf("break\n");
             }
             
             if (length) {
@@ -275,20 +277,28 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             else {
                 if ((lft_char[i] & rt_char[i]) & MORPHY_IS_APPLICABLE) {
                     
-                    if ((lft_char[i] & rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) { // TODO: Check that this branch is necessary because of downpass
-                        n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                    if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
+                        n_final[i] = temp & MORPHY_IS_APPLICABLE;
                     }
                     else {
-                        n_final[i] = ( n_prelim[i] | (anc_char[i] & (lft_char[i] & rt_char[i]))); // FLAG: This is a trouble spot
-                        //n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE; // NOTE: This might not be necessary.
-                        assert(n_final[i]);
+                        n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                     }
+                    assert(n_final[i]);
+
+//                    if ((lft_char[i] & rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) { // TODO: Check that this branch is necessary because of downpass
+//                        n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+//                    }
+//                    else {
+//                        n_final[i] = ( n_prelim[i] | (anc_char[i] & (lft_char[i] & rt_char[i]))); // FLAG: This is a trouble spot
+//                        //n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE; // NOTE: This might not be necessary.
+//                        assert(n_final[i]);
+//                    }
                 } else {
                     if ((lft_char[i] | rt_char[i]) == MORPHY_INAPPLICABLE_BITPOS) {
                         n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
                     }
                     else {
-                        if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                        //if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
                             
                             if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
                                 n_final[i] = temp;
@@ -296,10 +306,10 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                             else {
                                 n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                             }
-                        }
-                        else {
-                            n_final[i] = (n_prelim[i] | anc_char[i]) & MORPHY_IS_APPLICABLE; // NOTE: Last operatin can probably be eliminated
-                        }
+//                        }
+//                        else {
+//                            //n_final[i] = (n_prelim[i] | anc_char[i]) & MORPHY_IS_APPLICABLE; // NOTE: Last operatin can probably be eliminated
+//                        }
                         
                     }
                     assert(n_final[i]);
@@ -308,7 +318,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
         }
         
         if (length) {
-            if ((n_final[i] & anc_char[i]) != anc_char[i]) {
+            if (!(n_final[i] & anc_char[i]) /*!= anc_char[i]*/) {
                 if (n_final[i] == (n_final[i] & -n_final[i])) {
                     //if (n_prelim[i] != n_final[i]) {
                         if (n_final[i] & actives[i]) {
@@ -320,9 +330,9 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                             dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
                             
                         }
-                    //}
+                    }
                 }
-            }
+            //}
         }
         
         int x = n_final[i];
@@ -333,7 +343,20 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
             }
         }
+        else {
+            //if (n_final[i] != anc_char[i]) {
+            if ((n_final[i] & anc_char[i]) == n_final[i]) {
+                n_final[i] = (n_final[i] ^ x);
+            }
+            //}
+        }
+        //        else {
+//            if (n_final[i] != anc_char[i]) {
+//                n_final[i] = (n_final[i] ^ x);
+//            }
+//        }
 
+//
         assert(n_final[i]);
     }
 }
@@ -501,7 +524,7 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
                       );
         }
         else {
-            if (n->nodet_next->nodet_edge->nodet_tip == 10) {
+            if (n->nodet_next->nodet_edge->nodet_tip == 15) {
                 dbg_printf("break\n");
             }
             evaluator(
