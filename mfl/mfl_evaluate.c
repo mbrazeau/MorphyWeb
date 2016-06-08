@@ -317,39 +317,42 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
         
-        if (length) {
-            if (!(n_final[i] & anc_char[i]) /*!= anc_char[i]*/) {
-                if (n_final[i] == (n_final[i] & -n_final[i])) {
-                    //if (n_prelim[i] != n_final[i]) {
-                        if (n_final[i] & actives[i]) {
-                            *length += weights[i];
-                            dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
-                            dbg_printf("n_final[i]:  %llu\n", n_final[i]);
-                            dbg_printf("lft_char[i]: %llu\n", lft_char[i]);
-                            dbg_printf("rt_char[i]:  %llu\n", rt_char[i]);
-                            dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
-                            
-                        }
-                    }
-                }
-            //}
+        if (n_final[i] == (n_final[i] & anc_char[i])) {
+            if (n_final[i] != (n_final[i] & -n_final[i])) {
+                n_final[i] = n_final[i] ^ (n_final[i] & -n_final[i]);
+            }
         }
         
         int x = n_final[i];
         x = x & -x;
+        
+        if (length) {
+        
+            if (!(n_final[i] & anc_char[i]) /*!= anc_char[i]*/) {
+                if (n_final[i] & actives[i]) {
+                    *length += weights[i];
+                    dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
+                    dbg_printf("n_final[i]:  %llu\n", n_final[i]);
+                    dbg_printf("lft_char[i]: %llu\n", lft_char[i]);
+                    dbg_printf("rt_char[i]:  %llu\n", rt_char[i]);
+                    dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
+                    
+                }
+            }
+        }
+        
+        
 
         if (n_final[i] == x ) {
             if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
                 actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
             }
         }
-        else {
-            //if (n_final[i] != anc_char[i]) {
-            if ((n_final[i] & anc_char[i]) == n_final[i]) {
-                n_final[i] = (n_final[i] ^ x);
-            }
-            //}
-        }
+//        else {
+//            //if (n_final[i] != anc_char[i]) {
+//
+//            //}
+//        }
         //        else {
 //            if (n_final[i] != anc_char[i]) {
 //                n_final[i] = (n_final[i] ^ x);
