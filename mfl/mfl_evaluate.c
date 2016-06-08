@@ -284,21 +284,11 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                         n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                     }
                     assert(n_final[i]);
-
-//                    if ((lft_char[i] & rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) { // TODO: Check that this branch is necessary because of downpass
-//                        n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
-//                    }
-//                    else {
-//                        n_final[i] = ( n_prelim[i] | (anc_char[i] & (lft_char[i] & rt_char[i]))); // FLAG: This is a trouble spot
-//                        //n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE; // NOTE: This might not be necessary.
-//                        assert(n_final[i]);
-//                    }
                 } else {
                     if ((lft_char[i] | rt_char[i]) == MORPHY_INAPPLICABLE_BITPOS) {
                         n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
                     }
                     else {
-                        //if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
                             
                             if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
                                 n_final[i] = temp;
@@ -306,10 +296,6 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                             else {
                                 n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                             }
-//                        }
-//                        else {
-//                            //n_final[i] = (n_prelim[i] | anc_char[i]) & MORPHY_IS_APPLICABLE; // NOTE: Last operatin can probably be eliminated
-//                        }
                         
                     }
                     assert(n_final[i]);
@@ -317,10 +303,15 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
         
-        if (n_final[i] == (n_final[i] & anc_char[i])) {
-            if (n_final[i] != (n_final[i] & -n_final[i])) {
-                n_final[i] = n_final[i] ^ (n_final[i] & -n_final[i]);
-            }
+        
+        if (anc_char[i] != MORPHY_INAPPLICABLE_BITPOS) {
+            //if (n_final[i] == (n_final[i] & anc_char[i])) {
+                if (n_final[i] != anc_char[i]) {
+                    if (n_final[i] != (n_final[i] & -n_final[i])) {
+                        n_final[i] = n_final[i] ^ (n_final[i] & -n_final[i]);
+                    }
+                }
+            //}
         }
         
         int x = n_final[i];
@@ -341,25 +332,11 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
         
-        
-
         if (n_final[i] == x ) {
             if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
                 actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
             }
         }
-//        else {
-//            //if (n_final[i] != anc_char[i]) {
-//
-//            //}
-//        }
-        //        else {
-//            if (n_final[i] != anc_char[i]) {
-//                n_final[i] = (n_final[i] ^ x);
-//            }
-//        }
-
-//
         assert(n_final[i]);
     }
 }
