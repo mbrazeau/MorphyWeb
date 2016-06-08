@@ -154,7 +154,7 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
     for (i = 0; i < num_chars; ++i) {
 
         
-        if ((temp =  left[i] & right[i])) {
+        if ((temp = left[i] & right[i])) {
             
             if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
                 
@@ -172,7 +172,12 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
         }
         else {
             
-            n_prelim[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+            if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
+                n_prelim[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+            }
+            else {
+                n_prelim[i] = (left[i] | right[i]);
+            }
 
             assert(n_prelim[i]);
         }
@@ -285,6 +290,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                     assert(n_final[i]);
                 } else {
+                    
                     if ((lft_char[i] | rt_char[i]) == MORPHY_INAPPLICABLE_BITPOS) {
                         n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
                     }
@@ -309,6 +315,13 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 if (n_final[i] != anc_char[i]) {
                     if (n_final[i] != (n_final[i] & -n_final[i])) {
                         n_final[i] = n_final[i] ^ (n_final[i] & -n_final[i]);
+                    }
+                }
+                else if ((temp = lft_char[i] & rt_char[i])) {
+                    if (temp == anc_char[i]) {
+                        if (n_final[i] != (n_final[i] & -n_final[i])) {
+                            n_final[i] = n_final[i] & -n_final[i];
+                        }
                     }
                 }
             //}
@@ -504,7 +517,7 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
                       );
         }
         else {
-            if (n->nodet_next->nodet_edge->nodet_tip == 15) {
+            if (n->nodet_index == 30) {
                 dbg_printf("break\n");
             }
             evaluator(
