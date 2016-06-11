@@ -379,6 +379,51 @@ mfl_node_t * mfl_alloc_node(void)
 }
 
 
+void mfl_destroy_nodal_data(mfl_node_t* n)
+{
+    int i = 0;
+    int max = n->nodet_num_dat_partitions;
+    mfl_node_t* p = NULL;
+    mfl_nodedata_t* ndata = NULL;
+    
+    for (i = 0; i < max; ++i) {
+        
+        ndata = n->nodet_charstates[i];
+        
+        
+        if (ndata->nd_prelim_set) {
+            free(ndata->nd_prelim_set);
+            ndata->nd_prelim_set = NULL;
+        }
+        if (ndata->nd_final_set) {
+            free(ndata->nd_final_set);
+            ndata->nd_final_set = NULL;
+        }
+        if (ndata->nd_subtree_final_set) {
+            free(ndata->nd_subtree_final_set);
+            ndata->nd_subtree_final_set = NULL;
+        }
+        if (ndata->nd_subtree_prelim_set) {
+            free(ndata->nd_subtree_prelim_set);
+            ndata->nd_subtree_prelim_set = NULL;
+        }
+        
+        if (n->nodet_next) {
+            p = n->nodet_next;
+            do {
+                p->nodet_charstates[i]->nd_final_set = NULL;
+                p->nodet_charstates[i]->nd_subtree_final_set = NULL;
+                p = p->nodet_next;
+            } while (p != n);
+        }
+        
+        free(ndata);
+    }
+    
+    free(n->nodet_charstates);
+    n->nodet_charstates = NULL;
+}
+
 /*!
  @discussion Wrapper function on free() which is used to free node memory. 
  @note Any memory allocated within a node should be freed here as well.
@@ -386,11 +431,28 @@ mfl_node_t * mfl_alloc_node(void)
  */
 void mfl_free_node(mfl_node_t *node)
 {
+    mfl_node_t* p = NULL;
+    mfl_node_t* q = NULL;
     /*
      * If any other memory allocation made in nodes, then calls to free that 
      * memory should be placed here.
      */
+    if (node->nodet_charstates) {
+        mfl_destroy_nodal_data(node);
+    }
+    
     mfl_bts_destroy_bitset(node->nodet_bipart);
+    
+    // Disconnect the ring, if it exists
+    if (node->nodet_next) {
+        p = node->nodet_next;
+        do {
+            q = p;
+            p = p->nodet_next;
+            q->nodet_next = NULL;
+        } while (p != node);
+    }
+    
     free(node);
 }
 
