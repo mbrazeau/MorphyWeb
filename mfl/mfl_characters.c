@@ -1785,6 +1785,8 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, const 
     
     qsort(dataparts->ptset_partitions, dataparts->ptset_n_parts, sizeof(mfl_datapartition_t*), &mfl_compare_dataparts_by_ctype);
     
+    mfl_destroy_mfl_matrix(matrix, handle->n_taxa, handle->n_chars);
+    
     return dataparts;
 
 }
