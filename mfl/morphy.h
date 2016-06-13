@@ -548,6 +548,7 @@ void            mfl_insert_branch_with_ring_base(mfl_node_t *src, mfl_node_t *tg
 void            mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node);
 int             mfl_calculate_number_of_nodes_to_allocate(int num_taxa);
 mfl_node_t*     mfl_alloc_node(void);
+void mfl_destroy_nodal_data(mfl_node_t* n);
 void            mfl_free_node(mfl_node_t *node);
 void            mfl_free_treenodes(mfl_nodearray_t treenodes);
 void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int num_taxa);

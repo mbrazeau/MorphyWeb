@@ -40,6 +40,7 @@ typedef struct {
     char* tt_topology;
     char* tt_matrix;
     int tt_expected_length;
+    int tt_measured_length;
 } tui_test_topol_t;
 
 /*

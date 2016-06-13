@@ -657,6 +657,13 @@ mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_h
     return t;
 }
 
+void mfl_add_tips_stepwise(mfl_tree_t* t, mfl_partition_set_t* dataparts, mfl_searchrec_t* searchrec)
+{
+    // For every tip:
+    //      For each topology in the buffer:
+    //          Try all insertions
+}
+
 
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {

@@ -224,23 +224,10 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 dbg_printf("break\n");
             }
             
-            if (length) {
-                if ((n_final[i] & anc_char[i]) != anc_char[i]) {
-                    if (n_final[i] == (n_final[i] & -n_final[i])) {
-                        if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
-                            if (n_final[i] & actives[i]) {
-                                *length += weights[i];
-                                dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
-                                dbg_printf("n_final[i]:  %llu\n", n_final[i]);
-                                dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
-                            }
-                        }
-                    }
-                }
-            }
-            
             if (n_prelim[i] != MORPHY_MISSING_DATA_BITWISE) {
-                actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+                if (!(n_prelim[i] & anc_char[i])) {
+                    actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+                }
             }
         }
         
@@ -309,32 +296,12 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
         
-        
-        if (anc_char[i] != MORPHY_INAPPLICABLE_BITPOS) {
-            //if (n_final[i] == (n_final[i] & anc_char[i])) {
-                if (n_final[i] != anc_char[i]) {
-                    if (n_final[i] != (n_final[i] & -n_final[i])) {
-                        n_final[i] = n_final[i] ^ (n_final[i] & -n_final[i]);
-                    }
-                }
-                else if ((temp = lft_char[i] & rt_char[i])) {
-                    if (temp == anc_char[i]) {
-                        if (n_final[i] != (n_final[i] & -n_final[i])) {
-                            n_final[i] = n_final[i] & -n_final[i];
-                        }
-                    }
-                }
-            //}
-        }
-        
-        int x = n_final[i];
-        x = x & -x;
-        
         if (length) {
         
-            if (!(n_final[i] & anc_char[i]) /*!= anc_char[i]*/) {
-                if (n_final[i] & actives[i]) {
+            if (!(lft_char[i] & rt_char[i])) {
+                if (lft_char[i] & actives[i] && rt_char[i] & actives[i]) {
                     *length += weights[i];
+                    dbg_printf("First check:\n");
                     dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
                     dbg_printf("n_final[i]:  %llu\n", n_final[i]);
                     dbg_printf("lft_char[i]: %llu\n", lft_char[i]);
@@ -342,14 +309,69 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
                     
                 }
+                else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    if ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE & actives[i]) {
+                        if (n_final[i] & MORPHY_IS_APPLICABLE) {
+                            *length += weights[i];
+                            dbg_printf("Third check:\n");
+                            dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
+                            dbg_printf("n_final[i]:  %llu\n", n_final[i]);
+                            dbg_printf("lft_char[i]: %llu\n", lft_char[i]);
+                            dbg_printf("rt_char[i]:  %llu\n", rt_char[i]);
+                            dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
+                        }
+                    }
+                }
+            }
+            else if (!(n_final[i] & anc_char[i])) {
+                if (n_final[i] & MORPHY_IS_APPLICABLE) {
+                    if ((n_final[i] & actives[i]) == n_final[i]) {
+                        *length += weights[i];
+                        dbg_printf("Second check:\n");
+                        dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
+                        dbg_printf("n_final[i]:  %llu\n", n_final[i]);
+                        dbg_printf("lft_char[i]: %llu\n", lft_char[i]);
+                        dbg_printf("rt_char[i]:  %llu\n", rt_char[i]);
+                        dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
+                    }
+                }
+            }
+            else if ((lft_char[i] & MORPHY_IS_APPLICABLE) && (rt_char[i] & MORPHY_IS_APPLICABLE)) {
+                if (!((lft_char[i] & MORPHY_IS_APPLICABLE) & (rt_char[i] & MORPHY_IS_APPLICABLE))) {
+                    temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                    if (temp & actives[i]) {
+                        *length += weights[i];
+                        dbg_printf("Fourth check:\n");
+                        dbg_printf("n_prelim[i]: %llu\n", n_prelim[i]);
+                        dbg_printf("n_final[i]:  %llu\n", n_final[i]);
+                        dbg_printf("lft_char[i]: %llu\n", lft_char[i]);
+                        dbg_printf("rt_char[i]:  %llu\n", rt_char[i]);
+                        dbg_printf("anc_char[i]: %llu\n\n", anc_char[i]);
+                    }
+                }
             }
         }
         
-        if (n_final[i] == x ) {
-            if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
-                actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+        if (lft_char[i] & rt_char[i]) {
+            if ((lft_char[i] & rt_char[i]) & MORPHY_IS_APPLICABLE) {
+                if ((n_final[i] & anc_char[i]) == n_final[i]) {
+                    if (n_final[i] != MORPHY_MISSING_DATA_BITWISE) {
+                        actives[i] = actives[i] | (n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE);
+                    }
+                }
+                else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    if (n_final[i] & MORPHY_IS_APPLICABLE) {
+                        actives[i] = actives[i] | (n_final[i] & MORPHY_IS_APPLICABLE);
+                    }
+                }
             }
         }
+        else if (n_final[i] != anc_char[i]) {
+            if (n_prelim[i] != MORPHY_MISSING_DATA_BITWISE) {
+                actives[i] = actives[i] | (n_prelim[i] & MORPHY_IS_APPLICABLE);
+            }
+        }
+        
         assert(n_final[i]);
     }
 }
@@ -520,7 +542,13 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
                       );
         }
         else {
-            if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 6) {
+            if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 10) {
+                dbg_printf("break\n");
+            }
+            if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 1) {
+                dbg_printf("break\n");
+            }
+            if (n->nodet_index == 37) {
                 dbg_printf("break\n");
             }
             evaluator(
