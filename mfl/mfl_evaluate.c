@@ -323,14 +323,16 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
     
     for (i = 0; i < num_chars; ++i) {
         
-        if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
-            if (temp & MORPHY_IS_APPLICABLE) {
-                n_final[i] = temp;
-            }
-        }
+        
         
         // Check for an intersection between descendant states
         if (!(lft_char[i] & rt_char[i])) {
+            
+            if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
+                if (temp & MORPHY_IS_APPLICABLE) {
+                    n_final[i] = temp;
+                }
+            }
             
             if ((lft_char[i] & actives[i]) && (rt_char[i] & actives[i])) {
                 
@@ -351,13 +353,21 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                 }
             }
-            
             if ((lft_char[i] | rt_char[i]) < (MORPHY_MISSING_DATA_BITWISE - 1)) {
                 actives[i] |= (lft_char[i] | rt_char[i]);// & MORPHY_IS_APPLICABLE;
             }
-            
-            
         }
+        else if ((lft_char[i] & rt_char[i]) != n_final[i]) {
+            if (n_final[i] != anc_char[i]) {
+                if ((n_final[i] & actives[i]) == n_final[i]) {
+                    if (length) {
+                        *length += weights[i];
+                    }
+                }
+            }
+        }
+        
+        
         
         assert(n_final[i]);
         
@@ -568,7 +578,7 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     } while (p != n);
     
     
-    if (n->nodet_index == 12) {
+    if (n->nodet_index == 17) {
         dbg_printf("Break\n");
     }
     
