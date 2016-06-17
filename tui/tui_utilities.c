@@ -591,3 +591,13 @@ void tui_test_checktree_(void)
     mfl_free_tree(testtr);
 
 }
+
+void tui_print_edgetable(mfl_edgetable_t* edgetable)
+{
+    int i = 0;
+    dbg_printf("Tip/node connects to tip/node\n");
+    
+    for(i = 0; i < edgetable->numentries; ++i) {
+        dbg_printf("%i connects to %i\n", i, edgetable->edgetable[i]);
+    }
+}

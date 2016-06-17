@@ -40,6 +40,113 @@ void mfl_destroy_bipartition_set(mfl_partition_set_t* bptset)
 }
 
 
+////Comparing tree algorithm (for consensus, etc...)
+//
+//// Bipartition table structure
+//typedef struct {
+//    int number_of_bipartitions;
+//    int* bipartition_occurence_counter;
+//    int* bipartitions;
+//} mfl_bipartition_table;
+//
+//// Cr
+//mfl_bipartition_table* mfl_initialise_bipartition_table(void) {
+//    //Create an empty biparition table
+//}
+//
+//
+//// Function for getting the bipartition at one node
+//int mfl_get_node_bipartition(mfl_node_t* n)
+//{
+//    
+//    // Return some bipartition integer (using bitwise business)
+//    int bipartition;
+//    int i = 0;
+//    int j = 0;
+//    mfl_bitfield_t bitfield = 1;
+//    
+//    for (i = 0; i < n->nodet_bipart->bts_nfields; ++i) {
+//        for (j = 0; j < MORPHY_BTS_IN_BITSET; ++j) {
+//            if (n->nodet_bipart->bts_bitfields[i] & (bitfield << j)) {
+//                dbg_printf("*");
+//            }
+//            else {
+//                dbg_printf(".");
+//            }
+//        }
+//    }
+//    
+//    return bipartition;
+//}
+//
+////Traversal for getting all the bipartitions
+//void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table)
+//{
+//    int current_bipartition = 0;
+//    int biparition_number = 0;
+//    mfl_node_t* p = NULL;
+//    
+//    if (n->nodet_tip) {
+//        return;
+//    }
+//    
+//    p = n->nodet_next;
+//    do {
+//        mfl_get_bipartition_traversal(p->nodet_edge, bipartition_table);
+//        p = p->nodet_next;
+//    } while (p != n);
+//    
+//    current_bipartition = mfl_get_node_bipartition(n);
+//    
+//  //find if current biparition exists
+//    //biparition_number = current_bipartition !& bipartition_table->bipartitions;
+//    
+//    if(biparition_number != 0){
+//        // Increment the occurence of this biparition
+//        ++bipartition_table->bipartition_occurence_counter[biparition_number];
+//    } else {
+//        // Add the biparition to the table
+//        bipartition_table[biparition_table->number_of_bipartitions] = current_bipartition;
+//        // Increment the total number of biparitions
+//        ++bipartition_table->number_of_bipartitions;
+//        // Increment the occurence of this biparition
+//        ++bipartition_table->bipartition_occurence_counter[biparition_table->number_of_bipartitions];
+//    }
+//}
+//
+////Function for appending a single biparition
+//
+//
+////Function for filling the biparition table
+//void mfl_append_biparition_table(mfl_bipartition_table* biparition_table, mfl_tree_t tree) {
+//    
+//    //If rooted business(else start)
+//    
+//    //Go through each node and append the table
+//    
+//    
+//    
+//    //Add one bipartition
+//    biparition_table[biparition_table->number_of_bipartitions];
+//    //Increment the number of biparitions
+//    ++biparition_table->number_of_bipartitions;
+//}
+
+//typedef struct mfl_bitset_t {
+//    int bts_nfields;
+//    int bts_max_bitfields;
+//    int bts_max_bit;
+//    mfl_bitfield_t* bts_bitfields;
+//} mfl_bitset_t;
+//
+//typedef struct mfl_bitsetlist_t {
+//    int bsl_num_sets;
+//    int bsl_max_sets;
+//    mfl_bitset_t** bsl_bitsets;
+//} mfl_bitsetlist_t;
+
+
+
 /* This is mostly a temporary function, as it is likely that the setting of 
  * bipartitions will be handled simultaneously by other tree traversals. 
  */
@@ -232,7 +339,7 @@ void mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree)
 }
 
 
-// Function idea
+// Comparing edgetables
 bool mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2)
 {
     if (t1->numentries != t2->numentries) {
@@ -247,78 +354,3 @@ bool mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2)
     }
 }
 
-void tui_print_edgetable(mfl_edgetable_t* edgetable)
-{
-    int i = 0;
-    dbg_printf("Tip/node connects to tip/node\n");
-    
-    for(i = 0; i < edgetable->numentries; ++i) {
-        dbg_printf("%i connects to %i\n", i, edgetable->edgetable[i]);
-    }
-}
-
-
-
-void tui_test_edgetables(void)
-{
-    char* cliptesttree1 = NULL;
-    char* cliptesttree2 = NULL;
-    bool compare = false;
-    
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,4));";
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,(4,5)));";
-    //cliptesttree = (char*)"temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
-    //cliptesttree = (char*)"temp_examp6=[&U] (5,(4,(3,(2,1))));";
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,(2,(6,7))),(3,(4,5)));";
-    cliptesttree1 = (char*)"equal_test=[&U] ((1,(2,3)), (4,(5,6)));";
-    //cliptesttree = (char*)"equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
-    //cliptesttree1 = (char*)"equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
-    cliptesttree2 = (char*)"equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
-    //cliptesttree = (char*)"equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
-    //cliptesttree = (char*)"tree1=[&U] (1,(2,(((((((((((((((((((((3,39),12),(11,(53,64))),30),(42,62)),48),(25,32)),74),21),((((((6,61),76),17),67),(8,45)),((((((((((14,22),38),(16,18)),((37,58),75)),(59,73)),15),26),68),(51,56)),36))),((((13,(40,((46,55),54))),49),((((((29,34),(33,63)),72),57),65),35)),23)),70),44),27),(31,43)),(((9,((19,41),(20,28))),24),47)),71),((4,10),69)),((50,78),52)),7),(((5,66),77),60))));";
-    
-    mfl_edgetable_t* test_edgetable1 = NULL;
-    mfl_edgetable_t* test_edgetable2 = NULL;
-    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 0);
-    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 0);
-    
-    if(!testree1->treet_root) {
-        mfl_assign_bottom_node(testree1->treet_start);
-        test_edgetable1 = mfl_initiate_edgetable_t(testree1->treet_num_taxa, 0);
-    } else {
-        mfl_assign_bottom_node(testree1->treet_root);
-        test_edgetable1 = mfl_initiate_edgetable_t(testree1->treet_num_taxa, 1);
-    }
-    
-    if(!testree2->treet_root) {
-        mfl_assign_bottom_node(testree2->treet_start);
-        test_edgetable2 = mfl_initiate_edgetable_t(testree2->treet_num_taxa, 0);
-    } else {
-        mfl_assign_bottom_node(testree2->treet_root);
-        test_edgetable2 = mfl_initiate_edgetable_t(testree2->treet_num_taxa, 1);
-    }
-    
-    
-    mfl_get_edgetable(test_edgetable1, testree1);
-    mfl_get_edgetable(test_edgetable2, testree2);
-
-    tui_print_edgetable(test_edgetable1);
-    tui_print_edgetable(test_edgetable2);
-    
-    compare = mfl_compare_edge_tables(test_edgetable1, test_edgetable2);
-    if(compare == true){
-        dbg_printf("Trees are the same!\n");
-    } else {
-        dbg_printf("Trees are different!\n");
-    }
-
-    
-//    
-//free(test_edgetable);
-    mfl_destroy_edgetable(test_edgetable2);
-    mfl_free_tree(testree2);
-
-    // Destroy the table
-    mfl_destroy_edgetable(test_edgetable1);
-    mfl_free_tree(testree1);
-}
