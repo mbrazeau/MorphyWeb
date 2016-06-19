@@ -727,6 +727,24 @@ int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
 void            mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
 bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
 
+
+//// Bipartition table structure
+//typedef struct {
+//    int number_of_bipartitions;
+//    int* bipartition_occurence_counter;
+//    int* bipartitions;
+//} mfl_bipartition_table;
+//
+//mfl_bipartition_table* mfl_initialise_bipartition_table(void) {;
+//void mfl_destroy_biparition_table(mfl_bipartition_table* biparition_table);
+//void mfl_append_malloc_biparition_table(mfl_bipartition_table* biparition_table);
+//int mfl_get_node_bipartition(mfl_node_t* n);
+//void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table);
+//void mfl_append_biparition_table(mfl_bipartition_table* biparition_table, mfl_tree_t tree);
+//
+void tui_test_biparition_tables(void); //TODO: move to tui
+
+
 /* in mfl_searchrec.c*/
 /* temporary place for prototypes */
 void            mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* handle);
