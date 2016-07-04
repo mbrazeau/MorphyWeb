@@ -729,9 +729,6 @@ int mfl_get_node_bipartition(mfl_node_t* n);
 int mfl_match_bipartition(int bipartition, mfl_bipartition_table* bipartition_table);
 void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table);
 
-void tui_test_bipartition_tables(void); //TODO: move to tui
-
-
 
 void            mfl_set_bipartitions(mfl_node_t* n);
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips, bool is_rooted);

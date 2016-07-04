@@ -601,3 +601,12 @@ void tui_print_edgetable(mfl_edgetable_t* edgetable)
         dbg_printf("%i connects to %i\n", i, edgetable->edgetable[i]);
     }
 }
+
+void tui_print_bipartition_tables(mfl_bipartition_table* bipartition_table)
+{
+    int i = 0;
+    dbg_printf("Total number of biparitions = %i\n", bipartition_table->number_of_bipartitions);
+    for(i = 0; i < bipartition_table->number_of_bipartitions; ++i){
+        dbg_printf("Partition %i - counted %i times\n", bipartition_table->bipartitions[i], bipartition_table->bipartition_occurence_counter[i]);
+    }
+}

@@ -9,22 +9,6 @@
 #include "morphy.h"
 
 
-//void mfl_sort_bipartition_set(mfl_partition_set_t* biparts)
-//{
-//    
-//}
-//
-//
-//int mfl_binary_search_bipartition(mfl_bitset_t* bipartition, mfl_partition_set_t* targetlist)
-//{
-//    return 0;
-//}
-//
-//int mfl_compare_all_bipartitions(mfl_partition_set_t* partset1, mfl_partition_set_t* partset2)
-//{
-//    
-//}
-
 // Create an empty bipartition table
 mfl_bipartition_table* mfl_initialise_bipartition_table(void) {
     
@@ -56,27 +40,30 @@ void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_tabl
     bipartition_table->bipartitions = (int*)mfl_malloc(sizeof(int), 0);
 }
 
-// Function for getting the bipartition at one node
-int mfl_get_node_bipartition(mfl_node_t* n)
+/*!
+ @description Gets the bipartition bitfield value.
+ @param node a mfl_node_t pointer to a node in a node ring.
+ @return and int that is the bit value of the bipartition
+ */
+int mfl_get_node_bipartition(mfl_node_t* node)
 {
-    
     // Return some bipartition integer (using bitwise business)
-    int bipartition = NULL;
+    int bipartition = 0;
     int i = 0;
     int j = 0;
+    int bit_position = 0;
     mfl_bitfield_t bitfield = 1;
     
-    for (i = 0; i < n->nodet_bipart->bts_nfields; ++i) {
+    //TODO: not sure if the i is mandatory + j seems to loop way to far
+    for (i = 0; i < node->nodet_bipart->bts_nfields; ++i) {
         for (j = 0; j < MORPHY_BTS_IN_BITSET; ++j) {
-            if (n->nodet_bipart->bts_bitfields[i] & (bitfield << j)) {
-                dbg_printf("*");
-            }
-            else {
-                dbg_printf(".");
+            bit_position = node->nodet_bipart->bts_bitfields[i] & (bitfield << j);
+            if (bit_position) {
+                bipartition ^= (-bit_position ^ bipartition) & (1 << j);
             }
         }
     }
-    
+    dbg_printf("Bipartition = %i\n", bipartition);
     return bipartition;
 }
 
@@ -97,28 +84,29 @@ int mfl_match_bipartition(int bipartition, mfl_bipartition_table* bipartition_ta
 }
 
 //Traversal for getting all the bipartitions
-void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table)
+void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipartition_table)
 {
     int current_bipartition = 0;
     int current_bipartition_position = 0;
     int bipartition_number = 0;
-    mfl_node_t* p = NULL;
+    mfl_node_t* start = NULL;
     
-    if (n->nodet_tip) {
+    if (node->nodet_tip) {
         return;
     }
     
-    p = n->nodet_next;
+    start = node->nodet_next;
+    
     do {
-        mfl_get_bipartition_traversal(p->nodet_edge, bipartition_table);
-        p = p->nodet_next;
-    } while (p != n);
-    
-    current_bipartition = mfl_get_node_bipartition(n);
-    
+        mfl_get_bipartition_traversal(start->nodet_edge, bipartition_table);
+        
+        start = start->nodet_next;
+        
+    } while (start != node);
+
+    current_bipartition = mfl_get_node_bipartition(node);
     //Get the current bipartition position
     current_bipartition_position = mfl_match_bipartition(current_bipartition, bipartition_table);
-    
     //Increment the biparitition table
     if(current_bipartition_position != 0){
         // Increment the occurence of this bipartition
@@ -128,28 +116,13 @@ void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* biparti
         mfl_append_malloc_bipartition_table(bipartition_table);
         // Add the bipartition to the table
         bipartition_table->bipartitions[bipartition_table->number_of_bipartitions] = current_bipartition;
-        // Increment the total number of bipartitions
-        ++bipartition_table->number_of_bipartitions;
         // Increment the occurence of this bipartition
         ++bipartition_table->bipartition_occurence_counter[bipartition_table->number_of_bipartitions];
+        // Increment the total number of bipartitions
+        ++bipartition_table->number_of_bipartitions;
     }
+    
 }
-
-
-//typedef struct mfl_bitset_t {
-//    int bts_nfields;
-//    int bts_max_bitfields;
-//    int bts_max_bit;
-//    mfl_bitfield_t* bts_bitfields;
-//} mfl_bitset_t;
-//
-//typedef struct mfl_bitsetlist_t {
-//    int bsl_num_sets;
-//    int bsl_max_sets;
-//    mfl_bitset_t** bsl_bitsets;
-//} mfl_bitsetlist_t;
-
-
 
 /* This is mostly a temporary function, as it is likely that the setting of 
  * bipartitions will be handled simultaneously by other tree traversals. 
@@ -356,31 +329,4 @@ bool mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2)
     else {
         return false;
     }
-}
-
-
-void tui_test_bipartition_tables(void)
-{
-    char* cliptesttree1 = NULL;
-    char* cliptesttree2 = NULL;
-    
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,4));";
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,(4,5)));";
-    //cliptesttree = (char*)"temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
-    //cliptesttree = (char*)"temp_examp6=[&U] (5,(4,(3,(2,1))));";
-    cliptesttree1 = (char*)"temp_examp6=[&R] ((1,(2,6)),(3,(4,5)));";
-    cliptesttree2 = (char*)"equal_test=[&R]  ((1,(2,3)),(4,(5,6)));";
-    //cliptesttree = (char*)"equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
-    
-    //cliptesttree1 = (char*)"equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
-    //cliptesttree2 = (char*)"equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
-    //cliptesttree = (char*)"equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
-    
-    mfl_bipartition_table* bipar_table = NULL;
-    
-    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 0);
-    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 0);
-
-    mfl_get_node_bipartition(testree1->treet_root);
-    
 }
