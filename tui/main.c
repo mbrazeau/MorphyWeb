@@ -527,7 +527,8 @@ void tui_test_bipartition_tables(void)
     //cliptesttree = (char*)"temp_examp6=[&U] (5,(4,(3,(2,1))));";
     //cliptesttree1 = (char*)"temp_examp6=[&R] ((1,(2,6)),(3,(4,5)));";
     cliptesttree1 = (char*)"temp_examp6=[&R] ((1,2),(3,4));";
-    cliptesttree2 = (char*)"equal_test=[&R]  ((1,(2,3)),(4,(5,6)));";
+    cliptesttree2 = (char*)"temp_examp6=[&R] ((1,3),(2,4));";
+    //cliptesttree2 = (char*)"equal_test=[&R]  ((1,(2,3)),(4,(5,6)));";
     //cliptesttree = (char*)"equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
     
     //cliptesttree1 = (char*)"equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
@@ -543,7 +544,11 @@ void tui_test_bipartition_tables(void)
     bipar_table = mfl_initialise_bipartition_table();
     
     mfl_set_bipartitions(testree1->treet_root);
-    tui_partition_print_traversal(testree1->treet_root);
+    mfl_set_bipartitions(testree2->treet_root);
+    
+    mfl_get_bipartition_traversal(testree2->treet_root, bipar_table);
+    
+    tui_print_bipartition_tables(bipar_table);
     
     mfl_get_bipartition_traversal(testree1->treet_root, bipar_table);
     

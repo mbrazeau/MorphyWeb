@@ -25,9 +25,11 @@ mfl_bipartition_table* mfl_initialise_bipartition_table(void) {
 void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table)
 {
     if (bipartition_table->bipartition_occurence_counter) {
+        bipartition_table->bipartition_occurence_counter = NULL;
         free(bipartition_table->bipartition_occurence_counter);
     }
     if (bipartition_table->bipartitions) {
+        bipartition_table->bipartitions = NULL;
         free(bipartition_table->bipartitions);
     }
     free(bipartition_table);
@@ -36,8 +38,12 @@ void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table)
 // Appends the malloc for a bipartition table
 void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table)
 {
-    bipartition_table->bipartition_occurence_counter = (int*)mfl_malloc(sizeof(int), 0);
-    bipartition_table->bipartitions = (int*)mfl_malloc(sizeof(int), 0);
+    //Append memory
+    bipartition_table->bipartition_occurence_counter = (int*)realloc(bipartition_table->bipartition_occurence_counter, bipartition_table->number_of_bipartitions+1 * sizeof(int));
+    bipartition_table->bipartitions = (int*)realloc(bipartition_table->bipartitions, bipartition_table->number_of_bipartitions+1 * sizeof(int));
+    //Set new values to 0
+    bipartition_table->bipartition_occurence_counter[bipartition_table->number_of_bipartitions+1] = 0;
+    bipartition_table->bipartitions[bipartition_table->number_of_bipartitions+1] = 0;
 }
 
 /*!
@@ -80,15 +86,14 @@ int mfl_match_bipartition(int bipartition, mfl_bipartition_table* bipartition_ta
         }
     }
     
-    return 0;
+    return -1;
 }
 
 //Traversal for getting all the bipartitions
 void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipartition_table)
 {
     int current_bipartition = 0;
-    int current_bipartition_position = 0;
-    int bipartition_number = 0;
+    int current_bipartition_position = -1; // Initialised to be -1 (no position; c.f. 0 that is the first position)
     mfl_node_t* start = NULL;
     
     if (node->nodet_tip) {
@@ -108,7 +113,7 @@ void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipa
     //Get the current bipartition position
     current_bipartition_position = mfl_match_bipartition(current_bipartition, bipartition_table);
     //Increment the biparitition table
-    if(current_bipartition_position != 0){
+    if(current_bipartition_position != -1){
         // Increment the occurence of this bipartition
         ++bipartition_table->bipartition_occurence_counter[current_bipartition_position];
     } else {
