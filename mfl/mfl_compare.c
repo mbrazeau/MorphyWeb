@@ -25,13 +25,6 @@
 //    
 //}
 
-// Bipartition table structure
-typedef struct {
-    int number_of_bipartitions;
-    int* bipartition_occurence_counter;
-    int* bipartitions;
-} mfl_bipartition_table;
-
 // Create an empty bipartition table
 mfl_bipartition_table* mfl_initialise_bipartition_table(void) {
     
