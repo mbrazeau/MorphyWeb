@@ -520,43 +520,66 @@ void tui_test_bipartition_tables(void)
 {
     char* cliptesttree1 = NULL;
     char* cliptesttree2 = NULL;
+    char* testtree1 = NULL;
+    char* testtree2 = NULL;
+    char* testtree3 = NULL;
+    char* testtree4 = NULL;
+    char* testtree5 = NULL;
     
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,4));";
-    //cliptesttree = (char*)"temp_examp6=[&U] ((1,2),(3,(4,5)));";
-    //cliptesttree = (char*)"temp_examp6=[&U] (1,(2,(3,(4,(5,6)))));";
-    //cliptesttree = (char*)"temp_examp6=[&U] (5,(4,(3,(2,1))));";
-    //cliptesttree1 = (char*)"temp_examp6=[&R] ((1,(2,6)),(3,(4,5)));";
     cliptesttree1 = (char*)"temp_examp6=[&R] ((1,2),(3,4));";
     cliptesttree2 = (char*)"temp_examp6=[&R] ((1,3),(2,4));";
-    //cliptesttree2 = (char*)"equal_test=[&R]  ((1,(2,3)),(4,(5,6)));";
-    //cliptesttree = (char*)"equal_test=[&U] ((4,(5,6)), (1,(2,3)));";
+    testtree1 = (char*)"testtree1 = [&R] ((((1,2),3),((4,5),6)),(((7,8),((9,(10,11)),12)),(13,(14,15))));";
+    testtree2 = (char*)"testtree2 = [&R] ((((4,5),6),((1,2),3)),(((10,11),((9,(7,8)),12)),(13,(14,15))));";
+    testtree3 = (char*)"testtree3 = [&R] ((((13,(14,15),((4,5),6)),(((10,11),((9,(7,8)),12)),(1,2),3))));";
+    testtree4 = (char*)"testtree4 = [&R] ((((1,2),3),(13,(14,15))),(((7,8),(((4,5),6),12)),(9,(10,11))));";
+    testtree5 = (char*)"testtree5 = [&R] ((((13,2),7),((14,6),11)),(((3,9),((8,(10,5)),12)),(1,(4,15))));";
     
-    //cliptesttree1 = (char*)"equal_test=[&U] (2, ((4,7), ((1,(3,5)), (8,(6,9)))));";
-    //cliptesttree2 = (char*)"equal_test=[&U] (2, ((4,7), ((8,(6,9)), (1,(3,5)))));";
-    //cliptesttree = (char*)"equal_test=[&U] (2, (((8,(6,9)), (1,(3,5))), (4,7)));";
+    //Get the trees into mfl_tree_t
+    mfl_tree_t* simpletree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 4);
+    mfl_tree_t* simpletree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 4);
+    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(testtree1, 15);
+    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(testtree2, 15);
+    mfl_tree_t* testree3 = mfl_convert_newick_to_mfl_tree_t(testtree3, 15);
+    mfl_tree_t* testree4 = mfl_convert_newick_to_mfl_tree_t(testtree4, 15);
+    mfl_tree_t* testree5 = mfl_convert_newick_to_mfl_tree_t(testtree5, 15);
     
-    mfl_bipartition_table* bipar_table = NULL;
-    
-    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 0);
-    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 0);
-    
-    // Initialising the table
-    bipar_table = mfl_initialise_bipartition_table();
-    
+    //Setting the biparititions
+    mfl_set_bipartitions(simpletree1->treet_root);
+    mfl_set_bipartitions(simpletree2->treet_root);
     mfl_set_bipartitions(testree1->treet_root);
     mfl_set_bipartitions(testree2->treet_root);
+    mfl_set_bipartitions(testree3->treet_root);
+    mfl_set_bipartitions(testree4->treet_root);
+    mfl_set_bipartitions(testree5->treet_root);
     
-    mfl_get_bipartition_traversal(testree2->treet_root, bipar_table);
+    //Initialising the tables
+    mfl_bipartition_table* simple_bipar_table = NULL;
+    mfl_bipartition_table* comple_bipar_table = NULL;
+    simple_bipar_table = mfl_initialise_bipartition_table();
+    comple_bipar_table = mfl_initialise_bipartition_table();
     
-    tui_print_bipartition_tables(bipar_table);
+    //Simple example (2 4 taxa trees)
+    //Generating the bipartition table for the first tree
+    mfl_get_bipartition_traversal(simpletree1->treet_root, simple_bipar_table);
+    //Printing the table
+    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-1"
+    //Adding the second tree to the table
+    mfl_get_bipartition_traversal(simpletree2->treet_root, simple_bipar_table);
+    //Printing the updated table
+    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-2;5-1;10-1"
     
-    mfl_get_bipartition_traversal(testree1->treet_root, bipar_table);
+    //Destroying the table
+    mfl_destroy_bipartition_table(simple_bipar_table);
     
-    tui_print_bipartition_tables(bipar_table);
     
-    // Destroying the table
-    mfl_destroy_bipartition_table(bipar_table);
-    
+    //Destroying the trees
+    mfl_free_tree(simpletree1);
+    mfl_free_tree(simpletree2);
+    mfl_free_tree(testree1);
+    mfl_free_tree(testree2);
+    mfl_free_tree(testree3);
+    mfl_free_tree(testree4);
+    mfl_free_tree(testree5);
 }
 
 
