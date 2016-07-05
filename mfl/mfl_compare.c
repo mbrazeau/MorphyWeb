@@ -15,8 +15,14 @@ mfl_bipartition_table* mfl_initialise_bipartition_table(void) {
     //Intialise the table
     mfl_bipartition_table* new_bipartition_table = NULL;
     
-    //malloc the edge table
+    //malloc the bipartition table
     new_bipartition_table = (mfl_bipartition_table*)mfl_malloc(sizeof(mfl_bipartition_table), 0);
+    
+    //malloc the bipartitions
+    new_bipartition_table->bipartitions = (int*)mfl_malloc(sizeof(int), 0);
+    //malloc the bipartition counter
+    new_bipartition_table->bipartition_occurence_counter = (int*)mfl_malloc(sizeof(int), 0);
+    
     
     return new_bipartition_table;
 }
@@ -42,8 +48,8 @@ void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_tabl
     bipartition_table->bipartition_occurence_counter = (int*)realloc(bipartition_table->bipartition_occurence_counter, bipartition_table->number_of_bipartitions+1 * sizeof(int));
     bipartition_table->bipartitions = (int*)realloc(bipartition_table->bipartitions, bipartition_table->number_of_bipartitions+1 * sizeof(int));
     //Set new values to 0
-    bipartition_table->bipartition_occurence_counter[bipartition_table->number_of_bipartitions+1] = 0;
-    bipartition_table->bipartitions[bipartition_table->number_of_bipartitions+1] = 0;
+    //bipartition_table->bipartition_occurence_counter[bipartition_table->number_of_bipartitions+1] = 0;
+    //bipartition_table->bipartitions[bipartition_table->number_of_bipartitions+1] = 0;
 }
 
 /*!
@@ -120,7 +126,7 @@ void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipa
         // Append the bipartition table size
         mfl_append_malloc_bipartition_table(bipartition_table);
         // Add the bipartition to the table
-        bipartition_table->bipartitions[bipartition_table->number_of_bipartitions] = current_bipartition;
+        bipartition_table->bipartitions[bipartition_table->number_of_bipartitions] = current_bipartition; //TG: this somehow increments the biparition_table->bipartitions_occurence_counter[0]!! (but only on the second pass...)
         // Increment the occurence of this bipartition
         ++bipartition_table->bipartition_occurence_counter[bipartition_table->number_of_bipartitions];
         // Increment the total number of bipartitions
