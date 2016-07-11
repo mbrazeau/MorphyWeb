@@ -554,9 +554,9 @@ void tui_test_bipartition_tables(void)
     
     //Initialising the tables
     mfl_bipartition_table* simple_bipar_table = NULL;
-    mfl_bipartition_table* comple_bipar_table = NULL;
-    simple_bipar_table = mfl_initialise_bipartition_table();
-    comple_bipar_table = mfl_initialise_bipartition_table();
+//    mfl_bipartition_table* comple_bipar_table = NULL;
+    simple_bipar_table = mfl_initialise_bipartition_table(simpletree1->treet_num_taxa);
+//    comple_bipar_table = mfl_initialise_bipartition_table();
     
     //Simple example (2 4 taxa trees)
     //Generating the bipartition table for the first tree
@@ -564,12 +564,13 @@ void tui_test_bipartition_tables(void)
     //Printing the table
     tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-1"
     //Adding the second tree to the table
-    mfl_get_bipartition_traversal(simpletree2->treet_root, simple_bipar_table);
-    //Printing the updated table
-    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-2;5-1;10-1"
-    
+//    mfl_get_bipartition_traversal(testree2->treet_root, simple_bipar_table);
+//    //Printing the updated table
+//    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-2;5-1;10-1"
+//    
     //Destroying the table
-    mfl_destroy_bipartition_table(simple_bipar_table);
+//    mfl_destroy_bipartition_table(simple_bipar_table);
+//    mfl_destroy_bipartition_table(comple_bipar_table);
     
     
     //Destroying the trees
