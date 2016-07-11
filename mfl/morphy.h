@@ -713,9 +713,22 @@ int             mfl_bts_calculate_n_bitfieds(int n_minbits);
 mfl_bitset_t*   mfl_bts_create_bitset(int n_minbits);
 bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
+
+
 /* in mfl_compare.c*/
-mfl_partition_set_t* mfl_create_bipartition_set(int num_taxa);
-void mfl_destroy_bipartition_set(mfl_partition_set_t* bptset);
+typedef struct {
+    int number_of_bipartitions;
+    int* bipartition_occurence_counter;
+    int* bipartitions;
+} mfl_bipartition_table;
+
+mfl_bipartition_table* mfl_initialise_bipartition_table(void);
+void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table);
+void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table);
+int mfl_get_node_bipartition(mfl_node_t* n);
+int mfl_match_bipartition(int bipartition, mfl_bipartition_table* bipartition_table);
+void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table);
+
 
 void            mfl_set_bipartitions(mfl_node_t* n);
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips, bool is_rooted);
@@ -727,8 +740,6 @@ int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
 void            mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
 bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
 
-void            tui_print_edgetable(mfl_edgetable_t* edgetable); //TODO: move this function to tui
-void            tui_test_edgetables(void); //TODO: move this function to tui
 
 /* in mfl_searchrec.c*/
 /* temporary place for prototypes */
