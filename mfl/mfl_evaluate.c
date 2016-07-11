@@ -321,59 +321,81 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
     mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate temp = 0;
     
+    
+    
     for (i = 0; i < num_chars; ++i) {
         
-        // Check for an intersection between descendant states
-        if (!(lft_char[i] & rt_char[i])) {
-            
-            if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
-                if (temp & MORPHY_IS_APPLICABLE) {
-                    n_final[i] = temp;
-                }
-            }
-            
-            if ((lft_char[i] & actives[i]) && (rt_char[i] & actives[i])) {
-                
-                if ((lft_char[i] & MORPHY_IS_APPLICABLE) && (rt_char[i] & MORPHY_IS_APPLICABLE)) {
-                    if (length) {
-                        *length += weights[i];
-                    }
-                    
-                    if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+        if (rt_char[i] == 8) {
+            dbg_printf("break\n");
+        }
+        
+        if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+            if (lft_char[i] & actives[i] || rt_char[i] & actives[i]) {
+                if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    if (actives[i] & MORPHY_INAPPLICABLE_BITPOS) {
                         if (length) {
                             *length += weights[i];
                         }
                     }
                 }
-                else if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+            }
+        }
+        
+        // Check for empty intersection between descendant states
+        if (!(lft_char[i] & rt_char[i])) {
+            
+            //temp = lft_char[i] | rt_char[i];
+            if ((lft_char[i] | rt_char[i]) & anc_char[i] & MORPHY_IS_APPLICABLE) {
+                n_final[i] = (lft_char[i] | rt_char[i]) & anc_char[i];
+            }
+            
+            if (lft_char[i] & actives[i] && rt_char[i] & actives[i]) {
+                
+                if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
                     if (length) {
                         *length += weights[i];
                     }
                 }
-            }
-            
-            if ((lft_char[i] | rt_char[i]) < (MORPHY_MISSING_DATA_BITWISE - 1)) {
-                
-                if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
-                    if (n_final[i] & MORPHY_IS_APPLICABLE) {
+                else if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                    if (anc_char[i] & MORPHY_IS_APPLICABLE) {
                         if (!(n_final[i] & anc_char[i])) {
-                            actives[i] |= (lft_char[i] | rt_char[i]);// & MORPHY_IS_APPLICABLE;
+                            if (anc_char[i] & actives[i]) {
+                                if (length) {
+                                    *length += weights[i];
+                                }
+                            }
                         }
                     }
                 }
-                else {
-                    actives[i] |= (lft_char[i] | rt_char[i]);// & MORPHY_IS_APPLICABLE;
-                }
-            }
-        }
-        else if ((lft_char[i] & rt_char[i]) != n_final[i]) {
-            if (n_final[i] != anc_char[i]) {
-                if ((n_final[i] & actives[i]) == n_final[i]) {
+                else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                     if (length) {
                         *length += weights[i];
                     }
                 }
             }
+//            else if ((temp = ((lft_char[i] | rt_char[i]) & actives[i]) & MORPHY_IS_APPLICABLE)) {
+//                // Check if the active state is at least possibly the derived state?
+//                if (temp != anc_char[i]) {
+//                    if (temp & anc_char[i]) {
+//                        if (length) {
+//                            *length += weights[i];
+//                        }
+//                    }
+//                }
+//            }
+            
+            
+            if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+                if ((lft_char[i] | rt_char[i]) < (MORPHY_MISSING_DATA_BITWISE - 1)) {
+                    actives[i] |= (lft_char[i] | rt_char[i]);
+                }
+            }
+            else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                if ((lft_char[i] | rt_char[i]) < (MORPHY_MISSING_DATA_BITWISE - 1)) {
+                    actives[i] |= (lft_char[i] | rt_char[i]);
+                }
+            }
+            
         }
         
         
@@ -587,7 +609,10 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     } while (p != n);
     
     
-    if (n->nodet_index == 17) {
+    if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 10) {
+        dbg_printf("Break\n");
+    }
+    if (n->nodet_index == 16) {
         dbg_printf("Break\n");
     }
     
