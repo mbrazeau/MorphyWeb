@@ -79,11 +79,8 @@ void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_tabl
     bipartition_table->bipartition_occurence_counter = (int*)realloc(bipartition_table->bipartition_occurence_counter, bipartition_table->bipartitions_list->bsl_num_sets * sizeof(int));
 
     // Create a new bitset in the bitset list
-    bipartition_table->bipartitions_list->bsl_bitsets[bipartition_table->bipartitions_list->bsl_num_sets] = mfl_bts_create_bitset(bipartition_table->num_taxa); //TODO: some bad access here!
-    
-    // Increment the number of bipartitions in the bipartitions_list
-    ++bipartition_table->bipartitions_list->bsl_num_sets;
-    ++bipartition_table->bipartitions_list->bsl_max_sets;
+    bipartition_table->bipartitions_list->bsl_bitsets = (mfl_bitset_t**)realloc(bipartition_table->bipartitions_list->bsl_bitsets, bipartition_table->bipartitions_list->bsl_num_sets * sizeof(mfl_bitset_t));
+
 }
 
 /*!
@@ -108,6 +105,7 @@ void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_tabl
 int mfl_match_bipartition(mfl_bitset_t* bipartition, mfl_bipartition_table* bipartition_table)
 {
     int i = 0;
+    int mem = NULL;
     
     //Return -1 if the biparititions list is empty
     if(bipartition_table->bipartitions_list->bsl_num_sets == 0) {
@@ -116,12 +114,11 @@ int mfl_match_bipartition(mfl_bitset_t* bipartition, mfl_bipartition_table* bipa
     
     //Loop through the recorded biparititions
     for (i = 0; i < bipartition_table->bipartitions_list->bsl_num_sets; ++i){
-        if(memcmp(bipartition->bts_bitfields, bipartition_table->bipartitions_list->bsl_bitsets[i]->bts_bitfields, bipartition->bts_nfields * sizeof(mfl_bitfield_t)) != 0) {
-           //mfl_compare_bitsets(bipartition, bipartition_table->bipartitions_list->bsl_bitsets[i]) != 0) {
-            return -1;
+        if(memcmp(bipartition->bts_bitfields, bipartition_table->bipartitions_list->bsl_bitsets[i]->bts_bitfields, bipartition->bts_nfields * sizeof(mfl_bitfield_t)) == 0) {
+            return i;
         }
     }
-    return i;
+    return -1;
 }
 
 //Traversal for getting all the bipartitions_list
@@ -141,6 +138,7 @@ void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipa
     
     do {
         mfl_get_bipartition_traversal(start->nodet_edge, bipartition_table);
+        //Set the bipartition score at the node
         mfl_bts_OR(start->nodet_edge->nodet_bipart, start->nodet_bipart, start->nodet_bipart);
         
         start = start->nodet_next;
@@ -158,9 +156,15 @@ void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipa
         // Append the bipartition table size
         mfl_append_malloc_bipartition_table(bipartition_table);
         // Add the bipartition to the table
+        
+        //TODO: Somehow resets the first bitfield here...
+        
         bipartition_table->bipartitions_list->bsl_bitsets[bipartition_table->bipartitions_list->bsl_num_sets] = current_bipartition;
         // Increment the occurence of this bipartition
         ++bipartition_table->bipartition_occurence_counter[bipartition_table->bipartitions_list->bsl_num_sets];
+        // Increment the number of bipartitions in the bipartitions_list (this is not done in the append loop since it must start from 0)
+        ++bipartition_table->bipartitions_list->bsl_num_sets;
+        ++bipartition_table->bipartitions_list->bsl_max_sets;
     }
     
 }

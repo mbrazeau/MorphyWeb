@@ -554,33 +554,49 @@ void tui_test_bipartition_tables(void)
     
     //Initialising the tables
     mfl_bipartition_table* simple_bipar_table = NULL;
-//    mfl_bipartition_table* comple_bipar_table = NULL;
     simple_bipar_table = mfl_initialise_bipartition_table(simpletree1->treet_num_taxa);
-//    comple_bipar_table = mfl_initialise_bipartition_table();
     
     //Simple example (2 4 taxa trees)
     //Generating the bipartition table for the first tree
-    mfl_get_bipartition_traversal(simpletree1->treet_root, simple_bipar_table);
+    mfl_get_bipartition_traversal(simpletree2->treet_root, simple_bipar_table);
     //Printing the table
     tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-1"
     //Adding the second tree to the table
-//    mfl_get_bipartition_traversal(testree2->treet_root, simple_bipar_table);
-//    //Printing the updated table
-//    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-2;5-1;10-1"
-//    
+    mfl_get_bipartition_traversal(simpletree1->treet_root, simple_bipar_table);
+    //Printing the updated table
+    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-2;5-1;10-1"
+    
+    //Simple example 2 (5 15 taxa trees)
+    //Initialising the tables
+//    mfl_bipartition_table* simple_bipar_table2 = NULL;
+//    simple_bipar_table2 = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
+    
+    //Simple example (2 4 taxa trees)
+    //Generating the bipartition table for the first tree
+//    mfl_get_bipartition_traversal(testree1->treet_root, simple_bipar_table2);
+//    tui_print_bipartition_tables(simple_bipar_table2);
+//    mfl_get_bipartition_traversal(testree2->treet_root, simple_bipar_table2);
+//    tui_print_bipartition_tables(simple_bipar_table2);
+//    mfl_get_bipartition_traversal(testree3->treet_root, simple_bipar_table2);
+//    tui_print_bipartition_tables(simple_bipar_table2);
+//    mfl_get_bipartition_traversal(testree4->treet_root, simple_bipar_table2);
+//    tui_print_bipartition_tables(simple_bipar_table2);
+//    mfl_get_bipartition_traversal(testree5->treet_root, simple_bipar_table2);
+//    tui_print_bipartition_tables(simple_bipar_table2);
+
     //Destroying the table
-//    mfl_destroy_bipartition_table(simple_bipar_table);
-//    mfl_destroy_bipartition_table(comple_bipar_table);
+    //mfl_destroy_bipartition_table(simple_bipar_table);
+    //mfl_destroy_bipartition_table(comple_bipar_table);
     
     
     //Destroying the trees
-    mfl_free_tree(simpletree1);
-    mfl_free_tree(simpletree2);
-    mfl_free_tree(testree1);
-    mfl_free_tree(testree2);
-    mfl_free_tree(testree3);
-    mfl_free_tree(testree4);
-    mfl_free_tree(testree5);
+//    mfl_free_tree(simpletree1);
+//    mfl_free_tree(simpletree2);
+//    mfl_free_tree(testree1);
+//    mfl_free_tree(testree2);
+//    mfl_free_tree(testree3);
+//    mfl_free_tree(testree4);
+//    mfl_free_tree(testree5);
 }
 
 
