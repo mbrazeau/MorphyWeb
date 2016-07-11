@@ -129,9 +129,9 @@ typedef struct mfl_bitset_t {
 } mfl_bitset_t;
 
 typedef struct mfl_bitsetlist_t {
-    int bsl_num_sets;
-    int bsl_max_sets;
-    mfl_bitset_t** bsl_bitsets;
+    int bsl_num_sets;               // number of bitsets (e.g. number of bipartitions)
+    int bsl_max_sets;               // max number of bitsets
+    mfl_bitset_t** bsl_bitsets;     // list of bbitsets (e.g. list of iparitions)
 } mfl_bitsetlist_t;
 
 typedef struct {
@@ -716,18 +716,34 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 
 /* in mfl_compare.c*/
+//typedef struct {
+//    int number_of_bipartitions;
+//    int* bipartition_occurence_counter;
+//    int* bipartitions;
+//} mfl_bipartition_table;
 typedef struct {
-    int number_of_bipartitions;
+    int num_taxa;
+    int num_fields;
     int* bipartition_occurence_counter;
-    int* bipartitions;
-} mfl_bipartition_table;
+    mfl_bitsetlist_t* bipartitions_list;
+}  mfl_bipartition_table;
 
-mfl_bipartition_table* mfl_initialise_bipartition_table(void);
+
+//typedef struct mfl_bitsetlist_t {
+//    int max_pos;                    // the maximym number of positions in the bitsets (e.g. number of taxa)
+//    int bsl_num_sets;               // number of bitsets (e.g. number of bipartitions)
+//    int* count_sets;                // the occurences of each sets
+//    int bsl_max_sets;               // max number of bitsets
+//    mfl_bitset_t** bsl_bitsets;     // list of bbitsets (e.g. list of iparitions)
+//} mfl_bitsetlist_t;
+
+mfl_bipartition_table* mfl_initialise_bipartition_table(const int num_taxa);
 void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table);
+mfl_bitset_t* mfl_create_empty_bipartition(const int num_taxa, const int num_fields);
 void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table);
-int mfl_get_node_bipartition(mfl_node_t* n);
-int mfl_match_bipartition(int bipartition, mfl_bipartition_table* bipartition_table);
-void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table);
+//int mfl_get_node_bipartition(mfl_node_t* n);
+int mfl_match_bipartition(mfl_bitset_t* bipartition, mfl_bipartition_table* bipartition_table);
+void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipartition_table);
 
 
 void            mfl_set_bipartitions(mfl_node_t* n);

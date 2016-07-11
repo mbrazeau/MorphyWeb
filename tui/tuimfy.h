@@ -76,6 +76,7 @@ int             tui_check_all_binary(mfl_tree_t *querytree, const int *verbose);
 void            tui_print_newick_recursive(mfl_node_t *start);
 void            tui_print_newick(mfl_node_t *n);
 void            tui_print_edgetable(mfl_edgetable_t* edgetable);
+void            tui_print_bitset(mfl_bitset_t* bitset);
 void            tui_print_bipartition_tables(mfl_bipartition_table* bipartition_table);
 
 /*  tui_io.c
