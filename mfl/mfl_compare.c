@@ -39,6 +39,7 @@ void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table)
     if (bipartition_table->bipartition_occurence_counter) {
         free(bipartition_table->bipartition_occurence_counter);
     }
+    
     if (bipartition_table->bipartitions_list) {
         for(counts = 0; counts < bipartition_table->bipartitions_list->bsl_num_sets; ++counts) {
             mfl_bts_destroy_bitset(bipartition_table->bipartitions_list->bsl_bitsets[counts]);
@@ -48,38 +49,18 @@ void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table)
     free(bipartition_table);
 }
 
-/*!
- @description This function is based on mfl_bts_create_bitset (in mfl/mfl_bitset.c) but skips the number of fields counting
- @param num_taxa the number of (active) taxa
- @param num_fields the number of fields needed (usually obtained from mfl_bts_calculate_n_bitfieds)
- @return an empty mfl_bitset_t
- */
-mfl_bitset_t* mfl_create_empty_bipartition(int num_taxa, int num_fields)
-{
-    mfl_bitset_t* new_bitset = NULL;
-    
-    //allocating the bitset
-    new_bitset = (mfl_bitset_t*)mfl_malloc(sizeof(mfl_bitset_t), 0);
-    
-    //allocating the bitfields
-    new_bitset->bts_bitfields = (uint64_t*)mfl_malloc(num_fields * sizeof(uint64_t), 0);
-    
-    //setting the integers
-    new_bitset->bts_max_bitfields = num_fields;
-    new_bitset->bts_nfields = num_fields;
-    new_bitset->bts_max_bit = num_taxa;
-    
-    return new_bitset;
-}
 
 // Appends the malloc for a bipartition table
 void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table)
 {
     // Append memory for the bipartitions counter
-    bipartition_table->bipartition_occurence_counter = (int*)realloc(bipartition_table->bipartition_occurence_counter, bipartition_table->bipartitions_list->bsl_num_sets * sizeof(int));
+    bipartition_table->bipartition_occurence_counter = (int*)realloc(bipartition_table->bipartition_occurence_counter, bipartition_table->bipartitions_list->bsl_num_sets * sizeof(int*));
+    bipartition_table->bipartition_occurence_counter[bipartition_table->bipartitions_list->bsl_num_sets] = 0;
 
     // Create a new bitset in the bitset list
     bipartition_table->bipartitions_list->bsl_bitsets = (mfl_bitset_t**)realloc(bipartition_table->bipartitions_list->bsl_bitsets, bipartition_table->bipartitions_list->bsl_num_sets * sizeof(mfl_bitset_t));
+    
+    //void *realloc(my_pointer, new_size);
 
 }
 
@@ -105,7 +86,6 @@ void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_tabl
 int mfl_match_bipartition(mfl_bitset_t* bipartition, mfl_bipartition_table* bipartition_table)
 {
     int i = 0;
-    int mem = NULL;
     
     //Return -1 if the biparititions list is empty
     if(bipartition_table->bipartitions_list->bsl_num_sets == 0) {
@@ -139,8 +119,6 @@ void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipa
     do {
         mfl_get_bipartition_traversal(start->nodet_edge, bipartition_table);
         //Set the bipartition score at the node
-        mfl_bts_OR(start->nodet_edge->nodet_bipart, start->nodet_bipart, start->nodet_bipart);
-        
         start = start->nodet_next;
         
     } while (start != node);
@@ -156,9 +134,6 @@ void mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipa
         // Append the bipartition table size
         mfl_append_malloc_bipartition_table(bipartition_table);
         // Add the bipartition to the table
-        
-        //TODO: Somehow resets the first bitfield here...
-        
         bipartition_table->bipartitions_list->bsl_bitsets[bipartition_table->bipartitions_list->bsl_num_sets] = current_bipartition;
         // Increment the occurence of this bipartition
         ++bipartition_table->bipartition_occurence_counter[bipartition_table->bipartitions_list->bsl_num_sets];
