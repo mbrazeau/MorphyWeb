@@ -397,6 +397,27 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
             }
             
         }
+        else {
+            
+            if (lft_char[i] != (lft_char[i] & -lft_char[i])) {
+                
+                if (rt_char[i] != (rt_char[i] & -rt_char[i])) {
+                    
+                    if (lft_char[i] != rt_char[i]) {
+                        
+                        temp = lft_char[i] & rt_char[i];
+                        
+                        if (temp) {
+                            if (temp == (temp & -temp)) {
+                                if (length) {
+                                    *length += weights[i];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         
         
         
