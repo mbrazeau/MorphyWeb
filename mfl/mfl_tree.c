@@ -1236,6 +1236,115 @@ mfl_tree_t* mfl_rake_tree(int num_taxa)
 }
 
 /*!
+ Find previous node in a node ring.
+ @param node (mfl_node_t*) a pointer to a node.
+ @return a pointer to the previous node.
+ */
+mfl_node_t* mfl_find_previous_node(mfl_node_t* node)
+{
+    //Make sure the node is not a tip
+    assert(node->nodet_tip == 0);
+    
+    mfl_node_t* start = NULL;
+    mfl_node_t* previous = NULL;
+    
+    start = node->nodet_next;
+    
+    // Loop through the ring until reaching the start point
+    while (node != start) {
+        previous = node;
+        node = node->nodet_next;
+    }
+    
+    return previous;
+}
+
+/*!
+ Extract a node from a ring.
+ @param node (mfl_node_t*) a pointer to a node to extract.
+ */
+void mfl_extract_node_from_ring(mfl_node_t* node)
+{
+    mfl_node_t* previous = NULL;
+    
+    // Shorten the ring
+    previous = mfl_find_previous_node(node);
+    previous->nodet_next = previous->nodet_next->nodet_next;
+    
+    // Remove the node
+    node->nodet_next = NULL;
+    
+    return;
+}
+
+/*!
+ Searches for the node that links to tip_number
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param tip_number (int) the number of a tip
+ @return a pointer to tip_number's edge
+ */
+mfl_node_t* mfl_find_tips_node(mfl_tree_t* tree, int tip_number)
+{
+    // tip number can't be 0!
+    assert(tip_number != 0);
+    
+    int i = 0;
+    while(tree->treet_treenodes[i]->nodet_tip != tip_number) {
+        ++i;
+    }
+    return tree->treet_treenodes[i]->nodet_edge;
+}
+
+/*!
+ Combine a list of tips into a clade
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param node_entry (mfl_node_t*) a pointer to the entry point in the ring to modify.
+ @param tips (int*) a list of tips to be grouped in the clade. Note: tip 1 = 0!
+ */
+void mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips)
+{
+    mfl_node_t* new_ring_node = NULL;
+    mfl_node_t* new_node_in_ring = NULL;
+    mfl_node_t* extracted_node = NULL;
+    mfl_node_t* previous_extracted_node = NULL;
+    int i = 0;
+    int j = 0;
+    
+    // Create a floating node (new_ring_node)
+    //TODO: get node from stack
+    
+    // Remove each tips from the ring and group them as a new ring
+    for (i = 0; i < tips[0]; ++i) {
+        //TODO: i must be < than length(tips)!
+        extracted_node = mfl_find_tips_node(tree, tips[i]);
+        mfl_extract_node_from_ring(extracted_node);
+        
+        // Create the new ring
+        if(i == 0) {
+            // If it's the first node to be extracted, link it to the new_ring_node
+            new_ring_node->nodet_next = extracted_node;
+        } else {
+            // Link the previous one to this one.
+            previous_extracted_node->nodet_next = extracted_node;
+        }
+        previous_extracted_node = extracted_node;
+    }
+    // Link the last node to the first to make a ring
+    extracted_node->nodet_next = new_ring_node;
+    // New ring must be a ring
+    assert(mfl_check_is_in_ring(new_ring_node));
+    
+    // Add a new node (new_node_in_ring) in the ring
+    //TODO: get node from stack
+    mfl_insert_node_in_ring(node_entry, new_node_in_ring);
+    
+    // Connect the new_node_in_ring to new_ring_node
+    mfl_join_node_edges(new_node_in_ring, new_ring_node);
+
+    return;
+}
+
+/*!
  Solve a biparition in a tree
  @param tree (mfl_tree_t*) a pointer to a tree.
  @param bipartition (mfl_bitset_t) a biparitition.

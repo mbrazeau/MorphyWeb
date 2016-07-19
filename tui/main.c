@@ -618,16 +618,19 @@ void tui_test_consensus_trees(void)
     //Initialising the bipartition table
     mfl_bipartition_table* bipar_table = NULL;
     
-    //Filling the bipartition table
-    bipar_table = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
-    mfl_get_bipartition_traversal(testree1->treet_root, bipar_table);
-    mfl_get_bipartition_traversal(testree2->treet_root, bipar_table);
-    mfl_get_bipartition_traversal(testree4->treet_root, bipar_table);
-//    tui_print_bipartition_tables(comple_bipar_table);
+//    //Filling the bipartition table
+//    bipar_table = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
+//    mfl_get_bipartition_traversal(testree1->treet_root, bipar_table);
+//    mfl_get_bipartition_traversal(testree2->treet_root, bipar_table);
+//    mfl_get_bipartition_traversal(testree4->treet_root, bipar_table);
+////    tui_print_bipartition_tables(comple_bipar_table);
     
     mfl_tree_t* testing;
     
     testing = mfl_rake_tree(4);
+    
+    int tips_to_group[2] = {1,3};
+    
 //    tui_print_newick(testing->treet_start);
     //Destroying the table
     //mfl_destroy_bipartition_table(bipar_table);

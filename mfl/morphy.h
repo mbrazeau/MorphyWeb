@@ -582,6 +582,10 @@ void            mfl_assign_bottom_node(mfl_node_t* n);
 //TODO: clean these functions declaration formating after testing
 void            mfl_create_rake_node_ring(mfl_tree_t* rake_tree);
 mfl_tree_t*     mfl_rake_tree(int num_taxa);
+mfl_node_t*     mfl_find_previous_node(mfl_node_t* node);
+void            mfl_extract_node_from_ring(mfl_node_t* node);
+mfl_node_t*     mfl_find_tips_node(mfl_tree_t* tree, int tip_number);
+void            mfl_set_tips_in_clade(mfl_tree_t* tree, int* tips);
 void            mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t bipartition);
 mfl_tree_t*     mfl_consensus_tree(mfl_bipartition_table bipartition_table, int consensus_level);
 
