@@ -1188,3 +1188,75 @@ void mfl_assign_bottom_node(mfl_node_t* n)
     
     return;
 }
+
+
+/*!
+ Creates a rake node ring and connect the tips to each node in the ring
+ @param rake_tree (mfl_tree_t*) a disconected tree
+ */
+void mfl_create_rake_node_ring(mfl_tree_t* rake_tree)
+{
+    int n_edge = 0;
+    mfl_node_t* n_node = NULL;
+    
+    //Create the node ring
+    rake_tree->treet_root = mfl_make_new_n_ary_ring_node(rake_tree->treet_num_taxa, rake_tree->treet_nodestack);
+    if(!mfl_check_is_in_ring(rake_tree->treet_root)) {
+        dbg_printf("Rake tree node ring is not a ring.\nYou really screwed that one!");
+    }
+    
+    // Get the first node n
+    n_node = rake_tree->treet_root->nodet_next;
+    //Connect the edges
+    for(n_edge = 0 ; n_edge < rake_tree->treet_num_taxa; ++n_edge){
+        // Connect it with the tip n
+        mfl_join_node_edges(n_node, rake_tree->treet_treenodes[n_edge]);
+        // Go to next node
+        n_node = n_node->nodet_next;
+    }
+    // n_node must be back to the root!
+    assert(n_node = rake_tree->treet_root);
+}
+
+/*!
+ Creates a rake (i.e. unresolved) tree of n taxa
+ @param num_taxa (int) the number of taxa in the rake.
+*/
+mfl_tree_t* mfl_rake_tree(int num_taxa)
+{
+    mfl_tree_t* rake_tree;
+    
+    //malloc business
+    rake_tree = mfl_alloctree_with_nodes(num_taxa);
+    
+    //Create the rake node ring
+    mfl_create_rake_node_ring(rake_tree);
+    
+    return rake_tree;
+}
+
+/*!
+ Solve a biparition in a tree
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param bipartition (mfl_bitset_t) a biparitition.
+ */
+void mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t bipartition)
+{
+    return;
+}
+
+/*!
+ Create a consensus tree from a biparition set
+ @param bipartition_table (mfl_bipartition_table) a bipartition table.
+ @param consensus_level (int) an integer to be the consensus level. E.g. for a strict consensus, the level should be the number of trees in the biparitition_table; for a majority consensus tree, the consensus level should be half the number of trees + 1.
+ */
+mfl_tree_t* mfl_consensus_tree(mfl_bipartition_table bipartition_table, int consensus_level)
+{
+    mfl_tree_t* consensus_tree;
+    int num_taxa = 0; // Extract that one from biparitition table
+    consensus_tree = mfl_rake_tree(num_taxa);
+    
+    // Extract the biparititions => consensus_level and add them to the rake tree
+    //mfl_add_biparition_to_tree(consensus_tree, bipartition_table->biparititions[i])
+    return consensus_tree;
+}

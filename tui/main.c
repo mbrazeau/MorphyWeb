@@ -595,6 +595,50 @@ void tui_test_bipartition_tables(void)
 }
 
 
+void tui_test_consensus_trees(void)
+{
+    char* testtree1 = NULL;
+    char* testtree2 = NULL;
+    char* testtree4 = NULL;
+    
+    testtree1 = (char*)"testtree1 = [&R] ((((1,2),3),((4,5),6)),(((7,8),((9,(10,11)),12)),(13,(14,15))));";
+    testtree2 = (char*)"testtree2 = [&R] ((((4,5),6),((1,2),3)),(((10,11),((9,(7,8)),12)),(13,(14,15))));";
+    testtree4 = (char*)"testtree4 = [&R] ((((1,2),3),(13,(14,15))),(((7,8),(((4,5),6),12)),(9,(10,11))));";
+    
+    //Get the trees into mfl_tree_t
+    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(testtree1, 0);
+    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(testtree2, 0);
+    mfl_tree_t* testree4 = mfl_convert_newick_to_mfl_tree_t(testtree4, 0);
+    
+    //Setting the biparititions
+    mfl_set_bipartitions(testree1->treet_root);
+    mfl_set_bipartitions(testree2->treet_root);
+    mfl_set_bipartitions(testree4->treet_root);
+    
+    //Initialising the bipartition table
+    mfl_bipartition_table* bipar_table = NULL;
+    
+    //Filling the bipartition table
+    bipar_table = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
+    mfl_get_bipartition_traversal(testree1->treet_root, bipar_table);
+    mfl_get_bipartition_traversal(testree2->treet_root, bipar_table);
+    mfl_get_bipartition_traversal(testree4->treet_root, bipar_table);
+//    tui_print_bipartition_tables(comple_bipar_table);
+    
+    mfl_tree_t* testing;
+    
+    testing = mfl_rake_tree(4);
+//    tui_print_newick(testing->treet_start);
+    //Destroying the table
+    //mfl_destroy_bipartition_table(bipar_table);
+    
+    //Destroying the trees
+    mfl_free_tree(testree1);
+    mfl_free_tree(testree2);
+    mfl_free_tree(testree4);
+}
+
+
 int main (int argc, char *argv[])
 {
     dbg_printf("\n\t****************************************\n\n");

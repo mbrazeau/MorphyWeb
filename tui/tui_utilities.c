@@ -613,7 +613,6 @@ void tui_print_bitset(mfl_bitset_t* bitset)
         dbg_printf("%i", bitset->bts_bitfields[i]);
     }
 }
-
 //Prints the biparition table
 void tui_print_bipartition_tables(mfl_bipartition_table* bipartition_table)
 {

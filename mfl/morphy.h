@@ -579,6 +579,12 @@ mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 void            mfl_assign_bottom_node(mfl_node_t* n);
 
+//TODO: clean these functions declaration formating after testing
+void            mfl_create_rake_node_ring(mfl_tree_t* rake_tree);
+mfl_tree_t*     mfl_rake_tree(int num_taxa);
+void            mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t bipartition);
+mfl_tree_t*     mfl_consensus_tree(mfl_bipartition_table bipartition_table, int consensus_level);
+
 //
 
 /* In mfl_initialise.c */
