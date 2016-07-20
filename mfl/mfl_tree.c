@@ -1248,7 +1248,9 @@ mfl_node_t* mfl_find_previous_node(mfl_node_t* node)
     mfl_node_t* start = NULL;
     mfl_node_t* previous = NULL;
     
-    start = node->nodet_next;
+    start = node;
+    previous = node;
+    node = node->nodet_next;
     
     // Loop through the ring until reaching the start point
     while (node != start) {
@@ -1296,10 +1298,24 @@ mfl_node_t* mfl_find_tips_node(mfl_tree_t* tree, int tip_number)
 }
 
 /*!
+ Count the number of elements in an array
+ @param array (int*) a pointer to an array of integers.
+ @return int, the number of elements in the array.
+ */
+int mfl_count_array_elements(int* array)
+{
+    int n = 0;
+    while (array[n] != 0) {
+        ++n;
+    }
+    return n;
+}
+
+/*!
  Combine a list of tips into a clade
  @param tree (mfl_tree_t*) a pointer to a tree.
  @param node_entry (mfl_node_t*) a pointer to the entry point in the ring to modify.
- @param tips (int*) a list of tips to be grouped in the clade. Note: tip 1 = 0!
+ @param tips (int*) a list of tips to be grouped in the clade.
  */
 void mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips)
 {
@@ -1307,15 +1323,19 @@ void mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips)
     mfl_node_t* new_node_in_ring = NULL;
     mfl_node_t* extracted_node = NULL;
     mfl_node_t* previous_extracted_node = NULL;
+    mfl_node_t* temp_node = NULL;
     int i = 0;
-    int j = 0;
+    int num_tips = 0;
     
     // Create a floating node (new_ring_node)
-    //TODO: get node from stack
+    new_ring_node = mfl_get_node_from_nodestack(tree->treet_nodestack);
+    //or get it from the node array?
+    //new_ring_node = mfl_get_next_available_node(tree->treet_treenodes);
     
+    // Get the number of tips
+    num_tips = mfl_count_array_elements(tips);
     // Remove each tips from the ring and group them as a new ring
-    for (i = 0; i < tips[0]; ++i) {
-        //TODO: i must be < than length(tips)!
+    for (i = 0; i < num_tips; ++i) {
         extracted_node = mfl_find_tips_node(tree, tips[i]);
         mfl_extract_node_from_ring(extracted_node);
         
@@ -1335,8 +1355,16 @@ void mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips)
     assert(mfl_check_is_in_ring(new_ring_node));
     
     // Add a new node (new_node_in_ring) in the ring
-    //TODO: get node from stack
-    mfl_insert_node_in_ring(node_entry, new_node_in_ring);
+    new_node_in_ring = mfl_get_node_from_nodestack(tree->treet_nodestack);
+    //or get it from the node array?
+    //new_node_in_ring = mfl_get_next_available_node(tree->treet_treenodes);
+    
+    //insert node in ring
+    temp_node = node_entry->nodet_next;
+    node_entry->nodet_next = new_node_in_ring;
+    new_node_in_ring->nodet_next = temp_node;
+    assert(mfl_check_is_in_ring(node_entry));
+    //mfl_insert_node_in_ring(node_entry, new_node_in_ring); //TG: some nasty infinite loop in there!
     
     // Connect the new_node_in_ring to new_ring_node
     mfl_join_node_edges(new_node_in_ring, new_ring_node);

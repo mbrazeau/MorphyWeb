@@ -627,11 +627,16 @@ void tui_test_consensus_trees(void)
     
     mfl_tree_t* testing;
     
-    testing = mfl_rake_tree(4);
+    testing = mfl_rake_tree(8);
+    dbg_printf("Starting tree (rake):\n");
+    tui_print_newick(testing->treet_root);
     
-    int tips_to_group[2] = {1,3};
+    int tips_to_group[4] = {1,7,3,2};
     
-//    tui_print_newick(testing->treet_start);
+    mfl_set_tips_in_clade(testing, testing->treet_root, tips_to_group);
+    
+    dbg_printf("\nOne clade solved:\n");
+    tui_print_newick(testing->treet_root);
     //Destroying the table
     //mfl_destroy_bipartition_table(bipar_table);
     
