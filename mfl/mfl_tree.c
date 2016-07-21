@@ -1311,6 +1311,79 @@ int mfl_count_array_elements(int* array)
     return n;
 }
 
+///*!
+// Find the Most Recent Common Ancestor (MRCA) for a pair of tips
+// @param root (mfl_node_t*) pointer to the root of the tree.
+// @param tip1 (mfl_node_t*) pointer to the node directly linking to the first tip.
+// @param tip2 (mfl_node_t*) pointer to the node directly linking to the second tip.
+// @return mfl_node_t* the pointer to the MRCA
+// */
+//mfl_node_t* mfl_find_pair_MRCA(mfl_node_t* root, mfl_node_t* tip1, mfl_node_t* tip2)
+//{
+//    mfl_node_t* bottom1 = NULL;
+//    mfl_node_t* bottom2 = NULL;
+//    
+//    // Get the bottom nodes from both tips
+//    bottom1 = mfl_find_bottom_node_in_ring(tip1);
+//    bottom2 = mfl_find_bottom_node_in_ring(tip2);
+//    
+//    // Both tips share a common bottom node (the MRCA)
+//    if(bottom1 == bottom2) {
+//        return bottom1;
+//    }
+//    
+//    // One of the bottoms is the root (root is the MRCA)
+//    if(bottom1 == root || bottom2 == root){
+//        return root;
+//    }
+//    
+//    
+//    bottom1 = mfl_find_bottom_node_in_ring(bottom1->nodet_edge);
+//    
+//    while (bottom1 != bottom2) {
+//        bottom1 = bottom1->nodet_edge;
+//    }
+//    
+//    do {
+//        bottom1 = mfl_find_bottom_node_in_ring(tip1);
+//        bottom2 = mfl_find_bottom_node_in_ring(tip2);
+//    } while (bottom1 != bottom2);
+//    
+//    return bottom1;
+//}
+
+///*!
+// Find the Most Recent Common Ancestor (MRCA) for a list of tips
+// @param tree (mfl_tree_t*) a pointer to a tree.
+// @param tips (int*) a list of tips to be grouped in the clade.
+// @param num_tips (int) the number of tips to analyse (can be set to 0 and calculated automatically).
+// @return mfl_node_t* the pointer to the MRCA
+// */
+//mfl_node_t* mfl_find_MRCA(mfl_tree_t* tree, int* tips, int num_tips)
+//{
+//    mfl_node_t* MRCA = NULL;
+//    mfl_node_t* tip1 = NULL;
+//    mfl_node_t* tip2 = NULL;
+//    int i = 0;
+//    
+//    if(num_tips == 0) {
+//        //Get the number of tips
+//        num_tips = mfl_count_array_elements(tips);
+//    }
+//    
+//    // Do the first pair of tips
+//    
+//    // Loop through the other tips
+//    if(num_tips > 2) {
+//        for(i = 2; i < num_tips; ++i){ // Starting from the third tip!
+//            
+//        }
+//    }
+//    
+//    
+//    return MRCA;
+//}
+
 /*!
  Combine a list of tips into a clade
  @param tree (mfl_tree_t*) a pointer to a tree.
