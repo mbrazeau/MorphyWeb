@@ -750,6 +750,10 @@ mfl_bitset_t*   mfl_create_empty_bipartition(const int num_taxa, const int num_f
 void            mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table);
 int             mfl_match_bipartition(mfl_bitset_t* bipartition, mfl_bipartition_table* bipartition_table);
 void            mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipartition_table);
+mfl_bitset_t*   mfl_tips_to_bipartition(int* tips, int num_fields);
+mfl_node_t*     mfl_traverse_tree_to_find_bipartition(mfl_node_t* n, mfl_bitset_t* bipartition);
+mfl_node_t*     mfl_bipartition_to_node(mfl_tree_t* tree, mfl_bitset_t* bipartition);
+
 
 
 /* in mfl_searchrec.c*/

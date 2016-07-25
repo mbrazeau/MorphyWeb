@@ -65,19 +65,6 @@ void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_tabl
 }
 
 /*!
- @description Gets the bipartition bitfield value.
- @param node a mfl_node_t pointer to a node in a node ring.
- @return and int that is the bit value of the bipartition
- */
-//mfl_bitfield_t* mfl_get_node_bipartition(mfl_node_t* node)
-//{
-//    // Return some bipartition integer (using bitwise business)
-//    mfl_bitfield_t* bitfield = NULL;
-//    
-//    return bitfield;
-//}
-
-/*!
  @description compares a bipartition to the bipartitions stored in the list.
  @param bipartition a mfl_bitset_t pointer to the bipartition to test.
  @param bipartition_table a mfl_bipartition_table pointer to a bipartitions table.
@@ -165,6 +152,89 @@ void mfl_set_bipartitions(mfl_node_t* n)
     } while (p != n);
     
 }
+
+/*!
+ Get the bipartition of a list of tips
+ @param tips (int*) a list of tips.
+ @param num_fields (int) the number of fields in the bitset.
+ @return mfl_bitset* a pointer to the bipartition including ONLY these tips
+ */
+mfl_bitset_t* mfl_tips_to_bipartition(int* tips, int num_fields)
+{
+    mfl_bitset_t* bipartition_out = NULL;
+    int num_tips = 0;
+    int i = 0;
+    
+    // Get the number of tips
+    num_tips = mfl_count_array_elements(tips);
+    
+    // malloc the bitset
+    bipartition_out = mfl_bts_create_bitset(num_fields);
+    
+    // set the bipartition for the tips
+    for(i = 0; i < num_tips; ++i){
+        mfl_bts_setbit(bipartition_out, 1, tips[i]);
+    }
+    
+    return bipartition_out;
+}
+
+
+/*!
+ Traverse a tree to find a bipartition
+ @param n (mfl_node_t*) a pointer to a node.
+ @param bipartition (mfl_bitset_t) a biparitition
+ @return (mfl_bitset_t*) a pointer to a bipartition
+ */
+mfl_node_t* mfl_traverse_tree_to_find_bipartition(mfl_node_t* n, mfl_bitset_t* bipartition)
+{
+    mfl_node_t* p = NULL;
+    mfl_node_t* node_out = NULL;
+    
+    if(n->nodet_tip) {
+        return node_out;
+    }
+    
+    // Compare the bitsets and return the node if the bitset is equal to the biparition
+    if(mfl_compare_bitsets(n->nodet_bipart, bipartition) != 0) {
+        node_out = n;
+        return node_out;
+    }
+    
+    p = n->nodet_next;
+    do {
+        mfl_traverse_tree_to_find_bipartition(n, bipartition);
+    } while (p != n);
+}
+
+
+/*!
+ Get a bipartition's node
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param bipartition (mfl_bitset_t) a biparitition
+ @return (mfl_node_t*) a pointer to the bottom node of the bipartition
+ */
+mfl_node_t* mfl_bipartition_to_node(mfl_tree_t* tree, mfl_bitset_t* bipartition)
+{
+    
+    mfl_node_t* node_out = NULL;
+    
+    if(tree->treet_root) {
+        // The tree must contain bipartitions!
+        assert(tree->treet_root->nodet_bipart);
+        // Get the node corresponding to the bipartition
+        node_out = mfl_traverse_tree_to_find_bipartition(tree->treet_root, bipartition);
+        
+    } else {
+        // The tree must contain bipartitions!
+        assert(tree->treet_start->nodet_bipart);
+        // Get the node corresponding to the bipartition
+        node_out = mfl_traverse_tree_to_find_bipartition(tree->treet_start, bipartition);
+    }
+    
+    return node_out;
+}
+
 
 
 //Allocate the memory to the edgetable
