@@ -1188,3 +1188,238 @@ void mfl_assign_bottom_node(mfl_node_t* n)
     
     return;
 }
+
+
+/*!
+ Creates a rake node ring and connect the tips to each node in the ring
+ @param rake_tree (mfl_tree_t*) a disconected tree
+ */
+void mfl_create_rake_node_ring(mfl_tree_t* rake_tree)
+{
+    int n_edge = 0;
+    mfl_node_t* n_node = NULL;
+    
+    //Create the node ring
+    rake_tree->treet_root = mfl_make_new_n_ary_ring_node(rake_tree->treet_num_taxa, rake_tree->treet_nodestack);
+    if(!mfl_check_is_in_ring(rake_tree->treet_root)) {
+        dbg_printf("Rake tree node ring is not a ring.\nYou really screwed that one!");
+    }
+    
+    // Get the first node n
+    n_node = rake_tree->treet_root->nodet_next;
+    //Connect the edges
+    for(n_edge = 0 ; n_edge < rake_tree->treet_num_taxa; ++n_edge){
+        // Connect it with the tip n
+        mfl_join_node_edges(n_node, rake_tree->treet_treenodes[n_edge]);
+        // Go to next node
+        n_node = n_node->nodet_next;
+    }
+    // n_node must be back to the root!
+    assert(n_node = rake_tree->treet_root);
+}
+
+/*!
+ Creates a rake (i.e. unresolved) tree of n taxa
+ @param num_taxa (int) the number of taxa in the rake.
+*/
+mfl_tree_t* mfl_rake_tree(int num_taxa)
+{
+    mfl_tree_t* rake_tree;
+    
+    //malloc business
+    rake_tree = mfl_alloctree_with_nodes(num_taxa);
+    
+    //Create the rake node ring
+    mfl_create_rake_node_ring(rake_tree);
+    
+    return rake_tree;
+}
+
+/*!
+ Find previous node in a node ring.
+ @param node (mfl_node_t*) a pointer to a node.
+ @return a pointer to the previous node.
+ */
+mfl_node_t* mfl_find_previous_node(mfl_node_t* node)
+{
+    //Make sure the node is not a tip
+    assert(node->nodet_tip == 0);
+    
+    mfl_node_t* start = NULL;
+    mfl_node_t* previous = NULL;
+    
+    start = node;
+    previous = node;
+    node = node->nodet_next;
+    
+    // Loop through the ring until reaching the start point
+    while (node != start) {
+        previous = node;
+        node = node->nodet_next;
+    }
+    
+    return previous;
+}
+
+/*!
+ Extract a node from a ring.
+ @param node (mfl_node_t*) a pointer to a node to extract.
+ */
+void mfl_extract_node_from_ring(mfl_node_t* node)
+{
+    mfl_node_t* previous = NULL;
+    
+    // Shorten the ring
+    previous = mfl_find_previous_node(node);
+    previous->nodet_next = previous->nodet_next->nodet_next;
+    
+    // Remove the node
+    node->nodet_next = NULL;
+    
+    return;
+}
+
+/*!
+ Searches for the node that links to tip_number
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param tip_number (int) the number of a tip
+ @return a pointer to tip_number's edge
+ */
+mfl_node_t* mfl_find_tips_node(mfl_tree_t* tree, int tip_number)
+{
+    // tip number can't be 0!
+    assert(tip_number != 0);
+    
+    int i = 0;
+    while(tree->treet_treenodes[i]->nodet_tip != tip_number) {
+        ++i;
+    }
+    return tree->treet_treenodes[i]->nodet_edge;
+}
+
+/*!
+ Count the number of elements in an array
+ @param array (int*) a pointer to an array of integers.
+ @return int, the number of elements in the array.
+ */
+int mfl_count_array_elements(int* array)
+{
+    int n = 0;
+    while (array[n] != 0) {
+        ++n;
+    }
+    return n;
+}
+
+///*!
+// Find the Most Recent Common Ancestor (MRCA) for a list of tips
+// @param bipartitions (mfl_bipartition_table*) bipartitions.
+// @param tips (int*) a list of tips to be grouped in the clade.
+// @return mfl_bitset* the pointer to the MRCA bipartition
+// */
+//mfl_bitset_t* mfl_find_MRCA_bipartition(mfl_bipartition_table* bipartitions, int* tips)
+//{
+//    mfl_bitset_t* MRCA_bipartition = NULL;
+//    mfl_bitset_t* tips_to_search = NULL;
+//    int i = 0;
+//    
+//    // set the tips_to_search as a biparition (using the mfl_bitset_format)
+//    
+//    // sort bipartition table in increasing order
+//    
+//    // find wich is smaller bipartition that contains the two tips
+//    while(!mfl_bts_OR(bipartitions->bipartitions_list->bsl_bitsets[i], tips_to_search)) {
+//        ++i;
+//    }
+//    
+//    MRCA_bipartition = bipartitions->bipartitions_list->bsl_bitsets[i];
+//    
+//    return MRCA_bipartition;
+//}
+
+/*!
+ Combine a list of tips into a clade
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param node_entry (mfl_node_t*) a pointer to the entry point in the ring to modify.
+ @param tips (int*) a list of tips to be grouped in the clade.
+ */
+void mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips)
+{
+    mfl_node_t* new_ring_node = NULL;
+    mfl_node_t* new_node_in_ring = NULL;
+    mfl_node_t* extracted_node = NULL;
+    mfl_node_t* previous_extracted_node = NULL;
+    mfl_node_t* temp_node = NULL;
+    int i = 0;
+    int num_tips = 0;
+    
+    // Create a floating node (new_ring_node)
+    new_ring_node = mfl_get_node_from_nodestack(tree->treet_nodestack);
+    //or get it from the node array?
+    //new_ring_node = mfl_get_next_available_node(tree->treet_treenodes);
+    
+    // Get the number of tips
+    num_tips = mfl_count_array_elements(tips);
+    // Remove each tips from the ring and group them as a new ring
+    for (i = 0; i < num_tips; ++i) {
+        extracted_node = mfl_find_tips_node(tree, tips[i]);
+        mfl_extract_node_from_ring(extracted_node);
+        
+        // Create the new ring
+        if(i == 0) {
+            // If it's the first node to be extracted, link it to the new_ring_node
+            new_ring_node->nodet_next = extracted_node;
+        } else {
+            // Link the previous one to this one.
+            previous_extracted_node->nodet_next = extracted_node;
+        }
+        previous_extracted_node = extracted_node;
+    }
+    // Link the last node to the first to make a ring
+    extracted_node->nodet_next = new_ring_node;
+    // New ring must be a ring
+    assert(mfl_check_is_in_ring(new_ring_node));
+    
+    // Add a new node (new_node_in_ring) in the ring
+    new_node_in_ring = mfl_get_node_from_nodestack(tree->treet_nodestack);
+    //or get it from the node array?
+    //new_node_in_ring = mfl_get_next_available_node(tree->treet_treenodes);
+    
+    //insert node in ring
+    temp_node = node_entry->nodet_next;
+    node_entry->nodet_next = new_node_in_ring;
+    new_node_in_ring->nodet_next = temp_node;
+    assert(mfl_check_is_in_ring(node_entry));
+    //mfl_insert_node_in_ring(node_entry, new_node_in_ring); //TG: some nasty infinite loop in there!
+    
+    // Connect the new_node_in_ring to new_ring_node
+    mfl_join_node_edges(new_node_in_ring, new_ring_node);
+
+    return;
+}
+
+/*!
+ Solve a biparition in a tree
+ @param tree (mfl_tree_t*) a pointer to a tree.
+ @param bipartition (mfl_bitset_t) a biparitition.
+ */
+void mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t bipartition)
+{
+    return;
+}
+
+/*!
+ Create a consensus tree from a biparition set
+ @param bipartition_table (mfl_bipartition_table) a bipartition table.
+ @param consensus_level (int) an integer to be the consensus level. E.g. for a strict consensus, the level should be the number of trees in the biparitition_table; for a majority consensus tree, the consensus level should be half the number of trees + 1.
+ */
+mfl_tree_t* mfl_consensus_tree(mfl_bipartition_table bipartition_table, int consensus_level)
+{
+    mfl_tree_t* consensus_tree;
+    int num_taxa = 0; // Extract that one from biparitition table
+    consensus_tree = mfl_rake_tree(num_taxa);
+    
+    // Extract the biparititions => consensus_level and add them to the rake tree
+    //mfl_add_biparition_to_tree(consensus_tree, bipartition_table->biparititions[i])
+    return consensus_tree;
+}

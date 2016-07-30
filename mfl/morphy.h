@@ -129,10 +129,18 @@ typedef struct mfl_bitset_t {
 } mfl_bitset_t;
 
 typedef struct mfl_bitsetlist_t {
-    int bsl_num_sets;
-    int bsl_max_sets;
-    mfl_bitset_t** bsl_bitsets;
+    int bsl_num_sets;               // number of bitsets (e.g. number of bipartitions)
+    int bsl_max_sets;               // max number of bitsets
+    mfl_bitset_t** bsl_bitsets;     // list of bbitsets (e.g. list of iparitions)
 } mfl_bitsetlist_t;
+
+typedef struct {
+    int num_taxa;                           // Number of taxa in the trees
+    int num_fields;                         // Number of bitfields needed
+    int* bipartition_occurence_counter;     // A list of integers counting the occurences of each bipartitions
+    mfl_bitsetlist_t* bipartitions_list;    // A list of biparititions
+}  mfl_bipartition_table;
+
 
 typedef struct {
     long int n_rearrangements;  // Number of tree topologies visited
@@ -571,6 +579,17 @@ mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 void            mfl_assign_bottom_node(mfl_node_t* n);
 
+//TODO: clean these functions declaration formating after testing
+void            mfl_create_rake_node_ring(mfl_tree_t* rake_tree);
+mfl_tree_t*     mfl_rake_tree(int num_taxa);
+mfl_node_t*     mfl_find_previous_node(mfl_node_t* node);
+void            mfl_extract_node_from_ring(mfl_node_t* node);
+mfl_node_t*     mfl_find_tips_node(mfl_tree_t* tree, int tip_number);
+int             mfl_count_array_elements(int* array);
+void            mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips);
+void            mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t bipartition);
+mfl_tree_t*     mfl_consensus_tree(mfl_bipartition_table bipartition_table, int consensus_level);
+
 //
 
 /* In mfl_initialise.c */
@@ -716,20 +735,6 @@ bool            mfl_bts_destroy_bitset(mfl_bitset_t* oldbts);
 
 
 /* in mfl_compare.c*/
-typedef struct {
-    int number_of_bipartitions;
-    int* bipartition_occurence_counter;
-    int* bipartitions;
-} mfl_bipartition_table;
-
-mfl_bipartition_table* mfl_initialise_bipartition_table(void);
-void mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table);
-void mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table);
-int mfl_get_node_bipartition(mfl_node_t* n);
-int mfl_match_bipartition(int bipartition, mfl_bipartition_table* bipartition_table);
-void mfl_get_bipartition_traversal(mfl_node_t* n, mfl_bipartition_table* bipartition_table);
-
-
 void            mfl_set_bipartitions(mfl_node_t* n);
 mfl_edgetable_t* mfl_initiate_edgetable_t(int num_tips, bool is_rooted);
 void            mfl_get_edgetable_tips(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
@@ -739,6 +744,16 @@ void            mfl_set_edge_ref_in_ring(mfl_node_t* node, int reference);
 int             mfl_get_edge_ref_from_ring(mfl_node_t* node);
 void            mfl_get_edgetable(mfl_edgetable_t* edgetable, mfl_tree_t* tree);
 bool            mfl_compare_edge_tables(mfl_edgetable_t* t1, mfl_edgetable_t* t2);
+mfl_bipartition_table* mfl_initialise_bipartition_table(const int num_taxa);
+void            mfl_destroy_bipartition_table(mfl_bipartition_table* bipartition_table);
+mfl_bitset_t*   mfl_create_empty_bipartition(const int num_taxa, const int num_fields);
+void            mfl_append_malloc_bipartition_table(mfl_bipartition_table* bipartition_table);
+int             mfl_match_bipartition(mfl_bitset_t* bipartition, mfl_bipartition_table* bipartition_table);
+void            mfl_get_bipartition_traversal(mfl_node_t* node, mfl_bipartition_table* bipartition_table);
+mfl_bitset_t*   mfl_tips_to_bipartition(int* tips, int num_fields);
+mfl_node_t*     mfl_traverse_tree_to_find_bipartition(mfl_node_t* n, mfl_bitset_t* bipartition);
+mfl_node_t*     mfl_bipartition_to_node(mfl_tree_t* tree, mfl_bitset_t* bipartition);
+
 
 
 /* in mfl_searchrec.c*/

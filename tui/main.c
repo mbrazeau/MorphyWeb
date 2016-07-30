@@ -535,13 +535,13 @@ void tui_test_bipartition_tables(void)
     testtree5 = (char*)"testtree5 = [&R] ((((13,2),7),((14,6),11)),(((3,9),((8,(10,5)),12)),(1,(4,15))));";
     
     //Get the trees into mfl_tree_t
-    mfl_tree_t* simpletree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 4);
-    mfl_tree_t* simpletree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 4);
-    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(testtree1, 15);
-    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(testtree2, 15);
-    mfl_tree_t* testree3 = mfl_convert_newick_to_mfl_tree_t(testtree3, 15);
-    mfl_tree_t* testree4 = mfl_convert_newick_to_mfl_tree_t(testtree4, 15);
-    mfl_tree_t* testree5 = mfl_convert_newick_to_mfl_tree_t(testtree5, 15);
+    mfl_tree_t* simpletree1 = mfl_convert_newick_to_mfl_tree_t(cliptesttree1, 0);
+    mfl_tree_t* simpletree2 = mfl_convert_newick_to_mfl_tree_t(cliptesttree2, 0);
+    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(testtree1, 0);
+    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(testtree2, 0);
+    mfl_tree_t* testree3 = mfl_convert_newick_to_mfl_tree_t(testtree3, 0);
+    mfl_tree_t* testree4 = mfl_convert_newick_to_mfl_tree_t(testtree4, 0);
+    mfl_tree_t* testree5 = mfl_convert_newick_to_mfl_tree_t(testtree5, 0);
     
     //Setting the biparititions
     mfl_set_bipartitions(simpletree1->treet_root);
@@ -554,23 +554,35 @@ void tui_test_bipartition_tables(void)
     
     //Initialising the tables
     mfl_bipartition_table* simple_bipar_table = NULL;
-    mfl_bipartition_table* comple_bipar_table = NULL;
-    simple_bipar_table = mfl_initialise_bipartition_table();
-    comple_bipar_table = mfl_initialise_bipartition_table();
+    simple_bipar_table = mfl_initialise_bipartition_table(simpletree1->treet_num_taxa);
     
     //Simple example (2 4 taxa trees)
     //Generating the bipartition table for the first tree
     mfl_get_bipartition_traversal(simpletree1->treet_root, simple_bipar_table);
-    //Printing the table
-    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-1"
-    //Adding the second tree to the table
     mfl_get_bipartition_traversal(simpletree2->treet_root, simple_bipar_table);
-    //Printing the updated table
-    tui_print_bipartition_tables(simple_bipar_table); //Should be: "3-1;12-1;15-2;5-1;10-1"
+    tui_print_bipartition_tables(simple_bipar_table);
+
+    //Simple example 2 (5 15 taxa trees)
+    //Initialising the tables
+//    mfl_bipartition_table* simple_bipar_table2 = NULL;
+//    simple_bipar_table2 = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
+    
+    //Initialising the tables
+    mfl_bipartition_table* comple_bipar_table = NULL;
+    comple_bipar_table = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
+    
+    //Simple example (2 4 taxa trees)
+    //Generating the bipartition table for the first tree
+    mfl_get_bipartition_traversal(testree1->treet_root, comple_bipar_table);
+    mfl_get_bipartition_traversal(testree2->treet_root, comple_bipar_table);
+    mfl_get_bipartition_traversal(testree4->treet_root, comple_bipar_table);
+//    mfl_get_bipartition_traversal(testree5->treet_root, comple_bipar_table);
+    tui_print_bipartition_tables(comple_bipar_table);
     
     //Destroying the table
-    mfl_destroy_bipartition_table(simple_bipar_table);
-    
+//    mfl_destroy_bipartition_table(simple_bipar_table);
+//    mfl_destroy_bipartition_table(comple_bipar_table);
+
     
     //Destroying the trees
     mfl_free_tree(simpletree1);
@@ -580,6 +592,75 @@ void tui_test_bipartition_tables(void)
     mfl_free_tree(testree3);
     mfl_free_tree(testree4);
     mfl_free_tree(testree5);
+}
+
+
+void tui_test_consensus_trees(void)
+{
+    char* testtree1 = NULL;
+    char* testtree2 = NULL;
+    char* testtree4 = NULL;
+    
+    testtree1 = (char*)"testtree1 = [&R] ((((1,2),3),((4,5),6)),(((7,8),((9,(10,11)),12)),(13,(14,15))));";
+    testtree2 = (char*)"testtree2 = [&R] ((((4,5),6),((1,2),3)),(((10,11),((9,(7,8)),12)),(13,(14,15))));";
+    testtree4 = (char*)"testtree4 = [&R] ((((1,2),3),(13,(14,15))),(((7,8),(((4,5),6),12)),(9,(10,11))));";
+    
+    //Get the trees into mfl_tree_t
+    mfl_tree_t* testree1 = mfl_convert_newick_to_mfl_tree_t(testtree1, 0);
+    mfl_tree_t* testree2 = mfl_convert_newick_to_mfl_tree_t(testtree2, 0);
+    mfl_tree_t* testree4 = mfl_convert_newick_to_mfl_tree_t(testtree4, 0);
+    
+    //Setting the biparititions
+    mfl_set_bipartitions(testree1->treet_root);
+    mfl_set_bipartitions(testree2->treet_root);
+    mfl_set_bipartitions(testree4->treet_root);
+    
+    //Initialising the bipartition table
+    mfl_bipartition_table* bipar_table = NULL;
+    
+//    //Filling the bipartition table
+//    bipar_table = mfl_initialise_bipartition_table(testree1->treet_num_taxa);
+//    mfl_get_bipartition_traversal(testree1->treet_root, bipar_table);
+//    mfl_get_bipartition_traversal(testree2->treet_root, bipar_table);
+//    mfl_get_bipartition_traversal(testree4->treet_root, bipar_table);
+////    tui_print_bipartition_tables(comple_bipar_table);
+    
+    mfl_tree_t* testing;
+    
+    testing = mfl_rake_tree(8);
+    dbg_printf("Starting tree (rake):\n");
+    tui_print_newick(testing->treet_root);
+    
+    int* clade1 = (int*)mfl_malloc(sizeof(int), 4);
+    clade1[0] = 1;
+    clade1[1] = 7;
+    clade1[2] = 3;
+    clade1[3] = 2;
+    
+//    int* clade1[4] = {1,7,3,2};
+    
+    mfl_set_tips_in_clade(testing, testing->treet_root, clade1);
+    
+    dbg_printf("\nOne clade solved:\n");
+    tui_print_newick(testing->treet_root);
+    
+    int* clade2 = (int*)mfl_malloc(sizeof(int), 2);
+    clade2[0] = 1;
+    clade2[1] = 2;
+
+    
+    mfl_set_tips_in_clade(testing, testing->treet_treenodes[19], clade2);
+    
+    dbg_printf("\nAnother clade solved:\n");
+    tui_print_newick(testing->treet_root);
+    
+    //Destroying the table
+    //mfl_destroy_bipartition_table(bipar_table);
+    
+    //Destroying the trees
+    mfl_free_tree(testree1);
+    mfl_free_tree(testree2);
+    mfl_free_tree(testree4);
 }
 
 

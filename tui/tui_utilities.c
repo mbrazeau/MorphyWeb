@@ -602,11 +602,25 @@ void tui_print_edgetable(mfl_edgetable_t* edgetable)
     }
 }
 
+//Converts all bitfield into a series of integers
+void tui_print_bitset(mfl_bitset_t* bitset)
+{
+    int i = 0;
+    dbg_printf("%i", bitset->bts_bitfields[i]);
+    ++i;
+    for(i = 1; i < bitset->bts_nfields; ++i){
+        dbg_printf(", ");
+        dbg_printf("%i", bitset->bts_bitfields[i]);
+    }
+}
+//Prints the biparition table
 void tui_print_bipartition_tables(mfl_bipartition_table* bipartition_table)
 {
     int i = 0;
-    dbg_printf("Total number of biparitions = %i\n", bipartition_table->number_of_bipartitions);
-    for(i = 0; i < bipartition_table->number_of_bipartitions; ++i){
-        dbg_printf("Bipartition %i - counted %i times\n", bipartition_table->bipartitions[i], bipartition_table->bipartition_occurence_counter[i]);
+    dbg_printf("Total number of biparitions = %i\n", bipartition_table->bipartitions_list->bsl_num_sets);
+    for(i = 0; i < bipartition_table->bipartitions_list->bsl_num_sets; ++i){
+        dbg_printf("Biparition ");
+        tui_print_bitset(bipartition_table->bipartitions_list->bsl_bitsets[i]);
+        dbg_printf(" - counted %i times\n", bipartition_table->bipartition_occurence_counter[i]);
     }
 }
