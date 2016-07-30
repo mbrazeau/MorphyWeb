@@ -159,7 +159,7 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
             if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
                 
                 if (temp & MORPHY_IS_APPLICABLE) {
-                    if ((length[i] == MORPHY_MISSING_DATA_BITWISE) || (right[i] == MORPHY_MISSING_DATA_BITWISE)) {
+                    if ((left[i] == MORPHY_MISSING_DATA_BITWISE) || (right[i] == MORPHY_MISSING_DATA_BITWISE)) {
                         n_prelim[i] = MORPHY_MISSING_DATA_BITWISE;
                     }
                     else {
@@ -329,17 +329,17 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
             dbg_printf("break\n");
         }
         
-        if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
-            if (lft_char[i] & actives[i] || rt_char[i] & actives[i]) {
-                if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                    if (actives[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                        if (length) {
-                            *length += weights[i];
-                        }
-                    }
-                }
-            }
-        }
+//        if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+//            if (lft_char[i] & actives[i] || rt_char[i] & actives[i]) {
+//                if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+//                    if (actives[i] & MORPHY_INAPPLICABLE_BITPOS) {
+//                        if (length) {
+//                            *length += weights[i];
+//                        }
+//                    }
+//                }
+//            }
+//        }
         
         // Check for empty intersection between descendant states
         if (!(lft_char[i] & rt_char[i])) {
@@ -373,16 +373,6 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                 }
             }
-//            else if ((temp = ((lft_char[i] | rt_char[i]) & actives[i]) & MORPHY_IS_APPLICABLE)) {
-//                // Check if the active state is at least possibly the derived state?
-//                if (temp != anc_char[i]) {
-//                    if (temp & anc_char[i]) {
-//                        if (length) {
-//                            *length += weights[i];
-//                        }
-//                    }
-//                }
-//            }
             
             
             if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
@@ -399,24 +389,8 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
         }
         else {
             
-            if (lft_char[i] != (lft_char[i] & -lft_char[i])) {
-                
-                if (rt_char[i] != (rt_char[i] & -rt_char[i])) {
-                    
-                    if (lft_char[i] != rt_char[i]) {
-                        
-                        temp = lft_char[i] & rt_char[i];
-                        
-                        if (temp) {
-                            if (temp == (temp & -temp)) {
-                                if (length) {
-                                    *length += weights[i];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            
+            
         }
         
         
