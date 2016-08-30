@@ -58,6 +58,7 @@ void tui_nexus_reader(char* argv1);
 void tui_test_newick_stuff(void);
 void tui_test_tree_copying(void);
 void tui_test_nary_ring_creation(void);
+void tui_spr_test_environment(void);
 
 /*  tui_utilities.c
  */
