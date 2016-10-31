@@ -606,11 +606,11 @@ void tui_print_edgetable(mfl_edgetable_t* edgetable)
 void tui_print_bitset(mfl_bitset_t* bitset)
 {
     int i = 0;
-    dbg_printf("%i", bitset->bts_bitfields[i]);
+    dbg_printf("%llu", bitset->bts_bitfields[i]);
     ++i;
     for(i = 1; i < bitset->bts_nfields; ++i){
         dbg_printf(", ");
-        dbg_printf("%i", bitset->bts_bitfields[i]);
+        dbg_printf("%llu", bitset->bts_bitfields[i]);
     }
 }
 //Prints the biparition table
