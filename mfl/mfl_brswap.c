@@ -243,19 +243,19 @@ void mfl_regrafting_traversal(mfl_node_t* tgt, mfl_node_t* src, mfl_searchrec_t*
     // Traverse the target tree, attempting the reinsertion
     
     mfl_node_t* p = NULL;
-    //mfl_cliprec_t regraft;
+    mfl_cliprec_t regraft;
 
     ++trav;
     
     if (trav > startdistance) {
-        // Insert branch
-        //mfl_temp_rebranching(src, tgt, &regraft);
-        
-        // Copy the tree, append it to the buffer
-        //mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
-        
-        // Count the number of rearrangements
-        //mfl_undo_temp_rebranching(&regraft);
+//        // Insert branch
+//        mfl_temp_rebranching(src, tgt, &regraft);
+//        
+//        // Copy the tree, append it to the buffer
+//        mfl_save_topology(searchrec->sr_swaping_on, searchrec->sr_treebuffer, searchrec);
+//        
+//        // Count the number of rearrangements
+//        mfl_undo_temp_rebranching(&regraft);
         
         
         ++searchrec->sr_rearrangement_counter;

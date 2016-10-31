@@ -205,6 +205,8 @@ mfl_node_t* mfl_traverse_tree_to_find_bipartition(mfl_node_t* n, mfl_bitset_t* b
     do {
         mfl_traverse_tree_to_find_bipartition(n, bipartition);
     } while (p != n);
+    
+    return node_out;
 }
 
 
