@@ -4,3 +4,21 @@ obj
 *.prev
 savefile.txt
 *~
+
+## LaTeX business
+*.aux
+.aux
+*.bbl
+*.blg
+*.dvi
+*.fff
+*.lof
+*.lot
+*.out
+*.toc
+*.ttt
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.fls
