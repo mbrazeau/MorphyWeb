@@ -263,7 +263,6 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
     }
-    
 }
 
 
