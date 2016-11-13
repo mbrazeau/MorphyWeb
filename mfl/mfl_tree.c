@@ -1311,6 +1311,7 @@ int mfl_count_array_elements(int* array)
     return n;
 }
 
+
 ///*!
 // Find the Most Recent Common Ancestor (MRCA) for a list of tips
 // @param bipartitions (mfl_bipartition_table*) bipartitions.
@@ -1336,6 +1337,7 @@ int mfl_count_array_elements(int* array)
 //    
 //    return MRCA_bipartition;
 //}
+
 
 /*!
  Combine a list of tips into a clade
@@ -1394,16 +1396,16 @@ void mfl_set_tips_in_clade(mfl_tree_t* tree, mfl_node_t* node_entry, int* tips)
     
     // Connect the new_node_in_ring to new_ring_node
     mfl_join_node_edges(new_node_in_ring, new_ring_node);
-
+    
     return;
 }
 
 /*!
  Solve a biparition in a tree
  @param tree (mfl_tree_t*) a pointer to a tree.
- @param bipartition (mfl_bitset_t) a biparitition.
+ @param bipartition (mfl_bitset_t*) a biparitition.
  */
-void mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t bipartition)
+void mfl_add_biparition_to_tree(mfl_tree_t* tree, mfl_bitset_t* bipartition)
 {
     return;
 }
