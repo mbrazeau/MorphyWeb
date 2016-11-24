@@ -187,7 +187,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
-    mfl_charstate temp = 0;
+//    mfl_charstate temp = 0;
     
     if (!left_nd) {
         assert(!right_nd);
@@ -241,6 +241,14 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 }
             }
             
+            if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                if (anc_char[i] & MORPHY_IS_APPLICABLE) {
+                    if ((lft_char[i] | rt_char[i]) != MORPHY_MISSING_DATA_BITWISE) {
+                        actives[i] |= anc_char[i];
+                    }
+                }
+            }
+            
         }
         else {
             // Normal Fitch
@@ -251,11 +259,11 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 if (lft_char[i] & rt_char[i]) {
                     n_final[i] = ( n_prelim[i] | ( anc_char[i] & (lft_char[i] | rt_char[i])));
                     
-                    if (length) {
-                        if ((n_final[i] & MORPHY_IS_APPLICABLE) != n_prelim[i]) {
-                            *length += weights[i];
-                        }
-                    }
+//                    if (length) {
+//                        if ((n_final[i] & MORPHY_IS_APPLICABLE) != n_prelim[i]) {
+//                            *length += weights[i];
+//                        }
+//                    }
                     
                 } else {
                     n_final[i] = n_prelim[i] | anc_char[i];
@@ -306,29 +314,55 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
             
             if (!(lft_char[i] & rt_char[i])) {
                 
-                if (n_final[i] == (n_final[i] & actives[i])) {
-                    if (n_final[i] != (n_final[i] & anc_char[i])) {
-                        *length += weights[i];
-                    }
-                }
-                
-                if ((lft_char[i] & MORPHY_IS_APPLICABLE) & actives[i] && (rt_char[i] & MORPHY_IS_APPLICABLE) & actives[i]) {
-                    *length += weights[i];
-                }
-                else if (lft_char[i] & actives[i] && rt_char[i] & actives[i]) {
-                    if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
-                        if (n_final[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                            *length += weights[i];
+                if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    
+                    if ((temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE)) {
+                        // Check if the applicable descendant is unambiguously optimised
+                        if ( temp == (temp & ~(temp-1)) ) {
+                            if (length) {
+                                if (temp & actives[i]) {
+                                    *length += weights[i];
+                                }
+                                else {
+                                    actives[i] |= temp;
+                                }
+                            }
                         }
                     }
                 }
                 else {
-                    actives[i] |= (lft_char[i] | rt_char[i]);
+                    if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+                        
+                        temp = n_final[i];
+                        
+                        if (length) {
+                            if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                                *length += weights[i];
+                            }
+                        }
+                        
+                        // Check whether the final state of the node is ambiguous or unambiguous.
+                        if (temp != (temp & ~(temp-1))) {
+                            if (length) {
+                                // If all states in the ambiguity are active states, add a step
+                                if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                                    *length += weights[i];
+                                }
+                                if ((temp & actives[i]) == temp) {
+                                    *length += weights[i];
+                                }
+                            }
+                        }
+                        
+                        if (n_final[i] == (lft_char[i] | rt_char[i])) {
+                            actives[i] |= (lft_char[i] | rt_char[i]);
+                        }
+                        else {
+                            actives[i] |= (lft_char[i] | rt_char[i]) ^ n_final[i];
+                        }
+                    }
                 }
-                
             }
-            
-        
         }
         
         
