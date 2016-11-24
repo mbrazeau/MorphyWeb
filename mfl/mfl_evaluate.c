@@ -195,11 +195,13 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             
             if (n_prelim[i] & anc_char[i]) {
                 n_final[i] = n_prelim[i] & anc_char[i];
+                if (n_final[i] & MORPHY_IS_APPLICABLE) {
+                    n_final[i] &= MORPHY_IS_APPLICABLE;
+                }
             }
             else {
                 n_final[i] = n_prelim[i];
             }
-            
         }
         
         return;
@@ -231,8 +233,13 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 }
                 else {
                     
-                    if (lft_char[i] & rt_char[i] & anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                        n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+                    if (lft_char[i] & rt_char[i] & anc_char[i] /*& MORPHY_INAPPLICABLE_BITPOS*/) {
+                        if (lft_char[i] & rt_char[i] & anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
+                            n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+                        }
+                        else {
+                            n_final[i] = lft_char[i] & rt_char[i] & anc_char[i];
+                        }
                     }
                     else {
                         n_final[i] = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) | MORPHY_INAPPLICABLE_BITPOS;
@@ -258,13 +265,6 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             else {
                 if (lft_char[i] & rt_char[i]) {
                     n_final[i] = ( n_prelim[i] | ( anc_char[i] & (lft_char[i] | rt_char[i])));
-                    
-//                    if (length) {
-//                        if ((n_final[i] & MORPHY_IS_APPLICABLE) != n_prelim[i]) {
-//                            *length += weights[i];
-//                        }
-//                    }
-                    
                 } else {
                     n_final[i] = n_prelim[i] | anc_char[i];
                 }
@@ -345,12 +345,12 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                         if (temp != (temp & ~(temp-1))) {
                             if (length) {
                                 // If all states in the ambiguity are active states, add a step
-                                if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                                if (((lft_char[i] | rt_char[i]) & actives[i]) == (lft_char[i] | rt_char[i])) {
                                     *length += weights[i];
                                 }
-                                if ((temp & actives[i]) == temp) {
-                                    *length += weights[i];
-                                }
+//                                if ((temp & actives[i]) == temp) {
+//                                    *length += weights[i];
+//                                }
                             }
                         }
                         
