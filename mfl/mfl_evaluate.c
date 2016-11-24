@@ -207,10 +207,16 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
         return;
     }
     
+    
+    
     lft_char = left_nd->nd_prelim_set;
     rt_char = right_nd->nd_prelim_set;
     
     for (i = 0; i < num_chars; ++i) {
+        
+        if (i == 124) {
+            dbg_printf("break\n");
+        }
         
         if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
             
@@ -271,6 +277,8 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
     }
+    
+    //assert(n_final[i]);
 }
 
 
@@ -297,18 +305,23 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
     
     for (i = 0; i < num_chars; ++i) {
         
+        if (i == 3) {
+            dbg_printf("break\n");
+        }
         
         if (n_final[i] & MORPHY_INAPPLICABLE_BITPOS) {
             if (lft_char[i] & rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else if (!(lft_char[i] & MORPHY_INAPPLICABLE_BITPOS) && !(rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
-                n_final[i] &= MORPHY_IS_APPLICABLE;
+                n_prelim[i] &= MORPHY_IS_APPLICABLE;
             }
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
         }
+        
+        assert(n_final[i]);
         
         if (length) {
             
@@ -365,8 +378,6 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
             }
         }
         
-        
-        assert(n_final[i]);
     }
     
 }
@@ -564,7 +575,7 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 10) {
         dbg_printf("Break\n");
     }
-    if (n->nodet_index == 16) {
+    if (n->nodet_index == 97) {
         dbg_printf("Break\n");
     }
     
