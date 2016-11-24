@@ -314,7 +314,16 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else if (!(lft_char[i] & MORPHY_INAPPLICABLE_BITPOS) && !(rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
-                n_final[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
+                if (lft_char[i] & rt_char[i]) {
+                    n_final[i] = lft_char[i] & rt_char[i];
+                }
+                else {
+                    n_final[i] = lft_char[i] | rt_char[i];
+                }
+                
+                if (n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE) {
+                    n_final[i] = n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE;
+                }
             }
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
