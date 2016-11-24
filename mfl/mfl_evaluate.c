@@ -314,7 +314,7 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else if (!(lft_char[i] & MORPHY_INAPPLICABLE_BITPOS) && !(rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
-                n_prelim[i] &= MORPHY_IS_APPLICABLE;
+                n_final[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
             }
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
