@@ -391,16 +391,6 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                 }
             }
-//            else if (n_final[i] & MORPHY_IS_APPLICABLE) {
-//                if (n_final[i] == anc_char[i]) {
-//                    if (n_final[i] != (n_final[i] & ~(n_final[i]-1))) { // Do a check for polymorphism/ambiguity
-//                        if (n_final[i] == (n_final[i] & actives[i])) {
-//                            *length += weights[i];
-//                        }
-//                    }
-//                }
-//                
-//            }
         }
     }
 }
