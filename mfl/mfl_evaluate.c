@@ -349,44 +349,60 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
         
         if (length) {
 
-            if (lft_char[i] != rt_char[i]) {
+            if (lft_char[i] != rt_char[i]) { // Check that descendent nodes have different states
                 
+                // Get the state(s) that differ from the current nodal set and aren't found in the descendant set.
                 temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
                 
-                if (temp & MORPHY_IS_APPLICABLE) {
-                    if (temp & actives[i]) {
-                        *length += weights[i];
-                    }
-                    else {
-                        actives[i] |= temp;
+                if (temp & MORPHY_IS_APPLICABLE) { // If this exists and is active ...
+                    if (anc_char[i]) {
+                        if (temp & actives[i]) {
+                            *length += weights[i];
+                        }
+                        else {
+                            actives[i] |= temp;
+                        }
                     }
                 }
-                else if (!(lft_char[i] & rt_char[i])) {
+                else if (!(lft_char[i] & rt_char[i])) { // Else in the case of no intersection between descendants...
                     
-                    temp = n_final[i] & ~(n_final[i]-1);
+                    // Get the lowest order bit of the current final nodal state
+                    //temp = ;
                     
-                    if (temp != n_final[i]) {
-                        if (n_final[i] == (n_final[i] & actives[i])) {
+                    if (n_final[i] != (n_final[i] & ~(n_final[i]-1)) ) { // Do a check for polymorphism/ambiguity
+                        if (temp != MORPHY_INAPPLICABLE_BITPOS) {
+                            if (n_final[i] == (n_final[i] & actives[i])) { // If the WHOLE polymorphism is active...
+                                *length += weights[i]; // PROBLEM SPOT
+                            }
+                            else {
+                                actives[i] |= n_final[i];
+                            }
+                        }
+                    }
+                }
+                else if (n_final[i] == anc_char[i]) {
+                    if (!(anc_char[i] & MORPHY_INAPPLICABLE_BITPOS)) {
+                        if (n_final[i] == (n_final[i] & actives[i])) { // If the WHOLE polymorphism is active...
                             *length += weights[i];
-                            
-                            // if (anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                            //      *length += weights[i];
-                            // }
                         }
                         else {
                             actives[i] |= n_final[i];
                         }
                     }
-                    
                 }
-                
             }
+//            else if (n_final[i] & MORPHY_IS_APPLICABLE) {
+//                if (n_final[i] == anc_char[i]) {
+//                    if (n_final[i] != (n_final[i] & ~(n_final[i]-1))) { // Do a check for polymorphism/ambiguity
+//                        if (n_final[i] == (n_final[i] & actives[i])) {
+//                            *length += weights[i];
+//                        }
+//                    }
+//                }
+//                
+//            }
         }
-        
-        
-        
     }
-    
 }
 
 
@@ -402,10 +418,10 @@ void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partiti
         n_char_in_parts = dataparts->ptset_partitions[i]->part_n_chars_included;
         
         for (j = 0; j < n_char_in_parts; ++j) {
-            dummyroot->nodet_charstates[i]->nd_final_set[j] = 0;//rootnode->nodet_charstates[i]->nd_prelim_set[j];
-//            if (dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE) {
-//                dummyroot->nodet_charstates[i]->nd_final_set[j] = dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE;
-//            }
+            dummyroot->nodet_charstates[i]->nd_final_set[j] = rootnode->nodet_charstates[i]->nd_prelim_set[j];
+            if (dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE) {
+                dummyroot->nodet_charstates[i]->nd_final_set[j] = dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE;
+            }
         }
     }
     
