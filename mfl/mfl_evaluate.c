@@ -274,8 +274,19 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             else {
                 if (lft_char[i] & rt_char[i]) {
                     n_final[i] = ( n_prelim[i] | ( anc_char[i] & (lft_char[i] | rt_char[i])));
-                } else {
-                    n_final[i] = n_prelim[i] | anc_char[i];
+                }
+                else {
+                    if (anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
+                        if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+                            n_final[i] = lft_char[i] | rt_char[i];
+                        }
+                        else {
+                            n_final[i] = n_prelim[i] | anc_char[i];
+                        }
+                    }
+                    else {
+                        n_final[i] = n_prelim[i] | anc_char[i];
+                    }
                 }
             }
         }
@@ -336,54 +347,43 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
         
         assert(n_final[i]);
         
-        if (!(lft_char[i] & rt_char[i])) {
-            if (length) {
+        if (length) {
+
+            if (lft_char[i] != rt_char[i]) {
                 
-                // Check if it's unambiguous (i.e. non-polymorphic).
-                if (n_final[i] == ( n_final[i] & ~(n_final[i] - 1)) ) {
-                    // Then add a step if the descendant states not found in the
-                    // current nodal set are active and applicable.
-                    temp = (n_final[i] ^ (lft_char[i] | rt_char[i]));
-                    
-                    if (temp & MORPHY_IS_APPLICABLE) {
-                        if (temp == (temp & ~(temp-1))) {
-                            
-                            if (temp & actives[i]) { // Only works if NA not added to actives.
-                                *length += weights[i];
-                            }
-                            else {
-                                actives[i] |= (temp & MORPHY_IS_APPLICABLE);
-                            }
-                        }
-                    }
-                    
-                }
-                else {
-                    // What to do when the ancestor is ambiguous/polymorphic.
-                    if (n_final[i] == (n_final[i] & actives[i])) {
+                temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
+                
+                if (temp & MORPHY_IS_APPLICABLE) {
+                    if (temp & actives[i]) {
                         *length += weights[i];
-                        
-                        if (!(n_final[i] & anc_char[i])) {
-                            *length += weights[i];
-                        }
-                        else if (n_final[i] == anc_char[i]) {
-                            *length += weights[i];
-                        }
-                        else if (n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE) {
-                            *length += weights[i];
-                        }
                     }
-//                    else if (/**/) {
-//                        
-//                    }
                     else {
-                        actives[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
+                        actives[i] |= temp;
                     }
                 }
-                
+                else if (!(lft_char[i] & rt_char[i])) {
+                    
+                    temp = n_final[i] & ~(n_final[i]-1);
+                    
+                    if (temp != n_final[i]) {
+                        if (n_final[i] == (n_final[i] & actives[i])) {
+                            *length += weights[i];
+                            
+                            // if (anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
+                            //      *length += weights[i];
+                            // }
+                        }
+                        else {
+                            actives[i] |= n_final[i];
+                        }
+                    }
+                    
+                }
                 
             }
         }
+        
+        
         
     }
     
