@@ -202,6 +202,13 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             else {
                 n_final[i] = n_prelim[i];
             }
+            
+            if (n_prelim[i] != MORPHY_MISSING_DATA_BITWISE) {
+                if (n_prelim[i] & MORPHY_IS_APPLICABLE) {
+                    //actives[i] |= n_prelim[i];
+                }
+            }
+            
         }
         
         return;
@@ -213,10 +220,6 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
     rt_char = right_nd->nd_prelim_set;
     
     for (i = 0; i < num_chars; ++i) {
-        
-        if (i == 124) {
-            dbg_printf("break\n");
-        }
         
         if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
             
@@ -257,7 +260,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 if (anc_char[i] & MORPHY_IS_APPLICABLE) {
                     if ((lft_char[i] | rt_char[i]) != MORPHY_MISSING_DATA_BITWISE) {
-                        actives[i] |= anc_char[i];
+                        actives[i] |= (anc_char[i] & MORPHY_IS_APPLICABLE);
                     }
                 }
             }
@@ -276,9 +279,10 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 }
             }
         }
+        assert(n_final[i]);
     }
     
-    //assert(n_final[i]);
+    
 }
 
 
@@ -305,9 +309,6 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
     
     for (i = 0; i < num_chars; ++i) {
         
-        if (i == 3) {
-            dbg_printf("break\n");
-        }
         
         if (n_final[i] & MORPHY_INAPPLICABLE_BITPOS) {
             if (lft_char[i] & rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
@@ -328,62 +329,59 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
+            else {
+                n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
+            }
         }
         
         assert(n_final[i]);
         
-        if (length) {
-            
-            if (!(lft_char[i] & rt_char[i])) {
+        if (!(lft_char[i] & rt_char[i])) {
+            if (length) {
                 
-                if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                // Check if it's unambiguous (i.e. non-polymorphic).
+                if (n_final[i] == ( n_final[i] & ~(n_final[i] - 1)) ) {
+                    // Then add a step if the descendant states not found in the
+                    // current nodal set are active and applicable.
+                    temp = (n_final[i] ^ (lft_char[i] | rt_char[i]));
                     
-                    if ((temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE)) {
-                        // Check if the applicable descendant is unambiguously optimised
-                        if ( temp == (temp & ~(temp-1)) ) {
-                            if (length) {
-                                if (temp & actives[i]) {
-                                    *length += weights[i];
-                                }
-                                else {
-                                    actives[i] |= temp;
-                                }
-                            }
-                        }
-                    }
-                }
-                else {
-                    if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
-                        
-                        temp = n_final[i];
-                        
-                        if (length) {
-                            if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                    if (temp & MORPHY_IS_APPLICABLE) {
+                        if (temp == (temp & ~(temp-1))) {
+                            
+                            if (temp & actives[i]) { // Only works if NA not added to actives.
                                 *length += weights[i];
                             }
-                        }
-                        
-                        // Check whether the final state of the node is ambiguous or unambiguous.
-                        if (temp != (temp & ~(temp-1))) {
-                            if (length) {
-                                // If all states in the ambiguity are active states, add a step
-                                if (((lft_char[i] | rt_char[i]) & actives[i]) == (lft_char[i] | rt_char[i])) {
-                                    *length += weights[i];
-                                }
-//                                if ((temp & actives[i]) == temp) {
-//                                    *length += weights[i];
-//                                }
+                            else {
+                                actives[i] |= (temp & MORPHY_IS_APPLICABLE);
                             }
                         }
+                    }
+                    
+                }
+                else {
+                    // What to do when the ancestor is ambiguous/polymorphic.
+                    if (n_final[i] == (n_final[i] & actives[i])) {
+                        *length += weights[i];
                         
-                        if (n_final[i] == (lft_char[i] | rt_char[i])) {
-                            actives[i] |= (lft_char[i] | rt_char[i]);
+                        if (!(n_final[i] & anc_char[i])) {
+                            *length += weights[i];
                         }
-                        else {
-                            actives[i] |= (lft_char[i] | rt_char[i]) ^ n_final[i];
+                        else if (n_final[i] == anc_char[i]) {
+                            *length += weights[i];
+                        }
+                        else if (n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE) {
+                            *length += weights[i];
                         }
                     }
+//                    else if (/**/) {
+//                        
+//                    }
+                    else {
+                        actives[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
+                    }
                 }
+                
+                
             }
         }
         
@@ -404,7 +402,10 @@ void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partiti
         n_char_in_parts = dataparts->ptset_partitions[i]->part_n_chars_included;
         
         for (j = 0; j < n_char_in_parts; ++j) {
-            dummyroot->nodet_charstates[i]->nd_final_set[j] = rootnode->nodet_charstates[i]->nd_prelim_set[j];
+            dummyroot->nodet_charstates[i]->nd_final_set[j] = 0;//rootnode->nodet_charstates[i]->nd_prelim_set[j];
+//            if (dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE) {
+//                dummyroot->nodet_charstates[i]->nd_final_set[j] = dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE;
+//            }
         }
     }
     
