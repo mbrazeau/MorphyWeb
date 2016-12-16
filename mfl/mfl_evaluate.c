@@ -355,13 +355,11 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
                 temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
                 
                 if (temp & MORPHY_IS_APPLICABLE) { // If this exists and is active ...
-                    if (anc_char[i]) {
-                        if (temp & actives[i]) {
-                            *length += weights[i];
-                        }
-                        else {
-                            actives[i] |= temp;
-                        }
+                    if (temp & actives[i]) {
+                        *length += weights[i];
+                    }
+                    else {
+                        actives[i] |= temp;
                     }
                 }
                 else if (!(lft_char[i] & rt_char[i])) { // Else in the case of no intersection between descendants...
