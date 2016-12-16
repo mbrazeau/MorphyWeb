@@ -143,13 +143,13 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
                                       int*                  length)
 {
     int i = 0;
-    //int* weights = datapart->part_int_weights;
+    int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
     mfl_charstate temp = 0;
-    //mfl_charstate* actives = datapart->part_activestates;
+    mfl_charstate* actives = datapart->part_activestates;
     
     for (i = 0; i < num_chars; ++i) {
 
@@ -160,10 +160,20 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
         }
         else {
             n_prelim[i] = left[i] | right[i];
-        }
-        
-        if ((left[i] | right[i]) & MORPHY_INAPPLICABLE_BITPOS) {
-            n_prelim[i] |= MORPHY_INAPPLICABLE_BITPOS;
+            
+            if ((left[i] | right[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                n_prelim[i] |= MORPHY_INAPPLICABLE_BITPOS;
+            }
+            else if (length) {
+                if (!(n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
+                    if ((n_prelim[i] & actives[i]) == n_prelim[i]) {
+                        *length += weights[i];
+                    }
+                    else {
+                        actives[i] |= n_prelim[i];
+                    }
+                }
+            }
         }
     }
     
@@ -348,47 +358,17 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
         assert(n_final[i]);
         
         if (length) {
-
-            if (lft_char[i] != rt_char[i]) { // Check that descendent nodes have different states
-                
-                // Get the state(s) that differ from the current nodal set and aren't found in the descendant set.
-                temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
-                
-                if (temp & MORPHY_IS_APPLICABLE) { // If this exists and is active ...
-                    if (temp & actives[i]) {
-                        *length += weights[i];
-                    }
-                    else {
-                        actives[i] |= temp;
-                    }
-                }
-                else if (!(lft_char[i] & rt_char[i])) { // Else in the case of no intersection between descendants...
-                    
-                    // Get the lowest order bit of the current final nodal state
-                    //temp = ;
-                    
-                    if (n_final[i] != (n_final[i] & ~(n_final[i]-1)) ) { // Do a check for polymorphism/ambiguity
-                        if (temp != MORPHY_INAPPLICABLE_BITPOS) {
-                            if (n_final[i] == (n_final[i] & actives[i])) { // If the WHOLE polymorphism is active...
-                                *length += weights[i]; // PROBLEM SPOT
-                            }
-                            else {
-                                actives[i] |= n_final[i];
-                            }
-                        }
-                    }
-                }
-                else if (n_final[i] == anc_char[i]) {
-                    if (!(anc_char[i] & MORPHY_INAPPLICABLE_BITPOS)) {
-                        if (n_final[i] == (n_final[i] & actives[i])) { // If the WHOLE polymorphism is active...
-                            *length += weights[i];
-                        }
-                        else {
-                            actives[i] |= n_final[i];
-                        }
-                    }
+            
+            if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                    *length += weights[i];
                 }
             }
+            
+            if (!(lft_char[i] & rt_char[i])) {
+                actives[i] |= (n_final[i] ^ (lft_char[i] | rt_char[i])) & MORPHY_IS_APPLICABLE;
+            }
+            
         }
     }
 }
@@ -627,9 +607,16 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
 
 #ifdef MFY_DEBUG
     dbg_printf("\nResetting length to 0 before uppass\n");
-    t->treet_parsimonylength = 0;
+    //t->treet_parsimonylength = 0;
 #endif
 
+    int i = 0;
+    for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+        if (dataparts->ptset_partitions[i]->part_activestates) {
+            memset(dataparts->ptset_partitions[i]->part_activestates, 0, dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate));
+        }
+    }
+    
     mfl_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
     
     // New function for finalising dummy root.
