@@ -252,7 +252,6 @@ typedef struct mfl_character_vector_t {
     int cv_num_states;
     int cv_partition_destination;
     char** cv_character_cells;
-    mfl_charstate* cv_activestates; // Records whether a state has appeared at least once on the tree
     mfl_charstate* cv_chardata;
 } mfl_character_vector_t;
 
