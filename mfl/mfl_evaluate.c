@@ -622,63 +622,6 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     return;
 }
 
-void mfl_allviews_postorder_traversal(mfl_node_t *n, int* length)
-{
-    
-    if (!n->nodet_downpass_visited) {
-        
-        int i = 0;
-        int num_dataparts;
-        mfl_node_t *p = NULL;
-        mfl_parsim_fn evaluator;
-        mfl_node_t* left;
-        mfl_node_t* right;
-        
-        if (n->nodet_tip) {
-            return;
-        }
-        
-        left = n->nodet_next->nodet_edge;
-        right = n->nodet_next->nodet_next->nodet_edge;
-        
-        p = n->nodet_next;
-        do {
-            mfl_postorder_traversal(p->nodet_edge, length);
-            p = p->nodet_next;
-        } while (p != n);
-        
-        num_dataparts = n->nodet_num_dat_partitions;
-        
-        for (i = 0; i < num_dataparts; ++i) {
-            
-            evaluator = n->nodet_charstates[i]->nd_downpass_full;
-            evaluator(n->nodet_charstates[i],
-                      left->nodet_charstates[i],
-                      right->nodet_charstates[i],
-                      NULL,
-                      n->nodet_charstates[i]->nd_parent_partition,
-                      length
-                      );
-            
-            // Do the final downpass operation
-            // TODO: use a function pointer here as above:
-            mfl_fitch_final_pass_inapplicables(n->nodet_charstates[i],
-                                                left->nodet_charstates[i],
-                                                right->nodet_charstates[i],
-                                                n->nodet_edge->nodet_charstates[i],
-                                                n->nodet_charstates[i]->nd_parent_partition,
-                                                length
-                                                );
-            
-        }
-        
-        n->nodet_downpass_visited = true;
-        
-    }
-    
-    return;
-}
-
 
 bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
 {
@@ -700,7 +643,7 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
             // and the final downpass, accomplishing both sets at the same time.
             // The first run of the final downpass should be able to count all
             // homoplasies. 
-            mfl_allviews_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
+            mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
         }
         
         // Restore original root.
