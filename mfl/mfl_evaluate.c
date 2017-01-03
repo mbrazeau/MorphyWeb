@@ -53,12 +53,18 @@
 //    return return_weight;
 //}
 
-void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length)
+void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd,
+                                    mfl_nodedata_t* left_nd,
+                                    mfl_nodedata_t* right_nd,
+                                    mfl_nodedata_t* dummy,
+                                    mfl_datapartition_t* datapart,
+                                    int* length)
 {
     int i = 0;
     int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+    //mfl_charstate* st_prelim = n_nd->nd_subtree_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
     mfl_charstate temp = 0;
@@ -73,10 +79,17 @@ void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_n
                 *length += weights[i];
             }
         }
+        
+        //st_prelim[i] = n_prelim[i];
     }
 }
 
-void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length)
+void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd,
+                                  mfl_nodedata_t* left_nd,
+                                  mfl_nodedata_t* right_nd,
+                                  mfl_nodedata_t* anc_nd,
+                                  mfl_datapartition_t* datapart,
+                                  int* length)
 {
     int i = 0;
     int num_chars = datapart->part_n_chars_included;
@@ -146,8 +159,12 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
 //    int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+    //mfl_charstate* st_prelim = n_nd->nd_subtree_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* subtreeactives = n_nd->nd_subtree_activestates;
     mfl_charstate temp = 0;
     
     for (i = 0; i < num_chars; ++i) {
@@ -160,6 +177,8 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
         else {
             n_prelim[i] = left[i] | right[i];
         }
+        
+        subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
     }
     
 }
@@ -279,7 +298,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
 }
 
 
-void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
+void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
                                          mfl_nodedata_t*       left_nd,
                                          mfl_nodedata_t*       right_nd,
                                          mfl_nodedata_t*       anc_nd,
@@ -335,9 +354,50 @@ void mfl_fitch_final_count_inapplicables(mfl_nodedata_t*       n_nd,
         assert(n_final[i]);
 
         subtreeactive[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        
     }
 }
 
+void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
+                                   mfl_nodedata_t*       left_nd,
+                                   mfl_nodedata_t*       right_nd,
+                                   mfl_nodedata_t*       anc_nd,
+                                   mfl_datapartition_t*  datapart,
+                                   int*                  length)
+{
+    
+    int* weights = datapart->part_int_weights;
+    int i = 0;
+    int num_chars = datapart->part_n_chars_included;
+    mfl_charstate* lft_char = left_nd->nd_final_set; // Note left and right are pointing to final sets now, not prelim sets
+    mfl_charstate* lft_prelim = left_nd->nd_prelim_set;
+    mfl_charstate* rt_char = right_nd->nd_final_set;
+    mfl_charstate* rt_prelim = right_nd->nd_prelim_set;
+    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+    mfl_charstate* n_final = n_nd->nd_final_set;
+    mfl_charstate* anc_char = anc_nd->nd_final_set;
+    mfl_charstate* actives = datapart->part_activestates;
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* n_active = n_nd->nd_subtree_activestates;
+    mfl_charstate* anc_active = anc_nd->nd_subtree_activestates;
+    mfl_charstate temp = 0;
+    
+    
+    
+    for (i = 0; i < num_chars; ++i) {
+        
+        assert(n_final[i]);
+        
+        if (length) {
+            
+            if (!(lft_prelim[i] & rt_prelim[i])) {
+                
+            }
+        }
+    }
+    
+}
 
 void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts)
 {
@@ -422,39 +482,45 @@ void mfl_wagner_downpass_binary_node(mfl_node_t *node)
 
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
-    int i = 0;
-    int num_dataparts;
-    mfl_node_t *p = NULL;
-    mfl_parsim_fn evaluator;
-    mfl_node_t* left;
-    mfl_node_t* right;
     
-    if (n->nodet_tip) {
-        return;
-    }
-    
-    left = n->nodet_next->nodet_edge;
-    right = n->nodet_next->nodet_next->nodet_edge;
-    
-    p = n->nodet_next;
-    do {
-        mfl_postorder_traversal(p->nodet_edge, length);
-        p = p->nodet_next;
-    } while (p != n);
-    
-    num_dataparts = n->nodet_num_dat_partitions;
-    
-    
-    for (i = 0; i < num_dataparts; ++i) {
-        evaluator = n->nodet_charstates[i]->nd_downpass_full;
-        evaluator(
-                  n->nodet_charstates[i],
-                  left->nodet_charstates[i],
-                  right->nodet_charstates[i],
-                  NULL,
-                  n->nodet_charstates[i]->nd_parent_partition,
-                  length
-                  );
+    if (!n->nodet_downpass_visited) {
+        
+        int i = 0;
+        int num_dataparts;
+        mfl_node_t *p = NULL;
+        mfl_parsim_fn evaluator;
+        mfl_node_t* left;
+        mfl_node_t* right;
+        
+        if (n->nodet_tip) {
+            return;
+        }
+        
+        left = n->nodet_next->nodet_edge;
+        right = n->nodet_next->nodet_next->nodet_edge;
+        
+        p = n->nodet_next;
+        do {
+            mfl_postorder_traversal(p->nodet_edge, length);
+            p = p->nodet_next;
+        } while (p != n);
+        
+        num_dataparts = n->nodet_num_dat_partitions;
+        
+        for (i = 0; i < num_dataparts; ++i) {
+            evaluator = n->nodet_charstates[i]->nd_downpass_full;
+            evaluator(
+                      n->nodet_charstates[i],
+                      left->nodet_charstates[i],
+                      right->nodet_charstates[i],
+                      NULL,
+                      n->nodet_charstates[i]->nd_parent_partition,
+                      length
+                      );
+        }
+
+        n->nodet_downpass_visited = true;
+
     }
     
     return;
@@ -543,7 +609,7 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
         if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
             // Do the final downpass operation
             // TODO: use a function pointer here as above:
-            mfl_fitch_final_count_inapplicables(n->nodet_charstates[i],
+            mfl_fitch_final_pass_inapplicables(n->nodet_charstates[i],
                                                 left->nodet_charstates[i],
                                                 right->nodet_charstates[i],
                                                 n->nodet_edge->nodet_charstates[i],
@@ -556,8 +622,65 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
     return;
 }
 
+void mfl_allviews_postorder_traversal(mfl_node_t *n, int* length)
+{
+    
+    if (!n->nodet_downpass_visited) {
+        
+        int i = 0;
+        int num_dataparts;
+        mfl_node_t *p = NULL;
+        mfl_parsim_fn evaluator;
+        mfl_node_t* left;
+        mfl_node_t* right;
+        
+        if (n->nodet_tip) {
+            return;
+        }
+        
+        left = n->nodet_next->nodet_edge;
+        right = n->nodet_next->nodet_next->nodet_edge;
+        
+        p = n->nodet_next;
+        do {
+            mfl_postorder_traversal(p->nodet_edge, length);
+            p = p->nodet_next;
+        } while (p != n);
+        
+        num_dataparts = n->nodet_num_dat_partitions;
+        
+        for (i = 0; i < num_dataparts; ++i) {
+            
+            evaluator = n->nodet_charstates[i]->nd_downpass_full;
+            evaluator(n->nodet_charstates[i],
+                      left->nodet_charstates[i],
+                      right->nodet_charstates[i],
+                      NULL,
+                      n->nodet_charstates[i]->nd_parent_partition,
+                      length
+                      );
+            
+            // Do the final downpass operation
+            // TODO: use a function pointer here as above:
+            mfl_fitch_final_pass_inapplicables(n->nodet_charstates[i],
+                                                left->nodet_charstates[i],
+                                                right->nodet_charstates[i],
+                                                n->nodet_edge->nodet_charstates[i],
+                                                n->nodet_charstates[i]->nd_parent_partition,
+                                                length
+                                                );
+            
+        }
+        
+        n->nodet_downpass_visited = true;
+        
+    }
+    
+    return;
+}
 
-void mfl_calculated_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts)
+
+bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
 {
     int i = 0;
     int num_taxa = t->treet_num_taxa;
@@ -569,20 +692,24 @@ void mfl_calculated_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts)
         t->treet_root->nodet_weight = num_taxa;
     }
     
+    // Perform a simple unrooting by
     if (mfl_clip_branch(t->treet_root->nodet_edge, &orig_root)) {
         
-        
-        //mfl_unroot_tree(t);
-        
         for (i = 0; i < num_taxa; ++i) {
-            
-            // Enter at terminal 0
-            // Perform a downpass
+            // Change this function to one that calls both the regular downpass
+            // and the final downpass, accomplishing both sets at the same time.
+            // The first run of the final downpass should be able to count all
+            // homoplasies. 
+            mfl_allviews_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
         }
         
         // Restore original root.
         mfl_restore_branching(&orig_root);
+        
+        return true;
     }
+    
+    return false;
 }
 
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts)
@@ -592,8 +719,6 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     
     mfl_postorder_traversal(t->treet_root, &t->treet_parsimonylength);
     dbg_printf("\nHere's the length after the downpass: %i\n", t->treet_parsimonylength);
-
-    mfl_calculated_all_views(t, dataparts);
     
 #ifdef MFY_DEBUG
     tui_check_broken_tree(t, false);
@@ -602,11 +727,13 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
 
 #ifdef MFY_DEBUG
-    dbg_printf("\nResetting length to 0 before uppass\n");
+    //dbg_printf("\nResetting length to 0 before uppass\n");
     //t->treet_parsimonylength = 0;
 #endif
     
     mfl_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
+    
+    mfl_calculate_all_views(t, dataparts, NULL);
     
     // New function for finalising dummy root.
     
