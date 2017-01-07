@@ -233,6 +233,7 @@ typedef struct mfl_datapartition_t {
     mfl_parsim_fn part_uppass_partial;
     mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_activestates;
+    mfl_charstate *part_tempactives; // Keeps track of unambiguous transformations
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 
@@ -269,6 +270,7 @@ typedef struct mfl_matrix_t {
 
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
+    bool nd_completed;
     mfl_datapartition_t *nd_parent_partition;
     mfl_parsim_fn nd_downpass_full;                  // The downpass parsimony function.
     mfl_parsim_fn nd_downpass_partial;
@@ -279,6 +281,7 @@ typedef struct mfl_nodedata_t {
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
     mfl_charstate *nd_subtree_final_set;        // The final uppass set of the subtree when the tree is broken.
     mfl_charstate *nd_subtree_activestates;
+    mfl_charstate *nd_region_activestates;
 } mfl_nodedata_t;
 
 
