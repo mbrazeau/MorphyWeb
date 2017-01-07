@@ -265,6 +265,8 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                         if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
                             n_final[i] = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) | MORPHY_INAPPLICABLE_BITPOS;
                         } else {
+                            // If one descendant is inapplicable, then any difference
+                            // between the descendant and nodal ancestor is ambiguous at the current node
                             n_final[i] = ((lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE) | MORPHY_INAPPLICABLE_BITPOS;
                         }
                     }
@@ -404,21 +406,59 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
         assert(n_final[i]);
         temp = 0;
         
+        if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+            regactive[i] = 0;
+        }
+        else {
+            regactive[i] = lreg_active[i] | rreg_active[i];
+        }
+        
         if (length) {
 
             if (!(lft_prelim[i] & rt_prelim[i])) {
-             
-                if (n_final[i]) {
+                
+                temp = (lft_prelim[i] | rt_prelim[i]) & MORPHY_IS_APPLICABLE;
+                
+                if (n_final[i] == (n_final[i] & ~(n_final[i] - 1))) {
+                    // Unambiguous nodal state
+                    
+                    // Get the unambiguous descendant
+                    temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
+                    
+                    if (temp & actives[i]) {
+                        *length += weights[i];
+                    }
+                    
                     actives[i] |= tempactive[i];
-                    tempactive[i] = 0;
+                    actives[i] |= temp;
+                    
+                }
+                else {
+                    // Ambiguous nodal state
+                    if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+                        if (temp == (temp & regactive[i])) {
+                            if (temp == (temp & tempactive[i])) {
+                                *length += weights[i];
+                            }
+                        }
+                    }
+                    else if (!(temp & anc_char[i])) { // This behaviour is analogous to an unambiguous nodal optimisation
+                        if (temp & actives[i]) {
+                            //*length += weights[i];
+                        }
+                        else {
+                            actives[i] |= temp & MORPHY_IS_APPLICABLE;
+                        }
+                        
+                        actives[i] |= anc_char[i] & MORPHY_IS_APPLICABLE;
+                    }
+                    
                 }
                 
+                tempactive[i] |= temp; // Danger here as temp gets reactivated
+                
             }
-            else if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                if (lft_active[i] & rt_active[i]) {
-                    *length += weights[i];
-                }
-            }
+            
         }
     }
     
@@ -566,7 +606,7 @@ void mfl_postorder_count_inapplicable(mfl_node_t *n, int* length)
     
     left = n->nodet_next->nodet_edge;
     right = n->nodet_next->nodet_next->nodet_edge;
-    
+
     p = n->nodet_next;
     do {
         mfl_postorder_count_inapplicable(p->nodet_edge, length);
