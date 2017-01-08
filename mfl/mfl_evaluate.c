@@ -427,10 +427,22 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                     
                     if (temp & actives[i]) {
                         *length += weights[i];
+                        
+                        // At this point, maybe check if '-' was added to actives and remove it if so...
                     }
-                    
-                    actives[i] |= tempactive[i];
-                    actives[i] |= temp;
+                    else if (temp == MORPHY_INAPPLICABLE_BITPOS) {
+                        if (lft_active[i] & rt_active[i] & n_final[i]) {
+                            *length += weights[i];
+                            
+                            actives[i] = actives[i] ^ n_final[i];
+                            tempactive[i] = 0;
+                        }
+                    }
+                    else {
+                        tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
+                        actives[i] |= tempactive[i];
+                        
+                    }
                     
                 }
                 else {
@@ -440,11 +452,14 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                             if (temp == (temp & tempactive[i])) {
                                 *length += weights[i];
                             }
+                            else {
+                                tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
+                            }
                         }
                     }
                     else if (!(temp & anc_char[i])) { // This behaviour is analogous to an unambiguous nodal optimisation
                         if (temp & actives[i]) {
-                            //*length += weights[i];
+                            *length += weights[i];
                         }
                         else {
                             actives[i] |= temp & MORPHY_IS_APPLICABLE;
@@ -454,8 +469,6 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                     
                 }
-                
-                tempactive[i] |= temp; // Danger here as temp gets reactivated
                 
             }
             
