@@ -343,16 +343,13 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else if (!(lft_char[i] & MORPHY_INAPPLICABLE_BITPOS) && !(rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
-                if (lft_char[i] & rt_char[i]) {
-                    n_final[i] = lft_char[i] & rt_char[i];
-                }
-                else {
-                    n_final[i] = lft_char[i] | rt_char[i];
-                }
-                
-                if (n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE) {
-                    n_final[i] = n_final[i] & anc_char[i] & MORPHY_IS_APPLICABLE;
-                }
+                n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
+                //                if (lft_char[i] & rt_char[i]) {
+//                    n_final[i] = (n_final[i] | ( anc_char[i] & (lft_char[i] | rt_char[i]))) & MORPHY_IS_APPLICABLE;
+//                }
+//                else{
+//                    n_final[i] = lft_char[i] | rt_char[i] & MORPHY_IS_APPLICABLE;
+//                }
             }
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
@@ -398,6 +395,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_active = n_nd->nd_subtree_activestates;
     mfl_charstate* anc_active = anc_nd->nd_subtree_activestates;
     mfl_charstate temp = 0;
+    mfl_charstate desc = 0;
     
     
     
@@ -405,73 +403,27 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
         
         assert(n_final[i]);
         temp = 0;
-        
-        if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
-            regactive[i] = 0;
-        }
-        else {
-            regactive[i] = lreg_active[i] | rreg_active[i];
-        }
+        desc = 0;
         
         if (length) {
-
-            if (!(lft_prelim[i] & rt_prelim[i])) {
-                
-                temp = (lft_prelim[i] | rt_prelim[i]) & MORPHY_IS_APPLICABLE;
-                
-                if (n_final[i] == (n_final[i] & ~(n_final[i] - 1))) {
-                    // Unambiguous nodal state
-                    
-                    // Get the unambiguous descendant
-                    temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
-                    
-                    if (temp & actives[i]) {
-                        *length += weights[i];
-                        
-                        // At this point, maybe check if '-' was added to actives and remove it if so...
-                    }
-                    else if (temp == MORPHY_INAPPLICABLE_BITPOS) {
-                        if (lft_active[i] & rt_active[i] & n_final[i]) {
-                            *length += weights[i];
-                            
-                            actives[i] = actives[i] ^ n_final[i];
-                            tempactive[i] = 0;
-                        }
-                    }
-                    else {
-                        tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
-                        actives[i] |= tempactive[i];
-                        
-                    }
-                    
-                }
-                else {
-                    // Ambiguous nodal state
-                    if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
-                        if (temp == (temp & regactive[i])) {
-                            if (temp == (temp & tempactive[i])) {
-                                *length += weights[i];
-                            }
-                            else {
-                                tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
-                            }
-                        }
-                    }
-                    else if (!(temp & anc_char[i])) { // This behaviour is analogous to an unambiguous nodal optimisation
-                        if (temp & actives[i]) {
-                            *length += weights[i];
-                        }
-                        else {
-                            actives[i] |= temp & MORPHY_IS_APPLICABLE;
-                        }
-                        
-                        actives[i] |= anc_char[i] & MORPHY_IS_APPLICABLE;
-                    }
-                    
-                }
-                
+            
+            
+            if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                regactive[i] = 0;
+            }
+            else {
+                regactive[i] = lreg_active[i] | rreg_active[i];
             }
             
+            if (!(lft_char[i] & rt_char[i])) {
+                // Unambiguous transformation
+            }
+            else if (n_final[i] != (n_final[i] & ~(n_final[i] - 1))) {
+                // Ambiguous transformation
+                if ((lreg_active[i] & rreg_active[i]) & n_final[i]) {
+                    *length += weights[i];
+                }
+            }            
         }
     }
     
