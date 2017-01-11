@@ -761,7 +761,7 @@ void tui_test_counts(void)
     char matrix12[] = "01------0101;"; tui_runmatrix(matrix12, 3); // Says 3
     char matrix14[] = "110--?---100;"; tui_runmatrix(matrix14, 2);
     char matrix17[] = "11--1??--111;"; tui_runmatrix(matrix17, 2); // Says 1
-//    char matrix18[] = "210--100--21;"; tui_runmatrix(matrix18, 3); // Carefull, there's an assert(final) fail on this one!
+    char matrix18[] = "210--100--21;"; tui_runmatrix(matrix18, 3); // Carefull, there's an assert(final) fail on this one!
     char matrix19[] = "????----1???;"; tui_runmatrix(matrix19, 0);
     char matrix20[] = "23--1----032;"; tui_runmatrix(matrix20, 2);
     char matrix21[] = "1----1----1-;"; tui_runmatrix(matrix21, 2);
