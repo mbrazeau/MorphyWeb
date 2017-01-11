@@ -773,7 +773,7 @@ void tui_test_counts(void)
     char matrix28[] = "110--??--100;"; tui_runmatrix(matrix28, 2);
     char matrix29[] = "11--1000001-;"; tui_runmatrix(matrix29, 1);
     char matrix30[] = "21--1----012;"; tui_runmatrix(matrix30, 3);
-    char matrix31[] = "11--1000001-;"; tui_runmatrix(matrix31, 2);
+    char matrix31[] = "11--1000001-;"; tui_runmatrix(matrix31, 1);
     
 }
 
