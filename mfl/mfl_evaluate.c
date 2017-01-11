@@ -314,24 +314,24 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
                                          int*                  length)
 {
     
-    int* weights = datapart->part_int_weights;
+//    int* weights = datapart->part_int_weights;
     int i = 0;
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* lft_char = left_nd->nd_final_set; // Note left and right are pointing to final sets now, not prelim sets
-    mfl_charstate* lft_prelim = left_nd->nd_prelim_set;
+//    mfl_charstate* lft_prelim = left_nd->nd_prelim_set;
     mfl_charstate* rt_char = right_nd->nd_final_set;
-    mfl_charstate* rt_prelim = right_nd->nd_prelim_set;
-    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+//    mfl_charstate* rt_prelim = right_nd->nd_prelim_set;
+//    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
-    mfl_charstate* actives = datapart->part_activestates;
+//    mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
     mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-    mfl_charstate* regionactive = n_nd->nd_region_activestates;
-    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
-    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
-    mfl_charstate temp = 0;
+//    mfl_charstate* regionactive = n_nd->nd_region_activestates;
+//    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
+//    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
+//    mfl_charstate temp = 0;
     
     
     
