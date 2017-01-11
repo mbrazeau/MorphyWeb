@@ -364,7 +364,12 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else {
-                n_final[i] = ((lft_char[i] | rt_char[i]) & n_final[i]) & MORPHY_IS_APPLICABLE;
+                if ((lft_char[i] | rt_char[i]) & anc_char[i] & MORPHY_IS_APPLICABLE) {
+                    n_final[i] = ((lft_char[i] | rt_char[i]) & n_final[i]) & MORPHY_IS_APPLICABLE;
+                }
+                else {
+                    n_final[i] = (n_prelim[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
+                }
             }
         }
         
