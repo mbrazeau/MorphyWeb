@@ -235,7 +235,19 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
         if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
             
             if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                n_final[i] = n_prelim[i];
+                
+                if ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) {
+                    
+                    if (anc_char[i] & MORPHY_IS_APPLICABLE) {
+                        n_final[i] = n_prelim[i] | anc_char[i];
+                    }
+                    else {
+                        n_final[i] = n_prelim[i];
+                    }
+                }
+                else {
+                    n_final[i] = n_prelim[i];
+                }
             }
             else {
                 if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
@@ -253,24 +265,13 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 }
                 else {
                     
-                    if (lft_char[i] & rt_char[i] & anc_char[i]) {
-                        if (lft_char[i] & rt_char[i] & anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                            n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
-                        }
-                        else {
-                            n_final[i] = lft_char[i] & rt_char[i] & anc_char[i];
-                        }
-                    }
-                    else {
-                        if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
-                            n_final[i] = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) | MORPHY_INAPPLICABLE_BITPOS;
-                        } else {
-                            // If one descendant is inapplicable, then any difference
-                            // between the descendant and nodal ancestor is ambiguous at the current node
-                            n_final[i] = ((lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE) | MORPHY_INAPPLICABLE_BITPOS;
+                    if ((lft_char[i] | rt_char[i]) & anc_char[i]) {
+                        n_final[i] = (lft_char[i] | rt_char[i]) & anc_char[i];
+                    } else {
+                        if (n_prelim[i] != MORPHY_INAPPLICABLE_BITPOS) {
+                            n_final[i] = (lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
                         }
                     }
-                    
                 }
             }
             
@@ -321,7 +322,7 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
 //    mfl_charstate* lft_prelim = left_nd->nd_prelim_set;
     mfl_charstate* rt_char = right_nd->nd_final_set;
 //    mfl_charstate* rt_prelim = right_nd->nd_prelim_set;
-//    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
 //    mfl_charstate* actives = datapart->part_activestates;
@@ -331,25 +332,36 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
 //    mfl_charstate* regionactive = n_nd->nd_region_activestates;
 //    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
 //    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
-//    mfl_charstate temp = 0;
+    mfl_charstate temp = 0;
     
     
     
     for (i = 0; i < num_chars; ++i) {
         
+        temp = 0;
         
-        if (n_final[i] & MORPHY_INAPPLICABLE_BITPOS) {
+        if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
             if (lft_char[i] & rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else if (!(lft_char[i] & MORPHY_INAPPLICABLE_BITPOS) && !(rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
-                n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
+
+                if ((temp = (lft_char[i] & MORPHY_IS_APPLICABLE) & (rt_char[i] & MORPHY_IS_APPLICABLE))) {
+                    //
+                    n_final[i] = temp;
+                    if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
+                        n_final[i] = n_final[i] | (temp & MORPHY_IS_APPLICABLE);
+                    }
+                }
+                else {
+                    n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
+                }
             }
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
             }
             else {
-                n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
+                n_final[i] = ((lft_char[i] | rt_char[i]) & n_final[i]) & MORPHY_IS_APPLICABLE;
             }
         }
         
@@ -410,14 +422,90 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
             }
             
             if (!(lft_char[i] & rt_char[i])) {
-                // Unambiguous transformation
+                
+                if (n_final[i] < n_prelim[i]) {
+                    // Unambig
+                    temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
+                    
+                    if (temp & MORPHY_IS_APPLICABLE) {
+                        if (temp & actives[i]) {
+                            *length += weights[i];
+                        }
+                        else {
+                            tempactive[i] |= temp;
+                            //actives[i] |= temp;
+
+                        }
+                    }
+                    else {
+                        if (n_final[i] & actives[i]) {
+                            //if (anc_active[i]) {
+                                *length += weights[i];
+                            //}
+                        }
+                        else if (n_final[i] & tempactive[i]){
+                            if (!((lft_char[i] | rt_char[i]) & anc_char[i])) {
+                                *length += weights[i];
+                            }
+                        }
+                    }
+                    
+                    /*if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                        actives[i] |= tempactive[i];
+                        tempactive[i] = 0;
+                    }
+                    else*/ if (temp == MORPHY_INAPPLICABLE_BITPOS) {
+                        if (n_final[i] & actives[i]) {
+                            if (n_final[i] == anc_char[i]) {
+                                if (lft_active[i] & rt_active[i] & n_final[i]) {
+                                    actives[i] = actives[i] ^ n_final[i];
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        actives[i] |= tempactive[i] & MORPHY_IS_APPLICABLE;
+                        
+                        if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                            tempactive[i] = 0;
+                        }
+                    }
+                }
+                else {
+                    // Ambig
+                    if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                        if (!((lft_char[i] | rt_char[i]) & anc_char[i])) {
+                            if ((lft_char[i] | rt_char[i]) & actives[i]) {
+                                *length += weights[i];
+                            }
+                            else {
+                                tempactive[i] = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE);
+                            }
+                        }
+                        
+                    }
+                    else {
+                        if (n_prelim[i] == (n_prelim[i] & actives[i])) {
+                            *length += weights[i];
+                        }
+                        else {
+                            tempactive[i] |= n_prelim[i] & MORPHY_IS_APPLICABLE;
+                        }
+                    }
+                }
+                
             }
             else if (n_final[i] != (n_final[i] & ~(n_final[i] - 1))) {
-                // Ambiguous transformation
-                if ((lreg_active[i] & rreg_active[i]) & n_final[i]) {
+                // Ambiguous transformations only
+                if (!(lft_prelim[i] & rt_prelim[i])) {
+                    if ((lreg_active[i] & rreg_active[i]) & n_final[i]) {
+                        *length += weights[i];
+                    }
+                }
+                else if ((lft_active[i] & rt_active[i]) == n_final[i]) {
                     *length += weights[i];
                 }
-            }            
+            }
         }
     }
     
