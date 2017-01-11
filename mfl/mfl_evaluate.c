@@ -170,7 +170,7 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
     for (i = 0; i < num_chars; ++i) {
 
         temp = 0;
-        
+
         if ((temp = (left[i] & right[i])) ) {
             n_prelim[i] = temp;
         }
@@ -178,7 +178,13 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
             n_prelim[i] = left[i] | right[i];
         }
         
+        if ((left[i] | right[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+            n_prelim[i] |= MORPHY_INAPPLICABLE_BITPOS;
+        }
+        
         subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        
+        assert(n_prelim[i]);
     }
     
 }
