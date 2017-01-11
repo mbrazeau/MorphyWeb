@@ -447,9 +447,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                                 *length += weights[i];
                             }
                         }
-                    }
-                
-                    if (temp == MORPHY_INAPPLICABLE_BITPOS) {
+                        
                         if (n_final[i] & actives[i]) {
                             if (n_final[i] == anc_char[i]) {
                                 if (lft_active[i] & rt_active[i] & n_final[i]) {
@@ -458,12 +456,11 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                             }
                         }
                     }
-                    else {
-                        actives[i] |= tempactive[i] & MORPHY_IS_APPLICABLE;
-                        
-                        if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                            tempactive[i] = 0;
-                        }
+                
+                    actives[i] |= tempactive[i] & MORPHY_IS_APPLICABLE;
+                    
+                    if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                        tempactive[i] = 0;
                     }
                 }
                 else {
