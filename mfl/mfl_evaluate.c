@@ -708,19 +708,19 @@ void mfl_preorder_traversal(mfl_node_t *n, int* length)
         }
         else {
 
-            dbg_printf("\nNode: %i\n", n->nodet_index);
-            if (n->nodet_next->nodet_edge->nodet_tip) {
-                dbg_printf("left descendant tip: %i\n", n->nodet_next->nodet_edge->nodet_tip);
-            }
-            else {
-                dbg_printf("left descendant node: %i\n", n->nodet_next->nodet_edge->nodet_index);
-            }
-            if (n->nodet_next->nodet_next->nodet_edge->nodet_tip) {
-                dbg_printf("right descendant tip: %i\n", n->nodet_next->nodet_next->nodet_edge->nodet_tip);
-            }
-            else {
-                dbg_printf("right descendant node: %i\n", n->nodet_next->nodet_next->nodet_edge->nodet_index);
-            }
+//            dbg_printf("\nNode: %i\n", n->nodet_index);
+//            if (n->nodet_next->nodet_edge->nodet_tip) {
+//                dbg_printf("left descendant tip: %i\n", n->nodet_next->nodet_edge->nodet_tip);
+//            }
+//            else {
+//                dbg_printf("left descendant node: %i\n", n->nodet_next->nodet_edge->nodet_index);
+//            }
+//            if (n->nodet_next->nodet_next->nodet_edge->nodet_tip) {
+//                dbg_printf("right descendant tip: %i\n", n->nodet_next->nodet_next->nodet_edge->nodet_tip);
+//            }
+//            else {
+//                dbg_printf("right descendant node: %i\n", n->nodet_next->nodet_next->nodet_edge->nodet_index);
+//            }
             
             evaluator(
                       n->nodet_charstates[i],
