@@ -502,6 +502,23 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                 else if ((lft_active[i] & rt_active[i]) == n_final[i]) {
                     *length += weights[i];
                 }
+            } else if (!(lft_prelim[i] & rt_prelim[i])) {
+                
+                if (n_final[i] < n_prelim[i]) {
+                    // Unambig
+                    temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
+                    
+                    if (temp & MORPHY_IS_APPLICABLE) {
+                        if (temp & actives[i]) {
+                            if (!((lft_prelim[i] | rt_prelim[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
+                                *length += weights[i];
+                            }
+                        }
+                        else {
+                            tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
+                        }
+                    }
+                }
             }
         }
     }
