@@ -444,6 +444,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                     if (temp & MORPHY_IS_APPLICABLE) {
                         if (temp & actives[i]) {
                             *length += weights[i];
+                            //dbg_printf("call 1\n");
                         }
                         else {
                             tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
@@ -452,10 +453,13 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                     else {
                         if (n_final[i] & actives[i]) {
                             *length += weights[i];
+                            //dbg_printf("call 2\n");
                         }
                         else if (n_final[i] & tempactive[i]){
                             if (!((lft_char[i] | rt_char[i]) & anc_char[i])) {
+                                // Never called
                                 *length += weights[i];
+                                //dbg_printf("call 3\n");
                             }
                         }
                         
@@ -480,6 +484,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                         if (!((lft_char[i] | rt_char[i]) & anc_char[i])) {
                             if ((lft_char[i] | rt_char[i]) & actives[i]) {
                                 *length += weights[i];
+                                //dbg_printf("call 4\n");
                             }
                             else {
                                 tempactive[i] = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE);
@@ -490,6 +495,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                     else {
                         if (n_prelim[i] == (n_prelim[i] & actives[i])) {
                             *length += weights[i];
+                            //dbg_printf("call 5\n");
                         }
                         else {
                             tempactive[i] |= n_prelim[i] & MORPHY_IS_APPLICABLE;
@@ -503,10 +509,13 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                 if (!(lft_prelim[i] & rt_prelim[i])) {
                     if ((lreg_active[i] & rreg_active[i]) & n_final[i]) {
                         *length += weights[i];
+                        //dbg_printf("call 6\n");
                     }
                 }
                 else if ((lft_active[i] & rt_active[i]) == n_final[i]) {
                     *length += weights[i];
+                    // Never called
+                    //dbg_printf("call 7\n");
                 }
             } else if (!(lft_prelim[i] & rt_prelim[i])) {
                 
@@ -518,6 +527,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                         if (temp & actives[i]) {
                             if (!((lft_prelim[i] | rt_prelim[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
                                 *length += weights[i];
+                                //dbg_printf("call 8\n");
                             }
                         }
                         else {
