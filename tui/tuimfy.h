@@ -105,5 +105,9 @@ void            mfl_test_newick_stuff();
 void            tui_test_character_stuff();
 void            tui_test_checktree_(void);
 
+// Functions for testing matrices count
+void    tui_runmatrix(char matrix[], int expect);
+void    tui_test_counts(void);
+
 #endif /* tuimfy_h */
 

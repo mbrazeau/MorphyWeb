@@ -624,3 +624,39 @@ void tui_print_bipartition_tables(mfl_bipartition_table* bipartition_table)
         dbg_printf(" - counted %i times\n", bipartition_table->bipartition_occurence_counter[i]);
     }
 }
+
+// Run a matrix
+void tui_runmatrix(char matrix[], int expect)
+{
+    int num_taxa = 12;//78
+    int num_chars = 1;//236;
+    int num_og_tax = 0;
+    char* testnewick;
+    
+    testnewick = (char*)"UNTITLED = [&R] ((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
+    mfl_tree_t* testtree = mfl_convert_newick_to_mfl_tree_t(testnewick, num_taxa);
+    
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    // Setup the handle:
+    handle->n_taxa = num_taxa;
+    handle->n_chars = num_chars;
+    handle->n_outgroup_taxa = num_og_tax;
+    handle->n_to_hold = 3;
+    handle->addseq_type = MFL_AST_ASIS;
+    
+    handle->input_data = matrix;
+    mfl_partition_set_t* dataparts = mfl_generate_search_data(handle);
+    
+    mfl_setup_input_tree_with_node_data(testtree, dataparts);
+    tui_check_broken_tree(testtree, false);
+    mfl_fullpass_tree_optimisation(testtree, dataparts);
+    
+    dbg_printf("\n===================\n");
+    dbg_printf("Martix: %s\n", matrix);
+    dbg_printf("Is of length: %i\n", testtree->treet_parsimonylength);
+    dbg_printf("Should be %i.", expect);
+    dbg_printf("\n===================\n");
+    //
+    mfl_free_tree(testtree);
+}
