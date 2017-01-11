@@ -747,34 +747,33 @@ void tui_test_consensus_trees(void)
 
 void tui_test_counts(void)
 {
-    
-    char matrix1[] = "23--1??--032;"; // should be 2
-    char matrix2[] = "1---1111---1;"; // should be 2
-    char matrix3[] = "1100----1100;"; // should be 2
-    char matrix4[] = "11-------100;"; // should be 1 ???
-    char matrix5[] = "----1111---1;"; // should be 2
-    char matrix6[] = "01----010101;"; // should be 4
-    char matrix7[] = "01---1010101;"; // should be 4
-    char matrix8[] = "1??--??--100;"; // should be 2
-    char matrix9[] = "21--3??--032;"; // should be 2
-    char matrix10[] = "11--1??--111;"; // should be 2
-    char matrix11[] = "11--1000001-;"; // should be 1
-//
-    
-    //"01------0101;";//"1??--??--100;";//"110--?---100;";//"21--3??--032;";//"110--??--100;";//"11--1??--111;";//"????----1???;";//"23--1----032;";//"1----1----1-;";//"-1-1-1--1-1-;";//"23--1??--032;";////"--------0101;";//"10101-----01;";//"21--100--012;";////"011--?--0011;";//"110--??--100;";////.//////////"11--1000001-;";////"21--1----012;";//"11--1000001-;";//
-    
-
-    tui_runmatrix(matrix1, 2);
-    tui_runmatrix(matrix2, 2);
-    tui_runmatrix(matrix3, 2);
-    tui_runmatrix(matrix4, 1);
-    tui_runmatrix(matrix5, 2);
-    tui_runmatrix(matrix6, 4);
-    tui_runmatrix(matrix7, 4);
-    tui_runmatrix(matrix8, 2);
-    tui_runmatrix(matrix9, 2);
-    tui_runmatrix(matrix10, 2);
-    tui_runmatrix(matrix11, 1);
+    char matrix1[] = "23--1??--032;"; tui_runmatrix(matrix1, 2);
+    char matrix2[] = "1---1111---1;"; tui_runmatrix(matrix2, 2); // or 1?
+    char matrix3[] = "1100----1100;"; tui_runmatrix(matrix3, 2); // blue tail red tail
+    char matrix4[] = "11-------100;"; tui_runmatrix(matrix4, 1);
+    char matrix5[] = "----1111---1;"; tui_runmatrix(matrix5, 1);
+    char matrix6[] = "01----010101;"; tui_runmatrix(matrix6, 4);
+    char matrix7[] = "01---1010101;"; tui_runmatrix(matrix7, 4);
+    char matrix8[] = "1??--??--100;"; tui_runmatrix(matrix8, 2); // Says 0
+    char matrix9[] = "21--3??--032;"; tui_runmatrix(matrix9, 2);
+    char matrix10[] = "11--1??--111;"; tui_runmatrix(matrix10, 2); // or 1?
+    char matrix11[] = "11--1000001-;"; tui_runmatrix(matrix11, 2); // or 3?
+    char matrix12[] = "01------0101;"; tui_runmatrix(matrix12, 2); // Says 3
+    char matrix14[] = "110--?---100;"; tui_runmatrix(matrix14, 2);
+    char matrix17[] = "11--1??--111;"; tui_runmatrix(matrix17, 1); // Says 1
+//    char matrix18[] = "210--100--21;"; tui_runmatrix(matrix18, 3); // Carefull, there's an assert(final) fail on this one!
+    char matrix19[] = "????----1???;"; tui_runmatrix(matrix19, 0);
+    char matrix20[] = "23--1----032;"; tui_runmatrix(matrix20, 2);
+    char matrix21[] = "1----1----1-;"; tui_runmatrix(matrix21, 2);
+    char matrix22[] = "-1-1-1--1-1-;"; tui_runmatrix(matrix22, 1); // says 4
+    char matrix23[] = "23--1??--032;"; tui_runmatrix(matrix23, 2);
+    char matrix24[] = "--------0101;"; tui_runmatrix(matrix24, 2); // says 1
+    char matrix25[] = "10101-----01;"; tui_runmatrix(matrix25, 4); // says 3
+    char matrix27[] = "011--?--0011;"; tui_runmatrix(matrix27, 2);
+    char matrix28[] = "110--??--100;"; tui_runmatrix(matrix28, 2);
+    char matrix29[] = "11--1000001-;"; tui_runmatrix(matrix29, 2);
+    char matrix30[] = "21--1----012;"; tui_runmatrix(matrix30, 2);
+    char matrix31[] = "11--1000001-;"; tui_runmatrix(matrix31, 2);
     
 }
 
