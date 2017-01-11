@@ -298,7 +298,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                         }
                     }
                     else {
-                        n_final[i] = n_prelim[i] | anc_char[i];
+                        n_final[i] = n_prelim[i];// | anc_char[i];
                     }
                 }
             }
@@ -510,6 +510,7 @@ void mfl_fitch_count_inapplicables(mfl_nodedata_t*       n_nd,
                     *length += weights[i];
                 }
             }
+
         }
     }
     
