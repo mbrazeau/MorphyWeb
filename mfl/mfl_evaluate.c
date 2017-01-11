@@ -289,6 +289,9 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     if (anc_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
                         if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
                             n_final[i] = lft_char[i] | rt_char[i];
+                            if (n_final[i] & anc_char[i]) {
+                                n_final[i] = n_final[i] & anc_char[i];
+                            }
                         }
                         else {
                             n_final[i] = n_prelim[i] | anc_char[i];
