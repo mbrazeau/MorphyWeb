@@ -411,11 +411,27 @@ void tui_spr_test_environment(void)
     
 }
 
-void tui_test_treelength_calculation(mfl_handle_s* handle)
+// TODO: Move to utilities
+bool tui_check_values(int actual, int expected)
+{
+    dbg_printf("===================\n");
+    dbg_printf(" Expected:   %i\n", expected);
+    dbg_printf(" Calculated: %i\n", actual);
+    dbg_printf("===================\n");
+    
+    if (actual == expected) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+void tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
 {
     int i = 0;
     int numtax = 0;
     int numintrees = 0;
+    int testfails = 0;
     char *intree = NULL;
     mfl_tree_t* t = NULL;
     mfl_partition_set_t* dataparts = NULL;
@@ -425,28 +441,44 @@ void tui_test_treelength_calculation(mfl_handle_s* handle)
     numintrees = handle->n_input_newick_trees;
     
     // Set up the input data
+    dataparts = mfl_generate_search_data(handle);
     
     for (i = 0; i < numintrees; ++i) {
         // Create the tree
         intree = handle->input_newick_trees[i];
         t = mfl_convert_newick_to_mfl_tree_t(intree, numtax);
+        t->treet_parsimonylength = 0;
         
         // Prepare the data and tree
-        dataparts = mfl_generate_search_data(handle);
         mfl_setup_input_tree_with_node_data(t, dataparts);
         
         // Output the length
         mfl_fullpass_tree_optimisation(t, dataparts);
+        
         // Compare the length to the expected value (if given)
+        if (tui_check_values(t->treet_parsimonylength, expectedlengths[i])) {
+            ++testfails;
+        }
+        
         // Destroy the tree
+        //tui_check_broken_tree(t, false);
         mfl_free_tree(t);
         t = NULL;
     }
     
     // Destroy the input data
-    // Summarise the test
     
-    tui_check_broken_tree(t, false);
+    // Summarise the test
+    dbg_printf("\n");
+    dbg_printf("SUMMARY:\n");
+    dbg_printf("Basic tree length counting concluded\n");
+    if (testfails) {
+        dbg_printf("Test FAILED %i times.\n", testfails);
+    }
+    else {
+        dbg_printf("All tests PASSED\n");
+    }
+    dbg_printf("\n");
 }
 
 void tui_test_basic_character_optimisation(void)
@@ -786,34 +818,80 @@ void tui_test_consensus_trees(void)
 
 void tui_test_counts(void)
 {
-    char matrix1[] = "23--1??--032;"; tui_runmatrix(matrix1, 2);
-    char matrix2[] = "1---1111---1;"; tui_runmatrix(matrix2, 2); // or 1?
-    char matrix3[] = "1100----1100;"; tui_runmatrix(matrix3, 2); // blue tail red tail
-    char matrix4[] = "11-------100;"; tui_runmatrix(matrix4, 1);
-    char matrix5[] = "----1111---1;"; tui_runmatrix(matrix5, 1);
-    char matrix6[] = "01----010101;"; tui_runmatrix(matrix6, 4);
-    char matrix7[] = "01---1010101;"; tui_runmatrix(matrix7, 4);
-    char matrix8[] = "1??--??--100;"; tui_runmatrix(matrix8, 1); // Says 0
-    char matrix9[] = "21--3??--032;"; tui_runmatrix(matrix9, 2);
-    char matrix10[] = "11--1??--111;"; tui_runmatrix(matrix10, 2); // or 1?
-    char matrix11[] = "11--1000001-;"; tui_runmatrix(matrix11, 1); // or 3?
-    char matrix12[] = "01------0101;"; tui_runmatrix(matrix12, 3); // Says 3
-    char matrix14[] = "110--?---100;"; tui_runmatrix(matrix14, 2);
-    char matrix17[] = "11--1??--111;"; tui_runmatrix(matrix17, 2); // Says 1
-    char matrix18[] = "210--100--21;"; tui_runmatrix(matrix18, 3); // Carefull, there's an assert(final) fail on this one!
-    char matrix19[] = "????----1???;"; tui_runmatrix(matrix19, 0);
-    char matrix20[] = "23--1----032;"; tui_runmatrix(matrix20, 2);
-    char matrix21[] = "1----1----1-;"; tui_runmatrix(matrix21, 2);
-    char matrix22[] = "-1-1-1--1-1-;"; tui_runmatrix(matrix22, 4); // says 4
-    char matrix23[] = "23--1??--032;"; tui_runmatrix(matrix23, 2);
-    char matrix24[] = "--------0101;"; tui_runmatrix(matrix24, 1); // says 1
-    char matrix25[] = "10101-----01;"; tui_runmatrix(matrix25, 3); // says 3
-    char matrix27[] = "011--?--0011;"; tui_runmatrix(matrix27, 2);
-    char matrix28[] = "110--??--100;"; tui_runmatrix(matrix28, 2);
-    char matrix29[] = "11--1000001-;"; tui_runmatrix(matrix29, 1);
-    char matrix30[] = "21--1----012;"; tui_runmatrix(matrix30, 3);
-    char matrix31[] = "11----111111;"; tui_runmatrix(matrix31, 1);
+//    char matrix1[] = "23--1??--032;"; tui_runmatrix(matrix1, 2);
+//    char matrix2[] = "1---1111---1;"; tui_runmatrix(matrix2, 2); // or 1?
+//    char matrix3[] = "1100----1100;"; tui_runmatrix(matrix3, 2); // blue tail red tail
+//    char matrix4[] = "11-------100;"; tui_runmatrix(matrix4, 1);
+//    char matrix5[] = "----1111---1;"; tui_runmatrix(matrix5, 1);
+//    char matrix6[] = "01----010101;"; tui_runmatrix(matrix6, 4);
+//    char matrix7[] = "01---1010101;"; tui_runmatrix(matrix7, 4);
+//    char matrix8[] = "1??--??--100;"; tui_runmatrix(matrix8, 1); // Says 0
+//    char matrix9[] = "21--3??--032;"; tui_runmatrix(matrix9, 2);
+//    char matrix10[] = "11--1??--111;"; tui_runmatrix(matrix10, 2); // or 1?
+//    char matrix11[] = "11--1000001-;"; tui_runmatrix(matrix11, 1); // or 3?
+//    char matrix12[] = "01------0101;"; tui_runmatrix(matrix12, 3); // Says 3
+//    char matrix14[] = "110--?---100;"; tui_runmatrix(matrix14, 2);
+//    char matrix17[] = "11--1??--111;"; tui_runmatrix(matrix17, 2); // Says 1
+//    char matrix18[] = "210--100--21;"; tui_runmatrix(matrix18, 3); // Carefull, there's an assert(final) fail on this one!
+//    char matrix19[] = "????----1???;"; tui_runmatrix(matrix19, 0);
+//    char matrix20[] = "23--1----032;"; tui_runmatrix(matrix20, 2);
+//    char matrix21[] = "1----1----1-;"; tui_runmatrix(matrix21, 2);
+//    char matrix22[] = "-1-1-1--1-1-;"; tui_runmatrix(matrix22, 4); // says 4
+//    char matrix23[] = "23--1??--032;"; tui_runmatrix(matrix23, 2);
+//    char matrix24[] = "--------0101;"; tui_runmatrix(matrix24, 1); // says 1
+//    char matrix25[] = "10101-----01;"; tui_runmatrix(matrix25, 3); // says 3
+//    char matrix27[] = "011--?--0011;"; tui_runmatrix(matrix27, 2);
+//    char matrix28[] = "110--??--100;"; tui_runmatrix(matrix28, 2);
+//    char matrix29[] = "11--1000001-;"; tui_runmatrix(matrix29, 1);
+//    char matrix30[] = "21--1----012;"; tui_runmatrix(matrix30, 3);
+//    char matrix31[] = "11----111111;"; tui_runmatrix(matrix31, 1);
+//
+    int i = 0;
+    char* intree = (char*)"UNTITLED = [&R] ((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
+    char* matrices[] = {(char*)"23--1??--032;",
+                        (char*)"1---1111---1;",// or 1?
+                        (char*)"1100----1100;",//; tui_runmatrix(matrix3, 2); // blue tail red tail
+                        (char*)"11-------100;",//; tui_runmatrix(matrix4, 1);
+                        (char*)"----1111---1;",//; tui_runmatrix(matrix5, 1);
+                        (char*)"01----010101;",//; tui_runmatrix(matrix6, 4);
+                        (char*)"01---1010101;",//; tui_runmatrix(matrix7, 4);
+                        (char*)"1??--??--100;",//; tui_runmatrix(matrix8, 1); // Says 0
+                        (char*)"21--3??--032;",//; tui_runmatrix(matrix9, 2);
+                        (char*)"11--1??--111;",//; tui_runmatrix(matrix10, 2); // or 1?
+                        (char*)"11--1000001-;",//; tui_runmatrix(matrix11, 1); // or 3?
+                        (char*)"01------0101;",//; tui_runmatrix(matrix12, 3); // Says 3
+                        (char*)"110--?---100;",//; tui_runmatrix(matrix14, 2);
+                        (char*)"11--1??--111;",//; tui_runmatrix(matrix17, 2); // Says 1
+                        (char*)"210--100--21;",//; tui_runmatrix(matrix18, 3); // Carefull, there's an assert(final) fail on this one!
+                        (char*)"????----1???;",//; tui_runmatrix(matrix19, 0);
+                        (char*)"23--1----032;",//; tui_runmatrix(matrix20, 2);
+                        (char*)"1----1----1-;",//; tui_runmatrix(matrix21, 2);
+                        (char*)"-1-1-1--1-1-;",//; tui_runmatrix(matrix22, 4); // says 4
+                        (char*)"23--1??--032;",//; tui_runmatrix(matrix23, 2);
+                        (char*)"--------0101;",//; tui_runmatrix(matrix24, 1); // says 1
+                        (char*)"10101-----01;",//; tui_runmatrix(matrix25, 3); // says 3
+                        (char*)"011--?--0011;",//; tui_runmatrix(matrix27, 2);
+                        (char*)"110--??--100;",//; tui_runmatrix(matrix28, 2);
+                        (char*)"11--1000001-;",//; tui_runmatrix(matrix29, 1);
+                        (char*)"21--1----012;",//; tui_runmatrix(matrix30, 3);
+                        (char*)"11----111111;",//; tui_runmatrix(matrix31, 1);
+                        };
+    int num_matrices = 27;
+    int expected[] = {2, 2, 2, 1, 1, 4, 4, 1, 2, 2, 1, 3, 2, 2, 3, 0, 2, 2, 4, 2, 1, 3, 2, 2, 1, 3, 1};
     
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    handle->n_taxa = 12;
+    handle->n_chars = 1;
+    handle->n_input_newick_trees = 1;
+    handle->input_newick_trees = (char**)mfl_malloc(1, 0);
+    handle->input_newick_trees[0] = intree;
+    
+    for (i = 0; i < num_matrices; ++i) {
+        handle->input_data = matrices[i];
+        tui_test_treelength_calculation(handle, &expected[i]);
+        dbg_printf("Test matrix: %s\n", matrices[i]);
+    }
 }
 
 
