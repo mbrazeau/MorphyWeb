@@ -352,6 +352,7 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
         if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
             if (lft_char[i] & rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+                assert(n_final[i]);
             }
             else if (!(lft_char[i] & MORPHY_INAPPLICABLE_BITPOS) && !(rt_char[i] & MORPHY_INAPPLICABLE_BITPOS) ) {
 
@@ -360,21 +361,26 @@ void mfl_fitch_final_pass_inapplicables(mfl_nodedata_t*       n_nd,
                     n_final[i] = temp;
                     if ((temp = (lft_char[i] | rt_char[i]) & anc_char[i])) {
                         n_final[i] = n_final[i] | (temp & MORPHY_IS_APPLICABLE);
+                        assert(n_final[i]);
                     }
                 }
                 else {
-                    n_final[i] = n_final[i] & MORPHY_IS_APPLICABLE;
+                    n_final[i] = n_final[i];// & MORPHY_IS_APPLICABLE;
+                    assert(n_final[i]);
                 }
             }
             else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 n_final[i] = MORPHY_INAPPLICABLE_BITPOS;
+                assert(n_final[i]);
             }
             else {
                 if ((lft_char[i] | rt_char[i]) & anc_char[i] & MORPHY_IS_APPLICABLE) {
                     n_final[i] = ((lft_char[i] | rt_char[i]) & n_final[i]) & MORPHY_IS_APPLICABLE;
+                    assert(n_final[i]);
                 }
                 else {
                     n_final[i] = (n_prelim[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
+                    assert(n_final[i]);
                 }
             }
         }
