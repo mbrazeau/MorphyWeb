@@ -426,7 +426,7 @@ bool tui_check_values(int actual, int expected)
     }
 }
 
-void tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
+int tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
 {
     int i = 0;
     int numtax = 0;
@@ -471,7 +471,7 @@ void tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
     // Summarise the test
     dbg_printf("\n");
     dbg_printf("SUMMARY:\n");
-    dbg_printf("Basic tree length counting concluded\n");
+    dbg_printf("Test of all topologies for matrix %s concluded\n", handle->input_data);
     if (testfails) {
         dbg_printf("Test FAILED %i times.\n", testfails);
     }
@@ -479,6 +479,8 @@ void tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
         dbg_printf("All tests PASSED\n");
     }
     dbg_printf("\n");
+    
+    return testfails;
 }
 
 void tui_test_basic_character_optimisation(void)
@@ -878,6 +880,7 @@ void tui_test_counts(void)
                         };
     int num_matrices = 27;
     int expected[] = {2, 2, 2, 1, 1, 4, 4, 1, 2, 2, 1, 3, 2, 2, 3, 0, 2, 2, 4, 2, 1, 3, 2, 2, 1, 3, 1};
+    int testfails = 0;
     
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
     
@@ -889,9 +892,21 @@ void tui_test_counts(void)
     
     for (i = 0; i < num_matrices; ++i) {
         handle->input_data = matrices[i];
-        tui_test_treelength_calculation(handle, &expected[i]);
-        dbg_printf("Test matrix: %s\n", matrices[i]);
+        if (tui_test_treelength_calculation(handle, &expected[i])) {
+            ++testfails;
+        }
     }
+    
+    dbg_printf("\n");
+    dbg_printf("SUMMARY:\n");
+    dbg_printf("Test of all topologies for all matrices concluded\n");
+    if (testfails) {
+        dbg_printf("Test FAILED %i times.\n", testfails);
+    }
+    else {
+        dbg_printf("All tests PASSED\n");
+    }
+    dbg_printf("\n");
 }
 
 
