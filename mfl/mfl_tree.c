@@ -407,6 +407,15 @@ void mfl_destroy_nodal_data(mfl_node_t* n)
             free(ndata->nd_subtree_prelim_set);
             ndata->nd_subtree_prelim_set = NULL;
         }
+        if (ndata->nd_region_activestates) {
+            free(ndata->nd_region_activestates);
+            ndata->nd_region_activestates = NULL;
+        }
+        if (ndata->nd_subtree_activestates) {
+            free(ndata->nd_subtree_activestates);
+            ndata->nd_subtree_activestates = NULL;
+        }
+        
         
         if (n->nodet_next) {
             p = n->nodet_next;
@@ -877,6 +886,39 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
     return newtree;
 }
 
+void mfl_free_dummynode_data(mfl_node_t* dummynode)
+{
+    int i = 0;
+    int numparts = 0;
+    
+    if (dummynode->nodet_charstates) {
+        numparts = dummynode->nodet_num_dat_partitions;
+        if (i) {
+            for (i = 0; i < numparts; ++i) {
+                if (dummynode->nodet_charstates[i]->nd_final_set) {
+                    free(dummynode->nodet_charstates[i]->nd_final_set);
+                    dummynode->nodet_charstates[i]->nd_final_set = NULL;
+                }
+                if (dummynode->nodet_charstates[i]->nd_subtree_activestates) {
+                    free(dummynode->nodet_charstates[i]->nd_subtree_activestates);
+                    dummynode->nodet_charstates[i]->nd_subtree_activestates = NULL;
+                }
+                if (dummynode->nodet_charstates[i]->nd_region_activestates) {
+                    free(dummynode->nodet_charstates[i]->nd_region_activestates);
+                    dummynode->nodet_charstates[i]->nd_region_activestates = NULL;
+                }
+                if (dummynode->nodet_charstates[i]) {
+                    free(dummynode->nodet_charstates[i]);
+                    dummynode->nodet_charstates[i] = NULL;
+                }
+            }
+        }
+    }
+    
+    free(dummynode->nodet_charstates);
+    dummynode->nodet_charstates = NULL;
+}
+
 
 void mfl_free_tree(mfl_tree_t *tree_to_free)
 {
@@ -884,6 +926,7 @@ void mfl_free_tree(mfl_tree_t *tree_to_free)
     mfl_free_treenodes(tree_to_free->treet_treenodes);
     mfl_free_nodearray(tree_to_free->treet_treenodes);
     mfl_destroy_nodestack(tree_to_free->treet_nodestack);
+    mfl_free_dummynode_data(&tree_to_free->treet_dummynode);
     /*
      * Any other allocated memory in a tree should be freed here
      */

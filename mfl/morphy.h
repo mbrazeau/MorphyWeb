@@ -570,6 +570,7 @@ mfl_node_t*     mfl_find_rightmost_tip_in_tree(mfl_node_t* n);
 void            mfl_unroot_tree(mfl_tree_t *tree);
 void            mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes);
 mfl_tree_t*     mfl_alloctree_with_nodes(int num_taxa);
+void            mfl_free_dummynode_data(mfl_node_t* dummynode);
 void            mfl_free_tree(mfl_tree_t *tree_to_free);
 void            mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_start); //TG: WARNING: this creates a polytomy on the target node.
 void            mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node);

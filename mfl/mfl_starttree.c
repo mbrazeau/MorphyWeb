@@ -530,7 +530,7 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
     int i = 0;
     
     mfl_join_node_edges(&t->treet_dummynode, t->treet_root);
-    
+    t->treet_dummynode.nodet_num_dat_partitions = dataparts->ptset_n_parts;
     t->treet_dummynode.nodet_charstates = (mfl_nodedata_t**)mfl_malloc(dataparts->ptset_n_parts * sizeof(mfl_nodedata_t*), 0);
     for (i = 0; i < dataparts->ptset_n_parts; ++i) {
         t->treet_dummynode.nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
