@@ -281,6 +281,7 @@ int mfl_compare_tries_by_length(const void* t1, const void* t2)
  @param sarecord (mfl_stepwise_addition_t*) the stepwise addition record
  @param steps (int) the number of steps in the stepwise addition to roll back by
  */
+
 void mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps)
 {
     int i = 0;
@@ -539,6 +540,7 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
     }
 }
 
+
 void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
     int i = 0;
@@ -571,6 +573,7 @@ void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dat
     
     mfl_apply_characters_to_tips(t, dataparts);
 }
+
 
 mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts)
 {
@@ -664,6 +667,7 @@ mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_h
 
     return t;
 }
+
 
 void mfl_add_tips_stepwise(mfl_tree_t* t, mfl_partition_set_t* dataparts, mfl_searchrec_t* searchrec)
 {
