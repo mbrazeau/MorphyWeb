@@ -1800,5 +1800,22 @@ mfl_partition_set_t* mfl_generate_search_data(const mfl_handle_s* handle)
 
 void mfl_destroy_partition_set(mfl_partition_set_t* ptset)
 {
+    int i = 0;
+    int part_i = 0;
+    int numparts = 0;
+
+    numparts = ptset->ptset_n_parts;
     
+    // Dellocate the dataparts
+    for (i = 0; i < numparts; ++i) {
+        free(ptset->ptset_partitions[i]->part_char_indices);
+        free(ptset->ptset_partitions[i]->part_int_weights);
+        free(ptset->ptset_partitions[i]->part_matrix);
+        free(ptset->ptset_partitions[i]);
+        ptset->ptset_partitions[i] = NULL;
+    }
+    
+    free(ptset->ptset_partitions);
+    ptset->ptset_partitions = NULL;
+    free(ptset);
 }
