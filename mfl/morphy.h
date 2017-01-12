@@ -598,39 +598,41 @@ mfl_tree_t*     mfl_consensus_tree(mfl_bipartition_table bipartition_table, int 
 
 /* In mfl_starttree.c */
 
-void mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
-void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset);
-void mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_handle_s* handle, mfl_partition_set_t* parts);
-void mfl_randomise_array(int* array, int nelems);
-int* mfl_create_default_taxon_array(int num_taxa);
-void mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a);
-void mfl_push_tip_to_addseq_array(mfl_node_t* tip, mfl_stepwise_addition_t* sarec);
-void mfl_set_random_addition_sequence(mfl_tree_t* t, mfl_stepwise_addition_t* sarec);
-void mfl_set_addseq_as_is(mfl_tree_t* t, mfl_stepwise_addition_t* sarec);
-void mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* chardata /*some list of outgroup taxa*/);
-int mfl_compare_holdthreads(mfl_nodearray_t thread1, mfl_nodearray_t thread2, int n);
+void            mfl_copy_row_from_partition_into_nodedata(mfl_charstate* target, mfl_datapartition_t* datapart, int row);
+void            mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition_set_t* partset);
+void            mfl_apply_characters_to_tips(mfl_tree_t* t, mfl_partition_set_t* parts);
+void            mfl_randomise_array(int* array, int nelems);
+int*            mfl_create_default_taxon_array(int num_taxa);
+void            mfl_calculate_advancement_index(mfl_node_t* t, const mfl_node_t* a);
+void            mfl_push_tip_to_addseq_array(mfl_node_t* tip, mfl_stepwise_addition_t* sarec);
+void            mfl_set_random_addition_sequence(mfl_tree_t* t, mfl_stepwise_addition_t* sarec);
+void            mfl_set_addseq_as_is(mfl_tree_t* t, mfl_stepwise_addition_t* sarec);
+void            mfl_order_array_by_advancement_index(int* taxa, mfl_datapartition_t* chardata /*some list of outgroup taxa*/);
+int             mfl_compare_holdthreads(mfl_nodearray_t thread1, mfl_nodearray_t thread2, int n);
+void            mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec);
 mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
-int mfl_compare_tries_by_length(const void* t1, const void* t2);
-void mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps);
-void mfl_restore_addition_to_last_step(mfl_stepwise_addition_t* sarecord, int head);
-void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mfl_stepwise_addition_t* sarec);
-bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, int length, mfl_searchrec_t* searchrec);
-void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec);
-void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_t* searchrec);
-mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec);
-void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool bottom);
-void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, int num_parts);
-mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts);
-mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts);
-void mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t, mfl_partition_set_t* dataparts);
-void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts);
-bool mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa);
-mfl_tree_t* mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+int             mfl_compare_tries_by_length(const void* t1, const void* t2);
+void            mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps);
+void            mfl_restore_addition_to_last_step(mfl_stepwise_addition_t* sarecord, int head);
+void            mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mfl_stepwise_addition_t* sarec);
+bool            mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, int length, mfl_searchrec_t* searchrec);
+void            mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec);
+void            mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_t* searchrec);
+mfl_node_t*     mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec);
+void            mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool bottom);
+void            mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, int num_parts);
+void            mfl_setup_ringnode_data(mfl_node_t* ringentry, mfl_partition_set_t* dataparts);
+mfl_node_t*     mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts);
+void            mfl_setup_internal_nodedata_in_assembled_tree(mfl_node_t* n, mfl_partition_set_t* dataparts);
+void            mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts);
+void            mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dataparts);
+mfl_node_t*     mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts);
+void            mfl_append_tip_to_ringnode(mfl_node_t* tip, mfl_tree_t* t, mfl_partition_set_t* dataparts);
+void            mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t* sarec, mfl_partition_set_t* dataparts);
+bool            mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_outgroup_taxa);
+mfl_tree_t*     mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+void            mfl_add_tips_stepwise(mfl_tree_t* t, mfl_partition_set_t* dataparts, mfl_searchrec_t* searchrec);
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
-void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec);
-void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dataparts);
-void mfl_setup_internal_nodedata_in_assembled_tree(mfl_node_t* n, mfl_partition_set_t* dataparts);
-void mfl_setup_ringnode_data(mfl_node_t* ringentry, mfl_partition_set_t* dataparts);
 
 
 /* In mfl_drawtree.c*/
