@@ -173,6 +173,12 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
 
         if ((temp = (left[i] & right[i])) ) {
             n_prelim[i] = temp;
+            
+//            if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
+//                if ((left[i] | right[i]) & MORPHY_IS_APPLICABLE) {
+//                    n_prelim[i] |= (left[i] | right[i]);
+//                }
+//            }
         }
         else {
             n_prelim[i] = left[i] | right[i];
