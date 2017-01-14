@@ -438,6 +438,16 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             if (n_final[i] != (n_final[i] & ~(n_final[i] - 1))) {
                 if (lreg_active[i] & rreg_active[i]) {
                     *length += weights[i];
+                    
+                    actives[i] |= n_final[i];
+                }
+                else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS){
+                    if (n_final[i] == (n_final[i] & actives[i])) {
+                        *length += weights[i];
+                    }
+                    else {
+                        actives[i] |= n_final[i];
+                    }
                 }
             }
             else {
@@ -449,15 +459,18 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                         *length += weights[i];
                     }
                     else {
-                        actives[i] |= temp & MORPHY_IS_APPLICABLE;
+                        temp = temp & MORPHY_IS_APPLICABLE;
+                        actives[i] |= (temp & ~(temp - 1));
                     }
                 }
                 
-                if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                    if (anc_char[i] & MORPHY_IS_APPLICABLE) {
-                        actives[i] |= anc_char[i];
-                    }
-                }
+                
+            }
+            
+        }
+        if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
+            if (anc_char[i] & MORPHY_IS_APPLICABLE) {
+                actives[i] |= anc_char[i];
             }
         }
     }
