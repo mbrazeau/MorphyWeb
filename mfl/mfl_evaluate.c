@@ -353,6 +353,7 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
+    mfl_charstate* tempactive = datapart->part_tempactives;
 //    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
 //    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
@@ -395,11 +396,24 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 
                 if ((anc_char[i] & n_final[i]) == anc_char[i]) {
                     n_final[i] = anc_char[i] & n_final[i];
+                    
+                    if (!(lft_char[i] & rt_char[i])) {
+                        temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
+                        if (!(temp & MORPHY_INAPPLICABLE_BITPOS)) {
+                            if (temp & actives[i]) {
+                                *length += weights[i];
+                            }
+                            else {
+                                actives[i] |= temp;
+                            }
+                        }
+                    }
                 }
                 else {
                     if (lft_char[i] & rt_char[i]) {
                         n_final[i] |= ( anc_char[i] & (lft_char[i] | rt_char[i]));
-                    } else {
+                    }
+                    else {
                         
                         if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
                             
@@ -416,6 +430,13 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                             if ((anc_char[i] & n_final[i]) == anc_char[i]) {
                                 n_final[i] = anc_char[i] & n_final[i];
                             }
+                            
+                            if (n_final[i] == (n_final[i] & actives[i])) {
+                                *length += weights[i];
+                            }
+                            else {
+                                actives[i] |= n_final[i];
+                            }
                         }
                         
                     }
@@ -423,25 +444,10 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
             else {
                 if (lft_char[i] & rt_char[i]) {
-                    n_final[i] = (lft_char[i] & rt_char[i]);                }
+                    n_final[i] = (lft_char[i] & rt_char[i]);
+                }
                 else {
-                    n_final[i] = (lft_char[i] | rt_char[i]);
-                }
-            }
-        }
-        assert(n_final[i]);
-        
-        // Now the horrible task of counting.
-        
-        if (!(lft_prelim[i] & rt_prelim[i])) {
-            
-            if (n_final[i] != (n_final[i] & ~(n_final[i] - 1))) {
-                if (lreg_active[i] & rreg_active[i]) {
-                    *length += weights[i];
-                    
-                    actives[i] |= n_final[i];
-                }
-                else if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS){
+                    //n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                     if (n_final[i] == (n_final[i] & actives[i])) {
                         *length += weights[i];
                     }
@@ -450,29 +456,28 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                 }
             }
-            else {
-                temp = n_final[i] ^ (lft_char[i] | rt_char[i]);
-                
-                if (temp & MORPHY_IS_APPLICABLE) {
-                    
-                    if (temp & actives[i]) {
+        }
+        else {
+            
+            if (!(lft_char[i] & rt_char[i])) {
+                if ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) {
+                    if ((lft_char[i] | rt_char[i]) & actives[i]) {
                         *length += weights[i];
                     }
                     else {
-                        temp = temp & MORPHY_IS_APPLICABLE;
-                        actives[i] |= (temp & ~(temp - 1));
+                        temp = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE);
+                        temp = (temp & ~(temp-1));
+                        actives[i] |= temp;
                     }
                 }
-                
-                
             }
             
-        }
-        if (n_final[i] == MORPHY_INAPPLICABLE_BITPOS) {
             if (anc_char[i] & MORPHY_IS_APPLICABLE) {
                 actives[i] |= anc_char[i];
             }
         }
+        assert(n_final[i]);
+        
     }
 
 }
