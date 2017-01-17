@@ -1,0 +1,99 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\begin{document}
+
+\noindent{\Large \bf Inapplicable algorithm description}
+
+
+\section{First downpass}
+
+\begin{enumerate}
+    \item Enter the tree on a tip and get on its node.
+    \item Compare the character states between the left and the right descendant of the node.
+    \begin{enumerate}
+        \item \label{1stDp:case1:AND} If there is a \textbf{union} between both descendants set the node state as this union else go to \ref{1stDp:case1:OR}.
+        \begin{enumerate}
+            \item If there is an inapplicable token in the ancestral state \textit{and} that both descendants have also an inapplicable token, set the node state as the \textbf{intersection} of both descendants then go to \ref{1stDp:exitLoop}.
+        \end{enumerate}
+        \item \label{1stDp:case1:OR} Else set the node state as the \textbf{intersection} between both descendants.
+        \begin{enumerate}
+            \item If any of the descendants have an inapplicable token, add the inapplicable token to the node then go to \ref{1stDp:exitLoop}.
+        \end{enumerate}
+    \end{enumerate}
+    \item @@@ Activate so subtree states? % subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+    \item \label{1stDp:exitLoop} Exit the first downpass.
+\end{enumerate}
+
+\section{First uppass}
+
+\begin{enumerate}
+    \item Enter the tree on the root.
+    \item @@@ Do some activation business.
+    \item If the node has both an inapplicable token go to \ref{1stUp:nodeAppli} else go to \ref{1stUp:exitLoop}.
+    \begin{enumerate}
+        \item \label{1stUp:nodeAppli} If the node has an applicable token, go to \ref{1stUp:nodeAppli2} else go to \ref{1stUp:nodeInapp}.
+        \begin{enumerate}
+            \item \label{1stUp:nodeAppli2} If the ancestor has only the inapplicable token, set the node state to be only the inapplicable token; then go to \ref{1stUp:exitLoop}. Else go to \ref{1stUp:nodeAppli3}.
+            \item \label{1stUp:nodeAppli3} Remove the inapplicable token from the node; then go to \ref{1stUp:exitLoop}.
+        \end{enumerate}
+        \item \label{1stUp:nodeInapp} The node is an inapplicable token; go to \ref{1stUp:nodeInapp1}.
+        \begin{enumerate}
+            \item \label{1stUp:nodeInapp1} If the ancestor has only the inapplicable token, set the node state to be only the inapplicable token; then go to \ref{1stUp:exitLoop}. Else go to \ref{1stUp:nodeInapp2}.
+            \item \label{1stUp:nodeInapp2} If there is an \textbf{intersection} between the node's descendants states that is not inapplicable, set the node state to that \textbf{intersection}; then go to \ref{1stUp:exitLoop}. Else go to \ref{1stUp:nodeInapp3}.
+            \item \label{1stUp:nodeInapp3} Set the node state to the inapplicable token only; then go to \ref{1stUp:exitLoop}.
+        \end{enumerate}
+    \end{enumerate}
+    \item \label{1stUp:exitLoop} Exit the first uppass.
+\end{enumerate}
+
+\section{Second downpass}
+
+\begin{enumerate}
+    \item Enter the tree on a tip and get on its node.
+    \item If the node contains at least one applicable state go to \ref{2ndDp:unionDescen} else, go to \ref{2ndDp:exitLoop}.
+    \begin{enumerate}
+        \item \label{2ndDp:unionDescen} If the \textbf{union} between both descendants have an applicable character, set the node state to this union without any inapplicable characters; then go to \ref{2ndDp:exitLoop}. Else go to \ref{2ndDp:interDescen}.
+        \item \label{2ndDp:interDescen} Set the node state to be the \textbf{intersection} between the descendants and remove any eventual inapplicable tokens; then go to \ref{2ndDp:exitLoop}.
+    \end{enumerate}
+    \item @@@ Some activation business
+    \item \label{2ndDp:exitLoop} Exit the second downpass.
+\end{enumerate}
+
+\section{Second uppass}
+
+
+  
+\begin{enumerate}
+    \item If the node has no inapplicable token go to \ref{2ndUp:applicable} else go to \ref{2ndUp:inapplicableUnion}.
+    \begin{enumerate}
+        \item \label{2ndUp:applicable} If ancestral state also doesn't have an inapplicable token go to \ref{2ndUp:appli:case1}, else go to \ref{2ndUp:appli:case2}.
+        \begin{enumerate}
+            \item \label{2ndUp:appli:case1} If the \textbf{union} between the node and the ancestral state is equal to the ancestral state then set the node state to this union; then go to \ref{2ndUp:exitLoop}. Else go to \ref{2ndUp:exitLoop}. %and do some counting
+            
+            \item \label{2ndUp:appli:case2} If there is a \textbf{union} between the descendants then set the node to be the \textbf{intersection} between the \textbf{intersection} of the descendants and the \textbf{union} of the ancestral state (node = node | ((left | right) \& ancestral)); then go to \ref{2ndUp:exitLoop}. Else go to \ref{2ndUp:appli:case3}.
+            
+            \item \label{2ndUp:appli:case3} If there is an \textbf{intersection} between the descendants that has an inapplicable token then go to \ref{2ndUp:appli:case311}. Else go to \ref{2ndUp:appli:case32}.
+            \begin{enumerate}
+    
+                    \item \label{2ndUp:appli:case311} If this intersection \textbf{unions} with the ancestral state then set the node state to be equal to the \textbf{intersection} between the descendants \textbf{unioned} with the ancestral state and \textbf{intersecting} with the ancestral state (((left | right) \& ancestral) | ancestral); then go to \ref{2ndUp:exitLoop}. Else go to \ref{2ndUp:appli:case312}.
+                    
+                    \item \label{2ndUp:appli:case312} Set the node state to be the \textbf{intersection} between the descendants \textbf{intersecting} with the ancestral character (left | right | ancestral) without any eventual inapplicable tokens; then go to \ref{2ndUp:exitLoop}. Else go to \ref{2ndUp:appli:case313}.
+                    
+                    \item \label{2ndUp:appli:case313} Set the node state to be the \textbf{intersection} between the node state and the ancestral state; then go to \ref{2ndUp:exitLoop}.
+
+                    \item \label{2ndUp:appli:case32} If the \textbf{union} between node state and ancestral state equals the ancestral state set the node state to be this union; then go to \ref{2ndUp:exitLoop}. % and do some counting.
+
+            \end{enumerate}
+        \end{enumerate}
+        \item \label{2ndUp:inapplicableUnion} If there is a \textbf{union} between the descendants, set the node state to be equal to this union; then go to \ref{2ndUp:exitLoop}. Else go to \ref{2ndUp:inapplicableNoUnion}. %and to some counting.
+    \end{enumerate}
+    \item \label{2ndUp:inapplicableNoUnion} do some counting
+    \item \label{2ndUp:exitLoop} Exit second uppass.
+\end{enumerate}
+
+
+
+
+\end{document}
