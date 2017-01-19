@@ -47,9 +47,9 @@ convert.char <- function(character) {
         options(warn = -1)
         all_states <- as.numeric(character)
         options(warn = 0)
-        all_states <- unique(all_states[-c(which(is.na(all_states)), which(all_states == -1))])
+        all_states <- unique(all_states[-c(which(is.na(all_states))) #, which(all_states == -1))]
 
-        ## Convert inapplicables
+        ## Convert inapplicable
         character <- lapply(character, convert.inappli)
         
         ## Convert missing
@@ -303,7 +303,7 @@ warning("DEBUG")
 set.seed(1)
 tree <- rtree(5)
 character <- c(1,2,2,1,1)
-character <- "1??-?"
+character <- "123-?"
 
 plot.inapplicable.algorithm(tree, character)
 
