@@ -1,14 +1,3 @@
-
-## DEBUG
-warning("DEBUG")
-set.seed(1)
-tree <- rtree(5)
-character <- c(1,2,2,1,1) ## Inapplicable token will be converted to -1
-plot(tree) ; nodelabels(); tiplabels(character, adj = -2)
-
-states_matrix <- make.states.matrix(tree, character)
-states_matrix <- first.downpass(states_matrix, tree)
-
 #' @title Convert character
 #'
 #' @description Convert a character if it is not numeric (transforming - into -1 and ? into all characters (but - ))
@@ -55,8 +44,10 @@ convert.char <- function(character) {
         character <- as.list(character)
 
         ## Get all states
+        options(warn = -1)
         all_states <- as.numeric(character)
-        all_states <- all_states[-c(which(is.na(all_states)), which(all_states == -1))]
+        options(warn = 0)
+        all_states <- unique(all_states[-c(which(is.na(all_states)), which(all_states == -1))])
 
         ## Convert inapplicables
         character <- lapply(character, convert.inappli)
@@ -124,11 +115,13 @@ desc.anc <- function(node, tree) {
 
 ## Get an union (&)
 get.union <- function(a, b) {
-    options(warn = -1)
+options(warn = -1)
     if(!any(a == b)) {
+options(warn = 0)
         ## No union
         return(FALSE)
     } else {
+options(warn = 0)
         ## Union
         if(length(a) >= length(b)) {
             return(a[which(a == b)])
@@ -136,7 +129,6 @@ get.union <- function(a, b) {
             return(b[which(b == a)])
         }
     }
-    options(warn = 0)
 }
 
 ## Get an intersection inclusive (|)
@@ -279,24 +271,14 @@ second.uppass <- function(states_matrix, tree) {
 inapplicable.algorithm <- function(tree, character, n_passes = 4) {
 
     ## Setting up the output state matrix
-    states_matrix <- matrix(nrow = Ntip(tree)+Nnode(tree), ncol = 5)
-    ## Adding the column names
-    colnames(states_matrix) <- c("Char", "1Dp", "1Up", "2Dp", "2Up")
-    ## Adding the row names
-    if(!is.null(tree$node.label)) {
-        nodes_list <- tree$node.label
-        rownames(states_matrix) <- c(tree$tip.label, nodes_list)
-    } else {
-        nodes_list <- (Ntip(tree)+1):(Ntip(tree)+Nnode(tree))
-        rownames(states_matrix) <- c(tree$tip.label, nodes_list)
-    }
+    states_matrix <- make.states.matrix(tree, character)
 
     ## Setting the list of passes
     passes <- list(first.downpass, first.uppass, second.downpass, second.uppass)
 
     ## Applying the passes for each node
     for (pass in 1:n_passes) {
-        sates_matrix <- passes[[pass]](states_matrix, tree)
+        states_matrix <- passes[[pass]](states_matrix, tree)
     }
 
     return(states_matrix)
@@ -305,25 +287,103 @@ inapplicable.algorithm <- function(tree, character, n_passes = 4) {
 
 #' @title Plot inapplicable algorithm
 #'
-#' @description Plots the inapplicable algorithm
+#' @description Plots the results of the inapplicable algorithm
 #'
 #' @param tree \code{phylo}, a tree
 #' @param character \code{character}, a vector of character states
-#' @param n_passes \code{numeric}, the number of passes in the tree; from \code{1} to \code{4} (default)
+#' @param show.passes whether to display the ancestral reconstruction for each for passes (\code{TRUE}), any specific pass (\code{1}, \code{2}, \code{3} or \code{4}) or none (\code{FALSE}; default).
+#' @param show.changes whether to display the character changes on the tree (\code{TRUE}) or not (\code{FALSE}; default).
+#' @param use.pie if \code{show.passes} is not \code{FALSE}, whether to display the node states as a pie or not.
+#' @param ... any optional arguments to be passed to \code{\link[ape]{plot.phylo}}
 #' 
 #' @author Thomas Guillerme
 
- 
-## Add which pass to plot (+ how to plot them)
+## DEBUG
+warning("DEBUG")
+set.seed(1)
+tree <- rtree(5)
+character <- c(1,2,2,1,1)
+character <- "1??-?"
 
-plot.inapplicable.algorithm <- function(tree, character, n_passes = 4, ...) {
-        
-    ## Get the states matrix
+plot.inapplicable.algorithm(tree, character)
+
+plot.inapplicable.algorithm <- function(tree, character, show.passes = FALSE, show.changes = FALSE, use.pie = FALSE, ...) { ## Add option of converting states into colors?
+    
+    plot.convert.state <- function(character, missing = FALSE) {
+
+        plot.convert.inappli <- function(X) {
+            return(ifelse(X == -1, "-", X))
+        }
+
+        plot.convert.missing <- function(X, all_states) {
+            if(length(X) == length(all_states) && all(X == all_states)) {
+                return("?")
+            } else {
+                return(X)
+            }
+        }
+
+        if(missing) {
+            ## Getting all states
+            all_states <- unique(unlist(character))[-which(unique(unlist(character)) == -1)]
+            ## Convert the missing states
+            character <- lapply(character, plot.convert.missing, all_states)
+        }
+
+        ## Convert the inapplicables
+        character <- lapply(character, plot.convert.inappli)
+
+        ## Convert into character
+        return(unlist(lapply(character, function(X) paste(as.character(X), collapse = ""))))
+    }
+
+    ## SANITIZING
+    ## show.passes
+    if(class(show.passes) != "logical") {
+        if(class(show.passes) != "numeric") {
+            stop("show.passes argument should be logical or any integer(s) between 1 and 4.")
+        } else {
+            if(any(is.na(match(show.passes, c(1,2,3,4))))) {
+                stop("show.passes argument should be logical or any integer(s) between 1 and 4.")
+            }
+        }
+    } else {
+        if(show.passes) {
+            show.passes <- c(1,2,3,4)
+        }
+    }
+    ## show.changes
+    if(class(show.changes) != "logical") {
+        stop("show.changes argument must be logical.")
+    }
+    ## use.pie
+    if(class(use.pie) != "logical") {
+        stop("use.pie argument must be logical.")
+    }
+
+    ## Run the inapplicable algorithm
+    warning("DEBUG, 1st dp only") ; n_passes = 1
     states_matrix <- inapplicable.algorithm(tree, character, n_passes)
 
-    ## Plot the tree
-    plot(tree, ...)
+    ## Remove Tree's branch length
+    tree$edge.length <- NULL
 
+    ## Plotting the tree
+    plot(tree, show.tip.label = FALSE) ; warning("DEBUG, plot tree option")
+
+    ## Add the tip states
+    if(class(character) == "character" && length(character) == 1) {
+        tiplabels(as.character(strsplit(as.character(character), "")[[1]]))
+    } else {
+        tips_labels <- plot.convert.state(states_matrix[[1]][1:Ntip(tree)], missing = TRUE)
+        tiplabels(tips_labels)
+    }
+
+    ## Add the node labels
+    node_labels <- plot.convert.state(states_matrix[[n_passes + 1]][-c(1:Ntip(tree))])
+    nodelabels(node_labels)
+
+    ## Add the changes
 
 
 
