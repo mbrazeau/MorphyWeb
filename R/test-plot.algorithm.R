@@ -61,7 +61,7 @@ test_that("desc.anc works", {
 
 test_that("logicals work", {
     ## Union
-    expect_false(get.common(1,2))
+    expect_null(get.common(1,2))
     expect_equal(get.common(1,1), 1)
     expect_equal(get.common(c(1),c(1,2,3)), 1)
 
@@ -70,6 +70,6 @@ test_that("logicals work", {
     expect_equal(get.union.incl(c(1),c(1,2,3)), c(1,2,3))
 
     ## Intersection.excl
-    expect_false(get.union.excl(1,1))
+    expect_null(get.union.excl(1,1))
     expect_equal(get.union.excl(c(1),c(1,2,3)), c(2,3))
 })
