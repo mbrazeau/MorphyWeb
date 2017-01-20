@@ -9,22 +9,40 @@
 
 \section{First downpass}
 
+% \begin{enumerate}
+%     \item Enter the tree on a tip and get on its node.
+%     \item Compare the character states between the left and the right descendant of the node.
+%     \begin{enumerate}
+%         \item \label{1stDp:case1:AND} If there is a \textbf{union} between both descendants set the node state as this union else go to \ref{1stDp:case1:OR}.
+%         \begin{enumerate}
+%             \item If there is an inapplicable token in the ancestral state \textit{and} that both descendants have also an inapplicable token, set the node state as the \textbf{intersection} of both descendants then go to \ref{1stDp:exitLoop}.
+%         \end{enumerate}
+%         \item \label{1stDp:case1:OR} Else set the node state as the \textbf{intersection} between both descendants.
+%         \begin{enumerate}
+%             \item If any of the descendants have an inapplicable token, add the inapplicable token to the node then go to \ref{1stDp:exitLoop}.
+%         \end{enumerate}
+%     \end{enumerate}
+%     \item @@@ Activate so subtree states? % subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+%     \item \label{1stDp:exitLoop} Exit the first downpass.
+% \end{enumerate}
+
+
+
+%         ## Get the states in common between the descendants
+%             ## If there is any states in common, set the node to be that one
+%             ## If state in common is actually the inapplicable token, but that both descendants have an applicable, set it to be the union between the applicable states
+%             ## Else set it to be the union of the descendants
+%             ## If the node has inapplicable data but that both descendants have also applicable states, remove the inapplicable state from the node
+
 \begin{enumerate}
-    \item Enter the tree on a tip and get on its node.
-    \item Compare the character states between the left and the right descendant of the node.
-    \begin{enumerate}
-        \item \label{1stDp:case1:AND} If there is a \textbf{union} between both descendants set the node state as this union else go to \ref{1stDp:case1:OR}.
-        \begin{enumerate}
-            \item If there is an inapplicable token in the ancestral state \textit{and} that both descendants have also an inapplicable token, set the node state as the \textbf{intersection} of both descendants then go to \ref{1stDp:exitLoop}.
-        \end{enumerate}
-        \item \label{1stDp:case1:OR} Else set the node state as the \textbf{intersection} between both descendants.
-        \begin{enumerate}
-            \item If any of the descendants have an inapplicable token, add the inapplicable token to the node then go to \ref{1stDp:exitLoop}.
-        \end{enumerate}
-    \end{enumerate}
-    \item @@@ Activate so subtree states? % subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
-    \item \label{1stDp:exitLoop} Exit the first downpass.
+    \item Enter on any of the tips of the tree and focus on its closest ancestor (hereafter referred as the ``focal node'') then go to \ref{1stDp:ANDdescen}.
+    \item \label{1stDp:ANDdescen} \textbf{If} there is a state in common between both descendants of the focal node, \textbf{set} the focal node state to the states in common \textbf{then} go to \ref{1stDp:ANDinap}. \textbf{Else} go to \ref{1stDp:ORdescen}.
+    \item \label{1stDp:ANDinap} \textbf{If} the state of the focal node is now only the inapplicable token but that both descendants also have an applicable token, \textbf{set} the focal node state to be the union of both descendants states without the inapplicable token; \textbf{then} go to \ref{1stDp:exitLoop}.
+    \item \label{1stDp:ORdescen} \textbf{If} there is a no state in common between both descendants, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:ORinap}.
+    \item \label{1stDp:ORinap} \textbf{If} the focal node state has an inapplicable token but that both descendants have also applicable states, \textbf{remove} the inapplicable token from the the focal node state; \textbf{then} go to \ref{1stDp:exitLoop}.
+    \item \label{1stDp:exitLoop} Go to the closest ancestor from the focal node and repeat from \ref{1stDp:ANDdescen} until all the nodes in the tree have been visited.
 \end{enumerate}
+
 
 \section{First uppass}
 

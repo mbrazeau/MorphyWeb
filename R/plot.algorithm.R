@@ -47,7 +47,7 @@ convert.char <- function(character) {
         options(warn = -1)
         all_states <- as.numeric(character)
         options(warn = 0)
-        all_states <- unique(all_states[-c(which(is.na(all_states))) #, which(all_states == -1))]
+        all_states <- unique(all_states[-c(which(is.na(all_states)))]) #, which(all_states == -1))]
 
         ## Convert inapplicable
         character <- lapply(character, convert.inappli)
@@ -114,7 +114,7 @@ desc.anc <- function(node, tree) {
 }
 
 ## Get an union (&)
-get.union <- function(a, b) {
+get.common <- function(a, b) {
 options(warn = -1)
     if(!any(a == b)) {
 options(warn = 0)
@@ -132,7 +132,7 @@ options(warn = 0)
 }
 
 ## Get an intersection inclusive (|)
-get.intersection.incl <- function(a, b) {
+get.union.incl <- function(a, b) {
     out <- unique(c(a,b))
     if(length(out) == 0) {
         return(FALSE)
@@ -142,9 +142,9 @@ get.intersection.incl <- function(a, b) {
 }
 
 ## Get an intersection exclusive (^)
-get.intersection.excl <- function(a, b) {
-    out <- get.intersection.incl(a,b)
-    out <- out[-which(out == get.union(a,b))]
+get.union.excl <- function(a, b) {
+    out <- get.union.incl(a,b)
+    out <- out[-which(out == get.common(a,b))]
     if(length(out) == 0) {
         return(FALSE)
     } else {
@@ -175,27 +175,24 @@ first.downpass <- function(states_matrix, tree) {
         right <- states_matrix$Dp1[desc_anc[1]][[1]]
         left <- states_matrix$Dp1[desc_anc[2]][[1]]
 
-        ## Get the union between the descendants
-        union_desc <- get.union(left, right)
+        ## Get the states in common between the descendants
+        union_desc <- get.common(left, right)
 
         if(union_desc != FALSE) {
-            ## If there is a union, set the node to be the union
+            ## If there is any states in common, set the node to be that one
             states_matrix$Dp1[[node]] <- union_desc
 
-            ## If the union is actually the inapplicable token, and both descendants have an applicable, set it to be the intersection between applicable
+            ## If state in common is actually the inapplicable token, but that both descendants have an applicable, set it to be the union between the applicable states
             if(union_desc == -1 && any(left != -1) && any(right != -1)) {
-                states_matrix$Dp1[[node]] <- get.intersection.incl(left[-which(left == -1)], right[-which(right == -1)])
+                states_matrix$Dp1[[node]] <- get.union.incl(left[-which(left == -1)], right[-which(right == -1)])
             }
         } else {
-            ## Else set it to be the intersection
-            states_matrix$Dp1[[node]] <- get.intersection.incl(left, right)
+            ## Else set it to be the union of the descendants
+            states_matrix$Dp1[[node]] <- get.union.incl(left, right)
 
-            ## If the node has inapplicable data
-            if(any(states_matrix$Dp1[[node]] == -1)) {
-                ## If both left and right have applicable, set the node to be applicable only
-                if(any(left != -1) && any(right != -1)) {
-                    states_matrix$Dp1[[node]] <- states_matrix$Dp1[[node]][-which(states_matrix$Dp1[[node]] == -1)]
-                }
+            ## If the node has inapplicable data but that both descendants have also applicable states, remove the inapplicable state from the node
+            if(any(states_matrix$Dp1[[node]] == -1) && any(left != -1) && any(right != -1)) {
+                states_matrix$Dp1[[node]] <- states_matrix$Dp1[[node]][-which(states_matrix$Dp1[[node]] == -1)]
             }
         }
     }
@@ -384,6 +381,25 @@ plot.inapplicable.algorithm <- function(tree, character, show.passes = FALSE, sh
     nodelabels(node_labels)
 
     ## Add the changes
+    # if(show.changes) {
+
+    #     silent <- apply(tree$edge, 1, plot.change)
+
+    #     plot.change <- function(edge, states_matrix, n_passes) {
+            
+    #         ## Function for collapsing edge states
+    #         collapse <- function(edge, states_matrix, n_passes) {
+    #             sort(states_matrix[[n_passes + 1]][[edge[1]]])
+    #         }
+
+
+    #         ## Check if the two ends of the edge are different
+
+
+    #         if(states_matrix[[n_passes + 1]][[edge[1]]] states_matrix[[n_passes + 1]][[edge[2]]])
+
+    #     }
+    # }
 
 
 
