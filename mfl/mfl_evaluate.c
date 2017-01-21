@@ -374,8 +374,8 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                 n_final[i] = n_prelim[i];
             }
             
-//            subtreeactive[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
-//            regionactive[i] |= subtreeactive[i];
+            subtreeactive[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
+            regionactive[i] |= subtreeactive[i];
         }
         
         return;
@@ -390,28 +390,45 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
     
     for (i = 0; i < num_chars; ++i) {
         
+        temp = 0;
+        
         if (n_final[i] & MORPHY_IS_APPLICABLE) {
             
-            if (anc_char[i] & MORPHY_IS_APPLICABLE) {
+             if (anc_char[i] & MORPHY_IS_APPLICABLE) {
                 
                 if ((anc_char[i] & n_final[i]) == anc_char[i]) {
+                    
                     n_final[i] = anc_char[i] & n_final[i];
                     
-                    if (!(lft_char[i] & rt_char[i])) {
-                        temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
-                        if (!(temp & MORPHY_INAPPLICABLE_BITPOS)) {
-                            if (temp & actives[i]) {
-                                *length += weights[i];
-                            }
-                            else {
-                                actives[i] |= temp;
-                            }
-                        }
-                    }
+                    /* Begin counting*/
+//                    if (!(lft_char[i] & rt_char[i])) {
+//                        if (n_final[i] != (n_final[i] & ~(n_final[i] - 1))) {
+//                            if (lreg_active[i] & rreg_active[i]) {
+//                                *length += weights[i];
+//                            }
+//                            else if ((lft_char[i] | rt_char[i]) == ( (lft_char[i] | rt_char[i]) & tempactive[i] ) ) {
+//                                *length += weights[i];
+//                            }
+//                            
+//                            if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+//                                tempactive[i] |= (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+//                            }
+//                        }
+//                        else {
+//                            if ((lft_char[i] | rt_char[i]) & actives[i]) {
+//                                *length += weights[i];
+//                            }
+//                        }
+//                    }
+                    
+                    /* End counting */
+                    
                 }
                 else {
                     if (lft_char[i] & rt_char[i]) {
+                        
                         n_final[i] |= ( anc_char[i] & (lft_char[i] | rt_char[i]));
+                        
                     }
                     else {
                         
@@ -426,56 +443,57 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                             
                         }
                         else {
+                            
                             n_final[i] = n_final[i] | anc_char[i];
+                            
                             if ((anc_char[i] & n_final[i]) == anc_char[i]) {
                                 n_final[i] = anc_char[i] & n_final[i];
                             }
-                            
-                            if (n_final[i] == (n_final[i] & actives[i])) {
-                                *length += weights[i];
-                            }
-                            else {
-                                actives[i] |= n_final[i];
-                            }
                         }
-                        
                     }
                 }
+            }
+            
+        }
+//        else {
+//            if (lft_char[i] & rt_char[i]) {
+//                n_final[i] = (lft_char[i] & rt_char[i]);
+//            }
+//            else {
+//                if (n_final[i] == (n_final[i] & ~(n_final[i] - 1))) {
+//                    temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
+//                    
+//                    if (temp & tempactive[i]) {
+//                        *length += weights[i];
+//                    }
+//                    else {
+//                        tempactive[i] |= temp;
+//                        actives[i] |= tempactive[i];
+//                    }
+//                }
+//                else {
+//                    if ((lft_char[i] | rt_char[i]) == ( (lft_char[i] | rt_char[i]) & actives[i] ) ) {
+//                        *length += weights[i];
+//                    }
+//                    else {
+//                        actives[i] |= (lft_char[i] | rt_char[i]);
+//                    }
+//                }
+//            }
+//        }
+        
+        if (n_final[i] < n_prelim[i]) {
+            temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
+            
+            if (temp & tempactive[i]) {
+                *length += weights[i];
             }
             else {
-                if (lft_char[i] & rt_char[i]) {
-                    n_final[i] = (lft_char[i] & rt_char[i]);
-                }
-                else {
-                    //n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
-                    if (n_final[i] == (n_final[i] & actives[i])) {
-                        *length += weights[i];
-                    }
-                    else {
-                        actives[i] |= n_final[i];
-                    }
-                }
+                tempactive[i] |= temp;
+                actives[i] |= tempactive[i];
             }
         }
-        else {
-            
-            if (!(lft_char[i] & rt_char[i])) {
-                if ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) {
-                    if ((lft_char[i] | rt_char[i]) & actives[i]) {
-                        *length += weights[i];
-                    }
-                    else {
-                        temp = ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE);
-                        temp = (temp & ~(temp-1));
-                        actives[i] |= temp;
-                    }
-                }
-            }
-            
-            if (anc_char[i] & MORPHY_IS_APPLICABLE) {
-                actives[i] |= anc_char[i];
-            }
-        }
+        
         assert(n_final[i]);
         
     }
