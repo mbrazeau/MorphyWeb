@@ -176,14 +176,14 @@ first.downpass <- function(states_matrix, tree) {
         left <- states_matrix$Dp1[desc_anc[2]][[1]]
 
         ## Get the states in common between the descendants
-        union_desc <- get.common(left, right)
+        common_desc <- get.common(left, right)
 
-        if(!is.null(union_desc)) {
+        if(!is.null(common_desc)) {
             ## If there is any states in common, set the node to be that one
-            states_matrix$Dp1[[node]] <- union_desc
+            states_matrix$Dp1[[node]] <- common_desc
 
             ## If state in common is actually the inapplicable token, but that both descendants have an applicable, set it to be the union between the applicable states
-            if(union_desc == -1 && any(left != -1) && any(right != -1)) {
+            if(common_desc == -1 && any(left != -1) && any(right != -1)) {
                 states_matrix$Dp1[[node]] <- get.union.incl(left[-which(left == -1)], right[-which(right == -1)])
             }
         } else {
@@ -249,10 +249,10 @@ first.uppass <- function(states_matrix, tree) {
                     states_matrix$Up1[[node]] <- -1
                 } else {
                     ## If the union of left and right has an applicable
-                    union_desc <- get.union.incl(left, right)
-                    if(any(union_desc != -1)) {
+                    common_desc <- get.union.incl(left, right)
+                    if(any(common_desc != -1)) {
                         ## Set to the union of applicable states
-                        states_matrix$Up1[[node]] <- union_desc[which(union_desc != -1)]
+                        states_matrix$Up1[[node]] <- common_desc[which(common_desc != -1)]
                     } else {
                         ## Set to inapplicable
                         states_matrix$Up1[[node]] <- -1
@@ -283,6 +283,34 @@ second.downpass <- function(states_matrix, tree) {
     ## Transferring the characters in the right matrix column
     states_matrix$Dp2 <- states_matrix$Char
     
+    ## Loop through the nodes
+    for(node in rev(Ntip(tree)+1:Nnode(tree))) {
+
+        ## Select the descendants and ancestors
+        desc_anc <- desc.anc(node, tree)
+        right <- states_matrix$Up1[desc_anc[1]][[1]]
+        left <- states_matrix$Up1[desc_anc[2]][[1]]
+
+        ## If any state on the node is applicable
+        if(any(states_matrix$Up1[[node]] != -1)) {
+            
+            ## Get the states in common between the descendants
+            common_desc <- get.common(left, right)
+
+            ## If there is any applicable state in this common, set the node to be that state
+            if(any(common_desc != -1)) {
+                states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+            } else {
+            ## Else set the node state to be the union of the descendants without the inapplicable tokens
+                union_desc <- get.union.incl(left, right)
+                states_matrix$Dp2[[node]] <- union_desc[which(union_desc != -1)]
+            }
+        } else {
+            ## Else, leave the state as it was after the first uppass
+            states_matrix$Dp2[[node]] <- states_matrix$Up1[[node]]
+        }
+    }
+
     return(states_matrix)
 }
 
@@ -353,7 +381,7 @@ character <- "1100----1100"
 
 plot.inapplicable.algorithm(tree, character)
 
-plot.inapplicable.algorithm <- function(tree, character, n_passes = 2, show.passes = FALSE, show.changes = FALSE, use.pie = FALSE, ...) { ## Add option of converting states into colors?
+plot.inapplicable.algorithm <- function(tree, character, n_passes = 3, show.passes = FALSE, show.changes = FALSE, use.pie = FALSE, ...) { ## Add option of converting states into colors?
     
     plot.convert.state <- function(character, missing = FALSE) {
 
