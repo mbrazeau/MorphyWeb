@@ -182,9 +182,9 @@ first.downpass <- function(states_matrix, tree) {
             ## If there is any states in common, set the node to be that one
             states_matrix$Dp1[[node]] <- common_desc
 
-            ## If state in common is actually the inapplicable token, but that both descendants have an applicable, set it to be the union between the applicable states
+            ## If state in common is actually the inapplicable token, but that both descendants have applicables, set it to be the union between the descendants
             if(common_desc == -1 && any(left != -1) && any(right != -1)) {
-                states_matrix$Dp1[[node]] <- get.union.incl(left[which(left != -1)], right[which(right != -1)])
+                states_matrix$Dp1[[node]] <- get.union.incl(left, right)
             }
         } else {
             ## Else set it to be the union of the descendants
@@ -230,7 +230,7 @@ first.uppass <- function(states_matrix, tree) {
         desc_anc <- desc.anc(node, tree)
         right <- states_matrix$Dp1[desc_anc[1]][[1]] # The node's right descendant
         left <- states_matrix$Dp1[desc_anc[2]][[1]] # The node's left descendant
-        ancestor <- states_matrix$Dp1[desc_anc[3]][[1]]  # The node's ancestor
+        ancestor <- states_matrix$Dp1[desc_anc[3]][[1]] # The node's ancestor
 
         if(any(curr_node == -1)) {
             ## If any of the states is inapplicable...
@@ -250,10 +250,10 @@ first.uppass <- function(states_matrix, tree) {
                     states_matrix$Up1[[node]] <- -1
                 } else {
                     ## If the union of left and right has an applicable
-                    common_desc <- get.union.incl(left, right)
-                    if(any(common_desc != -1)) {
+                    union_desc <- get.union.incl(left, right)
+                    if(any(union_desc != -1)) {
                         ## Set to the union of applicable states
-                        states_matrix$Up1[[node]] <- common_desc[which(common_desc != -1)]
+                        states_matrix$Up1[[node]] <- union_desc[which(union_desc != -1)]
                     } else {
                         ## Set to inapplicable
                         states_matrix$Up1[[node]] <- -1
@@ -287,13 +287,14 @@ second.downpass <- function(states_matrix, tree) {
     ## Loop through the nodes
     for(node in rev(Ntip(tree)+1:Nnode(tree))) {
 
+        curr_node <- states_matrix$Up1[[node]]
         ## Select the descendants and ancestors
         desc_anc <- desc.anc(node, tree)
         right <- states_matrix$Up1[desc_anc[1]][[1]] # The node's right descendant
         left <- states_matrix$Up1[desc_anc[2]][[1]] # The node's left descendant
 
         ## If any state on the node is applicable
-        if(any(states_matrix$Up1[[node]] != -1)) {
+        if(any(curr_node != -1)) {
             
             ## Get the states in common between the descendants
             common_desc <- get.common(left, right)
@@ -308,7 +309,7 @@ second.downpass <- function(states_matrix, tree) {
             }
         } else {
             ## Else, leave the state as it was after the first uppass
-            states_matrix$Dp2[[node]] <- states_matrix$Up1[[node]]
+            states_matrix$Dp2[[node]] <- curr_node
         }
     }
 
@@ -346,7 +347,7 @@ second.uppass <- function(states_matrix, tree) {
         if(any(curr_node != -1)) { # If any state in the previous pass is not inapplicable
             if(any(ancestor != -1)) { # If any state in the ancestor is not inapplicable
                 common_anc_node <- get.common(ancestor, curr_node)
-                if(all(common_anc_node == ancestor)) { # If the common state between the ancestor and the final is the ancestor
+                if((length(common_anc_node) == length(ancestor)) && all(common_anc_node == ancestor)) { # If the common state between the ancestor and the final is the ancestor
                     states_matrix$Up2[[node]] <- common_anc_node
                 } else { # If the common state between the ancestor and the final is not the ancestor
                     if(!is.null(get.common(left, right))) { # If there is a state in common between left and right
@@ -354,7 +355,7 @@ second.uppass <- function(states_matrix, tree) {
                     } else { # If there is no state in common between left and right
                         union_desc <- get.union.incl(left, right)
                         if(any(union_desc == -1)) { # If the union of left and right has the inapplicable character
-                            if(!is.null(get.common(ancestor, union_desc))) { # If the union of left and right has a state in common with the ancestor
+                            if(!is.null(get.common(union_desc, ancestor))) { # If the union of left and right has a state in common with the ancestor
                                 states_matrix$Up2[[node]] <- get.union.incl(get.common(ancestor, union_desc), ancestor)
                             } else { # If the union of left and right has no state in common with the ancestor
                                 union_all <- get.union.incl(union_desc, ancestor)
