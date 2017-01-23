@@ -455,12 +455,12 @@ plot.convert.state <- function(character, missing = FALSE) {
 #' 
 #' @author Thomas Guillerme
 
-## DEBUG
-warning("DEBUG")
-tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
-character <- "1100----1100"
+# ## DEBUG
+# warning("DEBUG")
+# tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
+# character <- "1100----1100"
 
-plot.inapplicable.algorithm(tree, character)
+# plot.inapplicable.algorithm(tree, character)
 
 plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
 
