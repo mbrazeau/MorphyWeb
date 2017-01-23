@@ -43,20 +43,20 @@ convert.char <- function(character) {
         ## Convert into list
         character <- as.list(character)
 
+        ## Convert inapplicable
+        character <- lapply(character, convert.inappli)
+        
         ## Get all states
         options(warn = -1)
         all_states <- as.numeric(character)
         options(warn = 0)
         all_states <- unique(all_states[-c(which(is.na(all_states)))]) #, which(all_states == -1))]
 
-        ## Convert inapplicable
-        character <- lapply(character, convert.inappli)
-        
         ## Convert missing
         character <- lapply(character, convert.missing, all_states)
 
         ## Convert into numeric
-        return(lapply(character, as.numeric))
+        return(lapply(character, function(X) sort(as.numeric(X))))
     }
 }
 
@@ -117,18 +117,19 @@ desc.anc <- function(node, tree) {
 get.common <- function(a, b) {
 options(warn = -1)
     if(!any(a == b)) {
-options(warn = 0)
         ## No union
+        out <- NULL
         return(NULL)
     } else {
-options(warn = 0)
         ## Union
         if(length(a) >= length(b)) {
-            return(sort(a[which(a == b)]))
+            out <- sort(a[a %in% b])
         } else {
-            return(sort(b[which(b == a)]))
+            out <- sort(b[b %in% a])
         }
     }
+options(warn = 0)
+    return(out)
 }
 
 ## Get an intersection inclusive (|)
@@ -144,7 +145,7 @@ get.union.incl <- function(a, b) {
 ## Get an intersection exclusive (^)
 get.union.excl <- function(a, b) {
     out <- get.union.incl(a,b)
-    out <- out[-which(out == get.common(a,b))]
+    out <- out[which(out != get.common(a,b))]
     if(length(out) == 0) {
         return(NULL)
     } else {
@@ -169,7 +170,6 @@ first.downpass <- function(states_matrix, tree) {
 
     ## Loop through the nodes
     for(node in rev(Ntip(tree)+1:Nnode(tree))) {
-
         ## Select the descendants and ancestors
         desc_anc <- desc.anc(node, tree)
         right <- states_matrix$Dp1[desc_anc[1]][[1]] # The node's right descendant
@@ -236,7 +236,7 @@ first.uppass <- function(states_matrix, tree) {
             ## If any of the states is inapplicable...
             if(any(curr_node != -1)) {
                 ## If any of the states IS applicable
-                if(ancestor == -1) {
+                if(all(ancestor == -1)) {
                     ## If the ancestor state is inapplicable only, set to -1
                     states_matrix$Up1[[node]] <- -1
                 } else {
@@ -245,7 +245,7 @@ first.uppass <- function(states_matrix, tree) {
                 }
             } else {
                 ## No state IS applicable
-                if(ancestor == -1) {
+                if(all(ancestor == -1)) {
                     ## If the ancestor state is inapplicable only, set to -1
                     states_matrix$Up1[[node]] <- -1
                 } else {
@@ -335,7 +335,6 @@ second.uppass <- function(states_matrix, tree) {
 
     ## For each node from the root
     for(node in (Ntip(tree)+2:Nnode(tree))) { ## Start past the root (+2)
-
         ## Current node
         curr_node <- states_matrix$Dp2[[node]] # The current node
         ## Select the descendants and ancestors
@@ -350,12 +349,12 @@ second.uppass <- function(states_matrix, tree) {
                 if(all(common_anc_node == ancestor)) { # If the common state between the ancestor and the final is the ancestor
                     states_matrix$Up2[[node]] <- common_anc_node
                 } else { # If the common state between the ancestor and the final is not the ancestor
-                    if(get.common(left, right) != FALSE) { # If there is a state in common between left and right
+                    if(!is.null(get.common(left, right))) { # If there is a state in common between left and right
                         states_matrix$Up2[[node]] <- get.union.incl(curr_node, get.common(ancestor, get.union.incl(left, right)))
                     } else { # If there is no state in common between left and right
                         union_desc <- get.union.incl(left, right)
                         if(any(union_desc == -1)) { # If the union of left and right has the inapplicable character
-                            if(get.common(ancestor, union_desc) != FALSE) { # If the union of left and right has a state in common with the ancestor
+                            if(!is.null(get.common(ancestor, union_desc))) { # If the union of left and right has a state in common with the ancestor
                                 states_matrix$Up2[[node]] <- get.union.incl(get.common(ancestor, union_desc), ancestor)
                             } else { # If the union of left and right has no state in common with the ancestor
                                 union_all <- get.union.incl(union_desc, ancestor)
@@ -372,7 +371,7 @@ second.uppass <- function(states_matrix, tree) {
                 }
             } else { # If the ancestor has no applicable state
                 union_desc <- get.union.incl(left, right)
-                if(all(union_desc != FALSE)) { # If there is a state in common between left and right
+                if(!is.null(union_desc)) { # If there is a state in common between left and right
                     states_matrix$Up2[[node]] <- union_desc
                 } else { # If there is no state in common between left and right
                     states_matrix$Up2[[node]] <- curr_node
@@ -396,17 +395,17 @@ second.uppass <- function(states_matrix, tree) {
 #' 
 #' @author Thomas Guillerme
 
-inapplicable.algorithm <- function(tree, character, n_passes = 4) {
+inapplicable.algorithm <- function(tree, character, passes = 4) {
 
     ## Setting up the output state matrix
     states_matrix <- make.states.matrix(tree, character)
 
     ## Setting the list of passes
-    passes <- list(first.downpass, first.uppass, second.downpass, second.uppass)
+    n_passes <- list(first.downpass, first.uppass, second.downpass, second.uppass)
 
     ## Applying the passes for each node
-    for (pass in 1:n_passes) {
-        states_matrix <- passes[[pass]](states_matrix, tree)
+    for (pass in 1:passes) {
+        states_matrix <- n_passes[[pass]](states_matrix, tree)
     }
 
     return(states_matrix)
@@ -458,76 +457,69 @@ plot.convert.state <- function(character, missing = FALSE) {
 
 ## DEBUG
 warning("DEBUG")
-set.seed(1)
 tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
 character <- "1100----1100"
 
-tree <- rtree(50)
-character <- sample(c(1,0), 50, replace = TRUE)
+plot.inapplicable.algorithm(tree, character)
 
-plot.inapplicable.algorithm(tree, character, n_passes = 1)
-
-plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "blue"), ...) { ## Add option of converting states into colors?
+plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
 
     ## SANITIZING
-    ## tree character
-   
+    ## tree character done in make.states.matrix
+    
+    ## Passes
+    if(class(passes) != "numeric" | any(is.na(match(passes, c(1,2,3,4))))) {
+        stop("passes argument must be any integer(s) between 1 and 4.")
+    }
+    ## show.tip.label
+    if(class(show.tip.label) != "logical") {
+        stop("show.tip.label argument must be logical.")
+    }
+    ## col.tips.nodes
+    if(length(col.tips.nodes) == 1) {
+        col.tips.nodes <- rep(col.tips.nodes, 2)
+    } else {
+        if(length(col.tips.nodes) > 2) {
+            col.tips.nodes <- col.tips.nodes[1:2]
+            warning("Only the two first colors from col.tips.nodes are used.")
+        }
+    }
 
-    ## Run the inapplicable algorithm
+    ## RUN THE STATE RECONSTRUCTION (4 passes)
     states_matrix <- inapplicable.algorithm(tree, character, passes = 4)
 
-    # ## Remove Tree's branch length
-    # tree$edge.length <- NULL
+    ## Get the text plotting size
+    cex <- 1 - (Ntip(tree)/100)
+    ## Correct if Ntip < 10 or Ntip > 100
+    cex <- ifelse(Ntip(tree) < 10, 1, cex)
+    cex <- ifelse(Ntip(tree) > 100, 0.1, cex)
 
     ## Plotting the tree
-    plot(tree, show.tip.label = FALSE, type = "phylogram", use.edge.length = FALSE, ...)
-
-    ## Get the node plotting size
-    cex = ifelse(Ntip(tree) >= 10, 1/Ntip(tree)*7, 0.7)
+    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2, ...)
+    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2) ; warning("DEBUG plot")
 
     ## Add the tip states
     if(class(character) == "character" && length(character) == 1) {
-        tiplabels(as.character(strsplit(as.character(character), "")[[1]]))
+        tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1])
     } else {
         tips_labels <- plot.convert.state(states_matrix[[1]][1:Ntip(tree)], missing = TRUE)
-        tiplabels(tips_labels)
+        tiplabels(tips_labels, cex = cex, bg = col.tips.nodes[1])
     }
 
     ## Get the node labels
-    if(n_passes > 1) {
-        node_labels <- plot.convert.state(states_matrix[[2]][-c(1:Ntip(tree))])
+    if(length(passes) > 1) {
+        node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:Ntip(tree))])
         node_labels <- paste("1:", node_labels)
-        for(pass in 2:n_passes) {
+        for(pass in passes[-1]) {
             node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:Ntip(tree))]), sep = ""), sep = "\n")
         }
     } else {
-        node_labels <- plot.convert.state(states_matrix[[2]][-c(1:Ntip(tree))])
+        node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
+        node_labels <- paste(passes, ": ", node_labels, sep = "")
     }
 
-
     ## Plot the node labels
-    nodelabels(node_labels, cex = cex)
-
-    ## Add the changes
-    # if(show.changes) {
-
-    #     silent <- apply(tree$edge, 1, plot.change)
-
-    #     plot.change <- function(edge, states_matrix, n_passes) {
-            
-    #         ## Function for collapsing edge states
-    #         collapse <- function(edge, states_matrix, n_passes) {
-    #             sort(states_matrix[[n_passes + 1]][[edge[1]]])
-    #         }
-
-
-    #         ## Check if the two ends of the edge are different
-
-
-    #         if(states_matrix[[n_passes + 1]][[edge[1]]] states_matrix[[n_passes + 1]][[edge[2]]])
-
-    #     }
-    # }
+    nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
 
     return(invisible())
 }

@@ -4,7 +4,7 @@ context("utilities")
 
 test_that("convert.char works", {
     ## Simple case
-    character <- list(1,2,3,-1,c(1,2,3))
+    character <- list(1,2,3,-1,c(-1,1,2,3))
     expect_equal(convert.char(character), character)
 
     ## Numeric case
@@ -43,7 +43,7 @@ test_that("make.states.matrix works", {
     expect_is(test, "list")
     expect_equal(length(test), 5)
     expect_equal(unique(unlist(lapply(test, length))), 9)
-    expect_equal(unlist(test$Char), c(1,2,3,-1,1,2,3))
+    expect_equal(unlist(test$Char), c(1,2,3,-1,-1,1,2,3))
 })
 
 test_that("desc.anc works", {
