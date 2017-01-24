@@ -1,0 +1,65 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\begin{document}
+
+\noindent{\Large \bf Inapplicable algorithm description}
+
+
+\section{First downpass} \label{1stDp}
+
+\begin{enumerate}
+    \item Enter on any of the tips of the tree and focus on its closest ancestor (hereafter referred as the ``focal node'') then go to \ref{1stDp:ANDdescen}.
+    \item \label{1stDp:ANDdescen} \textbf{If} there is a state in common between both descendants of the focal node, \textbf{set} the focal node state to the states in common \textbf{then} go to \ref{1stDp:ANDinap}. \textbf{Else} go to \ref{1stDp:ORdescen}.
+    \item \label{1stDp:ANDinap} \textbf{If} the state of the focal node is now only the inapplicable token but that both descendants also have at least one applicable state, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:exitLoop}.
+    \item \label{1stDp:ORdescen} \textbf{If} there is a no state in common between both descendants, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:ORinap}.
+    \item \label{1stDp:ORinap} \textbf{If} both descendants have also applicable states, \textbf{remove} the inapplicable token from the the focal node state; \textbf{then} go to \ref{1stDp:exitLoop}.
+    \item \label{1stDp:exitLoop} Go to the closest ancestor from the focal node and repeat from \ref{1stDp:ANDdescen} until all the nodes in the tree have been visited.
+\end{enumerate}
+
+\section{First uppass} \label{1stUp}
+
+\begin{enumerate}
+    \item Enter the tree on the root. \textbf{If} if the root has both inapplicable \textit{and} applicable states, \textbf{remove} the inapplicable state; then go to \ref{1stUp:firstNode}.
+    \item \label{1stUp:firstNode} Select the next focal node after the root; then go to \ref{1stUp:entryLoop}. 
+    \item \label{1stUp:entryLoop} \textbf{If} that focal node as an inapplicable token go to \ref{1stUp:NodeInapplicable}; \textbf{else} go to \ref{1stUp:NodeApplicable}.
+    \item \label{1stUp:NodeInapplicable} \textbf{If} the focal node also has any applicable state \textit{and} \textbf{if} the state of the focal node's ancestor is the inapplicable token only, \textbf{set} the focal node state to be the inapplicable token; \textbf{then} go to \ref{1stUp:repeat}. \textbf{Else} go to \ref{1stUp:ancAppli1}.
+    \item \label{1stUp:ancAppli1} \textbf{Remove} the inapplicable token from the focal node states; \textbf{then} go to \ref{1stUp:repeat}.        \item \label{1stUp:NodeApplicable} \textbf{If} the focal node's ancestor state is only inapplicable, \textbf{set} the focal node state to be the inapplicable token \textbf{then} go to \ref{1stUp:repeat}. \textbf{Else} go to \ref{1stUp:ancAppli2}.
+    \item \label{1stUp:ancAppli2} \textbf{If} the union between the descendants is applicable \textbf{set} the nodal state to be this union \textit{and} \textbf{remove} any eventual inapplicable tokens; \textbf{then} go to \ref{1stUp:repeat}. \textbf{Else} go to \ref{1stUp:ancAppli2}.
+    \item \label{1stUp:ancAppli3} \textbf{Set} the focal node state to be the inapplicable token only; \textbf{then} go to \ref{1stUp:repeat}.
+    \item \label{1stUp:repeat} Select to the next node and repeat from \ref{1stUp:entryLoop} until all nodes have been visited; then go to \ref{2ndDp:exitLoop}.
+    \item \label{1stUp:exitLoop} Exit the first uppass.
+\end{enumerate}
+
+
+\section{Second downpass} \label{2ndDp}
+
+\begin{enumerate}
+    \item Enter on any of the tips of the tree and focus on its closest ancestor then go to \ref{2ndDp:entry}.
+    \item \label{2ndDp:entry} \textbf{If} the focal node state has an applicable state, go to \ref{2ndDp:Appli}. \textbf{Else} go to \ref{2ndDp:Inapp}.
+    \item \label{2ndDp:Appli} \textbf{If} the the focal node's two descendants have both in common at least on state that is not the inapplicable token, \textbf{set} the focal node state to be this common state (without any inapplicable token); \textbf{then} go to \ref{2ndDp:repeat}.
+    \item \label{2ndDp:Inapp} \textbf{Else} the \textbf{set} the focal node's state to be the union between both descendants without any eventual inapplicable token; \textbf{then} go to \ref{2ndDp:repeat}.
+    \item \label{2ndDp:repeat} \textbf{Else} leave the the focal node's state unchanged and repeat from \ref{2ndDp:entry} until all nodes have been visited; \textbf{then} go to \ref{2ndDp:exitLoop}.
+    \item \label{2ndDp:exitLoop} Exit the second downpass
+\end{enumerate}
+
+\section{Second uppass} \label{2ndUp}
+
+\begin{enumerate}
+    \item Enter the node next to the root; \textbf{then} go to \ref{2ndUp:entry}
+    \item \label{2ndUp:entry} \textbf{If} any state on the focal node is applicable; \textbf{then} go to \ref{2ndUp:AncAppli}. \textbf{Else} go to \ref{2ndUp:repeat}.
+    \item \label{2ndUp:AncAppli} \textbf{If} the ancestor also has at least one applicable state; \textbf{then} go to \ref{2ndUp:CommonIsAnc}{@}. \textbf{Else} go to \ref{2ndUp:AncInapp}.
+    \item \label{2ndUp:CommonIsAnc} \textbf{If} the common state between the ancestor and the final is the ancestor, \textbf{set} the focal node's state to be the state of it's ancestor; \textbf{then} go to \ref{2ndUp:repeat}. \textbf{Else} go to \ref{2ndUp:CommonIsNotAnc1}.
+    \item \label{2ndUp:CommonIsNotAnc1} \textbf{If} there is a state in common between the focal node's descendants, \textbf{set} the focal node's state to be the union between its previous state and the states in common between the focal node's ancestor and the union of the focal node's descendants; \textbf{then} go to \ref{2ndUp:repeat}. \textbf{Else} go to \ref{2ndUp:CommonIsNotAnc2}.
+    \item \label{2ndUp:CommonIsNotAnc2} \textbf{If} the union between the focal node's descendants have an inapplicable token, go to \ref{2ndUp:DescenInapp}; \textbf{else} go to \ref{2ndUp:DescenApp}.
+    \item \label{2ndUp:DescenInapp} \textbf{If} the union of the focal node's descendants have a state in common with its ancestor, \textbf{set} the node state to be the union of the ancestral states and the states in common between the union of descendants and the ancestor; \textbf{then} go to \ref{2ndUp:repeat}. \textbf{Else} go to \ref{2ndUp:DescenInapp2}.
+    \item \label{2ndUp:DescenInapp2} \textbf{Set} the focal node state to be the union between the descendants and the ancestral states without any inapplicable token; \textbf{then} go to \ref{2ndUp:repeat}.
+    \item \label{2ndUp:DescenApp} \textbf{Set} the focal node state to be the union between the node state from the previous pass and its ancestor state. \textbf{then}, go to \ref{2ndUp:DescenApp2}.
+    \item \label{2ndUp:DescenApp2} \textbf{If} the state in common between the focal node and its ancestor is the state of the ancestor, \textbf{set} the focal node's state to be the state in common between the focal node and its ancestor; \textbf{then} go to \ref{2ndUp:repeat}. \textbf{Else}, go to \ref{2ndUp:repeat}.
+    \item \label{2ndUp:AncInapp} \textbf{If} there is a state in common between the focal node's descendants, \textbf{set} the focal node state to be the states in common between it's descendants \textbf{then} go to \ref{2ndUp:repeat}. \textbf{Else}, go to \ref{2ndUp:repeat}.
+    \item \label{2ndUp:repeat} Leave the focal node's state unchanged and repeat from \ref{2ndUp:entry} until all nodes have been visited; \textbf{then} go to \ref{2ndUp:exitLoop}.
+    \item \label{2ndUp:exitLoop} Exit the second uppass
+\end{enumerate}
+
+\end{document}
