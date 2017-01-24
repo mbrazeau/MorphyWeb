@@ -1,3 +1,5 @@
+require(ape)
+
 #' @title Convert character
 #'
 #' @description Convert a character if it is not numeric (transforming - into -1 and ? into all characters (but - ))
@@ -183,15 +185,15 @@ first.downpass <- function(states_matrix, tree) {
             states_matrix$Dp1[[node]] <- common_desc
 
             ## If state in common is actually the inapplicable token, but that both descendants have applicables, set it to be the union between the descendants
-            if(common_desc == -1 && any(left != -1) && any(right != -1)) {
+            if(all(common_desc == -1) -1 && any(left != -1) && any(right != -1)) {
                 states_matrix$Dp1[[node]] <- get.union.incl(left, right)
             }
         } else {
             ## Else set it to be the union of the descendants
             states_matrix$Dp1[[node]] <- get.union.incl(left, right)
 
-            ## If the node has inapplicable data but that both descendants have also applicable states, remove the inapplicable state from the node
-            if(any(states_matrix$Dp1[[node]] == -1) && any(left != -1) && any(right != -1)) {
+            ## If both descendants have applicable states, remove the inapplicable state from the node
+            if(any(left != -1) && any(right != -1)) {
                 states_matrix$Dp1[[node]] <- states_matrix$Dp1[[node]][which(states_matrix$Dp1[[node]] != -1)]
             }
         }
@@ -487,7 +489,7 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
     }
 
     ## RUN THE STATE RECONSTRUCTION (4 passes)
-    states_matrix <- inapplicable.algorithm(tree, character, passes = 4)
+    states_matrix <- inapplicable.algorithm(tree, character, passes = 3)
 
     ## Get the text plotting size
     cex <- 1 - (Ntip(tree)/100)
