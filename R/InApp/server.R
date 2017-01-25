@@ -4,6 +4,8 @@ library(ape)
 # server.R
 shinyServer(
   function(input, output) {
+
+    source("helpers.R")
   
     output$plot_out <- renderPlot({ 
 
