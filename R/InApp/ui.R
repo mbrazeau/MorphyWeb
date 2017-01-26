@@ -22,7 +22,7 @@ shinyUI(fluidPage(
       conditionalPanel(
         condition = "input.character == 2",
           textInput("character_string", label = h5("Enter a character string:"), value = "1?2-"),
-          helpText("Note: the number of characters must match the size of the tree! Accepted states are any values from 0 to 9 as long as - for the inapplicable token and ? for all states (missing data).")
+          helpText("Note: the number of characters must match the size of the tree! Accepted states are any values from 0 to 9, - for the inapplicable token and ? for all states (missing data).")
       )   
     ),
 

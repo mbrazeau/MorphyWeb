@@ -185,7 +185,7 @@ first.downpass <- function(states_matrix, tree) {
             states_matrix$Dp1[[node]] <- common_desc
 
             ## If state in common is actually the inapplicable token, but that both descendants have applicables, set it to be the union between the descendants
-            if(all(common_desc == -1) -1 && any(left != -1) && any(right != -1)) {
+            if(all(common_desc == -1) && any(left != -1) && any(right != -1)) {
                 states_matrix$Dp1[[node]] <- get.union.incl(left, right)
             }
         } else {
@@ -238,8 +238,8 @@ first.uppass <- function(states_matrix, tree) {
             ## If any of the states is inapplicable...
             if(any(curr_node != -1)) {
                 ## If any of the states IS applicable
-                if(all(ancestor == -1)) {
-                    ## If the ancestor state is inapplicable only, set to -1
+                if(any(ancestor == -1)) {
+                    ## If the ancestor state has an inapplicable token
                     states_matrix$Up1[[node]] <- -1
                 } else {
                     ## Else remove the inapplicable
@@ -247,8 +247,8 @@ first.uppass <- function(states_matrix, tree) {
                 }
             } else {
                 ## No state IS applicable
-                if(all(ancestor == -1)) {
-                    ## If the ancestor state is inapplicable only, set to -1
+                if(any(ancestor == -1)) {
+                    ## If the ancestor state has an inapplicable token
                     states_matrix$Up1[[node]] <- -1
                 } else {
                     ## If the union of left and right has an applicable
@@ -349,11 +349,11 @@ second.uppass <- function(states_matrix, tree) {
         if(any(curr_node != -1)) { # If any state in the previous pass is not inapplicable
             if(any(ancestor != -1)) { # If any state in the ancestor is not inapplicable
                 common_anc_node <- get.common(ancestor, curr_node)
-                if((length(common_anc_node) == length(ancestor)) && all(common_anc_node == ancestor)) { # If the common state between the ancestor and the final is the ancestor
+                if(!is.null(common_anc_node) && any(common_anc_node == ancestor)) { # If there is a common state between the ancestor and the previous node state and that this commonality is equal to any of the ancestor state.
                     states_matrix$Up2[[node]] <- common_anc_node
                 } else { # If the common state between the ancestor and the final is not the ancestor
                     if(!is.null(get.common(left, right))) { # If there is a state in common between left and right
-                        states_matrix$Up2[[node]] <- get.union.incl(curr_node, get.common(ancestor, get.union.incl(left, right)))
+                        states_matrix$Up2[[node]] <- get.union.incl(common_anc_node, get.common(ancestor, get.union.incl(left, right)))
                     } else { # If there is no state in common between left and right
                         union_desc <- get.union.incl(left, right)
                         if(any(union_desc == -1)) { # If the union of left and right has the inapplicable character
@@ -367,15 +367,15 @@ second.uppass <- function(states_matrix, tree) {
                             union_node_anc <- get.union.incl(curr_node, ancestor)
                             states_matrix$Up2[[node]] <- union_node_anc
                             if(all(union_node_anc == ancestor)) { # If the state in common between the node and the ancestor is the ancestor
-                                states_matrix$Up2[[node]] <- get.common(ancestor, curr_node)
+                                states_matrix$Up2[[node]] <- get.common(ancestor, states_matrix$Up2[[node]])
                             }
                         }
                     }
                 }
             } else { # If the ancestor has no applicable state
-                union_desc <- get.union.incl(left, right)
-                if(!is.null(union_desc)) { # If there is a state in common between left and right
-                    states_matrix$Up2[[node]] <- union_desc
+                common_desc <- get.common(left, right)
+                if(!is.null(common_desc)) { # If there is a state in common between left and right 
+                    states_matrix$Up2[[node]] <- common_desc
                 } else { # If there is no state in common between left and right
                     states_matrix$Up2[[node]] <- curr_node
                 }
@@ -463,6 +463,7 @@ plot.convert.state <- function(character, missing = FALSE) {
 # tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
 # character <- "1100----1100"
 
+
 # plot.inapplicable.algorithm(tree, character)
 
 plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
@@ -489,16 +490,17 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
     }
 
     ## RUN THE STATE RECONSTRUCTION (4 passes)
-    states_matrix <- inapplicable.algorithm(tree, character, passes = 3)
+    states_matrix <- inapplicable.algorithm(tree, character, passes = 4)
 
     ## Get the text plotting size
-    cex <- 1 #- (Ntip(tree)/100)
+    # cex <- 1 - (Ntip(tree)/100)
+    cex <- 0.9
     ## Correct if Ntip < 10 or Ntip > 100
-    #cex <- ifelse(Ntip(tree) < 10, 1, cex)
-    #cex <- ifelse(Ntip(tree) > 100, 0.1, cex)
+    # cex <- ifelse(Ntip(tree) < 10, 1, cex)
+    # cex <- ifelse(Ntip(tree) > 100, 0.1, cex)
 
     ## Plotting the tree
-    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE)#, cex = cex, adj = cex*Ntip(tree)/2, ...)
+    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2, ...)
     # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2) ; warning("DEBUG plot")
 
     ## Add the tip states
@@ -522,7 +524,7 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
     }
 
     ## Plot the node labels
-    nodelabels(node_labels, bg = col.tips.nodes[2])#cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
+    nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
 
     return(invisible())
 }
