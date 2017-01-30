@@ -301,9 +301,14 @@ second.downpass <- function(states_matrix, tree) {
             ## Get the states in common between the descendants
             common_desc <- get.common(left, right)
 
-            ## If there is any applicable state in this common, set the node to be that state
-            if(any(common_desc != -1)) {
-                states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+            if(!is.null(common_desc)) {
+                ## If there is any applicable state in this common, set the node to be that state
+                if(any(common_desc != -1)) {
+                    states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+                } else {
+                ## @@@ Changed: Else set the state to the inapplicable token
+                    states_matrix$Dp2[[node]] <- -1
+                }   
             } else {
             ## Else set the node state to be the union of the descendants without the inapplicable tokens
                 union_desc <- get.union.incl(left, right)
@@ -349,7 +354,7 @@ second.uppass <- function(states_matrix, tree) {
         if(any(curr_node != -1)) { # If any state in the previous pass is not inapplicable
             if(any(ancestor != -1)) { # If any state in the ancestor is not inapplicable
                 common_anc_node <- get.common(ancestor, curr_node)
-                if(!is.null(common_anc_node) && any(common_anc_node == ancestor)) { # If there is a common state between the ancestor and the previous node state and that this commonality is equal to any of the ancestor state.
+                if(!is.null(common_anc_node) && any(common_anc_node %in% ancestor)) { # If there is a common state between the ancestor and the previous node state and that this commonality is equal to any of the ancestor state.
                     states_matrix$Up2[[node]] <- common_anc_node
                 } else { # If the common state between the ancestor and the final is not the ancestor
                     if(!is.null(get.common(left, right))) { # If there is a state in common between left and right
@@ -461,10 +466,12 @@ plot.convert.state <- function(character, missing = FALSE) {
 # ## DEBUG
 # warning("DEBUG")
 # tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
-# character <- "1100----1100"
+# character <- "01---1010101"
+# tree <- read.tree(text = "(((1,2),(3,4)),5);")
+# character <- "0-2-0"
 
 
-# plot.inapplicable.algorithm(tree, character)
+plot.inapplicable.algorithm(tree, character)
 
 plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
 

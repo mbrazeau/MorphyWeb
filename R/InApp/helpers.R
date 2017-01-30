@@ -301,9 +301,14 @@ second.downpass <- function(states_matrix, tree) {
             ## Get the states in common between the descendants
             common_desc <- get.common(left, right)
 
-            ## If there is any applicable state in this common, set the node to be that state
-            if(any(common_desc != -1)) {
-                states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+            if(!is.null(common_desc)) {
+                ## If there is any applicable state in this common, set the node to be that state
+                if(any(common_desc != -1)) {
+                    states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+                } else {
+                ## @@@ Changed: Else set the state to the inapplicable token
+                    states_matrix$Dp2[[node]] <- -1
+                }   
             } else {
             ## Else set the node state to be the union of the descendants without the inapplicable tokens
                 union_desc <- get.union.incl(left, right)
