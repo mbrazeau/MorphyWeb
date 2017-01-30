@@ -354,7 +354,7 @@ second.uppass <- function(states_matrix, tree) {
         if(any(curr_node != -1)) { # If any state in the previous pass is not inapplicable
             if(any(ancestor != -1)) { # If any state in the ancestor is not inapplicable
                 common_anc_node <- get.common(ancestor, curr_node)
-                if(!is.null(common_anc_node) && any(common_anc_node == ancestor)) { # If there is a common state between the ancestor and the previous node state and that this commonality is equal to any of the ancestor state.
+                if(!is.null(common_anc_node) && any(common_anc_node %in% ancestor)) { # If there is a common state between the ancestor and the previous node state and that this commonality is equal to any of the ancestor state.
                     states_matrix$Up2[[node]] <- common_anc_node
                 } else { # If the common state between the ancestor and the final is not the ancestor
                     if(!is.null(get.common(left, right))) { # If there is a state in common between left and right
@@ -466,7 +466,9 @@ plot.convert.state <- function(character, missing = FALSE) {
 # ## DEBUG
 # warning("DEBUG")
 # tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
-# character <- "1100----1100"
+# character <- "01---1010101"
+# tree <- read.tree(text = "(((1,2),(3,4)),5);")
+# character <- "0-2-0"
 
 
 # plot.inapplicable.algorithm(tree, character)
@@ -517,19 +519,21 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
     }
 
     ## Get the node labels
-    if(length(passes) > 1) {
+    if(length(passes) > 0) {
         node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:Ntip(tree))])
         node_labels <- paste("1:", node_labels)
         for(pass in passes[-1]) {
             node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:Ntip(tree))]), sep = ""), sep = "\n")
         }
-    } else {
-        node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
-        node_labels <- paste(passes, ": ", node_labels, sep = "")
+        nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
     }
+    # } else {
+    #     node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
+    #     node_labels <- paste(passes, ": ", node_labels, sep = "")
+    # }
 
     ## Plot the node labels
-    nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
+    # nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
 
     return(invisible())
 }

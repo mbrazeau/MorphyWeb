@@ -471,7 +471,7 @@ plot.convert.state <- function(character, missing = FALSE) {
 # character <- "0-2-0"
 
 
-plot.inapplicable.algorithm(tree, character)
+# plot.inapplicable.algorithm(tree, character)
 
 plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
 
@@ -519,19 +519,21 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
     }
 
     ## Get the node labels
-    if(length(passes) > 1) {
+    if(length(passes) > 0) {
         node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:Ntip(tree))])
         node_labels <- paste("1:", node_labels)
         for(pass in passes[-1]) {
             node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:Ntip(tree))]), sep = ""), sep = "\n")
         }
-    } else {
-        node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
-        node_labels <- paste(passes, ": ", node_labels, sep = "")
+        nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
     }
+    # } else {
+    #     node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
+    #     node_labels <- paste(passes, ": ", node_labels, sep = "")
+    # }
 
     ## Plot the node labels
-    nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
+    # nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
 
     return(invisible())
 }

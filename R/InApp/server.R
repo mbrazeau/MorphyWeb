@@ -56,10 +56,13 @@ shinyServer(
         character <- input$character_string
       }
 
-      ## Plot the inapplicable algorithm!
-      plot.inapplicable.algorithm(tree, character)
+      ## Setting up the number of passes to plot
+      # print(input$showPass)
 
-    }, height = 1200, width = 600)
+      ## Plot the inapplicable algorithm!
+      plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPass)))
+
+    })#, height = 1200, width = 600)
 
     # })
 
@@ -98,6 +101,11 @@ shinyServer(
     # output$newick_tree <- renderText({ 
     #   paste("newick_tree:", input$newick_tree)
     # })
+
+    # output$showPass <- renderText({ 
+    #   paste("showPass:", paste(input$showPass, collapse = ","))
+    # })
+
 
   }
 )
