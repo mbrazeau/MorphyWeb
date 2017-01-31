@@ -7,6 +7,18 @@ shinyServer(
 
     source("helpers.R")
   
+    # output$method <- renderText({ 
+    #   is.numeric(input$method)
+    #   if(as.numeric(input$method) == 1) {
+    #     print("Should be fitch inapplicable")
+    #     input$showPassInapp
+    #   } 
+    #   if(as.numeric(input$method) == 2) {
+    #     print("Should be fitch normal")
+    #     input$showPassFitch
+    #   } 
+    # })
+
     output$plot_out <- renderPlot({ 
 
       ## Setting up the tree
@@ -60,7 +72,15 @@ shinyServer(
       # print(input$showPass)
 
       ## Plot the inapplicable algorithm!
-      plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPass)))
+      if(as.numeric(input$method) == 1) {
+        plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassInapp)))
+      }
+      if(as.numeric(input$method) == 2) {
+        plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassFitch)))
+      }
+      # if(input$action) {
+      #   plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPass)))
+      # }
 
     })#, height = 1200, width = 600)
 
@@ -101,11 +121,6 @@ shinyServer(
     # output$newick_tree <- renderText({ 
     #   paste("newick_tree:", input$newick_tree)
     # })
-
-    # output$showPass <- renderText({ 
-    #   paste("showPass:", paste(input$showPass, collapse = ","))
-    # })
-
 
   }
 )

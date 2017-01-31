@@ -44,12 +44,12 @@ shinyUI(fluidPage(
           radioButtons("method", label = h3("Reconstruction method"), choices = list("Inapplicable Fitch" = 1, "Normal Fitch" = 2), selected = 1),
           conditionalPanel(
             condition = "input.method == 1",
-              checkboxGroupInput("showPass", label = h5("Show passes"),  choices = list("1st Downpass" = 1, "1st Uppass" = 2, "2nd Downpass" = 3, "2nd Uppass" = 4), selected = c(1,2,3,4)),
+              checkboxGroupInput("showPassInapp", label = h5("Show passes"),  choices = list("1st Downpass" = 1, "1st Uppass" = 2, "2nd Downpass" = 3, "2nd Uppass" = 4), selected = c(1,2,3,4)),
               helpText("Tick the passes to be displayed on the nodes")
           ),
           conditionalPanel(
             condition = "input.method == 2",
-              checkboxGroupInput("showPass", label = h5("Show passes"),  choices = list("1st Downpass" = 1, "1st Uppass" = 2), selected = c(1,2)),
+              checkboxGroupInput("showPassFitch", label = h5("Show passes"),  choices = list("1st Downpass" = 1, "1st Uppass" = 2), selected = c(1,2)),
               helpText("Tick the passes to be displayed on the nodes")
           ),
           hr(),
@@ -60,6 +60,7 @@ shinyUI(fluidPage(
   
   fluidRow(
     ## Plots the algorithm results
+    textOutput("method"),
     plotOutput("plot_out", width = "100%", "1000px")  ## Dynamically change the value here!
   )
 

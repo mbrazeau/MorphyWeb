@@ -1,5 +1,3 @@
-require(ape)
-
 #' @title Convert character
 #'
 #' @description Convert a character if it is not numeric (transforming - into -1 and ? into all characters (but - ))
@@ -436,7 +434,7 @@ plot.convert.state <- function(character, missing = FALSE) {
 
     if(missing) {
         ## Getting all states
-        all_states <- unique(unlist(character))[-which(unique(unlist(character)) == -1)]
+        all_states <- unique(unlist(character))
         ## Convert the missing states
         character <- lapply(character, plot.convert.missing, all_states)
     }
@@ -518,22 +516,15 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
         tiplabels(tips_labels, cex = cex, bg = col.tips.nodes[1])
     }
 
-    ## Get the node labels
     if(length(passes) > 0) {
         node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:Ntip(tree))])
-        node_labels <- paste("1:", node_labels)
+        node_labels <- paste(paste(passes[1], ":", sep = ""), node_labels)
         for(pass in passes[-1]) {
             node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:Ntip(tree))]), sep = ""), sep = "\n")
         }
-        nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
+        nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.85), bg = col.tips.nodes[2])
     }
-    # } else {
-    #     node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
-    #     node_labels <- paste(passes, ": ", node_labels, sep = "")
-    # }
 
-    ## Plot the node labels
-    # nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
 
     return(invisible())
 }
