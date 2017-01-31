@@ -8,18 +8,14 @@ shinyServer(
     source("helpers.R")
   
     # output$method <- renderText({ 
-    #   is.numeric(input$method)
-    #   if(as.numeric(input$method) == 1) {
-    #     print("Should be fitch inapplicable")
-    #     input$showPassInapp
-    #   } 
-    #   if(as.numeric(input$method) == 2) {
-    #     print("Should be fitch normal")
-    #     input$showPassFitch
-    #   } 
+    #   print(input$refresh)
     # })
+    seeds <- sample(1:200)*sample(1:10)
 
-    output$plot_out <- renderPlot({ 
+     output$plot_out <- renderPlot({ 
+
+      ## reset the seed based on the refresh
+      set.seed(seeds[(input$refresh)+1])
 
       ## Setting up the tree
       if(input$tree == 1) {
@@ -78,9 +74,6 @@ shinyServer(
       if(as.numeric(input$method) == 2) {
         plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassFitch)))
       }
-      # if(input$action) {
-      #   plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPass)))
-      # }
 
     })#, height = 1200, width = 600)
 
