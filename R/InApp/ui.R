@@ -20,7 +20,7 @@ shinyUI(fluidPage(
           ),
           conditionalPanel(
             condition = "input.tree == 3",
-              fileInput("newick_tree", label = h5("Select a newick format tree"))
+              fileInput("nexus_tree", label = h5("Select a newick format tree"))
           )
         ),
         
@@ -34,7 +34,7 @@ shinyUI(fluidPage(
           ),
           conditionalPanel(
             condition = "input.character == 3",
-              fileInput("newick_matrix", label = h5("Select a newick format matrix")),
+              fileInput("nexus_matrix", label = h5("Select a newick format matrix")),
               numericInput("character_num", label = h5("Selected character:"), value = 1)
           )
         ),
@@ -60,8 +60,10 @@ shinyUI(fluidPage(
   
   fluidRow(
     ## Plots the algorithm results
-    textOutput("method"),
-    plotOutput("plot_out", width = "100%", "1000px")  ## Dynamically change the value here!
+    # size <- uiOutput("plot_size"),
+    # textOutput("plot_size"),
+    uiOutput("plot.ui")
+    # plotOutput("plot_out")  ## Dynamically change the value here!
   )
 
 ))

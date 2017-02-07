@@ -84,16 +84,19 @@ make.states.matrix <- function(tree, character) {
     }
 
     ## Check if the character is the same length as the tree
-    if(Ntip(tree) != length(character)) {
+    if(ape::Ntip(tree) != length(character)) {
+        par(bty = "n")
+        plot(1,1, col = "white", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+        text(1,1, "The tree and the character are not the same length.")
         stop("The tree and character arguments don't match.")
     }
 
     ## Set up the list of characters
-    filling <- vector("list", Ntip(tree)+Nnode(tree))
+    filling <- vector("list", ape::Ntip(tree)+ape::Nnode(tree))
     states_matrix <- list("Char" = filling, "Dp1" = filling, "Up1" = filling, "Dp2" = filling, "Up2" = filling)
 
     ## Add the character into the list
-    states_matrix$Char[1:Ntip(tree)] <- character
+    states_matrix$Char[1:ape::Ntip(tree)] <- character
 
     return(states_matrix)
 }
@@ -169,7 +172,7 @@ first.downpass <- function(states_matrix, tree) {
     states_matrix$Dp1 <- states_matrix$Char
 
     ## Loop through the nodes
-    for(node in rev(Ntip(tree)+1:Nnode(tree))) {
+    for(node in rev(ape::Ntip(tree)+1:ape::Nnode(tree))) {
         ## Select the descendants and ancestors
         desc_anc <- desc.anc(node, tree)
         right <- states_matrix$Dp1[desc_anc[1]][[1]] # The node's right descendant
@@ -216,14 +219,14 @@ first.uppass <- function(states_matrix, tree) {
     states_matrix$Up1 <- states_matrix$Char
         
     ## Pre-condition: if the root is inapplicable AND applicable, remove inapplicable (if there's more than 2 states and one -1)
-    if(length(states_matrix$Dp1[[Ntip(tree)+1]]) > 1 && any(states_matrix$Dp1[[Ntip(tree)+1]] == -1)) {
-        states_matrix$Up1[[Ntip(tree)+1]] <- states_matrix$Dp1[[Ntip(tree)+1]][-which(states_matrix$Up1[[Ntip(tree)+1]] == -1)]
+    if(length(states_matrix$Dp1[[ape::Ntip(tree)+1]]) > 1 && any(states_matrix$Dp1[[ape::Ntip(tree)+1]] == -1)) {
+        states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]][-which(states_matrix$Up1[[ape::Ntip(tree)+1]] == -1)]
     } else {
-        states_matrix$Up1[[Ntip(tree)+1]] <- states_matrix$Dp1[[Ntip(tree)+1]]
+        states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]]
     }
 
     ## For each node from the root
-    for(node in (Ntip(tree)+2:Nnode(tree))) { ## Start past the root (+2)
+    for(node in (ape::Ntip(tree)+2:ape::Nnode(tree))) { ## Start past the root (+2)
 
         curr_node <- states_matrix$Dp1[[node]] # The current node
         ## Select the descendants and ancestors
@@ -285,7 +288,7 @@ second.downpass <- function(states_matrix, tree) {
     states_matrix$Dp2 <- states_matrix$Char
     
     ## Loop through the nodes
-    for(node in rev(Ntip(tree)+1:Nnode(tree))) {
+    for(node in rev(ape::Ntip(tree)+1:ape::Nnode(tree))) {
 
         curr_node <- states_matrix$Up1[[node]]
         ## Select the descendants and ancestors
@@ -337,10 +340,10 @@ second.uppass <- function(states_matrix, tree) {
     states_matrix$Up2 <- states_matrix$Char
 
     ## Root state is inherited from the second downpass
-    states_matrix$Up2[[Ntip(tree)+1]] <- states_matrix$Dp2[[Ntip(tree)+1]]
+    states_matrix$Up2[[ape::Ntip(tree)+1]] <- states_matrix$Dp2[[ape::Ntip(tree)+1]]
 
     ## For each node from the root
-    for(node in (Ntip(tree)+2:Nnode(tree))) { ## Start past the root (+2)
+    for(node in (ape::Ntip(tree)+2:ape::Nnode(tree))) { ## Start past the root (+2)
         ## Current node
         curr_node <- states_matrix$Dp2[[node]] # The current node
         ## Select the descendants and ancestors
@@ -471,7 +474,7 @@ plot.convert.state <- function(character, missing = FALSE) {
 
 # plot.inapplicable.algorithm(tree, character)
 
-plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
+plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), method = "Inapplicable", ...) {
 
     ## SANITIZING
     ## tree character done in make.states.matrix
@@ -493,36 +496,44 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
             warning("Only the two first colors from col.tips.nodes are used.")
         }
     }
+    ## method
+    if(method != "Inapplicable" && method != "Fitch") {
+        stop("method should be 'Fitch' or 'Inapplicable'")
+    }
 
     ## RUN THE STATE RECONSTRUCTION (4 passes)
-    states_matrix <- inapplicable.algorithm(tree, character, passes = 4)
+    if(method == "Inapplicable") {
+        states_matrix <- inapplicable.algorithm(tree, character, passes = 4)
+    } else {
+        states_matrix <- inapplicable.algorithm(tree, character, passes = 2) # Set to fitch!
+    }
 
     ## Get the text plotting size
-    # cex <- 1 - (Ntip(tree)/100)
-    cex <- 0.9
-    ## Correct if Ntip < 10 or Ntip > 100
-    # cex <- ifelse(Ntip(tree) < 10, 1, cex)
-    # cex <- ifelse(Ntip(tree) > 100, 0.1, cex)
+    # cex <- 1 - (ape::Ntip(tree)/100)
+    cex <- 0.99
+    ## Correct if ape::Ntip < 10 or ape::Ntip > 100
+    # cex <- ifelse(ape::Ntip(tree) < 10, 1, cex)
+    # cex <- ifelse(ape::Ntip(tree) > 100, 0.1, cex)
 
     ## Plotting the tree
-    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2, ...)
-    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2) ; warning("DEBUG plot")
+    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*ape::Ntip(tree)/2, ...)
+    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*ape::Ntip(tree)/2) ; warning("DEBUG plot")
 
     ## Add the tip states
     if(class(character) == "character" && length(character) == 1) {
-        tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1])
+        ape::tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1])
     } else {
-        tips_labels <- plot.convert.state(states_matrix[[1]][1:Ntip(tree)], missing = TRUE)
-        tiplabels(tips_labels, cex = cex, bg = col.tips.nodes[1])
+        tips_labels <- plot.convert.state(states_matrix[[1]][1:ape::Ntip(tree)], missing = TRUE)
+        ape::tiplabels(tips_labels, cex = cex, bg = col.tips.nodes[1])
     }
 
     if(length(passes) > 0) {
-        node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:Ntip(tree))])
+        node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:ape::Ntip(tree))])
         node_labels <- paste(paste(passes[1], ":", sep = ""), node_labels)
         for(pass in passes[-1]) {
-            node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:Ntip(tree))]), sep = ""), sep = "\n")
+            node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:ape::Ntip(tree))]), sep = ""), sep = "\n")
         }
-        nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.85), bg = col.tips.nodes[2])
+        ape::nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.85), bg = col.tips.nodes[2])
     }
 
 

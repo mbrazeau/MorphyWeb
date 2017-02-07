@@ -3,117 +3,228 @@ library(ape)
 
 # server.R
 shinyServer(
-  function(input, output) {
+    function(input, output, session) {
 
-    source("helpers.R")
-  
-    # output$method <- renderText({ 
-    #   print(input$refresh)
-    # })
-    seeds <- sample(1:200)*sample(1:10)
+        ## Load the functions
+        source("helpers.R")
 
-     output$plot_out <- renderPlot({ 
+        # ## Get the plot size out
+        # output$plot_size <- renderUI({ 
+        #     if(input$tree == 1) {
+        #         ## Random tree
+        #         tree <- ape::rtree(input$n_taxa)
+        #     }
 
-      ## reset the seed based on the refresh
-      set.seed(seeds[(input$refresh)+1])
+        #     ## Newick tree
+        #     if(input$tree == 2) {
+        #         tree <- ape::read.tree(text = input$newick_tree)
+        #     }
 
-      ## Setting up the tree
-      if(input$tree == 1) {
-        ## Random trees
-        if(input$tree_type == "Balanced") {
-          ## Balanced tree
-          if(log2(input$n_taxa)%%1 == 0)  {
-            tree <- ape::stree(input$n_taxa, type = "balanced")
-          } else {
-            tree <- ape::rtree(input$n_taxa)
-          }
-        }
-        if(input$tree_type == "Left-Right") {
-          ## Left-Right tree
-          if(input$n_taxa%%2 == 0) {
-            left <- ape::stree(input$n_taxa/2+1, type = "left")
-            right <- ape::stree(input$n_taxa/2, type = "right")
-            tree <- ape::bind.tree(left, right, where = 1)
-          } else {
-            tree <- ape::rtree(input$n_taxa)
-          }
-        }
-        if(input$tree_type == "Left") {
-          ## Left ladder tree
-          tree <- ape::stree(input$n_taxa, type = "left")
-        }
-        if(input$tree_type == "Right") {
-          ## Left ladder tree
-          tree <- ape::stree(input$n_taxa, type = "right")
-        }
-        if(input$tree_type == "Random") {
-          ## Left ladder tree
-          tree <- ape::rtree(input$n_taxa)
-        }
-      } else {
-        ## Tree is a newick format
-        tree <- ape::read.tree(text = input$newick_tree)
-      }
+        #     ## Nexus tree
+        #     if(input$tree == 3) {
+        #         nexus_tree <- input$nexus_tree
+        #         if(!is.null(nexus_tree)) {
+        #             tree <- ape::read.nexus(nexus_tree$datapath)
+        #             ## Check if the tree is multiPhylo
+        #             if(class(tree) == "multiPhylo") {
+        #                 tree <- tree[[1]]
+        #             }
+        #         }
+        #     }
+        #     if(ape::Ntip(tree) > 10) {
+        #         print(paste(round(ape::Ntip(tree)*0.4), "00px", sep = ""))
+        #     } else {
+        #         print(paste(4, "00px", sep = ""))
+        #     }
+        # })
 
-      ## Setting the character
-      if(input$character == 1) {
-        ## Generate a random character
-        character <- paste(sample(c("0", "1", "2", "-", "?"), ape::Ntip(tree), prob = c(0.535, 0.135, 0.13, 0.1, 0.1), replace = TRUE))
-      } else {
-        ## User character
-        character <- input$character_string
-      }
+        output$plot.ui <- renderUI({            
+            ## Get the tree
+            if(input$tree == 1) {
+                ## Random tree
+                tree <- ape::rtree(input$n_taxa)
+            }
 
-      ## Setting up the number of passes to plot
-      # print(input$showPass)
+            ## Newick tree
+            if(input$tree == 2) {
+                tree <- ape::read.tree(text = input$newick_tree)
+            }
 
-      ## Plot the inapplicable algorithm!
-      if(as.numeric(input$method) == 1) {
-        plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassInapp)))
-      }
-      if(as.numeric(input$method) == 2) {
-        plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassFitch)))
-      }
+            ## Nexus tree
+            if(input$tree == 3) {
+                nexus_tree <- input$nexus_tree
+                if(!is.null(nexus_tree)) {
+                    tree <- ape::read.nexus(nexus_tree$datapath)
+                    ## Check if the tree is multiPhylo
+                    if(class(tree) == "multiPhylo") {
+                        tree <- tree[[1]]
+                    }
+                }
+            }
 
-    })#, height = 1200, width = 600)
+            ## Set the plot window
+            if(ape::Ntip(tree) > 10) {
+                plotOutput("plot_out", width ="100%", height = paste(round(ape::Ntip(tree)*0.4), "00px", sep = ""))
+            } else {
+                plotOutput("plot_out", width ="100%", height = "400px")
+            }
+        })
+    
+        ## Generate the seeds for plotting
+        seeds <- sample(1:200)*sample(1:10)
 
-    # })
+        output$plot_out <- renderPlot({ 
+            ## Reset the seed when hitting the refresh button
+            set.seed(seeds[(input$refresh)+1])
 
+            ## ~~~~~~~~~~
+            ## Tree
+            ## ~~~~~~~~~~
 
-    ## DEBUG:
-    # output$tree <- renderText({ 
-    #   if(input$tree == 1) {
-    #     ## The input tree is random
-    #     paste("Tree type:", input$tree_type, "with", input$n_taxa, "taxa")
-    #   } else {
-    #     ## The input tree is user based
-    #     paste("Tree:", input$newick_tree, "with", Ntip(ape::read.tree(text = input$newick_tree)), "taxa")
-    #   }
-    # })
+            ## Setting up the tree
+            if(input$tree == 1) {
+                ## Balanced tree
+                if(input$tree_type == "Balanced") {
+                    if(log2(input$n_taxa)%%1 == 0) {
+                        tree <- ape::stree(input$n_taxa, type = "balanced")
+                    } else {
+                        tree <- ape::rtree(input$n_taxa)
+                    }
+                }
 
-    # output$character <- renderText({ 
-    #   if(input$character == 1) {
-    #     paste("Character input: Random")
-    #   } else {
-    #     paste("Character input: ", input$character_string)
-    #   }
-    # })
+                ## Left-Right tree
+                if(input$tree_type == "Left-Right") {
+                    if(input$n_taxa%%2 == 0) {
+                        left <- ape::stree(input$n_taxa/2+1, type = "left")
+                        right <- ape::stree(input$n_taxa/2, type = "right")
+                        tree <- ape::bind.tree(left, right, where = 1)
+                    } else {
+                        tree <- ape::rtree(input$n_taxa)
+                    }
+                }
 
-    # output$character_string <- renderText({ 
-    #   paste("character_string:", input$character_string)
-    # })
+                ## Left tree
+                if(input$tree_type == "Left") {
+                    tree <- ape::stree(input$n_taxa, type = "left")
+                }
 
-    # output$tree_type <- renderText({ 
-    #   paste("tree_type:", input$tree_type)
-    # })
+                ## Right tree
+                if(input$tree_type == "Right") {
+                    tree <- ape::stree(input$n_taxa, type = "right")
+                }
 
-    # output$n_taxa <- renderText({ 
-    #   paste("n_taxa:", input$n_taxa)
-    # })
+                ## Random tree
+                if(input$tree_type == "Random") {
+                    tree <- ape::rtree(input$n_taxa)
+                }
+            }
 
-    # output$newick_tree <- renderText({ 
-    #   paste("newick_tree:", input$newick_tree)
-    # })
+            ## Newick tree
+            if(input$tree == 2) {
+                tree <- ape::read.tree(text = input$newick_tree)
+                if(is.null(tree)) {
+                  stop("Enter a tree in newick format.")
+                }
+            }
 
-  }
+            ## Nexus tree
+            if(input$tree == 3) {
+                nexus_tree <- input$nexus_tree
+                if(!is.null(nexus_tree)) {
+                    tree <- ape::read.nexus(nexus_tree$datapath)
+                    ## Check if the tree is multiPhylo
+                    if(class(tree) == "multiPhylo") {
+                        tree <- tree[[1]]
+                    }
+                } else {
+                    stop("Load a tree in nexus format.")
+                }
+            }
+
+            ## ~~~~~~~~~~
+            ## Character
+            ## ~~~~~~~~~~
+
+            ## Generate a random character
+            if(input$character == 1) {
+                character <- paste(sample(c("0", "1", "2", "-", "?"), ape::Ntip(tree), prob = c(0.535, 0.135, 0.13, 0.1, 0.1), replace = TRUE))
+            }
+
+            ## Character input as a character string
+            if(input$character == 2) {
+                character <- as.character(input$character_string)
+                if(is.null(character)) {
+                    stop("Enter a character as a string (e.g. 0123).")
+                }
+            }
+
+            ## Character input as a nexus
+            if(input$character == 3) {
+                nexus_matrix <- input$nexus_matrix
+                if(!is.null(nexus_matrix)) {
+                    matrix <- ape::read.nexus.data(nexus_matrix$datapath)
+                    matrix <- matrix(data = unlist(matrix), nrow = length(matrix[[1]]), byrow = FALSE)
+                    ## Select the right character
+                    if(input$character_num < 1 | input$character_num > nrow(matrix)) {
+                        stop(paste("Select a character between 0 and ", nrow(matrix), ".", sep = ""))
+                    } else {
+                        character <- matrix[input$character_num, ]
+                    }
+                } else {
+                    stop("Load a matrix in nexus format.")
+                }
+            }
+
+            ## ~~~~~~~~~~
+            ## Plotting the results
+            ## ~~~~~~~~~~
+
+            # Inapplicable algorithm
+            if(as.numeric(input$method) == 1) {
+                plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassInapp)), method = "Inapplicable")
+            }
+
+            ## Fitch algorithm
+            if(as.numeric(input$method) == 2) {
+                plot.inapplicable.algorithm(tree, character, passes = as.vector(as.numeric(input$showPassFitch)), method = "Fitch")
+            }
+
+        })#, height = 1200, width = 600)
+
+        # # DEBUG:
+        # output$tree <- renderText({ 
+        #     if(input$tree == 1) {
+        #         ## The input tree is random
+        #         paste("Tree type:", input$tree_type, "with", input$n_taxa, "taxa")
+        #     } else {
+        #         ## The input tree is user based
+        #         paste("Tree:", input$newick_tree, "with", Ntip(ape::read.tree(text = input$newick_tree)), "taxa")
+        #     }
+        # })
+
+        # output$character <- renderText({ 
+        #     if(input$character == 1) {
+        #         paste("Character input: Random")
+        #     } else {
+        #         paste("Character input: ", input$character_string)
+        #     }
+        # })
+
+        # output$character_string <- renderText({ 
+        #     paste("character_string:", input$character_string)
+        # })
+
+        # output$tree_type <- renderText({ 
+        #     paste("tree_type:", input$tree_type)
+        # })
+
+        # output$n_taxa <- renderText({ 
+        #     paste("n_taxa:", input$n_taxa)
+        # })
+
+        # output$newick_tree <- renderText({ 
+        #     paste("newick_tree:", input$newick_tree)
+        # })
+
+    }
 )
