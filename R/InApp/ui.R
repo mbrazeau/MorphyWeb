@@ -49,6 +49,8 @@ shinyUI(fluidPage(
           ),
           conditionalPanel(
             condition = "input.method == 2",
+              radioButtons("fitch_inapp", label = h5("Inapplicable tokens are:"), choices = list("Missing data (?)" = 1, "An extra state" = 2), selected = 1),
+              helpText("When treated as ?, - is equal to all states; when treated as an extra state, - is equal to a new character state."),
               checkboxGroupInput("showPassFitch", label = h5("Show passes"),  choices = list("1st Downpass" = 1, "1st Uppass" = 2), selected = c(1,2)),
               helpText("Tick the passes to be displayed on the nodes")
           ),
