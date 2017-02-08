@@ -626,21 +626,21 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
 
     ## Get the text plotting size
     # cex <- 1 - (ape::Ntip(tree)/100)
-    cex <- 0.99
+    cex <- 1
     ## Correct if ape::Ntip < 10 or ape::Ntip > 100
     # cex <- ifelse(ape::Ntip(tree) < 10, 1, cex)
     # cex <- ifelse(ape::Ntip(tree) > 100, 0.1, cex)
 
     ## Plotting the tree
-    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*ape::Ntip(tree)/2, ...)
-    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*ape::Ntip(tree)/2) ; warning("DEBUG plot")
+    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = 0.5, ...)
+    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = 0.5) ; warning("DEBUG plot")
 
     ## Add the tip states
     if(class(character) == "character" && length(character) == 1) {
-        ape::tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1])
+        ape::tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1], adj = 1)
     } else {
         tips_labels <- plot.convert.state(states_matrix[[1]][1:ape::Ntip(tree)], missing = TRUE)
-        ape::tiplabels(tips_labels, cex = cex, bg = col.tips.nodes[1])
+        ape::tiplabels(tips_labels, cex = 1, bg = col.tips.nodes[1], adj = 1)
     }
 
     if(length(passes) > 0) {

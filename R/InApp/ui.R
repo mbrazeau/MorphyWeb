@@ -12,7 +12,8 @@ shinyUI(fluidPage(
             condition = "input.tree == 1",
               selectInput("tree_type", label = "Tree topology type", choices = list("Random", "Balanced", "Left", "Right", "Left-Right"), selected = "Random"),
               sliderInput("n_taxa", label = "Number of taxa:", min = 3, max = 100, value = 12),
-              helpText("Note: if the tree type 'Balanced', the number of taxa must be a power of 2 (2,4,8, ...); if the tree type is `Left-Right` the number of taxa must be even. In both cases, if the number of taxa does not match, a random tree is used instead.")
+              helpText("Note: if the tree type 'Balanced', the number of taxa must be a power of 2 (2,4,8, ...); if the tree type is 'Left-Right' the number of taxa must be even. In both cases, if the number of taxa does not match, a random tree is used instead."),
+              checkboxInput("showtiplabels", label = "Show tip labels", value = FALSE)
           ),
           conditionalPanel(
             condition = "input.tree == 2",
