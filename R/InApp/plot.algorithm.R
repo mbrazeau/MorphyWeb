@@ -323,7 +323,7 @@ first.uppass <- function(states_matrix, tree) {
         
     ## Pre-condition: if the root is inapplicable AND applicable, remove inapplicable (if there's more than 2 states and one -1)
     if(length(states_matrix$Dp1[[ape::Ntip(tree)+1]]) > 1 && any(states_matrix$Dp1[[ape::Ntip(tree)+1]] == -1)) {
-        states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]][-which(states_matrix$Up1[[ape::Ntip(tree)+1]] == -1)]
+        states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]][which(states_matrix$Dp1[[ape::Ntip(tree)+1]] != -1)]
     } else {
         states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]]
     }
