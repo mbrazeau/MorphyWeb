@@ -12,9 +12,9 @@
 \begin{enumerate}
     \item Enter on one of the most nested tips on the tree and focus on its closest ancestor (hereafter referred as the ``focal node'') then go to \ref{1stDp:ANDdescen}.
     \item \label{1stDp:ANDdescen} \textbf{If} there is a state in common between both descendants of the focal node, \textbf{set} the focal node state to the states in common \textbf{then} go to \ref{1stDp:ANDinap}. \textbf{Else} go to \ref{1stDp:ORdescen}.
-    \item \label{1stDp:ANDinap} \textbf{If} the state of the focal node is now only the inapplicable token but that both descendants also have at least one applicable state, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:exitLoop}.
-    \item \label{1stDp:ORdescen} \textbf{If} there is a no state in common between both descendants, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:ORinap}.
-    \item \label{1stDp:ORinap} \textbf{If} both descendants have also applicable states, \textbf{remove} the inapplicable token from the the focal node state; \textbf{then} go to \ref{1stDp:exitLoop}.
+    \item \label{1stDp:ANDinap} \textbf{If} the state of the focal node is now only the inapplicable token but that both descendants also have at least one applicable state, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:exitLoop}. \textbf{Else} leave the node state to be the inapplicable token; \textbf{then} go to \ref{1stDp:exitLoop}.
+    \item \label{1stDp:ORdescen} \textbf{If} there is no state in common between both descendants, \textbf{set} the focal node state to be the union of both descendants states; \textbf{then} go to \ref{1stDp:ORinap}.
+    \item \label{1stDp:ORinap} \textbf{If} both descendants have an applicable state, \textbf{remove} any eventual inapplicable token from the the focal node state; \textbf{then} go to \ref{1stDp:exitLoop}.
     \item \label{1stDp:exitLoop} Go to the closest ancestor from the focal node and repeat from \ref{1stDp:ANDdescen} until all the nodes in the tree have been visited.
 \end{enumerate}
 
@@ -23,7 +23,7 @@
 \begin{enumerate}
     \item Enter the tree on the root. \textbf{If} if the root has both inapplicable \textit{and} applicable states, \textbf{remove} the inapplicable state; then go to \ref{1stUp:firstNode}.
     \item \label{1stUp:firstNode} Select the next focal node after the root; then go to \ref{1stUp:entryLoop}. 
-    \item \label{1stUp:entryLoop} \textbf{If} that focal node as an inapplicable token go to \ref{1stUp:NodeInapplicable}; \textbf{else} go to \ref{1stUp:NodeApplicable}.
+    \item \label{1stUp:entryLoop} \textbf{If} that focal node has an inapplicable token go to \ref{1stUp:NodeInapplicable}; \textbf{else} go to \ref{1stUp:NodeApplicable}.
     % \item \label{1stUp:NodeInapplicable} \textbf{If} the focal node also has any applicable state \textit{and} \textbf{if} the state of the focal node's ancestor has an inapplicable token, \textbf{set} the focal node state to be the inapplicable token; \textbf{then} go to \ref{1stUp:repeat}. \textbf{Else} go to \ref{1stUp:ancAppli1}.
     \item \label{1stUp:NodeInapplicable} \textbf{If} the node also has at least one applicable state, \textbf{then} go to \ref{1stUp:NodeInapNApp}. \textbf{Else} go to \ref{1stUp:NodeInapOnly}.
     \item \label{1stUp:NodeInapNApp} \textbf{If} the node's ancestor has an inapplicable token, \textbf{set} the node state to be the inapplicable token; \textbf{then} go to \ref{1stUp:repeat}. \textbf{Else} \textbf{leave} the node's state unchanged but \textbf{remove} any inapplicable token; \textbf{then} go to \ref{1stUp:repeat}.
