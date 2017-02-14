@@ -274,6 +274,9 @@ first.downpass <- function(states_matrix, tree) {
     ## Transferring the characters in the right matrix column
     states_matrix$Dp1 <- states_matrix$Char
 
+    ## Set up the root state
+    states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]]
+
     ## Loop through the nodes
     for(node in rev(ape::Ntip(tree)+1:ape::Nnode(tree))) {
         ## Select the descendants and ancestors
