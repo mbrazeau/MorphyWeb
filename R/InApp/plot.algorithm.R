@@ -97,10 +97,11 @@ make.states.matrix <- function(tree, character, inapplicable = NULL) {
         ## How to treat inapplicables (for Fitch)
         find.inapplicable <- function(one_char, replace) {
             if(any(one_char == -1)) {
-                return(replace)
-            } else {
-                return(one_char)
+                one_char <- one_char[which(one_char != -1)]
+                one_char <- c(one_char, replace)
+                one_char <- sort(unique(one_char))
             }
+            return(one_char)
         }
         if(inapplicable == 1) {
             ## Inapplicable are missing
