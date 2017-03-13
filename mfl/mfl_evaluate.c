@@ -291,6 +291,7 @@ void mfl_fitch_second_downpass_inapplicables(mfl_nodedata_t*       n_nd,
 //    int* weights = datapart->part_int_weights;
     int i = 0;
     int num_chars = datapart->part_n_chars_included;
+    int* weights = datapart->part_int_weights;
     mfl_charstate* lft_char = left_nd->nd_final_set; // Note left and right are pointing to final sets now, not prelim sets
     mfl_charstate* lft_prelim = left_nd->nd_prelim_set;
     mfl_charstate* rt_char = right_nd->nd_final_set;
@@ -323,17 +324,38 @@ void mfl_fitch_second_downpass_inapplicables(mfl_nodedata_t*       n_nd,
                 
             } else {
                 n_final[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                
+                // Add steps if necessary:
+                if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
+                    if (n_final[i] == (n_final[i] & actives[i])) {
+                        if (length) {
+                            *length += weights[i];
+                        }
+                    }
+                    else {
+                        actives[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
+                    }
+                }
+            
             }
             
             regionactive[i] |= (lreg_active[i] | rreg_active[i]);
         }
         else {
-            regionactive[i] = 0;
+            if (!(lft_char[i] & rt_char[i])) {
+                
+                temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                
+                actives[i] |= temp;
+            }
         }
+//        else {
+//            regionactive[i] = 0;
+//        }
 
         assert(n_final[i]);
 
-        subtreeactive[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        //subtreeactive[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
         
     }
@@ -433,52 +455,27 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     }
                 }
             }
-            
         }
-        
-        
-        if ( !(lft_char[i] & rt_char[i]) ) {
-            
-            temp = lft_char[i] | rt_char[i];
-            
-            if (n_final[i] & MORPHY_IS_APPLICABLE) {
-                if (lreg_active[i] & rreg_active[i]) {
-                    if (!((lft_prelim[i] | rt_prelim[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
-                        if (length) {
-                            *length += weights[i];
-                        }
-                    }
-                }
-                else if (!(n_prelim[i] & anc_char[i])) {
-                    if (temp == (temp & actives[i])) {
-                        if (length) {
-                            *length += weights[i];
-                        }
-                    }
-                }
-                else if (temp == (temp & actives[i])) {
-                    if (!((lft_prelim[i] | rt_prelim[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
-                        if (length) {
-                            *length += weights[i];
-                        }
-                    }
-                }
-            }
-            else {
-                if (temp & actives[i]) {
+        else {
+            if (!(lft_char[i] & rt_char[i])) {
+                if ((lft_char[i] | rt_char[i]) & actives[i]) {
                     if (length) {
                         *length += weights[i];
                     }
                 }
+//                else {
+//                    actives[i] |= (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+//                }
             }
-            
-            tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
-            
+        }
+        
+        if (!(lft_char[i] & rt_char[i])) {
+            actives[i] |= (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
         }
 
-        // Add to actives any states in tempactives not found in the preliminary
-        // nodal set
-        actives[i] |= ((n_prelim[i] ^ tempactive[i]) & tempactive[i]);
+//        // Add to actives any states in tempactives not found in the preliminary
+//        // nodal set
+//        actives[i] |= ((n_prelim[i] ^ tempactive[i]) & tempactive[i]);
         
     
         assert(n_final[i]);
@@ -925,8 +922,15 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     //t->treet_parsimonylength = 0;
 #endif
     
-    mfl_final_preorder_traversal(t->treet_root, NULL);
+    mfl_final_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
     mfl_set_inapplic_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
+    
+    for (int i = 0; i < dataparts->ptset_n_parts; ++i) {
+        for (int j = 0; j < dataparts->ptset_partitions[i]->part_n_chars_max; ++j) {
+            memset(dataparts->ptset_partitions[i]->part_activestates, 0, dataparts->ptset_partitions[i]->part_n_chars_max* sizeof(mfl_charstate));
+        }
+    }
+    
     mfl_second_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
     
     mfl_calculate_all_views(t, dataparts, NULL);
