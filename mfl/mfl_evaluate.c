@@ -446,10 +446,11 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
         }
         
         if (!(lft_char[i] & rt_char[i])) {
-            actives[i] |= (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+            if (actives) {
+                actives[i] |= (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+            }
         }
-        
-    
+
         assert(n_final[i]);
         
     }
@@ -457,7 +458,9 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
 }
 
 
-void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts)
+void mfl_set_rootstates(mfl_node_t* dummyroot,
+                        mfl_node_t* rootnode,
+                        mfl_partition_set_t* dataparts)
 {
     
     int i = 0;
@@ -478,7 +481,9 @@ void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partiti
     
 }
 
-void mfl_set_inapplic_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts)
+void mfl_set_inapplic_rootstates(mfl_node_t* dummyroot,
+                                 mfl_node_t* rootnode,
+                                 mfl_partition_set_t* dataparts)
 {
     
     int i = 0;
@@ -499,7 +504,10 @@ void mfl_set_inapplic_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mf
     
 }
 
-inline int mfl_wagner_stepcount(mfl_charstate leftchar, mfl_charstate rightchar, mfl_charstate* parentchar, int weight)
+inline int mfl_wagner_stepcount(mfl_charstate leftchar,
+                                mfl_charstate rightchar,
+                                mfl_charstate* parentchar,
+                                int weight)
 {
     /* Calculates the number of steps between non-overlapping state sets from two 
      * descendant branches at a binary node. There might be a better way to do this
@@ -824,7 +832,9 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     
     for (int i = 0; i < dataparts->ptset_n_parts; ++i) {
         for (int j = 0; j < dataparts->ptset_partitions[i]->part_n_chars_max; ++j) {
-            memset(dataparts->ptset_partitions[i]->part_activestates, 0, dataparts->ptset_partitions[i]->part_n_chars_max* sizeof(mfl_charstate));
+            if (dataparts->ptset_partitions[i]->part_has_inapplicables) {
+                memset(dataparts->ptset_partitions[i]->part_activestates, 0, dataparts->ptset_partitions[i]->part_n_chars_max* sizeof(mfl_charstate));
+            }
         }
     }
     
