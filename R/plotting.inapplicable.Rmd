@@ -23,7 +23,7 @@ if(!require(devtools)) install.packages("devtools")
 After, you need to load all the code that's on the `morphy-developement` repo:
 
 ```{r}
-source_url("https://raw.githubusercontent.com/mbrazeau/Morphy/development/R/plot.algorithm.R")
+source_url("https://raw.githubusercontent.com/mbrazeau/Morphy/development/R/InApp/plot.algorithm.R")
 ```
 <!-- # source("~/Packaging/Morphy/R/plot.algorithm.R") -->
 

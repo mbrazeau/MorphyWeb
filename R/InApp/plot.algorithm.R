@@ -1,5 +1,3 @@
-require(ape)
-
 #' @title Convert character
 #'
 #' @description Convert a character if it is not numeric (transforming - into -1 and ? into all characters (but - ))
@@ -73,7 +71,7 @@ convert.char <- function(character) {
 #' If \code{character} argument is a list, each element of the list must be a \code{"numeric"} vector with \code{"?"} being all states and \code{"-"} being \code{-1}.
 #' @author Thomas Guillerme
 
-make.states.matrix <- function(tree, character) {
+make.states.matrix <- function(tree, character, inapplicable = NULL) {
 
     ## Check if the tree is a tree!
     if(class(tree) != "phylo") {
@@ -86,16 +84,39 @@ make.states.matrix <- function(tree, character) {
     }
 
     ## Check if the character is the same length as the tree
-    if(Ntip(tree) != length(character)) {
+    if(ape::Ntip(tree) != length(character)) {
         stop("The tree and character arguments don't match.")
     }
 
     ## Set up the list of characters
-    filling <- vector("list", Ntip(tree)+Nnode(tree))
+    filling <- vector("list", ape::Ntip(tree)+ape::Nnode(tree))
     states_matrix <- list("Char" = filling, "Dp1" = filling, "Up1" = filling, "Dp2" = filling, "Up2" = filling)
 
+
+    if(!is.null(inapplicable)) {
+        ## How to treat inapplicables (for Fitch)
+        find.inapplicable <- function(one_char, replace) {
+            if(any(one_char == -1)) {
+                one_char <- one_char[which(one_char != -1)]
+                one_char <- c(one_char, replace)
+                one_char <- sort(unique(one_char))
+            }
+            return(one_char)
+        }
+        if(inapplicable == 1) {
+            ## Inapplicable are missing
+            replace <- unique(unlist(character))[which(unique(unlist(character)) != -1)]
+            character <- lapply(character, find.inapplicable, replace)
+        } else {
+            ## Inapplicable is an extra state
+            replace <- max(unlist(character))+1
+            character <- lapply(character, find.inapplicable, replace)
+        }
+    }
+
     ## Add the character into the list
-    states_matrix$Char[1:Ntip(tree)] <- character
+    states_matrix$Char[1:ape::Ntip(tree)] <- character
+
 
     return(states_matrix)
 }
@@ -156,6 +177,90 @@ get.union.excl <- function(a, b) {
 }
 
 
+
+#' @title Fitch downpass
+#'
+#' @description Applies a Fitch down pass to a node
+#'
+#' @param states_matrix \code{matrix}, the matrix containing all the states
+#' @param tree \code{phylo}, a tree
+#'
+#' @author Thomas Guillerme
+
+fitch.downpass <- function(states_matrix, tree) {
+
+    ## Transferring the characters in the right matrix column
+    states_matrix$Dp1 <- states_matrix$Char
+
+    ## Loop through the nodes
+    for(node in rev(ape::Ntip(tree)+1:ape::Nnode(tree))) {
+        ## Select the descendants and ancestors
+        desc_anc <- desc.anc(node, tree)
+        right <- states_matrix$Dp1[desc_anc[1]][[1]] # The node's right descendant
+        left <- states_matrix$Dp1[desc_anc[2]][[1]] # The node's left descendant
+
+        ## Get the states in common between the descendants
+        common_desc <- get.common(left, right)
+
+        if(!is.null(common_desc)) {
+            ## If there is any states in common, set the node to be that one
+            states_matrix$Dp1[[node]] <- common_desc
+        } else {
+            ## Else set it to be the union of the descendants
+            states_matrix$Dp1[[node]] <- get.union.incl(left, right)
+        }
+    }
+
+    return(states_matrix) 
+}
+
+#' @title Fitch uppass
+#'
+#' @description Applies a Fitch up pass to a node
+#'
+#' @param states_matrix \code{matrix}, the matrix containing all the states
+#' @param tree \code{phylo}, a tree
+#'
+#' @author Thomas Guillerme
+
+fitch.uppass <- function(states_matrix, tree) {
+
+    ## Transferring the characters in the right matrix column
+    states_matrix$Up1 <- states_matrix$Char
+
+    ## For each node from the root
+    for(node in (ape::Ntip(tree)+2:ape::Nnode(tree))) { ## Start past the root (+2)
+
+        curr_node <- states_matrix$Dp1[[node]] # The current node
+        ## Select the descendants and ancestors
+        desc_anc <- desc.anc(node, tree)
+        right <- states_matrix$Dp1[desc_anc[1]][[1]] # The node's right descendant
+        left <- states_matrix$Dp1[desc_anc[2]][[1]] # The node's left descendant
+        ancestor <- states_matrix$Dp1[desc_anc[3]][[1]] # The node's ancestor
+
+        ## Get the states in common between the downpass and the ancestor
+        common_anc <- get.common(ancestor, curr_node)
+
+        ## If the state in common is the sate of the ancestor
+        if(!is.null(common_anc) && length(common_anc) == length(ancestor) && all(common_anc == ancestor)) {
+            ## Set final to be common
+            states_matrix$Up1[[node]] <- common_anc
+        } else {
+            ## Get the states in common between the descendants
+            common_desc <-get.common(left, right)
+            if(!is.null(common_desc)) {
+                ## If there is a state in common, set the final to be the union of the prelim and the common state between the ancestor and the union of the descendants
+                states_matrix$Up1[[node]] <- get.union.incl(curr_node, get.common(ancestor, get.union.incl(left, right)))
+            } else {
+                ## Else set the state to be the union between the prelim and the ancestor
+                states_matrix$Up1[[node]] <- get.union.incl(curr_node, ancestor)
+            }
+        }
+    }
+
+    return(states_matrix)    
+}
+
 #' @title First downpass
 #'
 #' @description Applies a first down pass to a node
@@ -170,8 +275,11 @@ first.downpass <- function(states_matrix, tree) {
     ## Transferring the characters in the right matrix column
     states_matrix$Dp1 <- states_matrix$Char
 
+    ## Set up the root state
+    states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]]
+
     ## Loop through the nodes
-    for(node in rev(Ntip(tree)+1:Nnode(tree))) {
+    for(node in rev(ape::Ntip(tree)+1:ape::Nnode(tree))) {
         ## Select the descendants and ancestors
         desc_anc <- desc.anc(node, tree)
         right <- states_matrix$Dp1[desc_anc[1]][[1]] # The node's right descendant
@@ -185,7 +293,7 @@ first.downpass <- function(states_matrix, tree) {
             states_matrix$Dp1[[node]] <- common_desc
 
             ## If state in common is actually the inapplicable token, but that both descendants have applicables, set it to be the union between the descendants
-            if(all(common_desc == -1) -1 && any(left != -1) && any(right != -1)) {
+            if(all(common_desc == -1) && any(left != -1) && any(right != -1)) {
                 states_matrix$Dp1[[node]] <- get.union.incl(left, right)
             }
         } else {
@@ -218,14 +326,14 @@ first.uppass <- function(states_matrix, tree) {
     states_matrix$Up1 <- states_matrix$Char
         
     ## Pre-condition: if the root is inapplicable AND applicable, remove inapplicable (if there's more than 2 states and one -1)
-    if(length(states_matrix$Dp1[[Ntip(tree)+1]]) > 1 && any(states_matrix$Dp1[[Ntip(tree)+1]] == -1)) {
-        states_matrix$Up1[[Ntip(tree)+1]] <- states_matrix$Dp1[[Ntip(tree)+1]][-which(states_matrix$Up1[[Ntip(tree)+1]] == -1)]
+    if(length(states_matrix$Dp1[[ape::Ntip(tree)+1]]) > 1 && any(states_matrix$Dp1[[ape::Ntip(tree)+1]] == -1)) {
+        states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]][which(states_matrix$Dp1[[ape::Ntip(tree)+1]] != -1)]
     } else {
-        states_matrix$Up1[[Ntip(tree)+1]] <- states_matrix$Dp1[[Ntip(tree)+1]]
+        states_matrix$Up1[[ape::Ntip(tree)+1]] <- states_matrix$Dp1[[ape::Ntip(tree)+1]]
     }
 
     ## For each node from the root
-    for(node in (Ntip(tree)+2:Nnode(tree))) { ## Start past the root (+2)
+    for(node in (ape::Ntip(tree)+2:ape::Nnode(tree))) { ## Start past the root (+2)
 
         curr_node <- states_matrix$Dp1[[node]] # The current node
         ## Select the descendants and ancestors
@@ -238,8 +346,8 @@ first.uppass <- function(states_matrix, tree) {
             ## If any of the states is inapplicable...
             if(any(curr_node != -1)) {
                 ## If any of the states IS applicable
-                if(all(ancestor == -1)) {
-                    ## If the ancestor state is inapplicable only, set to -1
+                if(any(ancestor == -1)) {
+                    ## If the ancestor state has an inapplicable token
                     states_matrix$Up1[[node]] <- -1
                 } else {
                     ## Else remove the inapplicable
@@ -247,8 +355,8 @@ first.uppass <- function(states_matrix, tree) {
                 }
             } else {
                 ## No state IS applicable
-                if(all(ancestor == -1)) {
-                    ## If the ancestor state is inapplicable only, set to -1
+                if(any(ancestor == -1)) {
+                    ## If the ancestor state has an inapplicable token
                     states_matrix$Up1[[node]] <- -1
                 } else {
                     ## If the union of left and right has an applicable
@@ -287,7 +395,7 @@ second.downpass <- function(states_matrix, tree) {
     states_matrix$Dp2 <- states_matrix$Char
     
     ## Loop through the nodes
-    for(node in rev(Ntip(tree)+1:Nnode(tree))) {
+    for(node in rev(ape::Ntip(tree)+1:ape::Nnode(tree))) {
 
         curr_node <- states_matrix$Up1[[node]]
         ## Select the descendants and ancestors
@@ -301,9 +409,14 @@ second.downpass <- function(states_matrix, tree) {
             ## Get the states in common between the descendants
             common_desc <- get.common(left, right)
 
-            ## If there is any applicable state in this common, set the node to be that state
-            if(any(common_desc != -1)) {
-                states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+            if(!is.null(common_desc)) {
+                ## If there is any applicable state in this common, set the node to be that state
+                if(any(common_desc != -1)) {
+                    states_matrix$Dp2[[node]] <- common_desc[which(common_desc != -1)]
+                } else {
+                ## @@@ Changed: Else set the state to the inapplicable token
+                    states_matrix$Dp2[[node]] <- -1
+                }   
             } else {
             ## Else set the node state to be the union of the descendants without the inapplicable tokens
                 union_desc <- get.union.incl(left, right)
@@ -334,10 +447,10 @@ second.uppass <- function(states_matrix, tree) {
     states_matrix$Up2 <- states_matrix$Char
 
     ## Root state is inherited from the second downpass
-    states_matrix$Up2[[Ntip(tree)+1]] <- states_matrix$Dp2[[Ntip(tree)+1]]
+    states_matrix$Up2[[ape::Ntip(tree)+1]] <- states_matrix$Dp2[[ape::Ntip(tree)+1]]
 
     ## For each node from the root
-    for(node in (Ntip(tree)+2:Nnode(tree))) { ## Start past the root (+2)
+    for(node in (ape::Ntip(tree)+2:ape::Nnode(tree))) { ## Start past the root (+2)
         ## Current node
         curr_node <- states_matrix$Dp2[[node]] # The current node
         ## Select the descendants and ancestors
@@ -349,11 +462,11 @@ second.uppass <- function(states_matrix, tree) {
         if(any(curr_node != -1)) { # If any state in the previous pass is not inapplicable
             if(any(ancestor != -1)) { # If any state in the ancestor is not inapplicable
                 common_anc_node <- get.common(ancestor, curr_node)
-                if((length(common_anc_node) == length(ancestor)) && all(common_anc_node == ancestor)) { # If the common state between the ancestor and the final is the ancestor
+                if(!is.null(common_anc_node) && any(common_anc_node %in% ancestor)) { # If there is a common state between the ancestor and the previous node state and that this commonality is equal to any of the ancestor state.
                     states_matrix$Up2[[node]] <- common_anc_node
                 } else { # If the common state between the ancestor and the final is not the ancestor
                     if(!is.null(get.common(left, right))) { # If there is a state in common between left and right
-                        states_matrix$Up2[[node]] <- get.union.incl(curr_node, get.common(ancestor, get.union.incl(left, right)))
+                        states_matrix$Up2[[node]] <- get.union.incl(common_anc_node, get.common(ancestor, get.union.incl(left, right)))
                     } else { # If there is no state in common between left and right
                         union_desc <- get.union.incl(left, right)
                         if(any(union_desc == -1)) { # If the union of left and right has the inapplicable character
@@ -367,15 +480,15 @@ second.uppass <- function(states_matrix, tree) {
                             union_node_anc <- get.union.incl(curr_node, ancestor)
                             states_matrix$Up2[[node]] <- union_node_anc
                             if(all(union_node_anc == ancestor)) { # If the state in common between the node and the ancestor is the ancestor
-                                states_matrix$Up2[[node]] <- get.common(ancestor, curr_node)
+                                states_matrix$Up2[[node]] <- get.common(ancestor, states_matrix$Up2[[node]])
                             }
                         }
                     }
                 }
             } else { # If the ancestor has no applicable state
-                union_desc <- get.union.incl(left, right)
-                if(!is.null(union_desc)) { # If there is a state in common between left and right
-                    states_matrix$Up2[[node]] <- union_desc
+                common_desc <- get.common(left, right)
+                if(!is.null(common_desc)) { # If there is a state in common between left and right 
+                    states_matrix$Up2[[node]] <- common_desc
                 } else { # If there is no state in common between left and right
                     states_matrix$Up2[[node]] <- curr_node
                 }
@@ -398,13 +511,17 @@ second.uppass <- function(states_matrix, tree) {
 #' 
 #' @author Thomas Guillerme
 
-inapplicable.algorithm <- function(tree, character, passes = 4) {
+inapplicable.algorithm <- function(tree, character, passes = 4, method, inapplicable) {
 
     ## Setting up the output state matrix
-    states_matrix <- make.states.matrix(tree, character)
+    states_matrix <- make.states.matrix(tree, character, inapplicable)
 
     ## Setting the list of passes
-    n_passes <- list(first.downpass, first.uppass, second.downpass, second.uppass)
+    if(method == "Inapplicable") {
+        n_passes <- list(first.downpass, first.uppass, second.downpass, second.uppass)
+    } else {
+        n_passes <- list(fitch.downpass, fitch.uppass)
+    }
 
     ## Applying the passes for each node
     for (pass in 1:passes) {
@@ -431,7 +548,7 @@ plot.convert.state <- function(character, missing = FALSE) {
 
     if(missing) {
         ## Getting all states
-        all_states <- unique(unlist(character))[-which(unique(unlist(character)) == -1)]
+        all_states <- unique(unlist(character))
         ## Convert the missing states
         character <- lapply(character, plot.convert.missing, all_states)
     }
@@ -453,6 +570,8 @@ plot.convert.state <- function(character, missing = FALSE) {
 #' @param passes \code{numeric}, the number of passes to plot (default = \code{c(1,2,3,4)})
 #' @param show.tip.label \code{logical}, whether to display tip labels (default = \code{FALSE}).
 #' @param col.tips.nodes \code{character}, a vector of one or two colors to be used for displaying respectively the tips and the nodes.
+#' @param method \code{"Inapplicable"} for the new algorithm or \code{"Fitch"} for classic Fitch
+#' @param inapplicable optional, when \code{method = "Fitch"}, how to treat the inapplicable data (\code{1} = as missing data, \code{2} = as an extra state).
 ##' @param col.character \code{logical} or \code{character}, whether to display the characters states as colors.
 #' @param ... any optional arguments to be passed to \code{\link[ape]{plot.phylo}}
 #' 
@@ -461,11 +580,14 @@ plot.convert.state <- function(character, missing = FALSE) {
 # ## DEBUG
 # warning("DEBUG")
 # tree <- read.tree(text = "((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));")
-# character <- "1100----1100"
+# character <- "01---1010101"
+# tree <- read.tree(text = "(((1,2),(3,4)),5);")
+# character <- "0-2-0"
+
 
 # plot.inapplicable.algorithm(tree, character)
 
-plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), ...) {
+plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), show.tip.label = FALSE, col.tips.nodes = c("orange", "lightblue"), method = "Inapplicable", inapplicable = NULL, ...) {
 
     ## SANITIZING
     ## tree character done in make.states.matrix
@@ -487,42 +609,53 @@ plot.inapplicable.algorithm <- function(tree, character, passes = c(1,2,3,4), sh
             warning("Only the two first colors from col.tips.nodes are used.")
         }
     }
+    ## method
+    if(method != "Inapplicable" && method != "Fitch") {
+        stop("method should be 'Fitch' or 'Inapplicable'")
+    }
+    ## If Fitch, only use two passes
+    if(method == "Fitch" && !all(is.na(match(passes, c(3,4)))) ) {
+        passes <- c(1,2)
+    }
+    if(method == "Fitch" && is.null(inapplicable)) {
+        inapplicable <- 1
+    }
 
     ## RUN THE STATE RECONSTRUCTION (4 passes)
-    states_matrix <- inapplicable.algorithm(tree, character, passes = 3)
+    if(method == "Inapplicable") {
+        states_matrix <- inapplicable.algorithm(tree, character, passes = 4, method = method, inapplicable = inapplicable)
+    } else {
+        states_matrix <- inapplicable.algorithm(tree, character, passes = 2, method = method, inapplicable = inapplicable)
+    }
 
     ## Get the text plotting size
-    cex <- 1 - (Ntip(tree)/100)
-    ## Correct if Ntip < 10 or Ntip > 100
-    cex <- ifelse(Ntip(tree) < 10, 1, cex)
-    cex <- ifelse(Ntip(tree) > 100, 0.1, cex)
+    # cex <- 1 - (ape::Ntip(tree)/100)
+    cex <- 1
+    ## Correct if ape::Ntip < 10 or ape::Ntip > 100
+    # cex <- ifelse(ape::Ntip(tree) < 10, 1, cex)
+    # cex <- ifelse(ape::Ntip(tree) > 100, 0.1, cex)
 
     ## Plotting the tree
-    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2, ...)
-    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = cex*Ntip(tree)/2) ; warning("DEBUG plot")
+    plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = 0.5, ...)
+    # plot(tree, show.tip.label = show.tip.label, type = "phylogram", use.edge.length = FALSE, cex = cex, adj = 0.5) ; warning("DEBUG plot")
 
     ## Add the tip states
     if(class(character) == "character" && length(character) == 1) {
-        tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1])
+        ape::tiplabels(as.character(strsplit(as.character(character), "")[[1]]), cex = cex, bg = col.tips.nodes[1], adj = 1)
     } else {
-        tips_labels <- plot.convert.state(states_matrix[[1]][1:Ntip(tree)], missing = TRUE)
-        tiplabels(tips_labels, cex = cex, bg = col.tips.nodes[1])
+        tips_labels <- plot.convert.state(states_matrix[[1]][1:ape::Ntip(tree)], missing = TRUE)
+        ape::tiplabels(tips_labels, cex = 1, bg = col.tips.nodes[1], adj = 1)
     }
 
-    ## Get the node labels
-    if(length(passes) > 1) {
-        node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:Ntip(tree))])
-        node_labels <- paste("1:", node_labels)
+    if(length(passes) > 0) {
+        node_labels <- plot.convert.state(states_matrix[[passes[1]+1]][-c(1:ape::Ntip(tree))])
+        node_labels <- paste(paste(passes[1], ":", sep = ""), node_labels)
         for(pass in passes[-1]) {
-            node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:Ntip(tree))]), sep = ""), sep = "\n")
+            node_labels <- paste(node_labels, paste(pass, ": ", plot.convert.state(states_matrix[[pass + 1]][-c(1:ape::Ntip(tree))]), sep = ""), sep = "\n")
         }
-    } else {
-        node_labels <- plot.convert.state(states_matrix[[passes+1]][-c(1:Ntip(tree))])
-        node_labels <- paste(passes, ": ", node_labels, sep = "")
+        ape::nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.85), bg = col.tips.nodes[2])
     }
 
-    ## Plot the node labels
-    nodelabels(node_labels, cex = cex-(1-cex)*(length(passes)*0.75), bg = col.tips.nodes[2])
 
     return(invisible())
 }
