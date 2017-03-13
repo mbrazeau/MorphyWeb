@@ -296,12 +296,12 @@ void mfl_fitch_second_downpass_inapplicables(mfl_nodedata_t*       n_nd,
     mfl_charstate* rt_char = right_nd->nd_final_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
-    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
-    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
-    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-    mfl_charstate* regionactive = n_nd->nd_region_activestates;
-    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
-    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
+//    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+//    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+//    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+//    mfl_charstate* regionactive = n_nd->nd_region_activestates;
+//    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
+//    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
     mfl_charstate temp = 0;
     
     
@@ -332,10 +332,7 @@ void mfl_fitch_second_downpass_inapplicables(mfl_nodedata_t*       n_nd,
                         actives[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
                     }
                 }
-            
             }
-            
-            regionactive[i] |= (lreg_active[i] | rreg_active[i]);
         }
         else {
             if (!(lft_char[i] & rt_char[i])) {
