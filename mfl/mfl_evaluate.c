@@ -374,6 +374,10 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             
             //subtreeactive[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
             regionactive[i] |= subtreeactive[i] & MORPHY_IS_APPLICABLE;
+            
+//            if (!(n_final[i] & anc_char[i])) {
+//                actives[i] |= tempactive[i];
+//            }
         }
         
         return;
@@ -414,7 +418,7 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                                 n_final[i] = ((lft_char[i] | rt_char[i]) & anc_char[i]) | anc_char[i];
                             }
                             else {
-                                n_final[i] = (lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;// & anc_char[i];
+                                n_final[i] = (lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
                             }
                             
                         }
@@ -431,55 +435,48 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
             
         }
-
-        if (!(lft_char[i] & rt_char[i])) {
+        
+        
+        if ( !(lft_char[i] & rt_char[i]) ) {
             
-            if (n_final[i] != (n_final[i] & ~(n_final[i]-1))) {
-                
-                temp = (lft_char[i] | rt_char[i]);
-                
+            temp = lft_char[i] | rt_char[i];
+            
+            if (n_final[i] & MORPHY_IS_APPLICABLE) {
                 if (lreg_active[i] & rreg_active[i]) {
-                    *length += weights[i];
-                    
-                    //actives[i] |= temp & MORPHY_IS_APPLICABLE;
-                }
-                else if (!(n_final[i] & anc_char[i]) ) {
-                    if (n_final[i] == (n_final[i] & actives[i])) {
+                    if (length) {
                         *length += weights[i];
                     }
-                    else {
-                        actives[i] |= n_final[i];
+                }
+                else if (!(n_prelim[i] & anc_char[i])) {
+                    if (temp == (temp & actives[i])) {
+                        if (length) {
+                            *length += weights[i];
+                        }
                     }
                 }
-                else if (temp == (temp & actives[i])){
-                    //*length += weights[i];
+                else if (temp == (temp & actives[i])) {
+                    if (length) {
+                        *length += weights[i];
+                    }
                 }
             }
             else {
-                temp = (lft_char[i] | rt_char[i]) ^ n_final[i];
-                
-                if (temp & MORPHY_IS_APPLICABLE) {
-                    if (temp & actives[i]) {
+                if (temp & actives[i]) {
+                    if (length) {
                         *length += weights[i];
                     }
-                    else if (n_final[i] & MORPHY_IS_APPLICABLE) {
-                        actives[i] |= temp;
-                    }
-//                    else if (lft_active[i] & rt_active[i] & temp) {
-//                        actives[i] |= temp;
-//                    }
                 }
             }
+            
+            tempactive[i] |= temp & MORPHY_IS_APPLICABLE;
+            
         }
-        
-        if (n_final[i] & MORPHY_INAPPLICABLE_BITPOS) {
-            if (anc_char[i] & MORPHY_IS_APPLICABLE) {
-                actives[i] |= anc_char[i];
-            }
-        }
+
+        // Add to actives any states in tempactives not found in the preliminary
+        // nodal set
+        actives[i] |= ((n_prelim[i] ^ tempactive[i]) & tempactive[i]);
         
     
-        
         assert(n_final[i]);
         
     }
@@ -498,13 +495,15 @@ void mfl_activation_on_return(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate* n_active = n_nd->nd_subtree_activestates;
+    mfl_charstate* tempactive = datapart->part_tempactives;
     
     for (i = 0; i < num_chars; ++i) {
         
         assert(n_final[i]);
         
         if (n_final[i] & MORPHY_INAPPLICABLE_BITPOS) {
-            actives[i] |= n_active[i] & MORPHY_IS_APPLICABLE;
+            //actives[i] |= n_active[i] & MORPHY_IS_APPLICABLE;
+            actives[i] |= tempactive[i] & MORPHY_IS_APPLICABLE;
         }
     }
     
