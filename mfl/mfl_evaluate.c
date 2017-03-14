@@ -615,14 +615,12 @@ void mfl_final_preorder_traversal(mfl_node_t *n, int* length)
         evaluator = n->nodet_charstates[i]->nd_uppass_full;
         
         if (n->nodet_tip) {
-            evaluator(
-                      n->nodet_charstates[i],
+            evaluator(n->nodet_charstates[i],
                       NULL,
                       NULL,
                       n->nodet_edge->nodet_charstates[i],
                       n->nodet_charstates[i]->nd_parent_partition,
-                      length
-                      );
+                      length);
         }
         else {
 
@@ -640,14 +638,12 @@ void mfl_final_preorder_traversal(mfl_node_t *n, int* length)
 //                dbg_printf("right descendant node: %i\n", n->nodet_next->nodet_next->nodet_edge->nodet_index);
 //            }
             
-            evaluator(
-                      n->nodet_charstates[i],
+            evaluator(n->nodet_charstates[i],
                       left->nodet_charstates[i],
                       right->nodet_charstates[i],
                       n->nodet_edge->nodet_charstates[i],
                       n->nodet_charstates[i]->nd_parent_partition,
-                      length
-                      );
+                      length);
         }
         
         
@@ -664,25 +660,15 @@ void mfl_final_preorder_traversal(mfl_node_t *n, int* length)
     } while (p != n);
     
     
-    if (n->nodet_next->nodet_next->nodet_edge->nodet_tip == 10) {
-        dbg_printf("Break\n");
-    }
-    if (n->nodet_index == 97) {
-        dbg_printf("Break\n");
-    }
-    
     for (i = 0; i < num_dataparts; ++i) {
-    
         if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
-            // Do the final downpass operation
             // TODO: use a function pointer here as above:
             mfl_second_fitch_na_downpass(n->nodet_charstates[i],
-                                                left->nodet_charstates[i],
-                                                right->nodet_charstates[i],
-                                                n->nodet_edge->nodet_charstates[i],
-                                                n->nodet_charstates[i]->nd_parent_partition,
-                                                length
-                                                );
+                                         left->nodet_charstates[i],
+                                         right->nodet_charstates[i],
+                                         n->nodet_edge->nodet_charstates[i],
+                                         n->nodet_charstates[i]->nd_parent_partition,
+                                         length);
         }
     }
     
@@ -708,26 +694,22 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     
  
     for (i = 0; i < num_dataparts; ++i) {
-        
+        // TODO: Use function pointer here
         if (n->nodet_tip) {
-            mfl_second_fitch_na_uppass(
-                                                  n->nodet_charstates[i],
-                                                  NULL,
-                                                  NULL,
-                                                  n->nodet_edge->nodet_charstates[i],
-                                                  n->nodet_charstates[i]->nd_parent_partition,
-                                                  length
-                                                  );
+            mfl_second_fitch_na_uppass(n->nodet_charstates[i],
+                                       NULL,
+                                       NULL,
+                                       n->nodet_edge->nodet_charstates[i],
+                                       n->nodet_charstates[i]->nd_parent_partition,
+                                       length);
         }
         else {
-            mfl_second_fitch_na_uppass(
-                                                  n->nodet_charstates[i],
-                                                  left->nodet_charstates[i],
-                                                  right->nodet_charstates[i],
-                                                  n->nodet_edge->nodet_charstates[i],
-                                                  n->nodet_charstates[i]->nd_parent_partition,
-                                                  length
-                                                  );
+            mfl_second_fitch_na_uppass(n->nodet_charstates[i],
+                                       left->nodet_charstates[i],
+                                       right->nodet_charstates[i],
+                                       n->nodet_edge->nodet_charstates[i],
+                                       n->nodet_charstates[i]->nd_parent_partition,
+                                       length);
         }
     }
 
