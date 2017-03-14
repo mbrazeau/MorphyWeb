@@ -1558,19 +1558,104 @@ void mfl_set_datapart_params(mfl_datapartition_t* d, mfl_parsimony_t opt_t, bool
 }
 
 
-mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass)
+//mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass)
+//{
+//    mfl_parsim_fn ret = NULL;
+//    
+//    switch (parsim_type)
+//    {
+//        case MFL_OPT_FITCH:
+//            if (gapasinapplic) {
+//                // TODO: Fix this before doing any work on inapplicable characters
+//                ret = &mfl_first_fitch_na_downpass;
+//            }
+//            else {
+//                ret = &mfl_fitch_downpass_binary_node;
+//            }
+//            break;
+//            
+//            /*case MFL_OPT_WAGNER:
+//             ret = mfl_wagner_downpass_binary_node;
+//             break;
+//             
+//             case MFL_OPT_DOLLO:
+//             ret = mfl_dollo_downpass_binary_node;
+//             break;
+//             
+//             case MFL_OPT_IRREVERSIBLE:
+//             ret = mfl_irreversible_downpass_binary_node;
+//             break;
+//             
+//             case MFL_OPT_COST_MATRIX:
+//             ret = mfl_costmatrix_downpass_binary_node;
+//             break;*/
+//            
+//        default:
+//            break;
+//    }
+//    
+//    return  ret;
+//}
+//
+//
+//mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass)
+//{
+//    mfl_parsim_fn ret = NULL;
+//    
+//    switch (parsim_type)
+//    {
+//        case MFL_OPT_FITCH:
+//            if (gapasinapplic) {
+//                // TODO: Fix this before doing any work on inapplicable characters
+//                ret = &mfl_first_fitch_na_uppass;
+//            }
+//            else {
+//                ret = &mfl_fitch_uppass_binary_node;
+//            }
+//            break;
+//            
+//            /*case MFL_OPT_WAGNER:
+//             ret = mfl_wagner_downpass_binary_node;
+//             break;*/
+//            
+//            /*case MFL_OPT_DOLLO:
+//             ret = mfl_dollo_downpass_binary_node;
+//             break;*/
+//            
+//            /*case MFL_OPT_IRREVERSIBLE:
+//             ret = mfl_irreversible_downpass_binary_node;
+//             break;*/
+//            
+//            /*case MFL_OPT_COST_MATRIX:
+//             ret = mfl_costmatrix_downpass_binary_node;
+//             break;*/
+//            
+//        default:
+//            break;
+//    }
+//    
+//    return  ret;
+//}
+
+int mfl_fetch_parsimony_fxn(mfl_datapartition_t* part, mfl_parsimony_t parsim_type, bool gapasinapplic)
 {
-    mfl_parsim_fn ret = NULL;
+    int ret = 0;
     
     switch (parsim_type)
     {
         case MFL_OPT_FITCH:
             if (gapasinapplic) {
                 // TODO: Fix this before doing any work on inapplicable characters
-                ret = &mfl_first_fitch_na_downpass;
+                part->part_downpass_full    = &mfl_first_fitch_na_downpass;
+                part->part_uppass_full      = &mfl_first_fitch_na_uppass;
+                part->part_NAdownpass_full  = &mfl_second_fitch_na_downpass;
+                part->part_NAuppass_full    = &mfl_second_fitch_na_uppass;
+                ret = 0;
             }
             else {
-                ret = &mfl_fitch_downpass_binary_node;
+                part->part_downpass_full    = &mfl_fitch_downpass_binary_node;
+                part->part_uppass_full      = &mfl_fitch_uppass_binary_node;
+                ret = 0;
             }
             break;
             
@@ -1591,52 +1676,12 @@ mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool
              break;*/
             
         default:
+            ret = -1;
             break;
     }
     
     return  ret;
 }
-
-
-mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass)
-{
-    mfl_parsim_fn ret = NULL;
-    
-    switch (parsim_type)
-    {
-        case MFL_OPT_FITCH:
-            if (gapasinapplic) {
-                // TODO: Fix this before doing any work on inapplicable characters
-                ret = &mfl_first_fitch_na_uppass;
-            }
-            else {
-                ret = &mfl_fitch_uppass_binary_node;
-            }
-            break;
-            
-            /*case MFL_OPT_WAGNER:
-             ret = mfl_wagner_downpass_binary_node;
-             break;*/
-            
-            /*case MFL_OPT_DOLLO:
-             ret = mfl_dollo_downpass_binary_node;
-             break;*/
-            
-            /*case MFL_OPT_IRREVERSIBLE:
-             ret = mfl_irreversible_downpass_binary_node;
-             break;*/
-            
-            /*case MFL_OPT_COST_MATRIX:
-             ret = mfl_costmatrix_downpass_binary_node;
-             break;*/
-            
-        default:
-            break;
-    }
-    
-    return  ret;
-}
-
 
 void mfl_copy_column_into_partition(mfl_datapartition_t* prt, mfl_character_vector_t* cv, int intwt, int index, int num_rows)
 {
@@ -1677,18 +1722,21 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
         
         inapplicable = false;
         ptype = ptset->ptset_partitions[i]->part_optimisation_method;
+        
         if (ptset->ptset_partitions[i]->part_has_inapplicables) {
             if (gapmethod == MFL_GAP_INAPPLICABLE) {
                 inapplicable = true;
             }
             ptset->ptset_partitions[i]->part_activestates = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-            //ptset->ptset_partitions[i]->part_NAdownpass_full =
-            //ptset->ptset_partitions[i]->part_NAuppass_full =
         }
+    
+        mfl_fetch_parsimony_fxn(ptset->ptset_partitions[i], ptype, inapplicable);
+        
+        /*
         ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, true);
         ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, false);
         ptset->ptset_partitions[i]->part_uppass_full = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, true);
-        ptset->ptset_partitions[i]->part_uppass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, false);
+        ptset->ptset_partitions[i]->part_uppass_partial = mfl_fetch_uppass_parsimony_fxn(ptype, inapplicable, false);*/
     }
     
 }

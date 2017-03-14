@@ -534,8 +534,9 @@ mfl_partition_set_t* mfl_generate_search_data(const mfl_handle_s* handle);
 void            mfl_destroy_partition_set(mfl_partition_set_t* ptset);
 mfl_matrix_t*   mfl_create_internal_data_matrix(const mfl_handle_s* mfl_handle);
 mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, mfl_handle_s* handle);
-mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
-mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
+//mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
+//mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool gapasinapplic, bool fullpass);
+int mfl_fetch_parsimony_fxn(mfl_datapartition_t* part, mfl_parsimony_t parsim_type, bool gapasinapplic);
 void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t gapmethod, mfl_matrix_t* m);
 
 /* In mfl_tree.c */

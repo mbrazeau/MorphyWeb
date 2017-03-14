@@ -647,13 +647,16 @@ void mfl_first_preorder_traversal(mfl_node_t *n, int* length)
     
     for (i = 0; i < num_dataparts; ++i) {
         if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+            
+            evaluator = n->nodet_charstates[i]->nd_NAdownpass_full;
+            
             // TODO: use a function pointer here as above:
-            mfl_second_fitch_na_downpass(n->nodet_charstates[i],
-                                         left->nodet_charstates[i],
-                                         right->nodet_charstates[i],
-                                         n->nodet_edge->nodet_charstates[i],
-                                         n->nodet_charstates[i]->nd_parent_partition,
-                                         length);
+            evaluator(n->nodet_charstates[i],
+                      left->nodet_charstates[i],
+                      right->nodet_charstates[i],
+                      n->nodet_edge->nodet_charstates[i],
+                      n->nodet_charstates[i]->nd_parent_partition,
+                      length);
         }
     }
     
@@ -682,6 +685,7 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     
     for (i = 0; i < num_dataparts; ++i) {
         // TODO: Use function pointer here
+        evaluator = n->nodet_charstates[i]->nd_NAuppass_full;
         if (n->nodet_tip) {
             leftchars = NULL;
             rightchars = NULL;
@@ -691,12 +695,12 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
             rightchars = right->nodet_charstates[i];
         }
         
-        mfl_second_fitch_na_uppass(n->nodet_charstates[i],
-                                   leftchars,
-                                   rightchars,
-                                   n->nodet_edge->nodet_charstates[i],
-                                   n->nodet_charstates[i]->nd_parent_partition,
-                                   length);
+        evaluator(n->nodet_charstates[i],
+                  leftchars,
+                  rightchars,
+                  n->nodet_edge->nodet_charstates[i],
+                  n->nodet_charstates[i]->nd_parent_partition,
+                  length);
     
     }
 
