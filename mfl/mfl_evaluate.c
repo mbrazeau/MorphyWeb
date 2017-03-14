@@ -185,11 +185,11 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
 
 
 void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
-                                    mfl_nodedata_t*       left_nd,
-                                    mfl_nodedata_t*       right_nd,
-                                    mfl_nodedata_t*       anc_nd,
-                                    mfl_datapartition_t*  datapart,
-                                    int*                  length)
+                               mfl_nodedata_t*       left_nd,
+                               mfl_nodedata_t*       right_nd,
+                               mfl_nodedata_t*       anc_nd,
+                               mfl_datapartition_t*  datapart,
+                               int*                  length)
 {
 
     //int* weights = datapart->part_int_weights;
@@ -266,11 +266,11 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
 
 
 void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
-                                         mfl_nodedata_t*       left_nd,
-                                         mfl_nodedata_t*       right_nd,
-                                         mfl_nodedata_t*       anc_nd,
-                                         mfl_datapartition_t*  datapart,
-                                         int*                  length)
+                                  mfl_nodedata_t*       left_nd,
+                                  mfl_nodedata_t*       right_nd,
+                                  mfl_nodedata_t*       anc_nd,
+                                  mfl_datapartition_t*  datapart,
+                                  int*                  length)
 {
     
 //    int* weights = datapart->part_int_weights;
@@ -334,11 +334,11 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
 }
 
 void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
-                                           mfl_nodedata_t*       left_nd,
-                                           mfl_nodedata_t*       right_nd,
-                                           mfl_nodedata_t*       anc_nd,
-                                           mfl_datapartition_t*  datapart,
-                                           int*                  length)
+                                mfl_nodedata_t*       left_nd,
+                                mfl_nodedata_t*       right_nd,
+                                mfl_nodedata_t*       anc_nd,
+                                mfl_datapartition_t*  datapart,
+                                int*                  length)
 {
     int i = 0;
     int num_chars = datapart->part_n_chars_included;
