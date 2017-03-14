@@ -121,26 +121,12 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd,
     for (i = 0; i < num_chars; ++i) {
         if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
             n_final[i] = anc_char[i] & n_prelim[i];
-#ifdef MFY_DEBUG
-            if (length) {
-                if (!(lft_char[i] & rt_char[i])) {
-                    //TODO: Change this to weights
-                    *length = *length + 1;
-                }
-            }
-#endif
         }
         else {
             if (lft_char[i] & rt_char[i]) {
                 n_final[i] = ( n_prelim[i] | ( anc_char[i] & (lft_char[i] | rt_char[i])));
             } else {
                 n_final[i] = n_prelim[i] | anc_char[i];
-#ifdef MFY_DEBUG
-                if (length) {
-                    //TODO: Change this to weights
-                    *length = *length + 1;
-                }
-#endif
             }
         }
         
@@ -768,6 +754,9 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     mfl_cliprec_t orig_root;
     
     
+    // Perform the first traversal
+    mfl_postorder_traversal(t->treet_root, length);
+    
     // Unroot the tree
     if (!t->treet_root->nodet_weight) {
         t->treet_root->nodet_weight = num_taxa;
@@ -787,18 +776,31 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
         // Restore original root.
         mfl_restore_branching(&orig_root);
         
+        
         for (j = 0; j < dataparts->ptset_n_parts; ++j) {
             for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
-                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k] = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
+                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
+                = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
             }
         }
-        
-        //mfl_postorder_count_inapplicable(t->treet_root, length);
-        
+
         return true;
     }
     
     return false;
+}
+
+void mfl_clear_active_states(mfl_partition_set_t* dataparts)
+{
+    int i = 0;
+    int j = 0;
+    for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+        for (j = 0; j < dataparts->ptset_partitions[i]->part_n_chars_max; ++j) {
+            if (dataparts->ptset_partitions[i]->part_has_inapplicables) {
+                memset(dataparts->ptset_partitions[i]->part_activestates, 0, dataparts->ptset_partitions[i]->part_n_chars_max* sizeof(mfl_charstate));
+            }
+        }
+    }
 }
 
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts)
@@ -806,34 +808,22 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     // TODO: finish this function
     // check is rooted; if not do the fucking root;
     
-    mfl_postorder_traversal(t->treet_root, &t->treet_parsimonylength);
-    dbg_printf("\nHere's the length after the downpass: %i\n", t->treet_parsimonylength);
+    
+    mfl_calculate_all_views(t, dataparts, &t->treet_parsimonylength);
     
 #ifdef MFY_DEBUG
     tui_check_broken_tree(t, false);
 #endif
 
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
-
-#ifdef MFY_DEBUG
-    //dbg_printf("\nResetting length to 0 before uppass\n");
-    //t->treet_parsimonylength = 0;
-#endif
     
     mfl_final_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
+    
     mfl_set_inapplic_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
     
-    for (int i = 0; i < dataparts->ptset_n_parts; ++i) {
-        for (int j = 0; j < dataparts->ptset_partitions[i]->part_n_chars_max; ++j) {
-            if (dataparts->ptset_partitions[i]->part_has_inapplicables) {
-                memset(dataparts->ptset_partitions[i]->part_activestates, 0, dataparts->ptset_partitions[i]->part_n_chars_max* sizeof(mfl_charstate));
-            }
-        }
-    }
+    mfl_clear_active_states(dataparts);
     
     mfl_second_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
-    
-    mfl_calculate_all_views(t, dataparts, NULL);
     
     // New function for finalising dummy root.
     
