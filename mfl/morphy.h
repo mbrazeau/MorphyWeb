@@ -464,6 +464,8 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd,
 void mfl_first_fitch_na_uppass(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts);
 void mfl_postorder_traversal(mfl_node_t *n, int* length);
+void mfl_first_preorder_traversal(mfl_node_t *n, int* length);
+void mfl_second_preorder_traversal(mfl_node_t *n, int* length);
 void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts);
 
 /* In mfl_characters.c */
