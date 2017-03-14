@@ -649,8 +649,7 @@ void mfl_first_preorder_traversal(mfl_node_t *n, int* length)
         if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
             
             evaluator = n->nodet_charstates[i]->nd_NAdownpass_full;
-            
-            // TODO: use a function pointer here as above:
+
             evaluator(n->nodet_charstates[i],
                       left->nodet_charstates[i],
                       right->nodet_charstates[i],
@@ -684,7 +683,7 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     // For each data partition at the node, set the correct type and evaluation
     
     for (i = 0; i < num_dataparts; ++i) {
-        // TODO: Use function pointer here
+
         evaluator = n->nodet_charstates[i]->nd_NAuppass_full;
         if (n->nodet_tip) {
             leftchars = NULL;
@@ -739,10 +738,6 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     if (mfl_clip_branch(t->treet_root->nodet_edge, &orig_root)) {
         
         for (i = 0; i < num_taxa; ++i) {
-            // TODO: Change this function to one that calls both the regular downpass
-            // and the final downpass, accomplishing both sets at the same time.
-            // The first run of the final downpass should be able to count all
-            // homoplasies. 
             mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
         }
         
@@ -778,10 +773,6 @@ void mfl_clear_active_states(mfl_partition_set_t* dataparts)
 
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
-    // TODO: finish this function
-    // check is rooted; if not do the fucking root;
-    
-    
     mfl_calculate_all_views(t, dataparts, &t->treet_parsimonylength);
     
 #ifdef MFY_DEBUG
@@ -797,8 +788,6 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     mfl_clear_active_states(dataparts);
     
     mfl_second_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
-    
-    // New function for finalising dummy root.
     
     dbg_printf("\nHere's the length after the uppass: %i\n", t->treet_parsimonylength);
 }
