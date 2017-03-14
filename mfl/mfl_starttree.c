@@ -458,8 +458,6 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         node->nodet_charstates[i]->nd_uppass_full = dataparts->ptset_partitions[i]->part_uppass_full;
         node->nodet_charstates[i]->nd_NAdownpass_full = dataparts->ptset_partitions[i]->part_NAdownpass_full;
         node->nodet_charstates[i]->nd_NAuppass_full = dataparts->ptset_partitions[i]->part_NAuppass_full;
-//        node->nodet_charstates[i]->
-//        node->nodet_charstates[i]->
         
         if (bottom) {
             node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
