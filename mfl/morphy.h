@@ -373,7 +373,7 @@ typedef struct mfl_treebuffer_t {
 } mfl_treebuffer_t;
 
 typedef struct {
-    int try_length;
+    int         try_length;
     mfl_node_t* try_site;
 } mfl_try_t;
 
@@ -393,8 +393,8 @@ typedef struct {
     mfl_node_t*     stpadd_lastnewbranch;
     int             stpadd_num_held_old;
     int             stpadd_num_held_new;
-    mfl_try_t**     stpadd_newtries;
-    mfl_try_t**     stpadd_oldtries;
+    mfl_try_t*      stpadd_newtries;
+    mfl_try_t*      stpadd_oldtries;
     
 } mfl_stepwise_addition_t;
 

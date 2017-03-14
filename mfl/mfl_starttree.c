@@ -311,10 +311,10 @@ void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mf
     sarec->stpadd_newbranch = newbranch;
     
     for (i = 0; i < sarec->stpadd_num_held_new; ++i) {
-        sarec->stpadd_oldtries[i]->try_site = sarec->stpadd_newtries[i]->try_site;
-        sarec->stpadd_oldtries[i]->try_length = sarec->stpadd_newtries[i]->try_length;
-        sarec->stpadd_newtries[i]->try_site = NULL;
-        sarec->stpadd_newtries[i]->try_length = 0;
+        sarec->stpadd_oldtries[i].try_site      = sarec->stpadd_newtries[i].try_site;
+        sarec->stpadd_oldtries[i].try_length    = sarec->stpadd_newtries[i].try_length;
+        sarec->stpadd_newtries[i].try_site      = NULL;
+        sarec->stpadd_newtries[i].try_length    = 0;
     }
     
     sarec->stpadd_num_held_old = sarec->stpadd_num_held_new;
@@ -493,6 +493,7 @@ void mfl_setup_ringnode_data(mfl_node_t* ringentry, mfl_partition_set_t* datapar
         p = p->nodet_next;
     } while (p != ringentry);
 }
+
 
 mfl_node_t* mfl_make_n_ary_ring_with_nodedata(int num_branches, mfl_nodestack_t* ndstk, mfl_partition_set_t* dataparts)
 {
