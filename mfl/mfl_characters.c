@@ -1567,7 +1567,7 @@ mfl_parsim_fn mfl_fetch_downpass_parsimony_fxn(mfl_parsimony_t parsim_type, bool
         case MFL_OPT_FITCH:
             if (gapasinapplic) {
                 // TODO: Fix this before doing any work on inapplicable characters
-                ret = &mfl_fitch_downpass_inapplicables;
+                ret = &mfl_first_fitch_na_downpass;
             }
             else {
                 ret = &mfl_fitch_downpass_binary_node;
@@ -1607,7 +1607,7 @@ mfl_parsim_fn mfl_fetch_uppass_parsimony_fxn(mfl_parsimony_t parsim_type, bool g
         case MFL_OPT_FITCH:
             if (gapasinapplic) {
                 // TODO: Fix this before doing any work on inapplicable characters
-                ret = &mfl_fitch_uppass_inapplicables;
+                ret = &mfl_first_fitch_na_uppass;
             }
             else {
                 ret = &mfl_fitch_uppass_binary_node;
@@ -1682,7 +1682,8 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
                 inapplicable = true;
             }
             ptset->ptset_partitions[i]->part_activestates = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-            ptset->ptset_partitions[i]->part_tempactives = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+            //ptset->ptset_partitions[i]->part_NAdownpass_full =
+            //ptset->ptset_partitions[i]->part_NAuppass_full =
         }
         ptset->ptset_partitions[i]->part_downpass_full = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, true);
         ptset->ptset_partitions[i]->part_downpass_partial = mfl_fetch_downpass_parsimony_fxn(ptype, inapplicable, false);

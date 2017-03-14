@@ -134,12 +134,12 @@ void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd,
     }
 }
 
-void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
-                                      mfl_nodedata_t*       left_nd,
-                                      mfl_nodedata_t*       right_nd,
-                                      mfl_nodedata_t*       dummy,
-                                      mfl_datapartition_t*  datapart,
-                                      int*                  length)
+void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
+                                 mfl_nodedata_t*       left_nd,
+                                 mfl_nodedata_t*       right_nd,
+                                 mfl_nodedata_t*       dummy,
+                                 mfl_datapartition_t*  datapart,
+                                 int*                  length)
 {
     int i = 0;
 //    int* weights = datapart->part_int_weights;
@@ -184,7 +184,7 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
 }
 
 
-void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
+void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                                     mfl_nodedata_t*       left_nd,
                                     mfl_nodedata_t*       right_nd,
                                     mfl_nodedata_t*       anc_nd,
@@ -265,7 +265,7 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
 }
 
 
-void mfl_fitch_second_downpass_inapplicables(mfl_nodedata_t*       n_nd,
+void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                                          mfl_nodedata_t*       left_nd,
                                          mfl_nodedata_t*       right_nd,
                                          mfl_nodedata_t*       anc_nd,
@@ -333,7 +333,7 @@ void mfl_fitch_second_downpass_inapplicables(mfl_nodedata_t*       n_nd,
     }
 }
 
-void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
+void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                                            mfl_nodedata_t*       left_nd,
                                            mfl_nodedata_t*       right_nd,
                                            mfl_nodedata_t*       anc_nd,
@@ -676,7 +676,7 @@ void mfl_final_preorder_traversal(mfl_node_t *n, int* length)
         if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
             // Do the final downpass operation
             // TODO: use a function pointer here as above:
-            mfl_fitch_second_downpass_inapplicables(n->nodet_charstates[i],
+            mfl_second_fitch_na_downpass(n->nodet_charstates[i],
                                                 left->nodet_charstates[i],
                                                 right->nodet_charstates[i],
                                                 n->nodet_edge->nodet_charstates[i],
@@ -710,7 +710,7 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     for (i = 0; i < num_dataparts; ++i) {
         
         if (n->nodet_tip) {
-            mfl_fitch_second_uppass_inapplicables(
+            mfl_second_fitch_na_uppass(
                                                   n->nodet_charstates[i],
                                                   NULL,
                                                   NULL,
@@ -720,7 +720,7 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
                                                   );
         }
         else {
-            mfl_fitch_second_uppass_inapplicables(
+            mfl_second_fitch_na_uppass(
                                                   n->nodet_charstates[i],
                                                   left->nodet_charstates[i],
                                                   right->nodet_charstates[i],
