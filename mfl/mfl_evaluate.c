@@ -162,9 +162,9 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
     //mfl_charstate* st_prelim = n_nd->nd_subtree_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
-//    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
-//    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
-//    mfl_charstate* subtreeactives = n_nd->nd_subtree_activestates;
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* subtreeactives = n_nd->nd_subtree_activestates;
     mfl_charstate temp = 0;
     
     for (i = 0; i < num_chars; ++i) {
@@ -188,6 +188,9 @@ void mfl_fitch_downpass_inapplicables(mfl_nodedata_t*       n_nd,
                 n_prelim[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
             }
         }
+        
+        
+        subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
         assert(n_prelim[i]);
     }
@@ -228,6 +231,8 @@ void mfl_fitch_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             }
             
             n_final[i] = n_prelim[i];
+
+            subtreeactive[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
         }
         
         return;
@@ -356,8 +361,8 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
-//    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-//    mfl_charstate* regionactive = n_nd->nd_region_activestates;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate* regionactive = n_nd->nd_region_activestates;
     mfl_charstate temp = 0;
     
     if (!left_nd) {
@@ -373,6 +378,7 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
             else {
                 n_final[i] = n_prelim[i];
             }
+            
         }
         
         return;
@@ -397,6 +403,7 @@ void mfl_fitch_second_uppass_inapplicables(mfl_nodedata_t*       n_nd,
                     if (lft_char[i] & rt_char[i]) {
                         
                         n_final[i] |= ( anc_char[i] & (lft_char[i] | rt_char[i]));
+    
                     }
                     else {
                         
