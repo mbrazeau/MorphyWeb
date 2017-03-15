@@ -857,6 +857,23 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     return;
 }
 
+void mfl_allviews_traversal(mfl_node_t* n)
+{
+    mfl_node_t *p = NULL;
+    
+    if (n->nodet_tip) {
+        mfl_postorder_traversal(n->nodet_edge, NULL);
+        return;
+    }
+    
+    p = n->nodet_next;
+    do {
+        mfl_allviews_traversal(p->nodet_edge);
+        p = p->nodet_next;
+    } while (p != n);
+    
+}
+
 bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
 {
     int i = 0;
@@ -869,22 +886,26 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     // Perform the first traversal
     mfl_postorder_traversal(t->treet_root, length);
     dbg_printf("Length after first traversal: %i\n", *length);
+    
     // Unroot the tree
     if (!t->treet_root->nodet_weight) {
         t->treet_root->nodet_weight = num_taxa;
     }
     
+    // TODO: This really needs to be generalised.
     // Perform a simple unrooting by
     if (mfl_clip_branch(t->treet_root->nodet_edge, &orig_root)) {
         
+        //mfl_allviews_traversal(t->treet_start);
         for (i = 0; i < num_taxa; ++i) {
-            mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
+            //mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
         }
         
         // Restore original root.
         mfl_restore_branching(&orig_root);
         
         
+        // TODO: Handle this elsewhere (and more elegantly?)---or DELETE?
         for (j = 0; j < dataparts->ptset_n_parts; ++j) {
             for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
                 t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
@@ -905,6 +926,7 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     return false;
 }
 
+
 void mfl_clear_active_states(mfl_partition_set_t* dataparts)
 {
     int i = 0;
@@ -920,6 +942,10 @@ void mfl_clear_active_states(mfl_partition_set_t* dataparts)
 
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
+    
+    // TODO: Needs rooted/unrooted handling
+
+    
     // Perform the downpass in all directions
     mfl_calculate_all_views(t, dataparts, &t->treet_parsimonylength);
     
@@ -935,6 +961,7 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     
     dbg_printf("\nHere's the length after the uppass: %i\n", t->treet_parsimonylength);
 }
+
 
 void mfl_preorder_traversal_partial(mfl_node_t *parent, mfl_searchrec_t *search_rec)
 {
