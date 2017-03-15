@@ -1571,7 +1571,7 @@ int mfl_fetch_parsimony_fxn(mfl_datapartition_t* part, mfl_parsimony_t parsim_ty
                 part->part_uppass_full      = &mfl_first_fitch_na_uppass;
                 part->part_NAdownpass_full  = &mfl_second_fitch_na_downpass;
                 part->part_NAuppass_full    = &mfl_second_fitch_na_uppass;
-                part->part_NAlocal          = &mfl_test_fitch_na_local;
+                part->part_local            = &mfl_test_fitch_na_local;
                 ret = 0;
             }
             else {
