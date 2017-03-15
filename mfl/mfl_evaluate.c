@@ -874,6 +874,33 @@ void mfl_allviews_traversal(mfl_node_t* n)
     
 }
 
+
+bool mfl_simple_unroot(mfl_tree_t *t, mfl_cliprec_t* clip)
+{
+    bool ret = false;
+    
+    if (!t->treet_root) {
+        return true;
+    }
+    
+    t->treet_start = mfl_find_rightmost_tip_in_tree(t->treet_root);
+    
+    if (mfl_clip_branch(t->treet_root->nodet_edge, clip)) {
+        ret = true;
+    }
+    
+    return ret;
+}
+
+bool mfl_simple_reroot(mfl_tree_t* t, mfl_cliprec_t* clip)
+{
+    bool ret = false;
+    
+    mfl_restore_branching(clip);
+    
+    return ret;
+}
+
 bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
 {
     int i = 0;
@@ -894,16 +921,16 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     
     // TODO: This really needs to be generalised.
     // Perform a simple unrooting by
-    if (mfl_clip_branch(t->treet_root->nodet_edge, &orig_root)) {
+    if (mfl_simple_unroot(t, &orig_root)) {
         
-        //mfl_allviews_traversal(t->treet_start);
-        for (i = 0; i < num_taxa; ++i) {
-            //mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
-        }
+        mfl_allviews_traversal(t->treet_start);
+//        for (i = 0; i < num_taxa; ++i) {
+//            mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
+//        }
         
         // Restore original root.
-        mfl_restore_branching(&orig_root);
-        
+        //mfl_restore_branching(&orig_root);
+        mfl_simple_reroot(t, &orig_root);
         
         // TODO: Handle this elsewhere (and more elegantly?)---or DELETE?
         for (j = 0; j < dataparts->ptset_n_parts; ++j) {
