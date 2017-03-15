@@ -126,24 +126,38 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* tgt2f = tgt2_nd->nd_final_set;
     mfl_charstate* tgt1p = tgt1_nd->nd_prelim_set;
     mfl_charstate* tgt2p = tgt2_nd->nd_prelim_set;
-    
+    mfl_charstate* tgt1a = tgt1_nd->nd_subtree_activestates;
+    mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
     // TODO: Optimise: increment pointers in loop head
     for (i = 0; i < num_chars; ++i) {
-        if (tgt1f[i] & tgt2f[i]) {
-            if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
+        
+        if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
+            if (src[i] & MORPHY_INAPPLICABLE_BITPOS) {
                 if (src[i] & (tgt1p[i] | tgt2p[i])) {
-                    
-                    // TODO: The outer condition permits writing one local check
-                    // TODO: function. It can be removed in a version of this function
-                    // TODO: that is used specifically during the search
-                    cost += weights[i];
-                    if (!(diff < 0)) {
-                        if (cost > diff) {
-                            return cost;
+                    if (tgt1f[i] & tgt2f[i]) {
+                        // TODO: The outer condition permits writing one local check
+                        // TODO: function. It can be removed in a version of this function
+                        // TODO: that is used specifically during the search
+                        cost += weights[i];
+                        if (!(diff < 0)) {
+                            if (cost > diff) {
+                                return cost;
+                            }
                         }
                     }
-                    
                 }
+            }
+            else if (src[i] & (tgt1a[i] | tgt2a[i])) {
+                // TODO: The outer condition permits writing one local check
+                // TODO: function. It can be removed in a version of this function
+                // TODO: that is used specifically during the search
+                cost += weights[i];
+                if (!(diff < 0)) {
+                    if (cost > diff) {
+                        return cost;
+                    }
+                }
+                
             }
         }
     }
