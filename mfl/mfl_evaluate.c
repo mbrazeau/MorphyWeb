@@ -834,9 +834,8 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
                       n->nodet_edge->nodet_charstates[i],
                       n->nodet_charstates[i]->nd_parent_partition,
                       length);
-            
-
         }
+        
     }
 
     if (n->nodet_tip) {
@@ -850,9 +849,11 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
         p = p->nodet_next;
     } while (p != n);
     
+    // TODO: This might need to be moved elsewhere
     n->nodet_downpass_visited = false;
     n->nodet_next->nodet_downpass_visited = false;
     n->nodet_next->nodet_next->nodet_downpass_visited = false;
+    
     return;
 }
 
@@ -891,8 +892,15 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
             }
         }
 
+#ifdef MFY_DEBUG
+        tui_check_broken_tree(t, false);
+#endif
         return true;
     }
+    
+#ifdef MFY_DEBUG
+    tui_check_broken_tree(t, false);
+#endif
     
     return false;
 }
@@ -912,23 +920,17 @@ void mfl_clear_active_states(mfl_partition_set_t* dataparts)
 
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts)
 {
+    // Perform the downpass in all directions
     mfl_calculate_all_views(t, dataparts, &t->treet_parsimonylength);
-    dbg_printf("\nHere's the length after the all-views1: %i\n", t->treet_parsimonylength);
-
-#ifdef MFY_DEBUG
-    //tui_check_broken_tree(t, false);
-#endif
-
-    mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
     
+    // Perform uppass and first inapplicable downpass
+    mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
     mfl_clear_active_states(dataparts);
-
     mfl_first_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
-    dbg_printf("\nHere's the length after the all-views2: %i\n", t->treet_parsimonylength);
+
+    // Perform the final uppass
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
-    
     mfl_clear_active_states(dataparts);
-    
     mfl_second_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
     
     dbg_printf("\nHere's the length after the uppass: %i\n", t->treet_parsimonylength);
