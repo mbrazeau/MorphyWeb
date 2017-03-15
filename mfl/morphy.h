@@ -236,7 +236,6 @@ typedef struct mfl_datapartition_t {
     mfl_parsim_fn part_NAdownpass_full;
     mfl_parsim_fn part_NAuppass_full;
     mfl_lparsim_fn part_local;
-    mfl_lparsim_fn part_NAlocal;
     mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_activestates;
     mfl_charstate *part_matrix;
@@ -284,7 +283,6 @@ typedef struct mfl_nodedata_t {
     mfl_parsim_fn nd_NAdownpass_full;
     mfl_parsim_fn nd_NAuppass_full;
     mfl_lparsim_fn nd_local;
-    mfl_lparsim_fn nd_NAlocal;
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
@@ -459,7 +457,7 @@ typedef struct {
  *
  */
 
-int             tui_check_broken_tree(mfl_tree_t *t, int *verbose);
+int             tui_check_broken_tree(mfl_tree_t *t, int verbose);
 
 /* In mfl_evaluate.c */
 int mfl_test_fitch_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);
