@@ -53,6 +53,11 @@
 //    return return_weight;
 //}
 
+void mfl_test_fitch_local()
+{
+    
+}
+
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd,
                                     mfl_nodedata_t* left_nd,
                                     mfl_nodedata_t* right_nd,
@@ -521,8 +526,8 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
     return length_increment * weight;
 }
 
-void mfl_wagner_downpass_binary_node(mfl_node_t *node)
-{
+//void mfl_wagner_downpass_binary_node(mfl_node_t *node)
+//{
 //    int i = 0;
 //    mfl_node_t* lchild = NULL;
 //    mfl_node_t* rchild = NULL;
@@ -543,7 +548,7 @@ void mfl_wagner_downpass_binary_node(mfl_node_t *node)
 //            /*Lenght increase = */ mfl_wagner_stepcount(leftchars[i], rightchars[i], &parentchars[i],  NULL/* WEIGHT goes here*/);
 //        }
 //    }
-}
+//}
 
 
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
