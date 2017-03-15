@@ -219,13 +219,14 @@ void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec)
     
     free(sarec->stpadd_addedtips);
     free(sarec->stpadd_tipstoadd);
+    // TODO: Add more free calls
     free(sarec);
 }
 
 
 mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
-    int i = 0;
+//    int i = 0;
     int hold = 0;
     
     mfl_stepwise_addition_t* sarec = (mfl_stepwise_addition_t*)mfl_malloc(sizeof(mfl_stepwise_addition_t), 0);
@@ -270,7 +271,7 @@ int mfl_compare_tries_by_length(const void* t1, const void* t2)
     mfl_try_t* try1 = *(mfl_try_t**)t1;
     mfl_try_t* try2 = *(mfl_try_t**)t2;
     
-    return (int)(try1->try_length - try2->try_length);
+    return try1->try_length - try2->try_length;
 }
 
 
@@ -285,7 +286,7 @@ int mfl_compare_tries_by_length(const void* t1, const void* t2)
 void mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps)
 {
     int i = 0;
-    int lasti = sarecord->sptadd_num_added - 1;
+//    int lasti = sarecord->sptadd_num_added - 1;
     
     for (i = 0; i < steps; ++i) {
         // mfl_disconnect_branch(sarecord->stpadd_addedtips[lasti - i]);
@@ -295,7 +296,7 @@ void mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps)
 
 void mfl_restore_addition_to_last_step(mfl_stepwise_addition_t* sarecord, int head)
 {
-    int i = 0;
+//    int i = 0;
     
     // Loop over each tip, following the reinsertion prescribed in a record
 }
@@ -326,12 +327,12 @@ bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, 
 {
     assert(length);
     bool ret = false;
-    int i = 0;
-    int num_equal = 0;
-    int discardrec = 0;
-    
-    
-    
+//    int i = 0;
+//    int num_equal = 0;
+//    int discardrec = 0;
+//    
+//    
+//    
 //    if (sarecord->stpadd_num_held_new < sarecord->stpadd_max_hold) {
 //        sarecord->stpadd_newtries[sarecord->stpadd_num_held_new]->try_site = tgt;
 //        sarecord->stpadd_newtries[sarecord->stpadd_num_held_new]->try_length = length;
