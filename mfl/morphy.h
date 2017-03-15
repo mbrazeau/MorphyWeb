@@ -214,6 +214,8 @@ typedef enum {
 
 
 typedef void (*mfl_parsim_fn)(struct mfl_nodedata_t* n, struct mfl_nodedata_t* left, struct mfl_nodedata_t* right, struct mfl_nodedata_t* anc, struct mfl_datapartition_t* datapart, int* length);       // Pointer for a function that performs parsimony calculations at a node.
+typedef int (*mfl_lparsim_fn)(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);       // Pointer for a function that performs parsimony local reoptimisation at a node.
+
 typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
 
@@ -233,6 +235,8 @@ typedef struct mfl_datapartition_t {
     mfl_parsim_fn part_uppass_partial;
     mfl_parsim_fn part_NAdownpass_full;
     mfl_parsim_fn part_NAuppass_full;
+    mfl_lparsim_fn part_local;
+    mfl_lparsim_fn part_NAlocal;
     mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_activestates;
     mfl_charstate *part_matrix;
@@ -279,6 +283,8 @@ typedef struct mfl_nodedata_t {
     mfl_parsim_fn nd_uppass_partial;
     mfl_parsim_fn nd_NAdownpass_full;
     mfl_parsim_fn nd_NAuppass_full;
+    mfl_lparsim_fn nd_local;
+    mfl_lparsim_fn nd_NAlocal;
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
@@ -464,6 +470,8 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*n_nd, mfl_nodedata_t* left_nd, 
 void mfl_second_fitch_na_uppass(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
 void mfl_fitch_uppass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
 void mfl_first_fitch_na_uppass(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
+bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length);
+void mfl_clear_active_states(mfl_partition_set_t* dataparts);
 void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* dataparts);
 void mfl_postorder_traversal(mfl_node_t *n, int* length);
 void mfl_first_preorder_traversal(mfl_node_t *n, int* length);
