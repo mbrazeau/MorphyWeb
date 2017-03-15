@@ -422,15 +422,22 @@ void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_
 
 mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
 {
-    --sarec->stpadd_num_toadd;
+    mfl_node_t* ret = NULL;
     
-    sarec->stpadd_addedtips[sarec->sptadd_num_added] = sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd];
+    if (sarec->stpadd_num_toadd) {
+        
+        --sarec->stpadd_num_toadd;
+        
+        sarec->stpadd_addedtips[sarec->sptadd_num_added] = sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd];
+        
+        sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = NULL;
+        
+        ++sarec->sptadd_num_added;
+    }
     
-    sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = NULL;
+    ret = sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
     
-    ++sarec->sptadd_num_added;
-    
-    return sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
+    return ret;
 }
 
 
@@ -700,6 +707,13 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     dbg_printf("the starting trichotomy: %s\n", showtree);
     free(showtree);
     
+    mfl_node_t *newbranch;
+    // Do-while(new branches to add)
+        // Get a new branch
+    
+        // Try all insertions for new branch
+    
+    // End Do-while
     
     return starttrees;
 }
