@@ -236,6 +236,7 @@ mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handl
     sarec->sptadd_num_added = 0;
     
     if (!searchrec->sr_num_trees_held_stepwise) {
+        // TODO: set these as default macros
         searchrec->sr_num_trees_held_stepwise = 1;
         hold = 1;
     }
@@ -402,9 +403,9 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     }
     
     // Try the insertion.
-    if (newbranch->nodet_index == n->nodet_index + 1) { // Some temporary arbitrary push criterion
-        // push the node ref to the list on the current hold thread number
-    }
+//    if (newbranch->nodet_index == n->nodet_index + 1) { // Some temporary arbitrary push criterion
+//        // push the node ref to the list on the current hold thread number
+//    }
     
     // If it works, store it.
     
@@ -428,12 +429,23 @@ mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
         
         --sarec->stpadd_num_toadd;
         
-        sarec->stpadd_addedtips[sarec->sptadd_num_added] = sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd];
-        
-        sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = NULL;
-        
+        if (sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd]) {
+            sarec->stpadd_addedtips[sarec->sptadd_num_added] = sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd];
+            sarec->stpadd_tipstoadd[sarec->stpadd_num_toadd] = NULL;
+        }
+#ifdef MFY_DEBUG
+        else {
+            dbg_eprintf("Attempt to retrieve tip from NULL pointer\n");
+        }
+#endif
+
         ++sarec->sptadd_num_added;
     }
+#ifdef MFY_DEBUG
+    else {
+        dbg_eprintf("Attempt to add negative tip number\n");
+    }
+#endif
     
     ret = sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
     
@@ -542,6 +554,7 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
     mfl_join_node_edges(&t->treet_dummynode, t->treet_root);
     t->treet_dummynode.nodet_num_dat_partitions = dataparts->ptset_n_parts;
     t->treet_dummynode.nodet_charstates = (mfl_nodedata_t**)mfl_malloc(dataparts->ptset_n_parts * sizeof(mfl_nodedata_t*), 0);
+    
     for (i = 0; i < dataparts->ptset_n_parts; ++i) {
         t->treet_dummynode.nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
         t->treet_dummynode.nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
@@ -575,7 +588,7 @@ void mfl_setup_input_tree_with_node_data(mfl_tree_t* t, mfl_partition_set_t* dat
     
     mfl_setup_internal_nodedata_in_assembled_tree(entry, dataparts);
     
-    // Conditional rooting business
+    // TODO: Conditional rooting business
     
     
     // TODO: Centralise this process
@@ -628,6 +641,14 @@ void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t
         mfl_append_tip_to_ringnode(sarec->stpadd_tipstoadd[i], t, dataparts);
     }
     
+    // Create the root ring
+    //mfl_make_n_ary_ring_with_nodedata(3, t->treet_nodestack, dataparts);
+    mfl_root_target_edge(t, startpoint);
+    // TODO: Might combine the below
+    mfl_setup_ringnode_data(t->treet_root, dataparts);
+    mfl_setup_starttree_root(t, dataparts);
+    
+    // TODO: Decide if tree is rooted/unrooted
     t->treet_start = startpoint;
 }
 
@@ -707,11 +728,19 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     dbg_printf("the starting trichotomy: %s\n", showtree);
     free(showtree);
     
-    mfl_node_t *newbranch;
-    // Do-while(new branches to add)
-        // Get a new branch
     
-        // Try all insertions for new branch
+    
+    
+    mfl_node_t *newbranch;
+    
+    // Do-while(new branches to add)
+    mfl_fullpass_tree_optimisation(t, dataparts);
+    
+    // Get a new branch
+    newbranch = mfl_get_next_terminal_in_addseq(sarec);
+    
+    // Try all insertions for new branch
+    
     
     // End Do-while
     
