@@ -53,9 +53,94 @@
 //    return return_weight;
 //}
 
-void mfl_test_fitch_local()
+//int mfl_locreopt_cost(node *src, node *tgt1, node *tgt2, int nchar, int diff)
+//{
+//    /* Returns cost of inserting subtree src between tgt1 and tgt2 following
+//     * the algorithms described by Ronquist (1998. Cladistics) and Goloboff
+//     * (1993, 1996. Cladistics).*/
+//    
+//    int i;
+//    int cost = 0;
+//    charstate *srctemps = src->apomorphies;
+//    charstate *tgt1apos = tgt1->apomorphies;
+//    charstate *tgt2apos = tgt2->apomorphies;
+//    
+//    
+//    for (i = 0; i < nchar; ++i, ++srctemps, ++tgt1apos, ++tgt2apos) {
+//        if ( !(*srctemps & (*tgt1apos | *tgt2apos)) ) {
+//            ++cost;
+//            if (cost > diff) {
+//                return cost;
+//            }
+//        }
+//    }
+//    
+//    return cost;
+//}
+
+int mfl_test_fitch_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff)
 {
+    int i = 0;
+    int cost = 0;
+    int *weights = dataprt->part_int_weights;
+    int num_chars = dataprt->part_n_chars_included;
+    mfl_charstate* src = src_nd->nd_final_set;
+    mfl_charstate* tgt1 = tgt1_nd->nd_final_set;
+    mfl_charstate* tgt2 = tgt2_nd->nd_final_set;
     
+    // TODO: Optimise: increment pointers in loop head
+    for (i = 0; i < num_chars; ++i) {
+        if (!(src[i] & (tgt1[i] | tgt2[i]))) {
+            cost += weights[i];
+            
+            // TODO: The outer condition permits writing one local check
+            // TODO: function. It can be removed in a version of this function
+            // TODO: that is used specifically during the search
+            if (!(diff < 0)) {
+                if (cost > diff) {
+                    return cost;
+                }
+            }
+        }
+    }
+    
+    return cost;
+}
+
+int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff)
+{
+    int i = 0;
+    int cost = 0;
+    int *weights = dataprt->part_int_weights;
+    int num_chars = dataprt->part_n_chars_included;
+    mfl_charstate* src = src_nd->nd_final_set;
+    mfl_charstate* tgt1f = tgt1_nd->nd_final_set;
+    mfl_charstate* tgt2f = tgt2_nd->nd_final_set;
+    mfl_charstate* tgt1p = tgt1_nd->nd_prelim_set;
+    mfl_charstate* tgt2p = tgt2_nd->nd_prelim_set;
+    
+    // TODO: Optimise: increment pointers in loop head
+    for (i = 0; i < num_chars; ++i) {
+        if (tgt1f[i] & tgt2f[i]) {
+            if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
+                if (src[i] & (tgt1p[i] | tgt2p[i])) {
+                    
+                    // TODO: The outer condition permits writing one local check
+                    // TODO: function. It can be removed in a version of this function
+                    // TODO: that is used specifically during the search
+                    cost += weights[i];
+                    if (!(diff < 0)) {
+                        if (cost > diff) {
+                            return cost;
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
+    
+    return cost;
 }
 
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd,

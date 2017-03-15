@@ -456,6 +456,8 @@ typedef struct {
 int             tui_check_broken_tree(mfl_tree_t *t, int *verbose);
 
 /* In mfl_evaluate.c */
+int mfl_test_fitch_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);
+int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length);
 void mfl_first_fitch_na_downpass(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd,  mfl_nodedata_t* dummy, mfl_datapartition_t*  datapart,int* length);
 void mfl_second_fitch_na_downpass(mfl_nodedata_t*n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length);
