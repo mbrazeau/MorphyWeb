@@ -165,6 +165,27 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     return cost;
 }
 
+
+void mfl_local_add_cost(mfl_node_t* src, mfl_node_t* tgt, const int diff, int *cost)
+{
+    int i = 0;
+    int num_dataparts = 0;
+    mfl_lparsim_fn evaluator;
+    mfl_node_t *tgtopp = tgt->nodet_edge;
+    
+    num_dataparts = src->nodet_num_dat_partitions;
+    assert(src->nodet_num_dat_partitions == tgt->nodet_num_dat_partitions);
+    
+    for (i = 0; i < num_dataparts; ++i) {
+        evaluator = src->nodet_charstates[i]->nd_local;
+        *cost += evaluator((const mfl_nodedata_t*)src->nodet_charstates[i],
+                  (const mfl_nodedata_t*)tgt->nodet_charstates[i],
+                  (const mfl_nodedata_t*)tgtopp->nodet_charstates[i],
+                  (const mfl_datapartition_t*)src->nodet_charstates[i]->nd_parent_partition,
+                   diff);
+    }
+}
+
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd,
                                     mfl_nodedata_t* left_nd,
                                     mfl_nodedata_t* right_nd,
