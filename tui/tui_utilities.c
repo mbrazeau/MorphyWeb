@@ -432,7 +432,7 @@ int tui_check_all_node_ring_circularity(const mfl_tree_t *t, int num_nodes, int 
  @param verbose (int*) yes/no value for verbose output
  @returns int
  */
-int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
+int tui_check_broken_tree(mfl_tree_t *t, int verbose)
 {
     dbg_printf("BEGIN TEST %s()\n", __FXN_NAME__);
     
@@ -458,11 +458,11 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     num_nodes = mfl_calculate_number_of_nodes_to_allocate(t->treet_num_taxa);
     
     // Check for dangling pointers and tip node misbehaviour
-    err = tui_check_tree_for_connection_errors(t, num_nodes, verbose);
+    err = tui_check_tree_for_connection_errors(t, num_nodes, &verbose);
     
     // Checking anastomosis. Each node record should be accessed by no more than one other edge.
     
-    ret = tui_check_for_anastomosis(t, num_nodes, verbose);
+    ret = tui_check_for_anastomosis(t, num_nodes, &verbose);
     
     if (ret) {
         err = ret;
@@ -474,7 +474,8 @@ int tui_check_broken_tree(mfl_tree_t *t, int *verbose)
     //      intended to be internal nodes via their nodet_next pointer. Thus, they should have their
     //      nodet_tip value set to 0 and they should not be found in the array between [0 and num_taxa)
     
-    ret = tui_check_all_node_ring_circularity(t, num_nodes, verbose);
+    // TODO: Change all these verbose arguments to non-pointers. Not sure why they *are* pointers
+    ret = tui_check_all_node_ring_circularity(t, num_nodes, &verbose);
     
     if (ret) {
         err = ret;
@@ -579,14 +580,14 @@ void tui_test_checktree_(void)
     //testtr->treet_treenodes[6]->nodet_next->nodet_next = testtr->treet_treenodes[6]->nodet_next;
     
     int verbose = TUI_SILENT;
-    tui_check_broken_tree(testtr, &verbose);
+    tui_check_broken_tree(testtr, verbose);
     
     mfl_free_tree(testtr);
     
     /* Do it again with non-consecutive tip numbers. */
     testtr = mfl_convert_newick_to_mfl_tree_t(temp_example2, 0);
 
-    tui_check_broken_tree(testtr, &verbose);
+    tui_check_broken_tree(testtr, verbose);
     
     mfl_free_tree(testtr);
 
