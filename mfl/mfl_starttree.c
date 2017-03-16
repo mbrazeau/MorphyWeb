@@ -70,11 +70,10 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
     
     for (i = 0; i < numparts; ++i) {
         // Stuff here.
-        mfl_copy_row_from_partition_into_nodedata(
-                                                  n->nodet_charstates[i]->nd_prelim_set,
+        mfl_copy_row_from_partition_into_nodedata(n->nodet_charstates[i]->nd_prelim_set,
                                                   partset->ptset_partitions[i],
-                                                  rownumber
-                                                  );
+                                                  rownumber);
+        memcpy(n->nodet_charstates[i]->nd_final_set, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
     }
 }
 
@@ -389,6 +388,11 @@ bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, 
 }
 
 
+struct addseq_test_s {
+    int best_try_length;
+    mfl_node_t *best_try_place;
+} addseq_test;
+
 void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec)
 {
     mfl_node_t* p = NULL;
@@ -400,6 +404,15 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
             mfl_tryall_traversal(p->nodet_edge, newbranch, sarecord, searchrec);
             p = p->nodet_next;
         } while (p != n);
+    }
+    
+    int cost = 0;
+    
+    mfl_local_add_cost(newbranch, n->nodet_edge, -1, &cost);
+    
+    dbg_printf("Added length: %i\n", cost);
+    if (cost < addseq_test.best_try_length) {
+        addseq_test.best_try_place = n;
     }
     
     // Try the insertion.
@@ -558,6 +571,7 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
     for (i = 0; i < dataparts->ptset_n_parts; ++i) {
         t->treet_dummynode.nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
         t->treet_dummynode.nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        t->treet_dummynode.nodet_charstates[i]->nd_prelim_set = t->treet_dummynode.nodet_charstates[i]->nd_final_set;
         t->treet_dummynode.nodet_charstates[i]->nd_subtree_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
          t->treet_dummynode.nodet_charstates[i]->nd_region_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
     }
@@ -642,7 +656,6 @@ void mfl_setup_tree_for_stepwise_addition(mfl_tree_t* t, mfl_stepwise_addition_t
     }
     
     // Create the root ring
-    //mfl_make_n_ary_ring_with_nodedata(3, t->treet_nodestack, dataparts);
     mfl_root_target_edge(t, startpoint);
     // TODO: Might combine the below
     mfl_setup_ringnode_data(t->treet_root, dataparts);
@@ -740,9 +753,12 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     newbranch = mfl_get_next_terminal_in_addseq(sarec);
     
     // Try all insertions for new branch
-    
+    mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
     
     // End Do-while
+#ifdef MFY_DEBUG
+    tui_check_broken_tree(t, false);
+#endif
     
     return starttrees;
 }
