@@ -749,16 +749,25 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     // While(new branches to add)
     while ((newbranch = mfl_get_next_terminal_in_addseq(sarec))) {
         
-        // FOR each tree held {
-        mfl_fullpass_tree_optimisation(t, dataparts);
-        
-        // Reset bestlen thingy
+        // Reset bestlen thingy if this is the first loop
         addseq_test.tried = false;
+        
+        // FOR each tree held {
+        
+        // Roll back to previous branching
+        
+        // Optimise the tree
+        t->treet_parsimonylength = 0;
+        mfl_fullpass_tree_optimisation(t, dataparts);
         
         // Try all insertions for new branch
         mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
         
+        // TODO: REMOVE THIS:
         mfl_insert_branch_with_ring_base(newbranch, addseq_test.best_try_place);
+        
+        // Add to the length the best length fo the last try
+        // t->treet_parsimonylength +=
         // } END FOR
     }
 
