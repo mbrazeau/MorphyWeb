@@ -132,20 +132,35 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     for (i = 0; i < num_chars; ++i) {
         
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
-            if (src[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                if (src[i] & (tgt1p[i] | tgt2p[i])) {
-                    if (tgt1f[i] & tgt2f[i]) {
-                        // TODO: The outer condition permits writing one local check
-                        // TODO: function. It can be removed in a version of this function
-                        // TODO: that is used specifically during the search
-                        cost += weights[i];
-                        if (!(diff < 0)) {
-                            if (cost > diff) {
-                                return cost;
-                            }
+            if (src[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    // TODO: The outer condition permits writing one local check
+                    // TODO: function. It can be removed in a version of this function
+                    // TODO: that is used specifically during the search
+                    cost += weights[i];
+                    if (!(diff < 0)) {
+                        if (cost > diff) {
+                            return cost;
                         }
                     }
                 }
+                else if (src[i] & tgt1p[i] & tgt2p[i]) {
+                    // TODO: The outer condition permits writing one local check
+                    // TODO: function. It can be removed in a version of this function
+                    // TODO: that is used specifically during the search
+                    cost += weights[i];
+                    if (!(diff < 0)) {
+                        if (cost > diff) {
+                            return cost;
+                        }
+                    }
+                }
+
+                
+//                if (src[i] & (tgt1p[i] | tgt2p[i])) {
+//                    if (tgt1f[i] & tgt2f[i]) {
+//                    }
+//                }
             }
             else if (src[i] & (tgt1a[i] | tgt2a[i])) {
                 // TODO: The outer condition permits writing one local check
@@ -584,10 +599,12 @@ void mfl_set_rootstates(mfl_node_t* dummyroot,
         n_char_in_parts = dataparts->ptset_partitions[i]->part_n_chars_included;
         
         for (j = 0; j < n_char_in_parts; ++j) {
+            
             dummyroot->nodet_charstates[i]->nd_final_set[j] = rootnode->nodet_charstates[i]->nd_prelim_set[j];
             if (dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE) {
                 dummyroot->nodet_charstates[i]->nd_final_set[j] = dummyroot->nodet_charstates[i]->nd_final_set[j] & MORPHY_IS_APPLICABLE;
             }
+            dummyroot->nodet_charstates[i]->nd_subtree_activestates[j] = dummyroot->nodet_charstates[i]->nd_prelim_set[j];
         }
     }
     
@@ -862,6 +879,7 @@ void mfl_allviews_traversal(mfl_node_t* n)
     mfl_node_t *p = NULL;
     
     if (n->nodet_tip) {
+        dbg_printf("Tip visited: %i\n", n->nodet_tip);
         mfl_postorder_traversal(n->nodet_edge, NULL);
         return;
     }
@@ -883,11 +901,15 @@ bool mfl_simple_unroot(mfl_tree_t *t, mfl_cliprec_t* clip)
         return true;
     }
     
-    t->treet_start = mfl_find_rightmost_tip_in_tree(t->treet_root);
+    mfl_node_t *start_opp = mfl_find_rightmost_tip_in_tree(t->treet_root);
+    
+    
     
     if (mfl_clip_branch(t->treet_root->nodet_edge, clip)) {
         ret = true;
     }
+    
+    t->treet_start = start_opp->nodet_edge;
     
     return ret;
 }
