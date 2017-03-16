@@ -389,6 +389,7 @@ bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, 
 
 
 struct addseq_test_s {
+    bool tried = false;
     int best_try_length;
     mfl_node_t *best_try_place;
 } addseq_test;
@@ -411,18 +412,17 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     mfl_local_add_cost(newbranch, n->nodet_edge, -1, &cost);
     
     dbg_printf("Added length: %i\n", cost);
-    if (cost < addseq_test.best_try_length) {
+    if ((cost <= addseq_test.best_try_length) || !addseq_test.tried) {
+        
+        // TODO: Replace with sarecord storage
+        addseq_test.best_try_length = cost;
+        
+        // TODO: Replace with a push to best positions list
         addseq_test.best_try_place = n;
     }
     
-    // Try the insertion.
-//    if (newbranch->nodet_index == n->nodet_index + 1) { // Some temporary arbitrary push criterion
-//        // push the node ref to the list on the current hold thread number
-//    }
+    addseq_test.tried = true;
     
-    // If it works, store it.
-    
-    // Move on.
 }
 
 
@@ -453,14 +453,14 @@ mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
 #endif
 
         ++sarec->sptadd_num_added;
+        ret = sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
     }
 #ifdef MFY_DEBUG
     else {
-        dbg_eprintf("Attempt to add negative tip number\n");
+        //dbg_eprintf("Attempt to add negative tip number\n");
+        dbg_printf("Warning: attempt to add negative tip number");
     }
 #endif
-    
-    ret = sarec->stpadd_addedtips[sarec->sptadd_num_added-1];
     
     return ret;
 }
@@ -746,17 +746,28 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     
     mfl_node_t *newbranch;
     
-    // Do-while(new branches to add)
-    mfl_fullpass_tree_optimisation(t, dataparts);
+    // While(new branches to add)
+    while ((newbranch = mfl_get_next_terminal_in_addseq(sarec))) {
+        
+        // FOR each tree held {
+        mfl_fullpass_tree_optimisation(t, dataparts);
+        
+        // Reset bestlen thingy
+        addseq_test.tried = false;
+        
+        // Try all insertions for new branch
+        mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
+        
+        mfl_insert_branch_with_ring_base(newbranch, addseq_test.best_try_place);
+        // } END FOR
+    }
+
     
-    // Get a new branch
-    newbranch = mfl_get_next_terminal_in_addseq(sarec);
     
-    // Try all insertions for new branch
-    mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
-    
-    // End Do-while
 #ifdef MFY_DEBUG
+    char *resultanttree = mfl_convert_mfl_tree_t_to_newick(t, false);
+    dbg_printf("The resultant tree:\n%s\n", resultanttree);
+    free(resultanttree);
     tui_check_broken_tree(t, false);
 #endif
     
