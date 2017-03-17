@@ -576,18 +576,27 @@ char matrix[] =
     
 }
 
-void tui_test_addition_sequence(void)
+void tui_test_local_reoptimisation(void)
 {
+    /*
+     * A seriously crufty test of LOCAL REOPTIMISATION, AT PRESENT
+     */
     
-    int num_taxa = 5;
-    int num_chars = 4;
+    int num_taxa = 7;
+    int num_chars = 6;
     int num_og_tax = 0;
     
-    char matrix[] = "-000"
-                    "-000"
-                    "-405"
-                    "3000"
-                    "1000;";
+    char *testnwk = (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));";
+    
+    //                        1         2
+    //               1...5....0....5....0
+    char matrix[] = "103000"
+                    "33-000"
+                    "---405"
+                    "---405"
+                    "--3000"
+                    "333000"
+                    "111000;";
     
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
     
@@ -597,15 +606,102 @@ void tui_test_addition_sequence(void)
     handle->n_outgroup_taxa = num_og_tax;
     handle->n_to_hold = 3;
     handle->input_data = matrix;
-    //handle->addseq_type = MFL_AST_ASIS;
+//    handle->gap_method = MFL_GAP_MISSING_DATA;
+//    handle->addseq_type = MFL_AST_ASIS;
 //    handle->addseq_type = MFL_AST_RANDOM;
+    
+    //mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
+    mfl_partition_set_t* dataparts = mfl_generate_search_data(handle);
+    
+    mfl_tree_t* testtree = mfl_convert_newick_to_mfl_tree_t(testnwk, num_taxa);
+    mfl_setup_input_tree_with_node_data(testtree, dataparts);
+    
+    tui_check_broken_tree(testtree, false);
+
+    mfl_fullpass_tree_optimisation(testtree, dataparts);
+    
+    int diff = 0;
+    int oldlen = testtree->treet_parsimonylength;
+    
+    // Prune tip 3;
+    mfl_cliprec_t clip;
+    mfl_node_t* tgt1 = testtree->treet_treenodes[2]->nodet_edge->nodet_next->nodet_edge;
+    mfl_node_t* tgt2 = testtree->treet_treenodes[2]->nodet_edge->nodet_next->nodet_next->nodet_edge;
+    
+    testtree->treet_treenodes[2]->nodet_edge->nodet_weight = 3;
+    testtree->treet_treenodes[2]->nodet_edge->nodet_downpass_visited = true;
+    mfl_clip_branch(testtree->treet_treenodes[2], &clip);
+    //tui_check_broken_tree(testtree, false);
+    char *treestring = mfl_convert_mfl_tree_t_to_newick(testtree, false);
+    printf("Tree after clip: %s\n", treestring);
+    
+    dbg_printf("The tree after clip:\n");
+    
+    // Perform full-pass on tree again (check that second time around visits all nodes)
+    testtree->treet_parsimonylength = 0;
+    
+    mfl_fullpass_tree_optimisation(testtree, dataparts);
+    
+    mfl_local_add_cost(testtree->treet_treenodes[2], tgt1, -1, &diff);
+    
+    // Compare length and sum of lengths;
+    printf("\nDiff: %i\n\n", diff);
+    if (oldlen == (testtree->treet_parsimonylength + diff)) {
+        dbg_ppass("lengths are equal.");
+    }
+    else {
+        dbg_pfail("lengths do not sum to full length as expected.");
+    }
+    dbg_printf("\n");
+    
+    mfl_free_tree(testtree);
+    
+    return;
+}
+
+
+void tui_test_stepwise_addition(void)
+{
+    int num_taxa = 7;
+    int num_chars = 20;
+    int num_og_tax = 1;
+    
+    //                        1         2
+    //               1...5....0....5....0
+    char matrix[] = "1030000000000000----"
+                    "33-0000000000000----"
+                    "---4051111000000----"
+                    "---4051111111100----"
+                    "--300011111111111---"
+                    "33300011111111111111"
+                    "11100011111111111111;";
+    /*"10300000000000000000"
+                    "33-00000000000000000"
+                    "---40511110000000000"
+                    "---40511111111000000"
+                    "--300011111111111000"
+                    "33300011111111111111"
+                    "11100011111111111111;";*/
+    
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    // Setup the handle:
+    handle->n_taxa = num_taxa;
+    handle->n_chars = num_chars;
+    handle->n_outgroup_taxa = num_og_tax;
+    handle->n_to_hold = 1;
+    handle->input_data = matrix;
+    //    handle->gap_method = MFL_GAP_MISSING_DATA;
+        handle->addseq_type = MFL_AST_ASIS;
+    //    handle->addseq_type = MFL_AST_RANDOM;
     
     mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
     mfl_partition_set_t* dataparts = mfl_generate_search_data(handle);
     
-    //tui_print_out_converted_matrix(<#mfl_matrix_t *matrix#>, <#int num_taxa#>, <#int num_chars#>, <#bool printbits#>)
+    // TODO: Needs to pass return to variable
+    // TODO: Return type needs designing
+    /**/ mfl_get_start_trees(dataparts, handle, searchrec);
     
-    //mfl_get_start_trees(dataparts, handle, searchrec);
 }
 
 void tui_test_edgetables(void)
@@ -928,13 +1024,17 @@ int main (int argc, char *argv[])
         //exit(0);
     }
     
-    dbg_printf("Testing the n-ary ring creation:\n");
-    tui_test_nary_ring_creation();
-    dbg_printf("\nEnd n-ary ring test\n");
-
+//    dbg_printf("Testing the n-ary ring creation:\n");
+//    tui_test_nary_ring_creation();
+//    dbg_printf("\nEnd n-ary ring test\n");
+//
     dbg_printf("Testing character optimisation (yay!):\n");
     tui_test_basic_character_optimisation();
     dbg_printf("\nEnd character optimisation test\n");
+    
+    dbg_printf("Testing local reoptimisation functions:\n");
+    tui_test_local_reoptimisation();
+    dbg_printf("\nEnd local optimisation test\n");
     
 //    dbg_printf("Testing addition sequence:\n");
 //    tui_test_addition_sequence();
@@ -963,7 +1063,11 @@ int main (int argc, char *argv[])
 
     dbg_printf("Testing matrices:\n");
     tui_test_counts();
-    dbg_printf("\nEnd edge tables test\n");
+    dbg_printf("\nEnd counts test\n");
+    
+    dbg_printf("Testing stepwise addition:\n");
+    tui_test_stepwise_addition();
+    dbg_printf("\nEnd stepwise addition test\n");
     
     //-----
     

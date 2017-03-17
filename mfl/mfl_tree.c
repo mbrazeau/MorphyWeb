@@ -1050,6 +1050,8 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
 void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
 {
     
+    // TODO: This function can be modified to allow the search to continue without resizing.
+    
     int newsize = trbuf->tb_max_buffersize + addedlength;
     
     mfl_tree_t** newtarray = (mfl_tree_t**)malloc(newsize * sizeof(mfl_tree_t*));
@@ -1076,6 +1078,8 @@ void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
  */
 void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle)
 {
+    // TODO: Change this function to have a return value
+    // TODO: Store autoincr values inside buffer struct and remove handle* param
     int addedlength = 0;
     
     if ((trbuf->tb_num_trees+1) > trbuf->tb_max_buffersize) {
@@ -1146,6 +1150,85 @@ void mfl_reset_nodestack(mfl_nodestack_t* nstk)
             --nstk->nstk_numnodes;
         }
     }
+}
+
+void mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store)
+{
+    int i = 0;
+    int num_nodes;
+    int num_taxa;
+    
+    num_nodes = t->treet_num_nodes;
+    num_taxa = t->treet_num_taxa;
+    
+    for (i = 0; i < num_nodes; ++i) {
+        if (i != num_taxa) {
+            store->treet_edges[i] = t->treet_treenodes[i]->nodet_edge;
+        }
+        else {
+            store->treet_edges[i] = &store->treet_dummynode;
+            store->treet_dummynode.nodet_edge = t->treet_treenodes[i];
+        }
+    }
+}
+
+mfl_tree_t* mfl_record_tree_topology(const mfl_tree_t* t)
+{
+
+    mfl_tree_t* storedt = NULL;
+    
+    if (t) {
+        
+        storedt = (mfl_tree_t*)mfl_malloc(sizeof(mfl_tree_t), 0);
+        
+        storedt->treet_treenodes = NULL;
+        storedt->treet_num_taxa = t->treet_num_taxa;
+        storedt->treet_num_nodes = t->treet_num_nodes;
+        storedt->treet_num_og_tips = t->treet_num_og_tips;
+        storedt->treet_root = t->treet_root;
+        storedt->treet_start = t->treet_start;
+        
+        // TODO: Values to update after return:
+        // storedt->treet_index
+        // storedt->treet_parsimonylength
+        // storedt->treet_index
+        // storedt->treet_island_id
+        storedt->treet_edges = (mfl_nodearray_t)mfl_malloc(t->treet_num_nodes * sizeof(mfl_node_t*), 0);
+        
+        mfl_update_stored_topology(t, storedt);
+        
+    }
+#ifdef MFY_DEBUG
+    else {
+        dbg_printf("Warning: passed NULL pointer to %s\n", __FXN_NAME__);
+    }
+#endif
+    return storedt;
+}
+
+void mfl_convert_from_stored_topol(mfl_tree_t *intree, mfl_tree_t *outtree)
+{
+    int i = 0;
+    int num_nodes = 0;
+    //int num_taxa = 0;
+    
+    if (intree && outtree) {
+        
+        num_nodes = outtree->treet_num_nodes;
+        
+        outtree->treet_treenodes = intree->treet_treenodes;
+        intree->treet_treenodes = NULL;
+        
+        for (i = 0; i < num_nodes; ++i) {
+            outtree->treet_treenodes[i]->nodet_edge = outtree->treet_edges[i];
+        }
+    }
+#ifdef MFY_DEBUG
+    else {
+        dbg_printf("Warning: passed NULL pointers to %s\n", __FXN_NAME__);
+    }
+#endif
+    
 }
 
 mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)

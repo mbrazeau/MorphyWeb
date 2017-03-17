@@ -80,6 +80,8 @@ void mfl_initialise_searchrec(mfl_searchrec_t* searchrec, const mfl_handle_s* ha
     if (!searchrec->sr_num_partitions) {
         searchrec->sr_num_partitions = 1;
     }
+    
+    searchrec->sr_handle_ptr = (mfl_handle_s*)handle;
 }
 
 mfl_searchrec_t* mfl_create_searchrec(mfl_handle_s* handle)

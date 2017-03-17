@@ -218,6 +218,7 @@ void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec)
     
     free(sarec->stpadd_addedtips);
     free(sarec->stpadd_tipstoadd);
+    free(sarec->stpadd_heldtrees);
     // TODO: Add more free calls
     free(sarec);
 }
@@ -225,7 +226,7 @@ void mfl_destroy_stepwise_addition(mfl_stepwise_addition_t* sarec)
 
 mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
-//    int i = 0;
+    int i = 0;
     int hold = 0;
     
     mfl_stepwise_addition_t* sarec = (mfl_stepwise_addition_t*)mfl_malloc(sizeof(mfl_stepwise_addition_t), 0);
@@ -244,6 +245,12 @@ mfl_stepwise_addition_t* mfl_generate_stepwise_addition(mfl_tree_t* t, mfl_handl
     }
     
     sarec->stpadd_max_hold = hold;
+    sarec->stpadd_heldtrees = (mfl_try_t*)mfl_malloc(sarec->stpadd_max_hold * sizeof(mfl_try_t), 0);
+    sarec->stpadd_num_held = 0;
+    
+    for (i = 0; i < sarec->stpadd_max_hold; ++i) {
+        sarec->stpadd_heldtrees[i].try_storedtopol = searchrec->sr_treebuffer->tb_savedtrees[i];
+    }
     
     
     // Set the terminal node addition sequence in the SA record.
@@ -275,124 +282,73 @@ int mfl_compare_tries_by_length(const void* t1, const void* t2)
 }
 
 
-/*!
- @discussion Rolls back the addition of terminals to the tree by any number of
- steps. The result is a tree denuded of all of the terminals added between the 
- current topology and the number of steps indicated.
- @param sarecord (mfl_stepwise_addition_t*) the stepwise addition record
- @param steps (int) the number of steps in the stepwise addition to roll back by
- */
-
-void mfl_rollback_additions(mfl_stepwise_addition_t* sarecord, int steps)
-{
-    int i = 0;
-//    int lasti = sarecord->sptadd_num_added - 1;
-    
-    for (i = 0; i < steps; ++i) {
-        // mfl_disconnect_branch(sarecord->stpadd_addedtips[lasti - i]);
-    }
-}
-
-
-void mfl_restore_addition_to_last_step(mfl_stepwise_addition_t* sarecord, int head)
-{
-//    int i = 0;
-    
-    // Loop over each tip, following the reinsertion prescribed in a record
-}
-
-
 void mfl_reset_stepwise_addition_record_for_new_branch(mfl_node_t* newbranch, mfl_stepwise_addition_t* sarec)
 {
-    int i = 0;
-    
-    sarec->stpadd_shortest_try = 0;
     sarec->stpadd_longest_try = 0;
-    sarec->stpadd_lastnewbranch = sarec->stpadd_newbranch;
-    sarec->stpadd_newbranch = newbranch;
-    
-    for (i = 0; i < sarec->stpadd_num_held_new; ++i) {
-        sarec->stpadd_oldtries[i].try_site      = sarec->stpadd_newtries[i].try_site;
-        sarec->stpadd_oldtries[i].try_length    = sarec->stpadd_newtries[i].try_length;
-        sarec->stpadd_newtries[i].try_site      = NULL;
-        sarec->stpadd_newtries[i].try_length    = 0;
-    }
-    
-    sarec->stpadd_num_held_old = sarec->stpadd_num_held_new;
-    sarec->stpadd_num_held_new = 0;
+    sarec->stpadd_shortest_try = 0;
+    sarec->stpadd_current_try = 0;
+}
+
+void mfl_replace_try (mfl_try_t* oldtry, mfl_tree_t* newtopol, int diff)
+{
+    oldtry->try_length = diff;
+    mfl_update_stored_topology(newtopol, oldtry->try_storedtopol);
 }
 
 
-bool mfl_push_try_to_record(mfl_node_t* tgt, mfl_stepwise_addition_t* sarecord, int length, mfl_searchrec_t* searchrec)
+int mfl_hold_new_tree(mfl_tree_t* newtr, mfl_stepwise_addition_t *sarec, mfl_searchrec_t* searchrec)
 {
-    assert(length);
-    bool ret = false;
-//    int i = 0;
-//    int num_equal = 0;
-//    int discardrec = 0;
-//    
-//    
-//    
-//    if (sarecord->stpadd_num_held_new < sarecord->stpadd_max_hold) {
-//        sarecord->stpadd_newtries[sarecord->stpadd_num_held_new]->try_site = tgt;
-//        sarecord->stpadd_newtries[sarecord->stpadd_num_held_new]->try_length = length;
-//        ++sarecord->stpadd_num_held_new;
-//        ret = true;
-//    }
-//    else {
-//        if (sarecord->stpadd_shortest_try < sarecord->stpadd_longest_try) {
-//            sarecord->stpadd_newtries[sarecord->stpadd_num_held_new-1]->try_site = tgt;
-//            sarecord->stpadd_newtries[sarecord->stpadd_num_held_new-1]->try_length = length;
-//            ret = true;
-//        }
-//        else {
-//            // Randomly choose a tree of equal length.
-//            
-//            // Count the number of equal tries.
-//            for (i = 0; i < sarecord->stpadd_num_held_new; ++i) {
-//                if (sarecord->stpadd_newtries[i]->try_length == length) {
-//                    ++num_equal;
-//                }
-//            }
-//            
-//            // Choose one of these to discard
-//            discardrec = gsl_rng_uniform_int(searchrec->sr_random_number, (unsigned long)num_equal);
-//            
-//            // If that includes the new try, just return
-//            if (discardrec == i) {
-//                return ret = false;
-//            }
-//            
-//            // Otherwise, swap out the old try record info with the new site
-//            num_equal = 0;
-//            
-//            // Find the try record.
-//            for (i = 0; i < sarecord->stpadd_num_held_new; ++i) {
-//                if (sarecord->stpadd_newtries[i]->try_length == length) {
-//                    ++num_equal;
-//                    if (num_equal == discardrec) {
-//                        sarecord->stpadd_newtries[i]->try_site = tgt;
-//                        break;
-//                    }
-//                }
-//            }
-//            
-//            ret = true;
-//        }
-//    }
-//
-//    qsort(sarecord->stpadd_newtries, sarecord->stpadd_num_held_new, sizeof(mfl_try_t*), &mfl_compare_tries_by_length);
-//    sarecord->stpadd_longest_try = sarecord->stpadd_newtries[sarecord->stpadd_num_held_new-1]->try_length;
+    int ret = 1;
+    
+    mfl_treebuffer_t *tbuf = searchrec->sr_treebuffer;
+    
+    if (sarec->stpadd_num_held < sarec->stpadd_max_hold) {
+        mfl_append_tree_to_treebuffer(newtr, tbuf, searchrec->sr_handle_ptr);
+        ++sarec->stpadd_num_held;
+        ret = 0;
+    }
     
     return ret;
 }
 
+mfl_try_t* mfl_choose_try_to_replace(int diff, mfl_stepwise_addition_t* sarec)
+{
+    int i = 0;
+    mfl_try_t *replaceme = NULL;
+    
+    do {
+        // Test lengths
+        sarec->stpadd_heldtrees[i].try_length;
+        ++i;
+    } while (i < sarec->stpadd_current_try);
+    
+    return replaceme;
+}
 
-struct addseq_test_s {
-    bool tried = false;
-    int best_try_length;
-    mfl_node_t *best_try_place;
-} addseq_test;
+int mfl_try_to_hold(mfl_tree_t* t, int diff, mfl_stepwise_addition_t* sarec, mfl_searchrec_t* searchrec)
+{
+    int ret = 0;
+    mfl_tree_t *holdt = NULL;
+    
+    if (sarec->stpadd_num_held < sarec->stpadd_max_hold) {
+        
+        holdt = mfl_record_tree_topology(t);
+        
+        if (mfl_hold_new_tree(holdt, sarec, searchrec)) {
+            dbg_eprintf("failed to append storage topology\n");
+            ret = 1;
+        }
+    }
+    else {
+        // Replace any try that is as long or longer
+        mfl_replace_try(&sarec->stpadd_heldtrees[0], t, diff);
+        
+        ret = 0;
+    }
+    
+    return ret;
+}
+
 
 void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec)
 {
@@ -412,16 +368,28 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     mfl_local_add_cost(newbranch, n->nodet_edge, -1, &cost);
     
     dbg_printf("Added length: %i\n", cost);
-    if ((cost <= addseq_test.best_try_length) || !addseq_test.tried) {
-        
-        // TODO: Replace with sarecord storage
-        addseq_test.best_try_length = cost;
-        
-        // TODO: Replace with a push to best positions list
-        addseq_test.best_try_place = n;
+    if (sarecord->stpadd_longest_try) {
+        if (cost <= sarecord->stpadd_longest_try) {
+            // Find tree(s) from _tries_ with equal added length
+            
+            // Replace any longer try; or randomly replace an equally long try
+        }
+    }
+    else {
+        sarecord->stpadd_longest_try = cost;
+        sarecord->stpadd_shortest_try = cost;
     }
     
-    addseq_test.tried = true;
+//    if ((cost <= addseq_test.best_try_length) || !addseq_test.tried) {
+//        
+//        // TODO: Replace with sarecord storage
+//        addseq_test.best_try_length = cost;
+//        
+//        // TODO: Replace with a push to best positions list
+//        addseq_test.best_try_place = n;
+//    }
+    
+//    addseq_test.tried = true;
     
 }
 
@@ -458,7 +426,7 @@ mfl_node_t* mfl_get_next_terminal_in_addseq(mfl_stepwise_addition_t* sarec)
 #ifdef MFY_DEBUG
     else {
         //dbg_eprintf("Attempt to add negative tip number\n");
-        dbg_printf("Warning: attempt to add negative tip number");
+        dbg_printf("Warning: attempt to add negative tip number\n");
     }
 #endif
     
@@ -629,6 +597,9 @@ mfl_node_t* mfl_generate_starting_trichotomy(mfl_tree_t* t, mfl_stepwise_additio
     mfl_join_node_edges(l, ringnd->nodet_next);
     mfl_join_node_edges(r, ringnd->nodet_next->nodet_next);
     
+    t->treet_edges = (mfl_nodearray_t)mfl_malloc(t->treet_num_nodes * sizeof(mfl_node_t*), 0);
+    //mfl_update_stored_topology(t, t);
+    
     return ringnd;
 }
 
@@ -723,19 +694,24 @@ void mfl_add_tips_stepwise(mfl_tree_t* t, mfl_partition_set_t* dataparts, mfl_se
 
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec)
 {
-    
+    int i = 0;
     int num_trees = MORPHY_DEFAULT_TREE_LIMIT;
+    mfl_node_t *newbranch;
+    
     if (handle->maxtrees) {
         num_trees = handle->maxtrees;
     }
     mfl_treebuffer_t* starttrees = mfl_alloc_treebuffer(num_trees);
-    
+   
+    searchrec->sr_treebuffer = starttrees;
     // Building stuff
     mfl_tree_t* t = mfl_generate_new_starting_tree(dataparts, handle, searchrec);
+    mfl_nodearray_t current = t->treet_treenodes;
     
     mfl_stepwise_addition_t * sarec = mfl_generate_stepwise_addition(t, handle, searchrec);
-    
     mfl_setup_tree_for_stepwise_addition(t, sarec, dataparts);
+    
+    mfl_hold_new_tree(t, sarec, searchrec);
     
     char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
     dbg_printf("the starting trichotomy: %s\n", showtree);
@@ -744,41 +720,44 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     
     
     
-    mfl_node_t *newbranch;
-    
     // While(new branches to add)
     while ((newbranch = mfl_get_next_terminal_in_addseq(sarec))) {
         
         // Reset bestlen thingy if this is the first loop
-        addseq_test.tried = false;
+        mfl_reset_stepwise_addition_record_for_new_branch(newbranch, sarec);
         
-        // FOR each tree held {
+        for (i = 0; i < sarec->stpadd_num_held; ++i) {
+            // FOR each tree held {
+            t->treet_treenodes = NULL;
+            t = starttrees->tb_savedtrees[i];
+            t->treet_treenodes = current;
+            
+            //mfl_update_stored_topology(t, t);
+            
+            // Optimise the tree
+            t->treet_parsimonylength = 0;
+            mfl_fullpass_tree_optimisation(t, dataparts);
+            
+            // Try all insertions for new branch
+            mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
+            
+            // TODO: UPDATE THIS:
+            //mfl_insert_branch_with_ring_base(newbranch, addseq_test.best_try_place);
+            
+            // Add to the length the best length fo the last try
+            // t->treet_parsimonylength +=
+            // } END FOR
         
-        // Roll back to previous branching
-        
-        // Optimise the tree
-        t->treet_parsimonylength = 0;
-        mfl_fullpass_tree_optimisation(t, dataparts);
-        
-        // Try all insertions for new branch
-        mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
-        
-        // TODO: REMOVE THIS:
-        mfl_insert_branch_with_ring_base(newbranch, addseq_test.best_try_place);
-        
-        // Add to the length the best length fo the last try
-        // t->treet_parsimonylength +=
-        // } END FOR
+            ++sarec->stpadd_current_try;
+        }
     }
-
-    
     
 #ifdef MFY_DEBUG
-    char *resultanttree = mfl_convert_mfl_tree_t_to_newick(t, false);
-    dbg_printf("The resultant tree:\n%s\n", resultanttree);
-    free(resultanttree);
+    showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
+    dbg_printf("The resultant tree:\n%s\n", showtree);
+    free(showtree);
     tui_check_broken_tree(t, false);
 #endif
-    
+    mfl_destroy_stepwise_addition(sarec);
     return starttrees;
 }
