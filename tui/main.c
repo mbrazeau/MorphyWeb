@@ -576,6 +576,7 @@ char matrix[] =
     
 }
 
+
 void tui_test_local_reoptimisation(void)
 {
     /*
@@ -659,6 +660,122 @@ void tui_test_local_reoptimisation(void)
     return;
 }
 
+
+void tui_test_compare_replace(void)
+{
+    int i = 0;
+    int num_taxa = 7;
+    int num_chars = 20;
+    int num_og_tax = 1;
+    int num_trees = 5;
+    
+    //                        1         2
+    //               1...5....0....5....0
+    char matrix[] = "10300000000000000000"
+                    "33-00000000000000000"
+                    "---40511110000000000"
+                    "---40511111111000000"
+                    "--300011111111111000"
+                    "33300011111111111111"
+                    "11100011111111111111;";
+    
+    char *testnwk[] = { (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",};
+//    { (char*)"[&R] (1,(5,(3,(4,(2,(6,7))))));",
+//                        (char*)"[&R] (1,((2,3),(4,(5,(6,7)))));",
+//                        (char*)"[&R] (1,(7,((5,((6,3),2)),4)));",
+//                        (char*)"[&R] (1,((7,5),(2,(3,(6,4)))));",
+//                        (char*)"[&R] (7,(2,(3,(4,(5,(6,1))))));",
+//                        (char*)"[&R] (6,(2,(3,(4,(5,(1,7))))));",
+//                        (char*)"[&R] (5,(2,((3,7),(1,(6,4)))));",
+//                        (char*)"[&R] (4,(2,((3,7),(1,(6,5)))));",
+//                        (char*)"[&R] (4,(2,((3,7),(1,(6,5)))));",
+//                        (char*)"[&R] (5,(2,((3,7),(1,(6,4)))));",
+//                        (char*)"[&R] (1,((7,5),(2,(3,(6,4)))));" };
+    
+    char *bestnwk = (char*) "[&R] (1,(2,(3,(4,(5,(6,7))))));";
+    
+    mfl_tree_t* besttr = mfl_convert_newick_to_mfl_tree_t(bestnwk, num_taxa);
+    besttr->treet_edges = (mfl_nodearray_t)mfl_malloc(besttr->treet_num_nodes * sizeof(mfl_node_t*), 0);
+    mfl_update_stored_topology(besttr, besttr);
+//    mfl_convert_from_stored_topol(besttr, besttr);
+//    char *reprint = mfl_convert_mfl_tree_t_to_newick(besttr, false);
+//    dbg_printf("After converting original tree to itself:\n");
+//    dbg_printf("%s\n\n", reprint);
+    
+    
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    // Setup the handle:
+    handle->n_taxa = num_taxa;
+    handle->n_chars = num_chars;
+    handle->n_outgroup_taxa = num_og_tax;
+    handle->n_to_hold = num_trees;
+    handle->input_data = matrix;
+    //    handle->gap_method = MFL_GAP_MISSING_DATA;
+    handle->addseq_type = MFL_AST_ASIS;
+    //    handle->addseq_type = MFL_AST_RANDOM;
+    
+    gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
+    gsl_rng_set(r, handle->rseed);
+    
+    mfl_searchrec_t* searchrec = mfl_create_searchrec(handle);
+    
+    
+    // Set up the searchrec
+    searchrec->sr_random_number = r;
+    
+    mfl_partition_set_t* dataparts = mfl_generate_search_data(handle);
+    mfl_treebuffer_t* trbuf = mfl_alloc_treebuffer(num_trees);
+    mfl_stepwise_addition_t *sarec = mfl_generate_stepwise_addition(besttr, handle, searchrec);
+    
+    for (i = 0; i < num_trees; ++i) {
+        mfl_append_tree_to_treebuffer(mfl_convert_newick_to_mfl_tree_t(testnwk[i], num_taxa), trbuf, handle);
+    }
+    
+    dbg_printf("The trees after storing and pushing to buffer:\n");
+    char *nwk = NULL;
+    for (i = 0; i < trbuf->tb_num_trees; ++i) {
+        nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[i], false);
+        trbuf->tb_savedtrees[i]->treet_edges = (mfl_nodearray_t)mfl_malloc(trbuf->tb_savedtrees[i]->treet_num_nodes * sizeof(mfl_node_t*), 0);
+        mfl_update_stored_topology(trbuf->tb_savedtrees[i], trbuf->tb_savedtrees[i]);
+        mfl_setup_input_tree_with_node_data(trbuf->tb_savedtrees[i], dataparts);
+        mfl_fullpass_tree_optimisation(trbuf->tb_savedtrees[i], dataparts);
+        
+        dbg_printf("%s   length: %i\n", nwk, trbuf->tb_savedtrees[i]->treet_parsimonylength);
+        free(nwk);
+        ++sarec->stpadd_num_held;
+    }
+    
+    mfl_cliprec_t clip;
+    trbuf->tb_savedtrees[3]->treet_treenodes[6]->nodet_edge->nodet_weight = 3;
+    mfl_clip_branch(trbuf->tb_savedtrees[3]->treet_treenodes[6], &clip);
+    mfl_insert_branch_with_ring_base(trbuf->tb_savedtrees[3]->treet_treenodes[6], trbuf->tb_savedtrees[3]->treet_treenodes[2]);
+    
+    nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[3], false);
+    
+    dbg_printf("\nTree after branch move:\n");
+    dbg_printf("%s\n\n", nwk);
+    
+    //mfl_attempt_replacement_stepadd(trbuf, besttr, sarec);
+    
+    mfl_update_stored_topology(trbuf->tb_savedtrees[2], trbuf->tb_savedtrees[3]);
+//    trbuf->tb_savedtrees[9]->treet_edges = besttr->treet_edges;
+    
+    dbg_printf("The trees after searching and replacing:\n");
+    for (i = 0; i < trbuf->tb_num_trees; ++i) {
+        mfl_convert_from_stored_topol(trbuf->tb_savedtrees[i], trbuf->tb_savedtrees[i]);
+        nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[i], false);
+        dbg_printf("%s\n", nwk);
+        free(nwk);
+    }
+    
+    //trbuf->tb_savedtrees[10]->treet_parsimonylength = 0;
+    //mfl_fullpass_tree_optimisation(trbuf->tb_savedtrees[10], dataparts);
+}
 
 void tui_test_stepwise_addition(void)
 {
@@ -1064,6 +1181,10 @@ int main (int argc, char *argv[])
     dbg_printf("Testing matrices:\n");
     tui_test_counts();
     dbg_printf("\nEnd counts test\n");
+    
+    dbg_printf("Testing compare and replace:\n");
+    tui_test_compare_replace();
+    dbg_printf("\nEnd compare and replace test\n");
     
     dbg_printf("Testing stepwise addition:\n");
     tui_test_stepwise_addition();

@@ -366,6 +366,13 @@ typedef struct mfl_tree_t {
 	int treet_index;                        // Identifier for the tree in the saved trees array.
 } mfl_tree_t;
 
+typedef struct mfl_treerec {
+    mfl_tree_t*     tr_tree;
+    mfl_nodearray_t tr_edges;
+    int             tr_length;
+    int             tr_rooted;
+} mfl_treerec_t;
+
 
 typedef struct mfl_treebuffer_t {
     int tb_num_trees;
@@ -374,8 +381,10 @@ typedef struct mfl_treebuffer_t {
     int tb_max_steps;
     int tb_bestlength;
     int tb_num_islands;
+    int tb_currenttree;
     mfl_tree_t** tb_savedtrees;
 } mfl_treebuffer_t;
+
 
 typedef struct mfl_try_str {
     int         try_length;
@@ -383,22 +392,23 @@ typedef struct mfl_try_str {
 } mfl_try_t;
 
 typedef struct {
-    int             sptadd_num_added;
-    int             stpadd_num_toadd;
-    mfl_nodearray_t stpadd_addedtips;
-    mfl_nodearray_t stpadd_tipstoadd;
-    int             stpadd_max_hold;
+    int                 sptadd_num_added;
+    int                 stpadd_num_toadd;
+    mfl_nodearray_t     stpadd_addedtips;
+    mfl_nodearray_t     stpadd_tipstoadd;
+    int                 stpadd_max_hold;
     
-    mfl_nodearray_t* stpadd_holdthreads;    // The stepwise addition sites for the last tree in thread i
-    int**           stpadd_thread_ids;      // The thread ids for the ancestral topology of the current topology
-    int             stpadd_current_try;
-    int             stpadd_shortest_try;
-    int             stpadd_longest_try;
-    mfl_node_t*     stpadd_newbranch;
-    mfl_node_t*     stpadd_lastnewbranch;
-    int             stpadd_num_held;
-    mfl_try_t*      stpadd_heldtrees;
-    
+    mfl_nodearray_t*    stpadd_holdthreads;    // The stepwise addition sites for the last tree in thread i
+    int**               stpadd_thread_ids;      // The thread ids for the ancestral topology of the current topology
+    int                 stpadd_current_try;
+    int                 stpadd_shortest_try;
+    int                 stpadd_longest_try;
+    mfl_node_t*         stpadd_newbranch;
+    mfl_node_t*         stpadd_lastnewbranch;
+    int                 stpadd_num_held;
+    mfl_treebuffer_t    *stpadd_newtries;
+    mfl_treebuffer_t    *stpadd_oldtries;
+    gsl_rng             *stpadd_random_number;
 } mfl_stepwise_addition_t;
 
 
@@ -591,12 +601,13 @@ void            mfl_free_tree(mfl_tree_t *tree_to_free);
 void            mfl_root_target_node(mfl_tree_t *input_tree, mfl_node_t *target_node_ring_start); //TG: WARNING: this creates a polytomy on the target node.
 void            mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node);
 mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees);
-void            mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle);
-void            mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
+int             mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle);
+int             mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
 void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
+void mfl_attempt_replacement_stepadd(mfl_treebuffer_t* heldtrs, mfl_tree_t* t, mfl_stepwise_addition_t *sarec);
 void            mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store);
 mfl_tree_t*     mfl_record_tree_topology(const mfl_tree_t* t);
-void            mfl_convert_from_stored_topol(mfl_tree_t *intree, mfl_tree_t *outtree);
+void            mfl_convert_from_stored_topol(mfl_tree_t *src, mfl_tree_t *tgt);
 mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 void            mfl_assign_bottom_node(mfl_node_t* n);

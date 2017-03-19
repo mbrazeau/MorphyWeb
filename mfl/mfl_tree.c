@@ -1047,17 +1047,20 @@ void mfl_root_target_edge(mfl_tree_t *input_tree, mfl_node_t *target_node)
  @param trbuf (*mfl_treebuffer_t) a pointer to a tree buffer
  @param addedlength (int) the number of spaces to add to the treebuffer
  */
-void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
+int mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
 {
     
     // TODO: This function can be modified to allow the search to continue without resizing.
     
+    int ret = 0;
+    
     int newsize = trbuf->tb_max_buffersize + addedlength;
     
     mfl_tree_t** newtarray = (mfl_tree_t**)malloc(newsize * sizeof(mfl_tree_t*));
+    
     if (!newtarray) {
         dbg_eprintf("unable to increase size of tree buffer");
-        return;
+        return -1;
     }
     else {
         memset(newtarray, 0, newsize * sizeof(mfl_tree_t*));
@@ -1068,6 +1071,8 @@ void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
     free(trbuf->tb_savedtrees);
     trbuf->tb_savedtrees = newtarray;
     trbuf->tb_maxtrees = newsize;
+    
+    return ret;
 }
 
 /*!
@@ -1076,11 +1081,12 @@ void mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength)
  @param trbuf (*mfl_treebuffer_t) a pointer to a treebuffer
  @param mfl_handle (*mfl_handle_s) a pointer to the mfl_handle options
  */
-void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle)
+int mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle)
 {
     // TODO: Change this function to have a return value
     // TODO: Store autoincr values inside buffer struct and remove handle* param
     int addedlength = 0;
+    int ret = 0;
     
     if ((trbuf->tb_num_trees+1) > trbuf->tb_max_buffersize) {
         
@@ -1091,15 +1097,101 @@ void mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf,
             else {
                 addedlength = MORPHY_DEFAULT_TREEBUFFER_AUTOINCREASE_AMOUNT;
             }
+            // TODO: Wrapt this in a check and set ret.
             mfl_resize_treebuffer(trbuf, addedlength);
         }
         else {
-            return;
+            return -1;
         }
     }
     
     trbuf->tb_savedtrees[trbuf->tb_num_trees] = newtree;
     ++trbuf->tb_num_trees;
+    
+    return ret;
+}
+
+mfl_node_t* mfl_get_safe_tree_entry(mfl_tree_t* t)
+{
+    mfl_node_t* entry = NULL;
+    
+    if (t->treet_treenodes) {
+        if (t->treet_root) {
+            if (t->treet_root->nodet_edge) {
+                entry = t->treet_root;
+            }
+        }
+        else if (t->treet_start) {
+            if (t->treet_start->nodet_edge) {
+                entry = t->treet_start;
+            }
+        }
+    }
+    
+    return entry;
+}
+
+int mfl_check_currenttree_valid(mfl_treebuffer_t *trbuf)
+{
+    int ret = 0;
+    
+    if (trbuf) {
+        if (trbuf->tb_savedtrees[trbuf->tb_currenttree]->treet_treenodes) {
+            ret = 0;
+        }
+    }
+    else {
+        ret = -1;
+    }
+    
+    return ret;
+}
+
+int mfl_transfer_treenodes(mfl_tree_t* src, mfl_tree_t* tgt)
+{
+    int ret = 0;
+    mfl_nodearray_t trnodes = NULL;
+    mfl_node_t *start;
+    
+    if (src->treet_treenodes) {
+    
+        trnodes = src->treet_treenodes;
+        src->treet_treenodes = NULL;
+        tgt->treet_treenodes = trnodes;
+        
+        ret = 0;
+    }
+    else {
+        ret = -1;
+    }
+    
+    return ret;
+}
+
+int mfl_increment_currenttree(mfl_treebuffer_t* trbuf)
+{
+    int ret = 0;
+    
+    if (trbuf) {
+        if (trbuf->tb_currenttree < trbuf->tb_maxtrees) {
+            if ((trbuf->tb_currenttree + 1) < trbuf->tb_num_trees) {
+                
+                // Do stuff here
+                ++trbuf->tb_currenttree;
+            }
+            else {
+                ret = 1;
+            }
+        }
+        else {
+            ret = 2;
+        }
+    }
+    else {
+        ret = -1;
+    }
+    
+    return ret;
 }
 
 /*!
@@ -1162,14 +1254,19 @@ void mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store)
     num_taxa = t->treet_num_taxa;
     
     for (i = 0; i < num_nodes; ++i) {
+        
         if (i != num_taxa) {
-            store->treet_edges[i] = t->treet_treenodes[i]->nodet_edge;
+            store->treet_edges[i] = store->treet_treenodes[t->treet_treenodes[i]->nodet_edge->nodet_index];
+            
         }
         else {
             store->treet_edges[i] = &store->treet_dummynode;
-            store->treet_dummynode.nodet_edge = t->treet_treenodes[i];
+            //store->treet_dummynode.nodet_edge = store->treet_treenodes[num_taxa];
         }
+        
     }
+    
+    //store->treet_parsimonylength = t->treet_parsimonylength;
 }
 
 mfl_tree_t* mfl_record_tree_topology(const mfl_tree_t* t)
@@ -1206,22 +1303,41 @@ mfl_tree_t* mfl_record_tree_topology(const mfl_tree_t* t)
     return storedt;
 }
 
-void mfl_convert_from_stored_topol(mfl_tree_t *intree, mfl_tree_t *outtree)
+
+void mfl_convert_from_stored_topol(mfl_tree_t *src, mfl_tree_t *tgt)
 {
     int i = 0;
     int num_nodes = 0;
-    //int num_taxa = 0;
+    int num_taxa = 0;
     
-    if (intree && outtree) {
+    
+    if (tgt) {
         
-        num_nodes = outtree->treet_num_nodes;
-        
-        outtree->treet_treenodes = intree->treet_treenodes;
-        intree->treet_treenodes = NULL;
+        num_nodes = tgt->treet_num_nodes;
+        num_taxa = tgt->treet_num_taxa;
+
+        //tgt->treet_treenodes = src->treet_treenodes;
+        //src->treet_treenodes = NULL;
         
         for (i = 0; i < num_nodes; ++i) {
-            outtree->treet_treenodes[i]->nodet_edge = outtree->treet_edges[i];
+            
+            
+            mfl_node_t *check = tgt->treet_treenodes[i]->nodet_edge;
+
+//            if (i != num_taxa) {
+                tgt->treet_treenodes[i]->nodet_edge = tgt->treet_edges[i];
+//            }
+//            else {
+//                tgt->treet_treenodes[i]->nodet_edge = &tgt->treet_dummynode;
+//                tgt->treet_dummynode.nodet_edge = tgt->treet_root;
+//            }
+
         }
+        
+        //mfl_update_stored_topology(tgt, tgt);
+        tgt->treet_dummynode.nodet_edge = tgt->treet_treenodes[num_taxa];
+        //tgt->treet_root = tgt->treet_dummynode.nodet_edge;
+        tgt->treet_treenodes[num_taxa]->nodet_edge = &tgt->treet_dummynode;
     }
 #ifdef MFY_DEBUG
     else {
@@ -1230,6 +1346,7 @@ void mfl_convert_from_stored_topol(mfl_tree_t *intree, mfl_tree_t *outtree)
 #endif
     
 }
+
 
 mfl_tree_t* mfl_copy_tree_topology(const mfl_tree_t* t)
 {
