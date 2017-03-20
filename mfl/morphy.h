@@ -406,6 +406,7 @@ typedef struct {
     mfl_node_t*         stpadd_newbranch;
     mfl_node_t*         stpadd_lastnewbranch;
     int                 stpadd_num_held;
+    int                 stpadd_num_saved;
     mfl_treebuffer_t    *stpadd_newtries;
     mfl_treebuffer_t    *stpadd_oldtries;
     gsl_rng             *stpadd_random_number;
@@ -584,7 +585,7 @@ void            mfl_insert_branch_with_ring_base(mfl_node_t *src, mfl_node_t *tg
 void            mfl_make_ring(mfl_node_t *bottom_node, mfl_node_t *left_node, mfl_node_t *right_node);
 int             mfl_calculate_number_of_nodes_to_allocate(int num_taxa);
 mfl_node_t*     mfl_alloc_node(void);
-void mfl_destroy_nodal_data(mfl_node_t* n);
+void            mfl_destroy_nodal_data(mfl_node_t* n);
 void            mfl_free_node(mfl_node_t *node);
 void            mfl_free_treenodes(mfl_nodearray_t treenodes);
 void            mfl_allocate_nodes_in_array(mfl_nodearray_t nodearray, int num_nodes, int num_taxa);
@@ -604,13 +605,14 @@ mfl_treebuffer_t* mfl_alloc_treebuffer(int num_trees);
 int             mfl_append_tree_to_treebuffer(mfl_tree_t* newtree, mfl_treebuffer_t* trbuf, mfl_handle_s* mfl_handle);
 int             mfl_resize_treebuffer(mfl_treebuffer_t* trbuf, int addedlength);
 void            mfl_reset_nodestack(mfl_nodestack_t* nstk);
-void mfl_attempt_replacement_stepadd(mfl_treebuffer_t* heldtrs, mfl_tree_t* t, mfl_stepwise_addition_t *sarec);
+void            mfl_attempt_replacement_stepadd(mfl_treebuffer_t* heldtrs, mfl_tree_t* t, mfl_stepwise_addition_t *sarec);
 void            mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store);
 mfl_tree_t*     mfl_record_tree_topology(const mfl_tree_t* t);
 void            mfl_convert_from_stored_topol(mfl_tree_t *src, mfl_tree_t *tgt);
 mfl_tree_t*     mfl_copy_tree_topology(const mfl_tree_t* t);
 void            mfl_destroy_treebuffer(mfl_treebuffer_t* oldtreebuf, bool cleartrees);
 void            mfl_assign_bottom_node(mfl_node_t* n);
+void            mfl_shuffle_tree(mfl_tree_t* t, mfl_searchrec_t* srec, int times);
 
 //TODO: clean these functions declaration formating after testing
 void            mfl_create_rake_node_ring(mfl_tree_t* rake_tree);
