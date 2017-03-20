@@ -1244,6 +1244,40 @@ void mfl_reset_nodestack(mfl_nodestack_t* nstk)
     }
 }
 
+void mfl_shuffle_tree(mfl_tree_t* t, mfl_searchrec_t* srec, int times)
+{
+    int i = 0;
+    unsigned long index = 0;
+    mfl_node_t *tip;
+    mfl_node_t *internal;
+    mfl_cliprec_t clip;
+    
+    // Select a tip at random
+    for (i = 0; i < times; ++i) {
+        
+        index = gsl_rng_uniform_int(srec->sr_random_number, t->treet_num_taxa);
+        tip = t->treet_treenodes[index];
+        
+        if (index > 0) {
+            // TODO: Fix this crap:
+            t->treet_treenodes[index]->nodet_edge->nodet_weight = 3;
+            
+            mfl_clip_branch(tip, &clip);
+            
+            while (1) {
+                index = gsl_rng_uniform_int(srec->sr_random_number, t->treet_num_nodes - t->treet_num_taxa - 1);
+                index += t->treet_num_taxa + 1;
+                internal = t->treet_treenodes[index];
+                if (t->treet_treenodes[index]->nodet_edge != tip && t->treet_treenodes[index]->nodet_next->nodet_edge != tip && t->treet_treenodes[index]->nodet_next->nodet_next->nodet_edge != tip) {
+                    break;
+                }
+            }
+            
+            mfl_insert_branch_with_ring_base(tip, internal);
+        }
+    }
+}
+
 void mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store)
 {
     int i = 0;
@@ -1266,7 +1300,7 @@ void mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store)
         
     }
     
-    //store->treet_parsimonylength = t->treet_parsimonylength;
+    store->treet_parsimonylength = t->treet_parsimonylength;
 }
 
 mfl_tree_t* mfl_record_tree_topology(const mfl_tree_t* t)
