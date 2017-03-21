@@ -399,10 +399,8 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     // TODO: You can probably optimise by passing the length in instead of -1
     mfl_local_add_cost(newbranch, n->nodet_edge, -1, &cost);
     
-    length = searchrec->sr_swaping_on->treet_parsimonylength + cost;
-    
-    
-    
+    searchrec->sr_swaping_on->treet_parsimonylength += cost;
+
     if (sarecord->stpadd_num_held < sarecord->stpadd_max_hold) {
         mfl_insert_branch_with_ring_base(newbranch, n);
         newbranch->nodet_edge->nodet_weight = 3;
@@ -413,7 +411,7 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
         sarecord->stpadd_longest_try = mfl_longest_tree_length(sarecord->stpadd_newtries);
     }
     else {
-        if (length < sarecord->stpadd_longest_try) {
+        if (searchrec->sr_swaping_on->treet_parsimonylength < sarecord->stpadd_longest_try) {
             mfl_insert_branch_with_ring_base(newbranch, n);
             newbranch->nodet_edge->nodet_weight = 3;
 
@@ -423,6 +421,7 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
         }
     }
     
+    searchrec->sr_swaping_on->treet_parsimonylength -= cost;
 }
 
 
@@ -773,12 +772,14 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     
     mfl_setup_tree_for_stepwise_addition(t, sarec, dataparts);
     
+    mfl_fullpass_tree_optimisation(t, dataparts);
     mfl_hold_new_tree(t, sarec);
   
     /* debugging code */
     char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
     dbg_printf("the starting trichotomy: %s\n", showtree);
     free(showtree);
+    int fail = 0;
     /* debugging code */
     
     searchrec->sr_swaping_on = t;
@@ -797,17 +798,20 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
             // Optimise the tree
             t->treet_parsimonylength = 0;
             mfl_fullpass_tree_optimisation(t, dataparts);
-            
+            if (sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength != t->treet_parsimonylength) {
+                dbg_printf("Oh crap! saved: %i and calculated: %i\n", sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength, t->treet_parsimonylength);
+                ++fail;
+            }
             // Try all insertions for new branch
-            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
-            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+            //mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge, newbranch, sarec, searchrec);
 
         }
     }
     
+    dbg_printf("Indirect optimisation on inapplicables failed: %i times\n", fail);
+    
 #ifdef MFY_DEBUG
-    
-    
     for (i = 0; i < sarec->stpadd_newtries->tb_num_trees; ++i) {
         mfl_convert_from_stored_topol(sarec->stpadd_newtries->tb_savedtrees[i], t);
         showtree = mfl_convert_mfl_tree_t_to_newick(t, false);

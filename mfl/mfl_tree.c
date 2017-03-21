@@ -1313,16 +1313,7 @@ void mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store)
     num_taxa = t->treet_num_taxa;
     
     for (i = 0; i < num_nodes; ++i) {
-        
         store->treet_edges[i] = t->treet_treenodes[i]->nodet_edge;
-//        if (i != num_taxa) {
-//            
-//            
-//        }
-//        else {
-//            store->treet_edges[i] = &store->treet_dummynode;
-//            //store->treet_dummynode.nodet_edge = store->treet_treenodes[num_taxa];
-//        }
     }
     
     store->treet_parsimonylength = t->treet_parsimonylength;
