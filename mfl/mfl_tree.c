@@ -1314,15 +1314,15 @@ void mfl_update_stored_topology(const mfl_tree_t *t, mfl_tree_t* store)
     
     for (i = 0; i < num_nodes; ++i) {
         
-        if (i != num_taxa) {
-            store->treet_edges[i] = store->treet_treenodes[t->treet_treenodes[i]->nodet_edge->nodet_index];
-            
-        }
-        else {
-            store->treet_edges[i] = &store->treet_dummynode;
-            //store->treet_dummynode.nodet_edge = store->treet_treenodes[num_taxa];
-        }
-        
+        store->treet_edges[i] = t->treet_treenodes[i]->nodet_edge;
+//        if (i != num_taxa) {
+//            
+//            
+//        }
+//        else {
+//            store->treet_edges[i] = &store->treet_dummynode;
+//            //store->treet_dummynode.nodet_edge = store->treet_treenodes[num_taxa];
+//        }
     }
     
     store->treet_parsimonylength = t->treet_parsimonylength;
@@ -1370,33 +1370,15 @@ void mfl_convert_from_stored_topol(mfl_tree_t *src, mfl_tree_t *tgt)
     int num_taxa = 0;
     
     
-    if (tgt) {
+    if (tgt && src) {
         
         num_nodes = tgt->treet_num_nodes;
         num_taxa = tgt->treet_num_taxa;
 
-        //tgt->treet_treenodes = src->treet_treenodes;
-        //src->treet_treenodes = NULL;
         
         for (i = 0; i < num_nodes; ++i) {
-            
-            
-            mfl_node_t *check = tgt->treet_treenodes[i]->nodet_edge;
-
-//            if (i != num_taxa) {
-                tgt->treet_treenodes[i]->nodet_edge = tgt->treet_edges[i];
-//            }
-//            else {
-//                tgt->treet_treenodes[i]->nodet_edge = &tgt->treet_dummynode;
-//                tgt->treet_dummynode.nodet_edge = tgt->treet_root;
-//            }
-
+            tgt->treet_treenodes[i]->nodet_edge = src->treet_edges[i];
         }
-        
-        //mfl_update_stored_topology(tgt, tgt);
-        tgt->treet_dummynode.nodet_edge = tgt->treet_treenodes[num_taxa];
-        //tgt->treet_root = tgt->treet_dummynode.nodet_edge;
-        tgt->treet_treenodes[num_taxa]->nodet_edge = &tgt->treet_dummynode;
     }
 #ifdef MFY_DEBUG
     else {

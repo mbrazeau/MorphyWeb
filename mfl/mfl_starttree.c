@@ -283,12 +283,13 @@ void mfl_reset_try_buffers(mfl_stepwise_addition_t *sarec)
     mfl_treebuffer_t *tbfa = sarec->stpadd_newtries;
     mfl_treebuffer_t *tbfb = sarec->stpadd_oldtries;
     
-    for (i = 0; i < sarec->stpadd_num_held; ++i) {
-        tbfb->tb_savedtrees[i]->treet_parsimonylength = 0;
-    }
-    
     sarec->stpadd_oldtries = tbfa;
     sarec->stpadd_newtries = tbfb;
+    
+    for (i = 0; i < sarec->stpadd_num_held; ++i) {
+        sarec->stpadd_newtries->tb_savedtrees[i]->treet_parsimonylength = 0;
+    }
+    
     sarec->stpadd_num_saved = sarec->stpadd_num_held;
 }
 
@@ -398,13 +399,29 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     // TODO: You can probably optimise by passing the length in instead of -1
     mfl_local_add_cost(newbranch, n->nodet_edge, -1, &cost);
     
-    //length = searchrec->sr_swaping_on->treet_parsimonylength + cost;
+    length = searchrec->sr_swaping_on->treet_parsimonylength + cost;
     
-    mfl_insert_branch_with_ring_base(newbranch, n);
-    newbranch->nodet_edge->nodet_weight = 3;
-    // Push try to record.
-    // Update best/worst tries.
-    mfl_clip_branch(newbranch, &clip);
+    
+    
+    if (sarecord->stpadd_num_held < sarecord->stpadd_max_hold) {
+        mfl_insert_branch_with_ring_base(newbranch, n);
+        newbranch->nodet_edge->nodet_weight = 3;
+        // Push try to record.
+        mfl_hold_new_tree(searchrec->sr_swaping_on, sarecord);
+        // Update best/worst tries.
+        mfl_clip_branch(newbranch, &clip);
+        sarecord->stpadd_longest_try = mfl_longest_tree_length(sarecord->stpadd_newtries);
+    }
+    else {
+        if (length < sarecord->stpadd_longest_try) {
+            mfl_insert_branch_with_ring_base(newbranch, n);
+            newbranch->nodet_edge->nodet_weight = 3;
+
+            mfl_attempt_replacement_stepadd(sarecord->stpadd_newtries, searchrec->sr_swaping_on, sarecord);
+            
+            mfl_clip_branch(newbranch, &clip);
+        }
+    }
     
 }
 
@@ -706,16 +723,12 @@ void mfl_add_tips_stepwise(mfl_tree_t* t, mfl_partition_set_t* dataparts, mfl_se
     //          Try all insertions
 }
 
-int mfl_hold_new_tree(mfl_tree_t* t, mfl_stepwise_addition_t *sarec, mfl_handle_s* handle)
+int mfl_hold_new_tree(mfl_tree_t* t, mfl_stepwise_addition_t *sarec)
 {
     int ret = -1;
     
-    if (sarec->stpadd_num_held <= handle->n_to_hold) {
-        mfl_tree_t* newtree = mfl_alloc_empty_tree(t->treet_num_taxa);
-        
-        //newtree->treet_treenodes = t->treet_treenodes;
-        
-        mfl_append_tree_to_treebuffer(t, sarec->stpadd_newtries, handle);
+    if (sarec->stpadd_num_held <= sarec->stpadd_max_hold) {
+        mfl_update_stored_topology(t, sarec->stpadd_newtries->tb_savedtrees[sarec->stpadd_num_held]);
         ++sarec->stpadd_num_held;
         ret = 0;
     }
@@ -739,12 +752,13 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     if (handle->maxtrees) {
         num_trees = handle->maxtrees;
     }
-    mfl_treebuffer_t* tbf1 = mfl_alloc_treebuffer(num_trees);
+    
+    mfl_treebuffer_t* tbf1 = mfl_alloc_treebuffer(handle->n_to_hold);
     mfl_treebuffer_t* tbf2 = mfl_alloc_treebuffer(handle->n_to_hold);
 
-    
     // Create starting tree
     mfl_tree_t* t = mfl_generate_new_starting_tree(dataparts, handle, searchrec);
+    mfl_update_stored_topology(t, t);
     
     mfl_nodearray_t current = t->treet_treenodes;
     mfl_stepwise_addition_t * sarec = mfl_generate_stepwise_addition(t, handle, searchrec);
@@ -759,7 +773,7 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     
     mfl_setup_tree_for_stepwise_addition(t, sarec, dataparts);
     
-    mfl_hold_new_tree(t, sarec, handle);
+    mfl_hold_new_tree(t, sarec);
   
     /* debugging code */
     char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
@@ -767,6 +781,7 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     free(showtree);
     /* debugging code */
     
+    searchrec->sr_swaping_on = t;
     
     // While(new branches to add)
     while ((newbranch = mfl_get_next_terminal_in_addseq(sarec))) {
@@ -777,46 +792,34 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
         for (i = 0; i < sarec->stpadd_num_saved; ++i) {
             // FOR each tree held in old list {
             
-//            t->treet_treenodes = NULL;
-//            t = tbf1->tb_savedtrees[i];
-//            t->treet_treenodes = current;
-//            
-//            mfl_update_stored_topology(t, t);
-//            
+            mfl_convert_from_stored_topol(sarec->stpadd_oldtries->tb_savedtrees[i], t);
+
             // Optimise the tree
             t->treet_parsimonylength = 0;
             mfl_fullpass_tree_optimisation(t, dataparts);
             
             // Try all insertions for new branch
-            mfl_tryall_traversal(t->treet_root, newbranch, sarec, searchrec);
-            
-            // TODO: UPDATE THIS:
-            //mfl_insert_branch_with_ring_base(newbranch, addseq_test.best_try_place);
-            
-            // Add to the length the best length fo the last try
-            // t->treet_parsimonylength +=
-            // } END FOR
-        
-            ++sarec->stpadd_current_try;
+            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+
         }
     }
     
 #ifdef MFY_DEBUG
-    showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
-    dbg_printf("The resultant tree:\n%s\n", showtree);
-    free(showtree);
+    
+    
+    for (i = 0; i < sarec->stpadd_newtries->tb_num_trees; ++i) {
+        mfl_convert_from_stored_topol(sarec->stpadd_newtries->tb_savedtrees[i], t);
+        showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
+        dbg_printf("tree morphy_%i = %s\n", i, showtree);
+        free(showtree);
+    }
     tui_check_broken_tree(t, false);
 #endif
+    
+    tbf1 = sarec->stpadd_newtries;
+    mfl_destroy_treebuffer(sarec->stpadd_oldtries, false);
     mfl_destroy_stepwise_addition(sarec);
     
-    if (tbf1->tb_max_buffersize > tbf2->tb_max_buffersize) {
-        mfl_destroy_treebuffer(tbf2, false); // TODO: Memory management: true possibly set to false
-        searchrec->sr_treebuffer = tbf1;
-        return tbf1;
-    }
-    else {
-        mfl_destroy_treebuffer(tbf1, false); // TODO: Memory management: true possibly set to false
-        searchrec->sr_treebuffer = tbf2;
-        return tbf2;
-    }
+    return tbf1;
 }
