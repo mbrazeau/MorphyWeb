@@ -667,23 +667,43 @@ void tui_test_compare_replace(void)
     int num_taxa = 7;
     int num_chars = 20;
     int num_og_tax = 1;
-    int num_trees = 5;
+    int num_trees = 20;
     
     //                        1         2
     //               1...5....0....5....0
-    char matrix[] = "10300000000000000000"
-                    "33-00000000000000000"
-                    "---40511110000000000"
-                    "---40511111111000000"
-                    "--300011111111111000"
-                    "33300011111111111111"
-                    "11100011111111111111;";
+    char matrix[] =     "--111111111111111110"
+                        "--111111111111111110"
+                        "--111111111111111100"
+                        "--111111111111111101"
+                        "-1111111111111111101"
+                        "11111111111111111101"
+                        "11000000000000000001;";
+
+//    "--111111111111111111"
+//    "--111111111111111111"
+//    "--111111111111111111"
+//    "--111111111111111111"
+//    "--111111111111111111"
+//    "--111111111111111111"
+//    "11000000000000000000;";
+    
+//    "10300000000000000000"
+//                     "33-00000000000000000"
+//                     "---40511110000000000"
+//                     "---40511111111000000"
+//                     "--300011111111111000"
+//                     "33300011111111111111"
+//                     "11100011111111111111;";
+    
+
+    
+
     
     char *testnwk[] = { (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
-        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
-        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
-        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
-        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",};
+                        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+                        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+                        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",
+                        (char*)"[&R] (1,(2,(3,(4,(5,(6,7))))));",};
 //    { (char*)"[&R] (1,(5,(3,(4,(2,(6,7))))));",
 //                        (char*)"[&R] (1,((2,3),(4,(5,(6,7)))));",
 //                        (char*)"[&R] (1,(7,((5,((6,3),2)),4)));",
@@ -700,7 +720,8 @@ void tui_test_compare_replace(void)
     
     mfl_tree_t* besttr = mfl_convert_newick_to_mfl_tree_t(bestnwk, num_taxa);
     besttr->treet_edges = (mfl_nodearray_t)mfl_malloc(besttr->treet_num_nodes * sizeof(mfl_node_t*), 0);
-    mfl_update_stored_topology(besttr, besttr);
+    
+    
 //    mfl_convert_from_stored_topol(besttr, besttr);
 //    char *reprint = mfl_convert_mfl_tree_t_to_newick(besttr, false);
 //    dbg_printf("After converting original tree to itself:\n");
@@ -733,14 +754,23 @@ void tui_test_compare_replace(void)
     mfl_stepwise_addition_t *sarec = mfl_generate_stepwise_addition(besttr, handle, searchrec);
     
     for (i = 0; i < num_trees; ++i) {
-        mfl_append_tree_to_treebuffer(mfl_convert_newick_to_mfl_tree_t(testnwk[i], num_taxa), trbuf, handle);
+        mfl_append_tree_to_treebuffer(mfl_convert_newick_to_mfl_tree_t(bestnwk, num_taxa), trbuf, handle);
     }
     
+    mfl_setup_input_tree_with_node_data(besttr, dataparts);
+    mfl_fullpass_tree_optimisation(besttr, dataparts);
+    mfl_update_stored_topology(besttr, besttr);
     dbg_printf("The trees after storing and pushing to buffer:\n");
     char *nwk = NULL;
+    
     for (i = 0; i < trbuf->tb_num_trees; ++i) {
-        nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[i], false);
+        
         trbuf->tb_savedtrees[i]->treet_edges = (mfl_nodearray_t)mfl_malloc(trbuf->tb_savedtrees[i]->treet_num_nodes * sizeof(mfl_node_t*), 0);
+        
+        mfl_shuffle_tree(trbuf->tb_savedtrees[i], searchrec, 10);
+        
+        nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[i], false);
+        
         mfl_update_stored_topology(trbuf->tb_savedtrees[i], trbuf->tb_savedtrees[i]);
         mfl_setup_input_tree_with_node_data(trbuf->tb_savedtrees[i], dataparts);
         mfl_fullpass_tree_optimisation(trbuf->tb_savedtrees[i], dataparts);
@@ -750,26 +780,14 @@ void tui_test_compare_replace(void)
         ++sarec->stpadd_num_held;
     }
     
-    mfl_cliprec_t clip;
-    trbuf->tb_savedtrees[3]->treet_treenodes[6]->nodet_edge->nodet_weight = 3;
-    mfl_clip_branch(trbuf->tb_savedtrees[3]->treet_treenodes[6], &clip);
-    mfl_insert_branch_with_ring_base(trbuf->tb_savedtrees[3]->treet_treenodes[6], trbuf->tb_savedtrees[3]->treet_treenodes[2]);
+    mfl_attempt_replacement_stepadd(trbuf, besttr, sarec);
+
     
-    nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[3], false);
-    
-    dbg_printf("\nTree after branch move:\n");
-    dbg_printf("%s\n\n", nwk);
-    
-    //mfl_attempt_replacement_stepadd(trbuf, besttr, sarec);
-    
-    mfl_update_stored_topology(trbuf->tb_savedtrees[2], trbuf->tb_savedtrees[3]);
-//    trbuf->tb_savedtrees[9]->treet_edges = besttr->treet_edges;
-    
-    dbg_printf("The trees after searching and replacing:\n");
+    dbg_printf("\nThe trees after searching and replacing:\n");
     for (i = 0; i < trbuf->tb_num_trees; ++i) {
         mfl_convert_from_stored_topol(trbuf->tb_savedtrees[i], trbuf->tb_savedtrees[i]);
         nwk = mfl_convert_mfl_tree_t_to_newick(trbuf->tb_savedtrees[i], false);
-        dbg_printf("%s\n", nwk);
+        dbg_printf("%s   length: %i\n", nwk, trbuf->tb_savedtrees[i]->treet_parsimonylength);
         free(nwk);
     }
     

@@ -866,6 +866,27 @@ void mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes)
     newtree->treet_dummynode.nodet_tip = -1;
 }
 
+mfl_tree_t * mfl_alloc_empty_tree(int num_taxa)
+{
+    
+    int num_nodes = 0;
+    
+    num_nodes = mfl_calculate_number_of_nodes_to_allocate(num_taxa);
+    
+    mfl_tree_t *newtree = NULL;
+    
+    newtree = (mfl_tree_t*)mfl_malloc(sizeof(mfl_tree_t), 0);
+    
+    newtree->treet_nodestack = mfl_create_empty_nodestack(num_nodes - num_taxa);
+    
+    newtree->treet_edges = (mfl_nodearray_t)mfl_malloc(num_nodes * sizeof(mfl_node_t*), 0);
+    
+    newtree->treet_num_taxa = num_taxa;
+    newtree->treet_num_nodes = num_nodes;
+    newtree->treet_dummynode.nodet_tip = -1;
+    
+    return newtree;
+}
 
 mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
 {
@@ -875,13 +896,16 @@ mfl_tree_t * mfl_alloctree_with_nodes(int num_taxa)
     
     mfl_tree_t *newtree = NULL;
     
-    newtree = (mfl_tree_t*)mfl_malloc(sizeof(mfl_tree_t), 0);
+    newtree = mfl_alloc_empty_tree(num_taxa);
     
     newtree->treet_treenodes = mfl_allocate_nodearray(num_taxa, num_nodes);
     
-    newtree->treet_nodestack = mfl_create_empty_nodestack(num_nodes - num_taxa);
+//    newtree->treet_nodestack = mfl_create_empty_nodestack(num_nodes - num_taxa);
+//    
+//    newtree->treet_edges = (mfl_nodearray_t)mfl_malloc(num_nodes * sizeof(mfl_node_t*), 0);
     
-    mfl_initialise_tree(newtree, num_taxa, num_nodes);
+//    mfl_initialise_tree(newtree, num_taxa, num_nodes);
+    mfl_initialise_nodearray(newtree, num_taxa, num_nodes);
     
     return newtree;
 }
@@ -930,6 +954,7 @@ void mfl_free_tree(mfl_tree_t *tree_to_free)
     /*
      * Any other allocated memory in a tree should be freed here
      */
+    free(tree_to_free->treet_edges);
     
     // Free the tree
     free(tree_to_free);

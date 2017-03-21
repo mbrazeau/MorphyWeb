@@ -596,6 +596,7 @@ int             mfl_node_is_n_ary(mfl_node_t *querynode, int test_n_branches);
 mfl_node_t*     mfl_find_rightmost_tip_in_tree(mfl_node_t* n);
 void            mfl_unroot_tree(mfl_tree_t *tree);
 void            mfl_initialise_tree(mfl_tree_t *newtree, int num_taxa, int num_nodes);
+mfl_tree_t*     mfl_alloc_empty_tree(int num_taxa);
 mfl_tree_t*     mfl_alloctree_with_nodes(int num_taxa);
 void            mfl_free_dummynode_data(mfl_node_t* dummynode);
 void            mfl_free_tree(mfl_tree_t *tree_to_free);
@@ -666,6 +667,7 @@ bool            mfl_setup_outgroup(mfl_tree_t* t, int* outgroup_taxa, int num_ou
 mfl_tree_t*     mfl_generate_new_starting_tree(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
 void            mfl_add_tips_stepwise(mfl_tree_t* t, mfl_partition_set_t* dataparts, mfl_searchrec_t* searchrec);
 mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle_s* handle, mfl_searchrec_t* searchrec);
+int             mfl_hold_new_tree(mfl_tree_t* t, mfl_stepwise_addition_t *sarec, mfl_handle_s* handle);
 
 
 /* In mfl_drawtree.c*/
