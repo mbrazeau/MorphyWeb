@@ -379,6 +379,35 @@ void mfl_attempt_replacement_stepadd(mfl_treebuffer_t* heldtrs, mfl_tree_t* t, m
     
 }
 
+mfl_partition_set_t *testparts;
+
+int mfl_test_expected_length(mfl_node_t* src, mfl_node_t* tgt, mfl_tree_t* t, mfl_searchrec_t* search)
+{
+    int origlength = t->treet_parsimonylength;
+    t->treet_parsimonylength = 0;
+    mfl_cliprec_t clip;
+    char *tree = NULL;
+    
+    mfl_insert_branch_with_ring_base(src, tgt);
+    src->nodet_edge->nodet_weight = 3;
+    
+    mfl_fullpass_tree_optimisation(t, testparts);
+    
+    if (origlength != t->treet_parsimonylength) {
+        dbg_pfail("lengths unequal: ");
+        dbg_printf("Indirect: %i; direct: %i\n", origlength, t->treet_parsimonylength);
+        dbg_printf("Tip added: %i\n", src->nodet_tip);
+        tree = mfl_convert_mfl_tree_t_to_newick(t, false);
+        dbg_printf("On this topology: %s\n\n", tree);
+        free(tree);
+    }
+    
+    mfl_clip_branch(src, &clip);
+    mfl_fullpass_tree_optimisation(t, testparts);
+    t->treet_parsimonylength = origlength;
+    
+    return 1;
+}
 
 void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_addition_t* sarecord, mfl_searchrec_t* searchrec)
 {
@@ -402,6 +431,7 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     
     searchrec->sr_swaping_on->treet_parsimonylength += cost;
 
+    mfl_test_expected_length(newbranch, n, searchrec->sr_swaping_on, searchrec);
     
     if (sarecord->stpadd_num_held < sarecord->stpadd_max_hold) {
         
@@ -477,6 +507,7 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         node->nodet_charstates[i]->nd_completed = false;
         
         node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        node->nodet_charstates[i]->nd_prelim2_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_region_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
@@ -771,6 +802,8 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     mfl_fullpass_tree_optimisation(t, dataparts);
     mfl_hold_new_tree(t, sarec);
   
+    testparts = dataparts;
+    
     /* debugging code */
     char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
     dbg_printf("the starting trichotomy: %s\n", showtree);

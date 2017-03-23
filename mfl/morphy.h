@@ -284,6 +284,7 @@ typedef struct mfl_nodedata_t {
     mfl_parsim_fn nd_NAuppass_full;
     mfl_lparsim_fn nd_local;
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
+    mfl_charstate *nd_prelim2_set;
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
     mfl_charstate *nd_subtree_final_set;        // The final uppass set of the subtree when the tree is broken.
@@ -486,6 +487,8 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length);
 void mfl_first_preorder_traversal(mfl_node_t *n, int* length);
 void mfl_second_preorder_traversal(mfl_node_t *n, int* length);
 void mfl_set_rootstates(mfl_node_t* dummyroot, mfl_node_t* rootnode, mfl_partition_set_t* dataparts);
+bool mfl_simple_unroot(mfl_tree_t *t, mfl_cliprec_t* clip);
+bool mfl_simple_reroot(mfl_tree_t* t, mfl_cliprec_t* clip);
 
 /* In mfl_characters.c */
 
