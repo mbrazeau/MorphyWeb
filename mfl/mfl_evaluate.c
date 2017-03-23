@@ -137,46 +137,8 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                     // TODO: The outer condition permits writing one local check
                     // TODO: function. It can be removed in a version of this function
                     // TODO: that is used specifically during the search
-                    dbg_printf("Nodal values in branch 1:\n");
-                    dbg_printf("src[%i]: %llu\n", i, src[i]);
-                    dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-                    dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-                    dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-                    dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-                    dbg_printf("\n");
-                    cost += weights[i];
-                    if (!(diff < 0)) {
-                        if (cost > diff) {
-                            return cost;
-                        }
-                    }
-                }
-                else if (src[i] & tgt1p[i] & tgt2p[i]) {
-                    // TODO: The outer condition permits writing one local check
-                    // TODO: function. It can be removed in a version of this function
-                    // TODO: that is used specifically during the search
-                    dbg_printf("Nodal values in branch 2:\n");
-                    dbg_printf("src[%i]: %llu\n", i, src[i]);
-                    dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-                    dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-                    dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-                    dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-                    dbg_printf("\n");
-                    cost += weights[i];
-                    if (!(diff < 0)) {
-                        if (cost > diff) {
-                            return cost;
-                        }
-                    }
-                }
-            }
-            else if (src[i] & (tgt1a[i] | tgt2a[i])) {
-                // TODO: The outer condition permits writing one local check
-                // TODO: function. It can be removed in a version of this function
-                // TODO: that is used specifically during the search
-                if (!( (tgt1f[i] | tgt2f[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
-                    if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
-                        dbg_printf("Nodal values in branch 3:\n");
+                    if (tgt1a[i] & tgt2a[i]) {
+                        dbg_printf("Nodal values in branch 1:\n");
                         dbg_printf("src[%i]: %llu\n", i, src[i]);
                         dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
                         dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
@@ -193,7 +155,54 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                         }
                     }
                 }
-                
+                else if (src[i] & tgt1p[i] & tgt2p[i]) {
+                    if (((tgt1p[i] & tgt2p[i]) & MORPHY_IS_APPLICABLE)) {
+                        // TODO: The outer condition permits writing one local check
+                        // TODO: function. It can be removed in a version of this function
+                        // TODO: that is used specifically during the search
+                        dbg_printf("Nodal values in branch 2:\n");
+                        dbg_printf("src[%i]: %llu\n", i, src[i]);
+                        dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
+                        dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
+                        dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
+                        dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
+                        dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
+                        dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
+                        dbg_printf("\n");
+                        cost += weights[i];
+                        if (!(diff < 0)) {
+                            if (cost > diff) {
+                                return cost;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (src[i] & (tgt1a[i] | tgt2a[i])) {
+                //if (tgt1a[i] && tgt2a[i]) {
+                    if (tgt1p[i] & MORPHY_INAPPLICABLE_BITPOS && tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS) {
+                        if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
+                            dbg_printf("Nodal values in branch 3:\n");
+                            dbg_printf("src[%i]: %llu\n", i, src[i]);
+                            dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
+                            dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
+                            dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
+                            dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
+                            dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
+                            dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
+                            dbg_printf("\n");
+                            // TODO: The outer condition permits writing one local check
+                            // TODO: function. It can be removed in a version of this function
+                            // TODO: that is used specifically during the search
+                            cost += weights[i];
+                            if (!(diff < 0)) {
+                                if (cost > diff) {
+                                    return cost;
+                                }
+                            }
+                        }
+                    }
+                //}
             }
         }
     }
@@ -345,7 +354,7 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
         }
         
         
-        subtreeactives[i] |= (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
         assert(n_prelim[i]);
     }
@@ -387,8 +396,8 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             
             n_final[i] = n_prelim[i];
 
-            subtreeactive[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
-            
+            subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
+
             assert(n_final[i]);
         }
         
@@ -452,9 +461,9 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
     mfl_charstate* rt_char = right_nd->nd_final_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
-//    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
-//    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
-//    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
 //    mfl_charstate* regionactive = n_nd->nd_region_activestates;
 //    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
 //    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
@@ -499,6 +508,7 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             }
         }
 
+        subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         assert(n_final[i]);
 
     }
@@ -518,7 +528,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
-//    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
 //    mfl_charstate* regionactive = n_nd->nd_region_activestates;
     mfl_charstate temp = 0;
     
@@ -535,6 +545,8 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             else {
                 n_final[i] = n_prelim[i];
             }
+            
+            subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
             assert(n_final[i]);
         }
         
@@ -722,7 +734,7 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
     
-    if (!n->nodet_downpass_visited) {
+    //if (!n->nodet_downpass_visited) {
         
         int i = 0;
         int num_dataparts;
@@ -760,7 +772,7 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
 
         n->nodet_downpass_visited = true;
 
-    }
+    //}
 
     return;
 }
@@ -902,7 +914,7 @@ void mfl_allviews_traversal(mfl_node_t* n)
     mfl_node_t *p = NULL;
     
     if (n->nodet_tip) {
-        dbg_printf("Tip visited: %i\n", n->nodet_tip);
+//        dbg_printf("Tip visited: %i\n", n->nodet_tip);
         mfl_postorder_traversal(n->nodet_edge, NULL);
         return;
     }
@@ -978,12 +990,12 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
         mfl_simple_reroot(t, &orig_root);
         
         // TODO: Handle this elsewhere (and more elegantly?)---or DELETE?
-        for (j = 0; j < dataparts->ptset_n_parts; ++j) {
-            for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
-                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
-                = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
-            }
-        }
+//        for (j = 0; j < dataparts->ptset_n_parts; ++j) {
+//            for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
+//                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
+//                = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
+//            }
+//        }
 
 #ifdef MFY_DEBUG
         tui_check_broken_tree(t, false);

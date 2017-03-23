@@ -74,6 +74,7 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
                                                   partset->ptset_partitions[i],
                                                   rownumber);
         memcpy(n->nodet_charstates[i]->nd_final_set, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
+        
     }
 }
 
@@ -401,7 +402,9 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     
     searchrec->sr_swaping_on->treet_parsimonylength += cost;
 
+    
     if (sarecord->stpadd_num_held < sarecord->stpadd_max_hold) {
+        
         mfl_insert_branch_with_ring_base(newbranch, n);
         newbranch->nodet_edge->nodet_weight = 3;
         // Push try to record.
@@ -412,6 +415,7 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     }
     else {
         if (searchrec->sr_swaping_on->treet_parsimonylength < sarecord->stpadd_longest_try) {
+            
             mfl_insert_branch_with_ring_base(newbranch, n);
             newbranch->nodet_edge->nodet_weight = 3;
 
@@ -422,14 +426,6 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     }
     
     searchrec->sr_swaping_on->treet_parsimonylength -= cost;
-}
-
-
-void mfl_try_all_insertions(mfl_node_t* newbranch, mfl_tree_t* t, mfl_searchrec_t* searchrec)
-{
-
-    
-    
 }
 
 
@@ -787,23 +783,34 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     // While(new branches to add)
     while ((newbranch = mfl_get_next_terminal_in_addseq(sarec))) {
         
+        dbg_printf("****\nAdding tip %i:\n***\n\n", newbranch->nodet_tip);
         // Reset bestlen thingy if this is the first loop
         mfl_reset_stepwise_addition_record_for_new_branch(newbranch, sarec);
         
         for (i = 0; i < sarec->stpadd_num_saved; ++i) {
             // FOR each tree held in old list {
-            
+            dbg_printf("**Hold %i in tip %i***\n", i, newbranch->nodet_tip);
             mfl_convert_from_stored_topol(sarec->stpadd_oldtries->tb_savedtrees[i], t);
 
+            showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
+            dbg_printf("Base topology: %s\n", showtree);
+            free(showtree);
+            
             // Optimise the tree
             t->treet_parsimonylength = 0;
             mfl_fullpass_tree_optimisation(t, dataparts);
+            
             if (sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength != t->treet_parsimonylength) {
                 dbg_printf("Oh crap! saved: %i and calculated: %i\n", sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength, t->treet_parsimonylength);
+                mfl_convert_from_stored_topol(sarec->stpadd_oldtries->tb_savedtrees[i], t);
+                
+                showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
+                dbg_printf("on topology %i: %s\n\n\n", i, showtree);
+                free(showtree);
                 ++fail;
             }
             // Try all insertions for new branch
-            //mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+//            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
             mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge, newbranch, sarec, searchrec);
 
         }
@@ -816,6 +823,7 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
         mfl_convert_from_stored_topol(sarec->stpadd_newtries->tb_savedtrees[i], t);
         showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
         dbg_printf("tree morphy_%i = %s\n", i, showtree);
+        dbg_printf("[Length: %i]\n", sarec->stpadd_newtries->tb_savedtrees[i]->treet_parsimonylength);
         free(showtree);
     }
     tui_check_broken_tree(t, false);
