@@ -137,30 +137,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
     // TODO: Optimise: increment pointers in loop head
     for (i = 0; i < num_chars; ++i) {
-        
-//        if (!src[i] & (tgt1f[i] | tgt2f[i])) {
-//            if (src[i] == MORPHY_INAPPLICABLE_BITPOS) {
-//                // Stuff
-//            }
-//            else {
-//                if (src[i] & (tgt1a[i] | tgt2a[i])) {
-//                    cost += weights[i];
-//                    if (!(diff < 0)) {
-//                        if (cost > diff) {
-//                            return cost;
-//                        }
-//                    }
-//                }
-//                else if (!(src[i] & (tgt1p2[i] | tgt2p2[i]) )) {
-//                    if (!(diff < 0)) {
-//                        if (cost > diff) {
-//                            return cost;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        
+
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
             if (src[i] == MORPHY_INAPPLICABLE_BITPOS) {
                 if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
@@ -179,7 +156,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 //                        dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
 //                        dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
 //                        dbg_printf("\n");
-//                        cost += weights[i];
+                        cost += weights[i];
 //                        if (!(diff < 0)) {
 //                            if (cost > diff) {
 //                                return cost;
@@ -203,7 +180,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 //                        dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
 //                        dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
 //                        dbg_printf("\n");
-//                        cost += weights[i];
+                        cost += weights[i];
 //                        if (!(diff < 0)) {
 //                            if (cost > diff) {
 //                                return cost;
@@ -225,7 +202,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 //                    dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
 //                    dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
 //                    dbg_printf("\n");
-//                    cost += weights[i];
+                    cost += weights[i];
 //                    if (!(diff < 0)) {
 //                        if (cost > diff) {
 //                            return cost;
@@ -244,7 +221,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 //                    dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
 //                    dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
 //                    dbg_printf("\n");
-//                    cost += weights[i];
+                    cost += weights[i];
 //                    if (!(diff < 0)) {
 //                        if (cost > diff) {
 //                            return cost;
@@ -252,39 +229,6 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 //                    }
                 }
             }
-
-
-            
-                //            else if (src[i] & (tgt1a[i] | tgt2a[i])) {
-//                //if (tgt1a[i] && tgt2a[i]) {
-//                    if (tgt1p[i] & MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS) {
-//                        if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
-//                            if (!(src[i] & (tgt1p2[i] | tgt2p2[i]))) {
-//                                dbg_printf("Nodal values in branch 3:\n");
-//                                dbg_printf("src[%i]: %llu\n", i, src[i]);
-//                                dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-//                                dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-//                                dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-//                                dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-//                                dbg_printf("tgt1p2[%i]: %llu\n", i, tgt1p2[i]);
-//                                dbg_printf("tgt2p2[%i]: %llu\n", i, tgt2p2[i]);
-//                                dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
-//                                dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
-//                                dbg_printf("\n");
-//                                // TODO: The outer condition permits writing one local check
-//                                // TODO: function. It can be removed in a version of this function
-//                                // TODO: that is used specifically during the search
-//                                cost += weights[i];
-//                                if (!(diff < 0)) {
-//                                    if (cost > diff) {
-//                                        return cost;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                //}
-//            }
         }
     }
     
@@ -1087,12 +1031,12 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
         mfl_simple_reroot(t, &orig_root);
         
         // TODO: Handle this elsewhere (and more elegantly?)---or DELETE?
-//        for (j = 0; j < dataparts->ptset_n_parts; ++j) {
-//            for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
-//                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
-//                = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
-//            }
-//        }
+        for (j = 0; j < dataparts->ptset_n_parts; ++j) {
+            for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
+                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
+                = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
+            }
+        }
 
 #ifdef MFY_DEBUG
         tui_check_broken_tree(t, false);

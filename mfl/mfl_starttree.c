@@ -398,13 +398,15 @@ int mfl_test_expected_length(mfl_node_t* src, mfl_node_t* tgt, mfl_tree_t* t, mf
         dbg_printf("Indirect: %i; direct: %i\n", origlength, t->treet_parsimonylength);
         dbg_printf("Tip added: %i\n", src->nodet_tip);
         tree = mfl_convert_mfl_tree_t_to_newick(t, false);
-        dbg_printf("On this topology: %s\n\n", tree);
+        dbg_printf("On this topology: %s\n", tree);
+        dbg_printf("At node: %i\n\n", tgt->nodet_index);
         free(tree);
     }
     
     mfl_clip_branch(src, &clip);
+    
     mfl_fullpass_tree_optimisation(t, testparts);
-    t->treet_parsimonylength = origlength;
+//    t->treet_parsimonylength = origlength;
     
     return 1;
 }
@@ -425,16 +427,16 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
         } while (p != n);
     }
     
-    
     // TODO: You can probably optimise by passing the length in instead of -1
-    mfl_local_add_cost(newbranch, n->nodet_edge, -1, &cost);
-    
-    searchrec->sr_swaping_on->treet_parsimonylength += cost;
 
-    mfl_test_expected_length(newbranch, n, searchrec->sr_swaping_on, searchrec);
+    length = searchrec->sr_swaping_on->treet_parsimonylength;
+    
+    mfl_local_add_cost(newbranch, n->nodet_edge, NULL, &cost);
+    searchrec->sr_swaping_on->treet_parsimonylength += cost;
+    
+//    mfl_test_expected_length(newbranch, n, searchrec->sr_swaping_on, searchrec);
     
     if (sarecord->stpadd_num_held < sarecord->stpadd_max_hold) {
-        
         mfl_insert_branch_with_ring_base(newbranch, n);
         newbranch->nodet_edge->nodet_weight = 3;
         // Push try to record.
@@ -455,7 +457,7 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
         }
     }
     
-    searchrec->sr_swaping_on->treet_parsimonylength -= cost;
+    searchrec->sr_swaping_on->treet_parsimonylength = length;
 }
 
 
@@ -595,11 +597,18 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
     t->treet_dummynode.nodet_charstates = (mfl_nodedata_t**)mfl_malloc(dataparts->ptset_n_parts * sizeof(mfl_nodedata_t*), 0);
     
     for (i = 0; i < dataparts->ptset_n_parts; ++i) {
+        
         t->treet_dummynode.nodet_charstates[i] = (mfl_nodedata_t*)mfl_malloc(sizeof(mfl_nodedata_t), 0);
+        
         t->treet_dummynode.nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        
+        t->treet_dummynode.nodet_charstates[i]->nd_prelim2_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        
         t->treet_dummynode.nodet_charstates[i]->nd_prelim_set = t->treet_dummynode.nodet_charstates[i]->nd_final_set;
+        
         t->treet_dummynode.nodet_charstates[i]->nd_subtree_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-         t->treet_dummynode.nodet_charstates[i]->nd_region_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        
+        t->treet_dummynode.nodet_charstates[i]->nd_region_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
     }
 }
 
@@ -824,32 +833,17 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
             // FOR each tree held in old list {
             dbg_printf("**Hold %i in tip %i***\n", i, newbranch->nodet_tip);
             mfl_convert_from_stored_topol(sarec->stpadd_oldtries->tb_savedtrees[i], t);
-
-            showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
-            dbg_printf("Base topology: %s\n", showtree);
-            free(showtree);
             
             // Optimise the tree
             t->treet_parsimonylength = 0;
             mfl_fullpass_tree_optimisation(t, dataparts);
             
-            if (sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength != t->treet_parsimonylength) {
-                dbg_printf("Oh crap! saved: %i and calculated: %i\n", sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength, t->treet_parsimonylength);
-                mfl_convert_from_stored_topol(sarec->stpadd_oldtries->tb_savedtrees[i], t);
-                
-                showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
-                dbg_printf("on topology %i: %s\n\n\n", i, showtree);
-                free(showtree);
-                ++fail;
-            }
             // Try all insertions for new branch
-//            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_edge, newbranch, sarec, searchrec);
-            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_next->nodet_next->nodet_edge, newbranch, sarec, searchrec);
 
         }
     }
-    
-    dbg_printf("Indirect optimisation on inapplicables failed: %i times\n", fail);
     
 #ifdef MFY_DEBUG
     for (i = 0; i < sarec->stpadd_newtries->tb_num_trees; ++i) {
