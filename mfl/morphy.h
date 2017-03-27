@@ -238,6 +238,7 @@ typedef struct mfl_datapartition_t {
     mfl_lparsim_fn part_local;
     mfl_stepmatrix_t* part_stepmatrix;
     mfl_charstate *part_activestates;
+    mfl_charstate *part_tempactives;
     mfl_charstate *part_matrix;
 } mfl_datapartition_t;
 

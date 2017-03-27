@@ -1651,6 +1651,7 @@ void mfl_populate_all_character_partitions(mfl_partition_set_t* ptset, mfl_gap_t
                 inapplicable = true;
             }
             ptset->ptset_partitions[i]->part_activestates = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+            ptset->ptset_partitions[i]->part_tempactives = (mfl_charstate*)mfl_malloc(ptset->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         }
     
         mfl_fetch_parsimony_fxn(ptset->ptset_partitions[i], ptype, inapplicable);
