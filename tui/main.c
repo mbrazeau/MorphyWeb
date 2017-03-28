@@ -445,26 +445,29 @@ int tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
     dataparts = mfl_generate_search_data(handle);
     
     for (i = 0; i < numintrees; ++i) {
-        // Create the tree
-        intree = handle->input_newick_trees[i];
-        t = mfl_convert_newick_to_mfl_tree_t(intree, numtax);
-        t->treet_parsimonylength = 0;
-        
-        // Prepare the data and tree
-        mfl_setup_input_tree_with_node_data(t, dataparts);
-        
-        // Output the length
-        mfl_fullpass_tree_optimisation(t, dataparts);
-        
-        // Compare the length to the expected value (if given)
-        if (tui_check_values(t->treet_parsimonylength, expectedlengths[i])) {
-            ++testfails;
-        }
-        
-        // Destroy the tree
-        //tui_check_broken_tree(t, false);
-        mfl_free_tree(t);
-        t = NULL;
+
+//        for (j = 0; j < 37; ++j) {
+            // Create the tree
+            intree = handle->input_newick_trees[i];
+            t = mfl_convert_newick_to_mfl_tree_t(intree, numtax);
+            t->treet_parsimonylength = 0;
+            
+            // Prepare the data and tree
+            mfl_setup_input_tree_with_node_data(t, dataparts);
+            
+            // Output the length
+            mfl_fullpass_tree_optimisation(t, dataparts);
+            
+            // Compare the length to the expected value (if given)
+            if (tui_check_values(t->treet_parsimonylength, *expectedlengths)) {
+                ++testfails;
+            }
+            
+            // Destroy the tree
+            //tui_check_broken_tree(t, false);
+            mfl_free_tree(t);
+            t = NULL;
+//        }
     }
     
     // Destroy the input data
@@ -492,7 +495,7 @@ void tui_test_basic_character_optimisation(void)
                    //.........111
                    //123456789012
 
-char matrix[] = "023-???1--32;";
+char matrix[] = "1??--??--100;";
 
 //    "10300000000000000000"
 //    "33-00000000000000000"
@@ -1131,13 +1134,14 @@ void tui_test_consensus_trees(void)
 void tui_test_counts(void)
 {
     int i = 0;
-    char* intree = (char*)"UNTITLED = [&R] ((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));";
-    intree =       (char*)"UNTITLED = [&R] ((((4,((1,2),3)),5),6),(7,(8,(9,((11,12),10)))));";
-    intree =       (char*)"UNTITLED = [&R] ((((4,((1,2),3)),5),6),((8,(9,((11,12),10))),7));";
-    intree =       (char*)"UNTITLED = [&R] (((8,(9,((11,12),10))),7),(((4,((1,2),3)),5),6));";
-    intree =       (char*)"UNTITLED = [&R] (((8,(9,((11,12),10))),7),(((4,(3,(1,2))),5),6));";
-    intree =       (char*)"UNTITLED = [&R] (1,(2,(3,(4,(5,(6,(7,(8,(9,(10,(11,12)))))))))));";
-//    intree =       (char*)"UNTITLED = [&R] (3,((1,2),(4,(5,(6,(7,(8,(9,(10,(11,12))))))))));";
+    int numtrees = 7;
+    char* intree[] =   {(char*)"UNTITLED = [&R] ((((((1,2),3),4),5),6),(7,(8,(9,(10,(11,12))))));",
+                        (char*)"UNTITLED = [&R] ((((4,((1,2),3)),5),6),(7,(8,(9,((11,12),10)))));",
+                        (char*)"UNTITLED = [&R] ((((4,((1,2),3)),5),6),((8,(9,((11,12),10))),7));",
+                        (char*)"UNTITLED = [&R] (((8,(9,((11,12),10))),7),(((4,((1,2),3)),5),6));",
+                        (char*)"UNTITLED = [&R] (((8,(9,((11,12),10))),7),(((4,(3,(1,2))),5),6));",
+                        (char*)"UNTITLED = [&R] (1,(2,(3,(4,(5,(6,(7,(8,(9,(10,(11,12)))))))))));",
+                        (char*)"UNTITLED = [&R] (3,((1,2),(4,(5,(6,(7,(8,(9,(10,(11,12))))))))));"};
     
     char* matrices[] = {(char*)"23--1??--032;", // 0
                         (char*)"1---1111---1;", // 1
@@ -1176,27 +1180,27 @@ void tui_test_counts(void)
                         (char*)"----1010----;", // 34
                         (char*)"------11---1;", // 35
                         (char*)"10----11---1;", // 36
+                        (char*)"320--??3--21;", // 37
                         };
     
-    int num_matrices = 37;
-    int expected[] = {2, 2, 2, 1, 1, 4, 4, 1, 2, 2, 1, 3, 2, 2, 3, 0, 2, 2, 4, 2, 1, 3, 2, 2, 1, 3, 1, 3, 2, 0, 2, 2, 1, 2, 1, 1, 2};
+    int num_matrices = 38;
+    int expected[] = {2, 2, 2, 1, 1, 4, 4, 1, 2, 2, 1, 3, 2, 2, 3, 0, 2, 2, 4, 2, 1, 3, 2, 2, 1, 3, 1, 3, 2, 0, 2, 2, 1, 2, 1, 1, 2, 2};
     int testfails = 0;
     
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
     
     handle->n_taxa = 12;
     handle->n_chars = 1;
-    handle->n_input_newick_trees = 1;
-    handle->input_newick_trees = (char**)mfl_malloc(1 * sizeof(char*), 0);
-    handle->input_newick_trees[0] = intree;
-    
-    for (i = 0; i < num_matrices; ++i) {
-        if (i == 33) {
-            dbg_printf("break\n");
-        }
-        handle->input_data = matrices[i];
-        if (tui_test_treelength_calculation(handle, &expected[i])) {
-            ++testfails;
+    handle->n_input_newick_trees = numtrees;
+//    handle->input_newick_trees = (char**)mfl_malloc(numtrees * sizeof(char*), 0);
+    handle->input_newick_trees = intree;
+    for (int j = 0; j < numtrees; ++j) {
+
+        for (i = 0; i < num_matrices; ++i) {
+            handle->input_data = matrices[i];
+            if (tui_test_treelength_calculation(handle, &expected[i])) {
+                ++testfails;
+            }
         }
     }
     
