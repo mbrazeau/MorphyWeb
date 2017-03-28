@@ -408,6 +408,8 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
     mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate* nd_active = n_nd->nd_region_activestates;
+    mfl_charstate* ractive = datapart->part_tempactives;
 
     if (!left_nd) {
         assert(!right_nd);
@@ -422,7 +424,8 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             
             n_final[i] = n_prelim[i];
 
-            subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
+            nd_active[i] = subtreeactive[i];
+//            subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
 
             assert(n_final[i]);
             
@@ -467,6 +470,8 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
         else {
             n_final[i] = n_prelim[i];
         }
+        
+        nd_active[i] |= ractive[i];
         assert(n_final[i]);
     }
     
@@ -490,12 +495,13 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
     mfl_charstate* rt_char = right_nd->nd_final_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
+    mfl_charstate* ractives = datapart->part_tempactives;
     mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
     mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-//    mfl_charstate* regionactive = n_nd->nd_region_activestates;
-//    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
-//    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
+    mfl_charstate* lreg_active = left_nd->nd_region_activestates;
+    mfl_charstate* rreg_active = right_nd->nd_region_activestates;
+    mfl_charstate* nreg_active = n_nd->nd_region_activestates;
     mfl_charstate temp = 0;
     
     
@@ -504,7 +510,11 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
         
         temp = 0;
         
+        nreg_active[i] = (lreg_active[i] | rreg_active[i]);
+        
         if (n_final[i] & MORPHY_IS_APPLICABLE) {
+            
+            
             
             if ((temp = (lft_char[i] & rt_char[i]))) {
                 
@@ -517,28 +527,45 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                 
                 // Add steps if necessary:
                 if (lft_char[i] & MORPHY_IS_APPLICABLE && rt_char[i] & MORPHY_IS_APPLICABLE) {
-                    if (n_final[i] == (n_final[i] & actives[i])) {
+                    if (n_final[i] == (n_final[i] & ractives[i])) {
                         if (length) {
                             *length += weights[i];
                         }
                     }
                     else {
-                        actives[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
+                        if (n_final[i] & actives[i]) {
+                            if (length) {
+                                *length += weights[i];
+                            }
+                        }
+//                        actives[i] |= (n_final[i] & MORPHY_IS_APPLICABLE);
                     }
                 }
             }
+            
+            ractives[i]|= nreg_active[i];
+            
         }
         else {
             if (!(lft_char[i] & rt_char[i])) {
                 
                 temp = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
                 
-                actives[i] |= temp;
+                if (temp == (temp & actives[i])) {
+                    if (length) {
+                        *length += weights[i];
+                    }
+                }
             }
+            
+            actives[i] |= ractives[i];
+            nreg_active[i] = 0;
+            ractives[i] = 0;
+            
         }
 
         //prelim2[i] = n_final[i];
-        
+//        nreg_active[i] |= lreg_active[i] | rreg_active[i];
         subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         assert(n_final[i]);
 
@@ -634,7 +661,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             if (!(lft_char[i] & rt_char[i])) {
                 if ((lft_char[i] | rt_char[i]) & actives[i]) {
                     if (length) {
-                        *length += weights[i];
+//                        *length += weights[i];
                     }
                 }
             }
