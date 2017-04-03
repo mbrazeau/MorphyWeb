@@ -140,93 +140,25 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
             if (src[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                    // TODO: The outer condition permits writing one local check
-                    // TODO: function. It can be removed in a version of this function
-                    // TODO: that is used specifically during the search
-                    if (tgt1a[i] & tgt2a[i]) {
-//                        dbg_printf("Nodal values in branch 1:\n");
-//                        dbg_printf("src[%i]: %llu\n", i, src[i]);
-//                        dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-//                        dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-//                        dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-//                        dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-//                        dbg_printf("tgt1p2[%i]: %llu\n", i, tgt1p2[i]);
-//                        dbg_printf("tgt2p2[%i]: %llu\n", i, tgt2p2[i]);
-//                        dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
-//                        dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
-//                        dbg_printf("\n");
-                        cost += weights[i];
-//                        if (!(diff < 0)) {
-//                            if (cost > diff) {
-//                                return cost;
-//                            }
-//                        }
+//                if (tgt1f[i] & MORPHY_IS_APPLICABLE && tgt2f[i] & MORPHY_IS_APPLICABLE) {
+                    if (tgt1f[i] & tgt2f[i]) { // Otherwise, one is just trading a step for a region count
+                        if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                            // Then adding the source branch would break the 'fragile' applicable region into two
+                            if (tgt1p[i] & MORPHY_INAPPLICABLE_BITPOS && tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS) {
+                                // Then adding the source branch would break the 'fragile' applicable region into two
+                                cost += weights[i];
+                            }                        }
                     }
-                }
-                else if (src[i] & tgt1p[i] & tgt2p[i]) {
-                    if (((tgt1p[i] & tgt2p[i]) & MORPHY_IS_APPLICABLE)) {
-                        // TODO: The outer condition permits writing one local check
-                        // TODO: function. It can be removed in a version of this function
-                        // TODO: that is used specifically during the search
-//                        dbg_printf("Nodal values in branch 2:\n");
-//                        dbg_printf("src[%i]: %llu\n", i, src[i]);
-//                        dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-//                        dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-//                        dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-//                        dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-//                        dbg_printf("tgt1p2[%i]: %llu\n", i, tgt1p2[i]);
-//                        dbg_printf("tgt2p2[%i]: %llu\n", i, tgt2p2[i]);
-//                        dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
-//                        dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
-//                        dbg_printf("\n");
-                        cost += weights[i];
-//                        if (!(diff < 0)) {
-//                            if (cost > diff) {
-//                                return cost;
-//                            }
-//                        }
-                    }
-                }
+//                }
             }
-            else if (src[i] & (tgt1a[i] | tgt2a[i])) {
-                if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
-//                    dbg_printf("Nodal values in branch 3:\n");
-//                    dbg_printf("src[%i]: %llu\n", i, src[i]);
-//                    dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-//                    dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-//                    dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-//                    dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-//                    dbg_printf("tgt1p2[%i]: %llu\n", i, tgt1p2[i]);
-//                    dbg_printf("tgt2p2[%i]: %llu\n", i, tgt2p2[i]);
-//                    dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
-//                    dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
-//                    dbg_printf("\n");
+            else {
+                if (tgt1f[i] & MORPHY_IS_APPLICABLE || tgt2f[i] & MORPHY_IS_APPLICABLE) {
                     cost += weights[i];
-//                    if (!(diff < 0)) {
-//                        if (cost > diff) {
-//                            return cost;
-//                        }
-//                    }
                 }
-                else if (!(src[i] & (tgt1p2[i] | tgt2p2[i]) )) {
-//                    dbg_printf("Nodal values in branch 4:\n");
-//                    dbg_printf("src[%i]: %llu\n", i, src[i]);
-//                    dbg_printf("tgt1f[%i]: %llu\n", i, tgt1f[i]);
-//                    dbg_printf("tgt2f[%i]: %llu\n", i, tgt2f[i]);
-//                    dbg_printf("tgt1p[%i]: %llu\n", i, tgt1p[i]);
-//                    dbg_printf("tgt2p[%i]: %llu\n", i, tgt2p[i]);
-//                    dbg_printf("tgt1p2[%i]: %llu\n", i, tgt1p2[i]);
-//                    dbg_printf("tgt2p2[%i]: %llu\n", i, tgt2p2[i]);
-//                    dbg_printf("tgt1a[%i]: %llu\n", i, tgt1a[i]);
-//                    dbg_printf("tgt2a[%i]: %llu\n", i, tgt2a[i]);
-//                    dbg_printf("\n");
-                    cost += weights[i];
-//                    if (!(diff < 0)) {
-//                        if (cost > diff) {
-//                            return cost;
-//                        }
-//                    }
+                else {
+                    // Would the addition of this branch fuse two regions?
+                    // Would it add a new region?
+                    
                 }
             }
         }
@@ -383,7 +315,7 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             prelim2[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
         }
         
-        subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+//        subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
         assert(n_prelim[i]);
     }
@@ -542,13 +474,7 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             }
             
         }
-//        else {
-//            if (lft_active[i] && rt_active[i]) {
-//                if (length) {
-//                    *length += weights[i];
-//                }
-//            }
-//        }
+        
 
         //prelim2[i] = n_final[i];
 //        nreg_active[i] |= lreg_active[i] | rreg_active[i];
