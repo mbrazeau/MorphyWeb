@@ -495,7 +495,7 @@ void tui_test_basic_character_optimisation(void)
                    //.........111
                    //123456789012
 
-char matrix[] = "1??--??--100;";
+char matrix[] = "023-???1--32;";
 
 //    "10300000000000000000"
 //    "33-00000000000000000"
@@ -652,7 +652,7 @@ void tui_test_local_reoptimisation(void)
             testtree->treet_parsimonylength = 0;
             
             mfl_fullpass_tree_optimisation(testtree, dataparts);
-            
+//            oldlen = testtree->treet_parsimonylength;
             mfl_local_add_cost(testtree->treet_treenodes[j], tgt1, -1, &diff);
             
             // Compare length and sum of lengths;
@@ -663,7 +663,7 @@ void tui_test_local_reoptimisation(void)
             }
             else {
                 dbg_pfail("lengths do not sum to full length as expected.\n");
-                dbg_printf("Estimated: %i, directly calculated: %i\n", oldlen, (testtree->treet_parsimonylength + diff));
+                dbg_printf("Estimated: %i, directly calculated: %i\n", (testtree->treet_parsimonylength + diff), oldlen);
                 ++fail;
             }
             dbg_printf("\n");
@@ -1184,7 +1184,9 @@ void tui_test_counts(void)
                         };
     
     int num_matrices = 38;
-    int expected[] = {2, 2, 2, 1, 1, 4, 4, 1, 2, 2, 1, 3, 2, 2, 3, 0, 2, 2, 4, 2, 1, 3, 2, 2, 1, 3, 1, 3, 2, 0, 2, 2, 1, 2, 1, 1, 2, 2};
+    //                                              1                             2                             3
+    //                0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7
+    int expected[] = {5, 2, 3, 2, 1, 5, 5, 2, 5, 2, 2, 4, 3, 2, 5, 0, 5, 2, 4, 5, 2, 4, 3, 3, 2, 5, 1, 4, 4, 0, 5, 5, 4, 5, 2, 1, 3, 5};
     int testfails = 0;
     
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
@@ -1214,8 +1216,57 @@ void tui_test_counts(void)
         dbg_printf("All tests PASSED\n");
     }
     dbg_printf("\n");
+//    mfl_destroy_handle(mfl_s2t(handle));
 }
 
+void tui_test_counts_bigtree(void)
+{
+    dbg_printf("\nTesting step counting on larger tree(s)\n");
+    dbg_printf("===============================\n\n");
+    int i = 0;
+    int numtrees = 1;
+    char* intree[] =   {(char*)"UNTITLED = [&R] ((1,2),((3,(4,5)),(6,(7,(8,(9,(10,((11,(12,(13,(14,15)))),(16,(17,(18,(19,20))))))))))));"};
+                           //            1    1    2
+                           //   1   5    0    5    0
+    char* matrices[] = {(char*)"11111---111---11---1;", // 0
+                        };
+    
+    int num_matrices = 1;
+    //                                              1                             2                             3
+    //                0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7
+    int expected[] = {3};
+    int testfails = 0;
+    
+    mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
+    
+    handle->n_taxa = 20;
+    handle->n_chars = 1;
+    handle->n_input_newick_trees = numtrees;
+    //    handle->input_newick_trees = (char**)mfl_malloc(numtrees * sizeof(char*), 0);
+    handle->input_newick_trees = intree;
+    
+    for (int j = 0; j < numtrees; ++j) {
+        
+        for (i = 0; i < num_matrices; ++i) {
+            handle->input_data = matrices[i];
+            if (tui_test_treelength_calculation(handle, &expected[i])) {
+                ++testfails;
+            }
+        }
+    }
+    
+    dbg_printf("\n");
+    dbg_printf("SUMMARY:\n");
+    dbg_printf("Test of all topologies for all matrices concluded\n");
+    if (testfails) {
+        dbg_printf("Test FAILED %i times.\n", testfails);
+    }
+    else {
+        dbg_printf("All tests PASSED\n");
+    }
+    dbg_printf("\n");
+//    mfl_destroy_handle(mfl_s2t(handle));
+}
 
 int main (int argc, char *argv[])
 {
@@ -1287,6 +1338,10 @@ int main (int argc, char *argv[])
     dbg_printf("Testing matrices:\n");
     tui_test_counts();
     dbg_printf("\nEnd counts test\n");
+    
+    dbg_printf("Testing counts on \"big\" trees:\n");
+    tui_test_counts_bigtree();
+    dbg_printf("\nEnd counts test on big trees\n");
     
     dbg_printf("Testing compare and replace:\n");
     tui_test_compare_replace();
