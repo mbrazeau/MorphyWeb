@@ -139,6 +139,9 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                         cost += weights[i];
                     }
                 }
+                else if (tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    cost += weights[i];
+                }
             }
             else {
                 if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
@@ -146,7 +149,6 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                 }
                 else {
                     if (tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS && tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                        dbg_printf("Branch 1\n");
                         if (tgt1a[i] || tgt2a[i]) {
                             if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
                                 cost += weights[i];
@@ -156,21 +158,17 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                             }
                         }
                     }
-                    else {
-                        dbg_printf("Branch 2\n");
-                    }
-                    if (tgt1p[i] != MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] != MORPHY_INAPPLICABLE_BITPOS) {
+                    else
+                        if (tgt1p[i] != MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] != MORPHY_INAPPLICABLE_BITPOS) {
                         if (src[i] & (tgt1p2[i] | tgt2p2[i])) {
                             if (tgt1p2[i] == tgt2p2[i]) {
                                 cost -= weights[i];
                             }
                         }
                         else  if (tgt1a[i] || tgt2a[i]) {
-//                            if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
-                                if (!(tgt1p2[i] && tgt2p2[i])) {
-                                    cost += weights[i];
-                                }
-//                            }
+                            if (!(tgt1p2[i] && tgt2p2[i])) {
+                                cost += weights[i];
+                            }
                         }
                     }
                     else if (tgt1a[i] || tgt2a[i]) {
