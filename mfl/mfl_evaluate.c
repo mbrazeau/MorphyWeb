@@ -96,15 +96,9 @@ int mfl_test_fitch_local(const mfl_nodedata_t* src_nd,
     for (i = 0; i < num_chars; ++i) {
         if (!(src[i] & (tgt1[i] | tgt2[i]))) {
             cost += weights[i];
-            
             // TODO: The outer condition permits writing one local check
             // TODO: function. It can be removed in a version of this function
             // TODO: that is used specifically during the search
-//            dbg_printf("Nodal values in normal Fitch:\n");
-//            dbg_printf("src[%i]: %llu\n", i, src[i]);
-//            dbg_printf("tgt1[%i]: %llu\n", i, tgt1[i]);
-//            dbg_printf("tgt2[%i]: %llu\n", i, tgt2[i]);
-//            dbg_printf("\n");
 //            if (!(diff < 0)) {
 //                if (cost > diff) {
 //                    return cost;
@@ -140,25 +134,52 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
             if (src[i] == MORPHY_INAPPLICABLE_BITPOS) {
-//                if (tgt1f[i] & MORPHY_IS_APPLICABLE && tgt2f[i] & MORPHY_IS_APPLICABLE) {
-                    if (tgt1f[i] & tgt2f[i]) { // Otherwise, one is just trading a step for a region count
-                        if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                            // Then adding the source branch would break the 'fragile' applicable region into two
-                            if (tgt1p[i] & MORPHY_INAPPLICABLE_BITPOS && tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS) {
-                                // Then adding the source branch would break the 'fragile' applicable region into two
-                                cost += weights[i];
-                            }                        }
+                if (src[i] & tgt1p[i] & tgt2p[i]) {
+                    if ((tgt1p[i] & tgt2p[i]) & MORPHY_IS_APPLICABLE) {
+                        cost += weights[i];
                     }
-//                }
+                }
             }
             else {
-                if (tgt1f[i] & MORPHY_IS_APPLICABLE || tgt2f[i] & MORPHY_IS_APPLICABLE) {
+                if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
                     cost += weights[i];
                 }
                 else {
-                    // Would the addition of this branch fuse two regions?
-                    // Would it add a new region?
-                    
+                    if (tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS && tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                        dbg_printf("Branch 1\n");
+                        if (tgt1a[i] || tgt2a[i]) {
+                            if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
+                                cost += weights[i];
+                            }
+                            else if (tgt1p[i] == tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                                cost += weights[i];
+                            }
+                        }
+                    }
+                    else {
+                        dbg_printf("Branch 2\n");
+                    }
+                    if (tgt1p[i] != MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] != MORPHY_INAPPLICABLE_BITPOS) {
+                        if (src[i] & (tgt1p2[i] | tgt2p2[i])) {
+                            if (tgt1p2[i] == tgt2p2[i]) {
+                                cost -= weights[i];
+                            }
+                        }
+                        else  if (tgt1a[i] || tgt2a[i]) {
+//                            if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
+                                if (!(tgt1p2[i] && tgt2p2[i])) {
+                                    cost += weights[i];
+                                }
+//                            }
+                        }
+                    }
+                    else if (tgt1a[i] || tgt2a[i]) {
+                        if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
+                            if (!(tgt1p2[i] && tgt2p2[i])) {
+                                 cost += weights[i];
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -301,7 +322,6 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                     n_prelim[i] = left[i] | right[i];
                 }
             }
-            
         }
         else {
             n_prelim[i] = left[i] | right[i];
@@ -311,11 +331,12 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             }
         }
         
-        if (left[i] & MORPHY_IS_APPLICABLE || right[i] & MORPHY_IS_APPLICABLE) {
+        if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
+            
             prelim2[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
         }
         
-//        subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
         assert(n_prelim[i]);
     }
@@ -430,6 +451,7 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
     int* weights = datapart->part_int_weights;
     mfl_charstate* lft_char = left_nd->nd_final_set; // Note left and right are pointing to final sets now, not prelim sets
     mfl_charstate* rt_char = right_nd->nd_final_set;
+    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate* ractives = datapart->part_tempactives;
@@ -476,13 +498,41 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
         }
         
 
-        //prelim2[i] = n_final[i];
+//        prelim2[i] = n_final[i] & MORPHY_IS_APPLICABLE;
 //        nreg_active[i] |= lreg_active[i] | rreg_active[i];
         subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         assert(n_final[i]);
 
     }
 }
+
+void mfl_set_subtree_actives(mfl_nodedata_t*       n_nd,
+                             mfl_nodedata_t*       left_nd,
+                             mfl_nodedata_t*       right_nd,
+                             mfl_nodedata_t*       anc_nd,
+                             mfl_datapartition_t*  datapart)
+{
+    int num_chars = datapart->part_n_chars_included;
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* lft_char = left_nd->nd_prelim_set;
+    mfl_charstate* rt_char = right_nd->nd_prelim_set;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
+    
+    for (int i = 0; i < num_chars; ++i) {
+        subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        
+//        if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
+//            prelim2[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+//        }
+//        else {
+//            prelim2[i] = 0;
+//        }
+    }
+}
+
 
 void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                                 mfl_nodedata_t*       left_nd,
@@ -517,7 +567,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 n_final[i] = n_prelim[i];
             }
             
-            prelim2[i] = n_final[i];
+//            prelim2[i] = n_final[i];
             subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
             assert(n_final[i]);
         }
@@ -865,16 +915,25 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     
     do {
         mfl_second_preorder_traversal(p->nodet_edge, length);
+        for (i = 0; i < num_dataparts; ++i) {
+            if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+                mfl_set_subtree_actives(p->nodet_charstates[i],
+                                        p->nodet_next->nodet_edge->nodet_charstates[i],
+                                        p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
+                                        p->nodet_edge->nodet_charstates[i],
+                                        n->nodet_charstates[i]->nd_parent_partition);
+            }
+        }
+        p->nodet_uppass_visited = false;
         p = p->nodet_next;
     } while (p != n);
     
-    // TODO: This might need to be moved elsewhere
     n->nodet_downpass_visited = false;
-    n->nodet_next->nodet_downpass_visited = false;
-    n->nodet_next->nodet_next->nodet_downpass_visited = false;
     
     return;
 }
+
+
 
 void mfl_allviews_traversal(mfl_node_t* n)
 {
@@ -956,21 +1015,8 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     if (mfl_simple_unroot(t, &orig_root)) {
         
         mfl_allviews_traversal(t->treet_start);
-//        for (i = 0; i < num_taxa; ++i) {
-//            mfl_postorder_traversal(t->treet_treenodes[i]->nodet_edge, NULL);
-//        }
-        
-        // Restore original root.
-        //mfl_restore_branching(&orig_root);
+
         mfl_simple_reroot(t, &orig_root);
-        
-        // TODO: Handle this elsewhere (and more elegantly?)---or DELETE?
-        for (j = 0; j < dataparts->ptset_n_parts; ++j) {
-            for (k = 0; k < dataparts->ptset_partitions[j]->part_n_chars_included; ++k) {
-                t->treet_root->nodet_next->nodet_charstates[j]->nd_subtree_activestates[k]
-                = t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_charstates[j]->nd_subtree_activestates[k];
-            }
-        }
 
 #ifdef MFY_DEBUG
         tui_check_broken_tree(t, false);
