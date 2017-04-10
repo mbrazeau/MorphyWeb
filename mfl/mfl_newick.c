@@ -253,13 +253,9 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     new_parent = mfl_get_next_available_node(nodearray);
     new_parent->nodet_next = new_parent;
     
-    if (new_parent->nodet_index == 7) {
-        dbg_printf("Just wait\n");
-    }
-    
     do {
         if (**newick_position == '(') {
-            node_ptr = mfl_get_node_from_nodestack(nodearray[0]->nodet_ndstack);//mfl_get_next_available_node(nodearray);
+            node_ptr = mfl_get_node_from_nodestack(nodearray[0]->nodet_ndstack);
             mfl_insert_node_in_ring(new_parent, node_ptr);
             new_child = mfl_traverse_newick_recursively(newick_position, nodearray, num_taxa);
             mfl_join_node_edges(node_ptr, new_child);
