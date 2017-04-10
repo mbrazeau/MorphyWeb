@@ -238,7 +238,8 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
     mfl_node_t *new_child = NULL;   // Child nodes returned from calls on this function
     mfl_node_t *node_ptr = NULL;    // For new node bases
     int tip_number = 0;
-    
+
+#ifdef MFY_DEBUG
     if (**newick_position == ';') {
         dbg_printf("ERROR in mfl_traverse_newick_recursively(): no defined operation for terminal semicolon\n");
         return NULL;
@@ -247,7 +248,7 @@ mfl_node_t * mfl_traverse_newick_recursively(char **newick_position, mfl_nodearr
         dbg_printf("ERROR in mfl_traverse_newick_recursively(): called on invalid symbol\n");
         return NULL;
     }
-    
+#endif
     ++(*newick_position);
     
     new_parent = mfl_get_next_available_node(nodearray);
