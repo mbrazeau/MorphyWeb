@@ -132,27 +132,75 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* tgt1a = tgt1_nd->nd_subtree_activestates;
     mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
     mfl_charstate nodeset = 0;
+    mfl_charstate tgt1n = 0;
+    mfl_charstate tgt2n = 0;
     
     // TODO: Optimise: increment pointers in loop head
     for (i = 0; i < num_chars; ++i) {
 
         nodeset = 0;
-
+        tgt1n = 0;
+        tgt2n = 0;
+        
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
+            
             if (src[i] & MORPHY_IS_APPLICABLE) {
                 if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
                     cost += weights[i];
                 }
-                else if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
-                    if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
-                        cost += weights[i];
-                    }
-                    else if (tgt1a[i] || tgt2a[i]) {
-                        regions -= weights[i];
+                else {
+                    // Three possibilities:
+                    // Lone NA region
+                    //      No steps
+                    if (tgt1a[i] || tgt2a[i]) { // If the new branch is not a lone region
+                    // Connects with nearby NA region?
+                        if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
+                    //      Two possibilites:
+                    //      1. connects with one other region
+                            if (!((tgt1p[i] & tgt2p[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
+                    //          Two further possibilities:
+                    //          1. Intersection?
+                    //          2. No intersection?
+                                if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
+                                    cost += weights[i];
+                                }
+                            }
+                            else {
+                                // Store the nearest states
+                                tgt1n = tgt1p[i] | tgt1p2[i];
+                                tgt2n = tgt2p[i] | tgt2p2[i];
+                    //      2. Connects two neighbouring regions
+                                if (tgt1n == tgt2n) {
+                                    regions -= weights[i];
+                                }
+                    //          1. All one region: no intersections?
+                                if (!(src[i] & (tgt1n | tgt2n))) {
+                                    cost += weights[i];
+                                }
+                    //          2. All one region: intersections
+                    //              1. Total intersection
+                    //              2. Partial intersection
+                            }
+                        }
+                        else {
+                            regions += weights[i];
+                        }
                     }
                 }
             }
+            else {
+                if (tgt1p[i] & tgt2p[i] & src[i]) {
+                    if (tgt1p[i] & tgt2p[i] & MORPHY_IS_APPLICABLE) {
+                        regions += weights[i];
+                    }
+                }
+                else if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    regions += weights[i];
+                }
+            }
+            
         }
+        
     }
     
     return cost + regions;
