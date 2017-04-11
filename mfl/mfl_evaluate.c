@@ -110,41 +110,6 @@ int mfl_test_fitch_local(const mfl_nodedata_t* src_nd,
     return cost;
 }
 
-//static inline int mfl_srcna_fitch_local(mfl_charstate src,
-//                                        mfl_charstate tgt1f,
-//                                        mfl_charstate tgt2f,
-//                                        mfl_charstate tgt1p,
-//                                        mfl_charstate tgt2p,
-//                                        mfl_charstate tgt1p2,
-//                                        mfl_charstate tgt2p2,
-//                                        mfl_charstate tgt1a,
-//                                        mfl_charstate tgt2a)
-//{
-//    int cost = 0;
-//    int regions = 0;
-//    
-//    return cost;
-//}
-//
-//static inline int mfl_srcapp_fitch_local(mfl_charstate src,
-//                                         mfl_charstate tgt1f,
-//                                         mfl_charstate tgt2f,
-//                                         mfl_charstate tgt1p,
-//                                         mfl_charstate tgt2p,
-//                                         mfl_charstate tgt1p2,
-//                                         mfl_charstate tgt2p2,
-//                                         mfl_charstate tgt1a,
-//                                         mfl_charstate tgt2a)
-//{
-//    int cost = 0;
-//    int regions = 0;
-//    
-//    if (tgt1f & tgt2f) {
-//        <#statements#>
-//    }
-//    
-//    return cost;
-//}
 
 int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                             const mfl_nodedata_t* tgt1_nd,
@@ -166,46 +131,24 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* tgt2p2 = tgt2_nd->nd_prelim2_set;
     mfl_charstate* tgt1a = tgt1_nd->nd_subtree_activestates;
     mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
-    mfl_charstate temp = 0;
+    mfl_charstate nodeset = 0;
     
     // TODO: Optimise: increment pointers in loop head
     for (i = 0; i < num_chars; ++i) {
+
+        nodeset = 0;
 
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
             if (src[i] & MORPHY_IS_APPLICABLE) {
                 if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
                     cost += weights[i];
                 }
-                else {
-                    if (tgt1p2[i] && tgt1p2[i]) {
-                        if (tgt1a[i] && tgt2a[i]) {
-                            regions -= weights[i];
-                        }
-                        
-                        if (!(src[i] & (tgt1p2[i] | tgt1p2[i]))) {
-                            cost += weights[i];
-                        }
+                else if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
+                    if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
+                        cost += weights[i];
                     }
-                    else if ((tgt1p[i] | tgt2p[i]) & MORPHY_INAPPLICABLE_BITPOS) {
-                        if (!((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE)) {
-                            if (tgt1a[i] || tgt2a[i]) {
-//                                regions += weights[i];
-                            }
-                        }
-                        else if (!((tgt1p[i] | tgt2p[i]) & src[i])) {
-                            cost += weights[i];
-                        }
-                    }
-                    
-                }
-            }
-            else {
-                if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                    regions += weights[i];
-                }
-                else if (src[i] & (tgt1p[i] & tgt2p[i])) {
-                    if (tgt1p[i] == tgt2p[i]) {
-                        regions += weights[i];
+                    else if (tgt1a[i] || tgt2a[i]) {
+                        regions -= weights[i];
                     }
                 }
             }
