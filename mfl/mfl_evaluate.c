@@ -110,6 +110,42 @@ int mfl_test_fitch_local(const mfl_nodedata_t* src_nd,
     return cost;
 }
 
+//static inline int mfl_srcna_fitch_local(mfl_charstate src,
+//                                        mfl_charstate tgt1f,
+//                                        mfl_charstate tgt2f,
+//                                        mfl_charstate tgt1p,
+//                                        mfl_charstate tgt2p,
+//                                        mfl_charstate tgt1p2,
+//                                        mfl_charstate tgt2p2,
+//                                        mfl_charstate tgt1a,
+//                                        mfl_charstate tgt2a)
+//{
+//    int cost = 0;
+//    int regions = 0;
+//    
+//    return cost;
+//}
+//
+//static inline int mfl_srcapp_fitch_local(mfl_charstate src,
+//                                         mfl_charstate tgt1f,
+//                                         mfl_charstate tgt2f,
+//                                         mfl_charstate tgt1p,
+//                                         mfl_charstate tgt2p,
+//                                         mfl_charstate tgt1p2,
+//                                         mfl_charstate tgt2p2,
+//                                         mfl_charstate tgt1a,
+//                                         mfl_charstate tgt2a)
+//{
+//    int cost = 0;
+//    int regions = 0;
+//    
+//    if (tgt1f & tgt2f) {
+//        <#statements#>
+//    }
+//    
+//    return cost;
+//}
+
 int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                             const mfl_nodedata_t* tgt1_nd,
                             const mfl_nodedata_t* tgt2_nd,
@@ -118,6 +154,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
 {
     int i = 0;
     int cost = 0;
+    int regions = 0;
     int *weights = dataprt->part_int_weights;
     int num_chars = dataprt->part_n_chars_included;
     mfl_charstate* src = src_nd->nd_prelim_set;
@@ -129,61 +166,53 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* tgt2p2 = tgt2_nd->nd_prelim2_set;
     mfl_charstate* tgt1a = tgt1_nd->nd_subtree_activestates;
     mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
+    mfl_charstate temp = 0;
+    
     // TODO: Optimise: increment pointers in loop head
     for (i = 0; i < num_chars; ++i) {
 
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
-            if (src[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                if (src[i] & tgt1p[i] & tgt2p[i]) {
-                    if ((tgt1p[i] & tgt2p[i]) & MORPHY_IS_APPLICABLE) {
-                        cost += weights[i];
-                    }
-                }
-                else if (tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                    cost += weights[i];
-                }
-            }
-            else {
+            if (src[i] & MORPHY_IS_APPLICABLE) {
                 if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
                     cost += weights[i];
                 }
                 else {
-                    if (tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS && tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                        if (tgt1a[i] || tgt2a[i]) {
-                            if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
-                                cost += weights[i];
-                            }
-                            else if (tgt1p[i] == tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                                cost += weights[i];
-                            }
+                    if (tgt1p2[i] && tgt1p2[i]) {
+                        if (tgt1a[i] && tgt2a[i]) {
+                            regions -= weights[i];
+                        }
+                        
+                        if (!(src[i] & (tgt1p2[i] | tgt1p2[i]))) {
+                            cost += weights[i];
                         }
                     }
-                    else
-                        if (tgt1p[i] != MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] != MORPHY_INAPPLICABLE_BITPOS) {
-                        if (src[i] & (tgt1p2[i] | tgt2p2[i])) {
-                            if (tgt1p2[i] == tgt2p2[i]) {
-                                cost -= weights[i];
+                    else if ((tgt1p[i] | tgt2p[i]) & MORPHY_INAPPLICABLE_BITPOS) {
+                        if (!((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE)) {
+                            if (tgt1a[i] || tgt2a[i]) {
+//                                regions += weights[i];
                             }
                         }
-                        else  if (tgt1a[i] || tgt2a[i]) {
-                            if (!(tgt1p2[i] && tgt2p2[i])) {
-                                cost += weights[i];
-                            }
+                        else if (!((tgt1p[i] | tgt2p[i]) & src[i])) {
+                            cost += weights[i];
                         }
                     }
-                    else if (tgt1a[i] || tgt2a[i]) {
-                        if (!(tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS)) {
-                            if (!(tgt1p2[i] && tgt2p2[i])) {
-                                 cost += weights[i];
-                            }
-                        }
+                    
+                }
+            }
+            else {
+                if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    regions += weights[i];
+                }
+                else if (src[i] & (tgt1p[i] & tgt2p[i])) {
+                    if (tgt1p[i] == tgt2p[i]) {
+                        regions += weights[i];
                     }
                 }
             }
         }
     }
     
-    return cost;
+    return cost + regions;
 }
 
 
@@ -492,7 +521,6 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                     }
                 }
             }
-            
         }
         
 
@@ -513,21 +541,14 @@ void mfl_set_subtree_actives(mfl_nodedata_t*       n_nd,
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
     mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
-    mfl_charstate* lft_char = left_nd->nd_prelim_set;
-    mfl_charstate* rt_char = right_nd->nd_prelim_set;
+//    mfl_charstate* lft_char = left_nd->nd_prelim_set;
+//    mfl_charstate* rt_char = right_nd->nd_prelim_set;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
-    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
+//    mfl_charstate* n_prelim = n_nd->nd_prelim_set;
+//    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     
     for (int i = 0; i < num_chars; ++i) {
         subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
-        
-//        if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
-//            prelim2[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
-//        }
-//        else {
-//            prelim2[i] = 0;
-//        }
     }
 }
 
@@ -546,7 +567,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_final = n_nd->nd_final_set;
     mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
-    mfl_charstate* actives = datapart->part_activestates;
+//    mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
 //    mfl_charstate* regionactive = n_nd->nd_region_activestates;
     mfl_charstate temp = 0;
@@ -565,7 +586,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 n_final[i] = n_prelim[i];
             }
             
-//            prelim2[i] = n_final[i];
+            prelim2[i] = n_final[i];
             subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
             assert(n_final[i]);
         }
