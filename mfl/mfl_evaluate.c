@@ -183,6 +183,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                                 if (!(src[i] & (tgt1n | tgt2n))) {
                                     cost += weights[i];
                                 }
+                                
                     //          2. All one region: intersections
                     //              1. Total intersection
                     //              2. Partial intersection
@@ -793,7 +794,7 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
     
-//    if (!n->nodet_downpass_visited) {
+    if (!n->nodet_downpass_visited) {
     
         int i = 0;
         int num_dataparts;
@@ -831,7 +832,7 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
 
         n->nodet_downpass_visited = true;
 
-//    }
+    }
 
     return;
 }
@@ -1028,9 +1029,6 @@ bool mfl_simple_reroot(mfl_tree_t* t, mfl_cliprec_t* clip)
 
 bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
 {
-    int i = 0;
-    int j = 0;
-    int k = 0;
     int num_taxa = t->treet_num_taxa;
     mfl_cliprec_t orig_root;
     mfl_node_t *entry = NULL;
@@ -1061,13 +1059,13 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
         mfl_simple_reroot(t, &orig_root);
 
 #ifdef MFY_DEBUG
-        tui_check_broken_tree(t, false);
+//        tui_check_broken_tree(t, false);
 #endif
         return true;
     }
     
 #ifdef MFY_DEBUG
-    tui_check_broken_tree(t, false);
+//    tui_check_broken_tree(t, false);
 #endif
     
     return false;
