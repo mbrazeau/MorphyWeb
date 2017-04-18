@@ -129,6 +129,8 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* tgt2p = tgt2_nd->nd_prelim_set;
     mfl_charstate* tgt1p2 = tgt1_nd->nd_prelim2_set;
     mfl_charstate* tgt2p2 = tgt2_nd->nd_prelim2_set;
+    mfl_charstate* tgt1p3 = tgt1_nd->nd_prelim3_set;
+    mfl_charstate* tgt2p3 = tgt2_nd->nd_prelim3_set;
     mfl_charstate* tgt1a = tgt1_nd->nd_subtree_activestates;
     mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
     mfl_charstate nodeset = 0;
@@ -173,6 +175,10 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                                 if (tgt1n == tgt2n) {
                                     regions -= weights[i];
                                 }
+                                else if ((tgt1p3[i] && tgt1p[i] & MORPHY_IS_APPLICABLE) || (tgt2p3[i] && tgt2p[i] & MORPHY_IS_APPLICABLE) ) {
+                                    regions -= weights[i];
+                                }
+
                     //          1. All one region: no intersections?
                                 if (!(src[i] & (tgt1n | tgt2n))) {
                                     cost += weights[i];
@@ -320,6 +326,9 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
+    mfl_charstate* lprelim3 = left_nd->nd_prelim3_set;
+    mfl_charstate* rprelim3 = right_nd->nd_prelim3_set;
+    mfl_charstate* prelim3 = n_nd->nd_prelim3_set;
     //mfl_charstate* st_prelim = n_nd->nd_subtree_prelim_set;
     mfl_charstate* left = left_nd->nd_prelim_set;
     mfl_charstate* right = right_nd->nd_prelim_set;
@@ -332,6 +341,8 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
 
         temp = 0;
 
+        prelim3[i] = 0;
+        
         if ((temp = (left[i] & right[i])) ) {
             n_prelim[i] = temp;
             
@@ -339,7 +350,12 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                 if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
                     n_prelim[i] = left[i] | right[i];
                 }
+                else {
+                    prelim2[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+                    
+                }
             }
+            
         }
         else {
             n_prelim[i] = left[i] | right[i];
@@ -347,12 +363,28 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
                 n_prelim[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
             }
+            
         }
         
+        /*** Saving nearby states ***/
+        /****************************/
         if (n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
             
-            prelim2[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+            if (n_prelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                if ((left[i] | right[i]) & MORPHY_IS_APPLICABLE) {
+                    prelim3[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
+                }
+            }
+            else if (left[i] & rprelim3[i] || right[i] & lprelim3[i]) {
+                prelim3[i] = ((left[i] & rprelim3[i]) | (right[i] & lprelim3[i]));
+            }
+            else {
+                prelim3[i] = 0;
+            }
         }
+        
+        /********************************/
+        /*** End saving nearby states ***/
         
         subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
@@ -405,7 +437,7 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
 
             assert(n_final[i]);
             
-            prelim2[i] = n_prelim[i];
+            prelim2[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
         }
         
         
@@ -447,7 +479,7 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             n_final[i] = n_prelim[i];
         }
         
-        nd_active[i] |= ractive[i];
+//        nd_active[i] |= ractive[i];
         assert(n_final[i]);
     }
     
@@ -487,7 +519,7 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
         
         temp = 0;
         
-        nreg_active[i] = (lreg_active[i] | rreg_active[i]);
+//        nreg_active[i] = (lreg_active[i] | rreg_active[i]);
         
         if (n_final[i] & MORPHY_IS_APPLICABLE) {
             
@@ -577,7 +609,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 n_final[i] = n_prelim[i];
             }
             
-            prelim2[i] = n_final[i];
+            prelim2[i] = n_final[i] & MORPHY_IS_APPLICABLE;
             subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
             assert(n_final[i]);
         }
@@ -761,8 +793,8 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
     
-    if (!n->nodet_downpass_visited) {
-        
+//    if (!n->nodet_downpass_visited) {
+    
         int i = 0;
         int num_dataparts;
         mfl_node_t *p = NULL;
@@ -799,7 +831,7 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
 
         n->nodet_downpass_visited = true;
 
-    }
+//    }
 
     return;
 }
