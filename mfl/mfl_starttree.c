@@ -510,6 +510,7 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         
         node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_prelim2_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        node->nodet_charstates[i]->nd_prelim3_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_region_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
@@ -795,7 +796,7 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     mfl_tree_t* t = mfl_generate_new_starting_tree(dataparts, handle, searchrec);
     mfl_update_stored_topology(t, t);
     
-    mfl_nodearray_t current = t->treet_treenodes;
+//    mfl_nodearray_t current = t->treet_treenodes;
     mfl_stepwise_addition_t * sarec = mfl_generate_stepwise_addition(t, handle, searchrec);
     
     sarec->stpadd_oldtries = tbf1;
@@ -813,13 +814,13 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
   
     testparts = dataparts;
     
-    /* debugging code */
+#ifdef MFY_DEBUG
     char *showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
     dbg_printf("the starting trichotomy: %s\n", showtree);
     free(showtree);
     int fail = 0;
-    /* debugging code */
-    
+    int oldlen;
+#endif
     searchrec->sr_swaping_on = t;
     
     // While(new branches to add)
@@ -837,9 +838,13 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
             // Optimise the tree
             t->treet_parsimonylength = 0;
             mfl_fullpass_tree_optimisation(t, dataparts);
-            
+            oldlen = t->treet_parsimonylength;
+            if (oldlen != sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength) {
+                dbg_printf("DOH!\n");
+                dbg_printf("Estimated: %i; direct: %i\n", sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength, oldlen);
+            }
             // Try all insertions for new branch
-            mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_next->nodet_edge, newbranch, sarec, searchrec);
+            // TODO: This should be performed on an unrooted tree
             mfl_tryall_traversal(t->treet_root->nodet_next->nodet_next->nodet_edge->nodet_next->nodet_next->nodet_edge, newbranch, sarec, searchrec);
 
         }
