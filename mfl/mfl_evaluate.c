@@ -202,7 +202,11 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                     }
                 }
                 else if (tgt1p[i] == MORPHY_INAPPLICABLE_BITPOS || tgt2p[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                    regions += weights[i];
+                    if (tgt1a[i] && tgt2a[i]) {
+                        if (tgt1f[i] == tgt2f[i]) {
+                            regions += weights[i];
+                        }
+                    }
                 }
             }
             
@@ -378,6 +382,9 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             }
             else if (left[i] & rprelim3[i] || right[i] & lprelim3[i]) {
                 prelim3[i] = ((left[i] & rprelim3[i]) | (right[i] & lprelim3[i]));
+            }
+            else if (((left[i] & MORPHY_IS_APPLICABLE) && rprelim3[i]) || ((right[i] & MORPHY_IS_APPLICABLE) && lprelim3[i])) {
+                prelim3[i] = (left[i] | rprelim3[i] | right[i] | lprelim3[i]) & MORPHY_IS_APPLICABLE;
             }
             else {
                 prelim3[i] = 0;
@@ -639,7 +646,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 else {
                     if (lft_char[i] & rt_char[i]) {
                         
-                        n_final[i] |= ( anc_char[i] & (lft_char[i] | rt_char[i]));
+                        n_final[i] |= ( anc_char[i] & (lft_char[i] & rt_char[i]));
     
                     }
                     else {
@@ -794,7 +801,7 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
     
-    if (!n->nodet_downpass_visited) {
+//    if (!n->nodet_downpass_visited) {
     
         int i = 0;
         int num_dataparts;
@@ -832,7 +839,7 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
 
         n->nodet_downpass_visited = true;
 
-    }
+//    }
 
     return;
 }
@@ -1072,6 +1079,99 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
 }
 
 
+void mfl_second_postorder(mfl_node_t *n, int* length)
+{
+    int i = 0;
+    int num_dataparts;
+    mfl_node_t *p = NULL;
+    mfl_parsim_fn evaluator;
+    mfl_node_t* left = NULL;
+    mfl_node_t* right = NULL;
+    mfl_nodedata_t* leftchars;
+    mfl_nodedata_t* rightchars;
+    
+    num_dataparts = n->nodet_num_dat_partitions;
+    
+    if (n->nodet_tip) {
+        return;
+    }
+    
+    p = n->nodet_next;
+    
+    do {
+        mfl_second_preorder_traversal(p->nodet_edge, length);
+        for (i = 0; i < num_dataparts; ++i) {
+            if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+                mfl_set_subtree_actives(p->nodet_charstates[i],
+                                        p->nodet_next->nodet_edge->nodet_charstates[i],
+                                        p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
+                                        p->nodet_edge->nodet_charstates[i],
+                                        n->nodet_charstates[i]->nd_parent_partition);
+            }
+        }
+        p->nodet_uppass_visited = false;
+        p = p->nodet_next;
+    } while (p != n);
+    
+//    n->nodet_downpass_visited = false;
+    
+    return;
+}
+
+
+void mfl_allviews_traversal2(mfl_node_t* n)
+{
+    mfl_node_t *p = NULL;
+    
+    if (n->nodet_tip) {
+        //        dbg_printf("Tip visited: %i\n", n->nodet_tip);
+        mfl_second_postorder(n->nodet_edge, NULL);
+        return;
+    }
+    
+    p = n->nodet_next;
+    do {
+        mfl_allviews_traversal2(p->nodet_edge);
+        p = p->nodet_next;
+    } while (p != n);
+    
+}
+
+bool mfl_calculate_all_views2(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
+{
+    int num_taxa = t->treet_num_taxa;
+    mfl_cliprec_t orig_root;
+    mfl_node_t *entry = NULL;
+    
+    if (t->treet_root) {
+        entry = t->treet_root;
+    }
+    else {
+        entry = t->treet_start;
+    }
+    
+    // Unroot the tree
+    if (t->treet_root) {
+        if (!t->treet_root->nodet_weight) {
+            t->treet_root->nodet_weight = num_taxa;
+        }
+        
+    }
+    // TODO: This really needs to be generalised.
+    // Perform a simple unrooting by
+    if (mfl_simple_unroot(t, &orig_root)) {
+        
+        mfl_allviews_traversal2(t->treet_start);
+        
+        mfl_simple_reroot(t, &orig_root);
+
+        return true;
+    }
+
+    
+    return false;
+}
+
 void mfl_clear_active_states(mfl_partition_set_t* dataparts)
 {
     int i = 0;
@@ -1099,6 +1199,7 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     mfl_clear_active_states(dataparts);
     mfl_first_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
 
+//    mfl_calculate_all_views2(t, dataparts, NULL);
     // Perform the final uppass
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
     mfl_clear_active_states(dataparts);
