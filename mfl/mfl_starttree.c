@@ -842,6 +842,7 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
             if (oldlen != sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength) {
                 dbg_printf("DOH!\n");
                 dbg_printf("Estimated: %i; direct: %i\n", sarec->stpadd_oldtries->tb_savedtrees[i]->treet_parsimonylength, oldlen);
+                ++fail;
             }
             // Try all insertions for new branch
             // TODO: This should be performed on an unrooted tree
@@ -851,6 +852,11 @@ mfl_treebuffer_t* mfl_get_start_trees(mfl_partition_set_t* dataparts, mfl_handle
     }
     
 #ifdef MFY_DEBUG
+    if (fail) {
+        dbg_pfail("lenth mismatches occurred.");
+        dbg_printf("Function failed %i times\n", fail);
+    }
+    
     for (i = 0; i < sarec->stpadd_newtries->tb_num_trees; ++i) {
         mfl_convert_from_stored_topol(sarec->stpadd_newtries->tb_savedtrees[i], t);
         showtree = mfl_convert_mfl_tree_t_to_newick(t, false);
