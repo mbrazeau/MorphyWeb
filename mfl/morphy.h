@@ -284,10 +284,13 @@ typedef struct mfl_nodedata_t {
     mfl_parsim_fn nd_NAdownpass_full;
     mfl_parsim_fn nd_NAuppass_full;
     mfl_lparsim_fn nd_local;
+    mfl_charstate *nd_initprelim;
+    mfl_charstate *nd_initfinal;
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
     mfl_charstate *nd_prelim2_set;
     mfl_charstate *nd_prelim3_set;
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
+    mfl_charstate *nd_final2_set;
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
     mfl_charstate *nd_subtree_final_set;        // The final uppass set of the subtree when the tree is broken.
     mfl_charstate *nd_subtree_activestates;

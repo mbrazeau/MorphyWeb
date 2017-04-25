@@ -390,7 +390,7 @@ void mfl_destroy_nodal_data(mfl_node_t* n)
         
         ndata = n->nodet_charstates[i];
         
-        
+        // TODO: Check some of this is done elsewhere already
         if (ndata->nd_prelim_set) {
             free(ndata->nd_prelim_set);
             ndata->nd_prelim_set = NULL;

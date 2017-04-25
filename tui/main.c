@@ -489,20 +489,14 @@ int tui_test_treelength_calculation(mfl_handle_s* handle, int* expectedlengths)
 
 void tui_test_basic_character_optimisation(void)
 {
-    int num_taxa = 7; //12;//78;
-    int num_chars = 2;//236;
+    int num_taxa = 12; //12;//78;
+    int num_chars = 1;//236;
     int num_og_tax = 0;
                    //.........111
                    //123456789012
 
     char matrix[] =
-    "--"
-    "--"
-    "--"
-    "--"
-    "-1"
-    "11"
-    "11;";
+    "023-???1--32;";
 
 //    "10300000000000000000"
 //    "33-00000000000000000"
@@ -511,7 +505,7 @@ void tui_test_basic_character_optimisation(void)
 //    "0-300011111111111000;";
     //"5315-35135-151--;";//"43132525--4--4--;";//"03422--50555----;";//"0402153-1-50-40-";//////"0100?011-1?0-???10110-???1?111-000;";//"-330355233-131-5";//"4-24-330-11305-2;";////"05--344-1000205-;";//
      char* testnewick;
-    testnewick = (char*)"[&R] (1,(2,((6,(7,4)),(5,3))));";
+    testnewick = (char*)"[&R] (1,(2,(3,(4,(5,(6,(7,(8,(9,(10,(11,12)))))))))));";
     
     //dbg_printf("Here is the data matrix:\n%s\n", matrix);
     //dbg_printf("And here is the tree:\n%s\n", testnewick);
@@ -643,7 +637,7 @@ void tui_basic_test_local_reopt(void)
         
         mfl_fullpass_tree_optimisation(testtree, dataparts);
         int oldlen = testtree->treet_parsimonylength;
-        assert(oldlen == expectedlens[i]);
+//        assert(oldlen == expectedlens[i]);
         
         int diff = 0;
         mfl_cliprec_t clip;
@@ -699,26 +693,30 @@ void tui_basic_any_local_reopt(void)
     int num_chars = 1;
     int num_og_tax = 0;
     int num_trees = 1;
-    int num_matrices = 11;
-    int ptip = 5;
+    int num_matrices = 15;
+    int ptip = 3;
     int pass = 0;
     int fail = 0;
     int i = 0;
     
-    const char *testnwk = "[&R] (1,(2,((6,(7,4)),(5,3))));";
+    const char *testnwk = "[&R] (1,(2,(7,((6,5),(4,3)))));";
     
     const char *matrix[] ={
-        "13---31;",
-        "03---21;",
-        "3---331;",
-        "0----00;",
-        "00-0--0;",
-        "00-5--0;",
-        "00-1--1;",
-        "0---11-;",
-        "00-11--;",
-        "00--1-1;",
-        "00--111;",
+        "13---31;", // 0
+        "03---21;", // 1
+        "3---331;", // 2
+        "0----00;", // 3
+        "00-0--0;", // 4
+        "00-5--0;", // 5
+        "00-1--1;", // 6
+        "0---11-;", // 7
+        "00-11--;", // 8
+        "00--1-1;", // 9
+        "00--111;", // 10
+        "----111;", // 11
+        "-----11;", // 12
+        "---0-11;", // 13
+        "00--11-;", // 14
         
 //        "1030000000000000000---111111111111111110"
 //        "33--0000-0-0000-------111111111111111110"
@@ -748,7 +746,7 @@ void tui_basic_any_local_reopt(void)
         mfl_tree_t* testtree = mfl_convert_newick_to_mfl_tree_t((char*)testnwk, num_taxa);
         dbg_printf("Testing matrix %i ... \n", i);
         
-        if (i == 0) {
+        if (i == 13) {
             dbg_printf("hold here\n");
         }
         handle->input_data = (char*)matrix[i];
@@ -898,7 +896,7 @@ void tui_test_local_reoptimisation(void)
         
         // Prune tip 3;
         for (int j = 2; j < testtree->treet_num_taxa; ++j) {
-            dbg_printf("Removing branch %i in tree %i:\n", j + 1, i);
+            dbg_printf("Removing branch %i in tree %i:\n", j, i);
             dbg_printf("==============================\n");
             dbg_printf("==============================\n");
             dbg_printf("%s\n\n", testnwk[i]);
