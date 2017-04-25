@@ -125,8 +125,8 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
     mfl_charstate* src = src_nd->nd_prelim_set;
     mfl_charstate* tgt1f = tgt1_nd->nd_final_set;
     mfl_charstate* tgt2f = tgt2_nd->nd_final_set;
-    mfl_charstate* tgt1p = tgt1_nd->nd_prelim_set;
-    mfl_charstate* tgt2p = tgt2_nd->nd_prelim_set;
+    mfl_charstate* tgt1p = tgt1_nd->nd_initprelim;
+    mfl_charstate* tgt2p = tgt2_nd->nd_initprelim;
     mfl_charstate* tgt1p2 = tgt1_nd->nd_prelim2_set;
     mfl_charstate* tgt2p2 = tgt2_nd->nd_prelim2_set;
     mfl_charstate* tgt1p3 = tgt1_nd->nd_prelim3_set;
@@ -175,8 +175,12 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                                 if (tgt1n == tgt2n) {
                                     regions -= weights[i];
                                 }
-                                else if ((tgt1p3[i] && tgt1p[i] & MORPHY_IS_APPLICABLE) || (tgt2p3[i] && tgt2p[i] & MORPHY_IS_APPLICABLE) ) {
+                                else if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE && (tgt1p3[i] || tgt2p3[i])/*(tgt1p3[i] && tgt1p[i] & MORPHY_IS_APPLICABLE) || (tgt2p3[i] && tgt2p[i] & MORPHY_IS_APPLICABLE) */) {
                                     regions -= weights[i];
+                                    
+                                    if (!((tgt1p[i] | tgt2p[i]) & (tgt1p3[i] | tgt2p3[i]))) {
+                                        cost += weights[i];
+                                    }
                                 }
 
                     //          1. All one region: no intersections?
@@ -339,9 +343,9 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
     mfl_charstate* prelim3 = n_nd->nd_prelim3_set;
     //mfl_charstate* st_prelim = n_nd->nd_subtree_prelim_set;
     
-//    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
-//    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
-//    mfl_charstate* subtreeactives = n_nd->nd_subtree_activestates;
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
     mfl_charstate temp = 0;
     
     for (i = 0; i < num_chars; ++i) {
@@ -399,7 +403,7 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
         /********************************/
         /*** End saving nearby states ***/
         
-//        subtreeactives[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
+        subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
         assert(n_initprelim[i]);
     }
@@ -848,7 +852,7 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
     
-    if (!n->nodet_downpass_visited) {
+//    if (!n->nodet_downpass_visited) {
     
         int i = 0;
         int num_dataparts;
@@ -886,7 +890,7 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
 
         n->nodet_downpass_visited = true;
 
-    }
+//    }
 
     return;
 }
@@ -1012,18 +1016,19 @@ void mfl_second_preorder_traversal(mfl_node_t *n, int* length)
     
     do {
         mfl_second_preorder_traversal(p->nodet_edge, length);
-        for (i = 0; i < num_dataparts; ++i) {
-            if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
-                mfl_set_subtree_actives(p->nodet_charstates[i],
-                                        p->nodet_next->nodet_edge->nodet_charstates[i],
-                                        p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
-                                        p->nodet_edge->nodet_charstates[i],
-                                        n->nodet_charstates[i]->nd_parent_partition);
-            }
-        }
         p->nodet_uppass_visited = false;
         p = p->nodet_next;
     } while (p != n);
+    
+    for (i = 0; i < num_dataparts; ++i) {
+        if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+            mfl_set_subtree_actives(p->nodet_charstates[i],
+                                    p->nodet_next->nodet_edge->nodet_charstates[i],
+                                    p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
+                                    p->nodet_edge->nodet_charstates[i],
+                                    n->nodet_charstates[i]->nd_parent_partition);
+        }
+    }
     
     n->nodet_downpass_visited = false;
     
@@ -1146,20 +1151,21 @@ void mfl_second_postorder(mfl_node_t *n, int* length)
     p = n->nodet_next;
     
     do {
-        mfl_second_preorder_traversal(p->nodet_edge, length);
-        for (i = 0; i < num_dataparts; ++i) {
-            if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
-                mfl_set_subtree_actives(p->nodet_charstates[i],
-                                        p->nodet_next->nodet_edge->nodet_charstates[i],
-                                        p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
-                                        p->nodet_edge->nodet_charstates[i],
-                                        n->nodet_charstates[i]->nd_parent_partition);
-            }
-        }
+        mfl_second_postorder(p->nodet_edge, length);
+        
         p->nodet_uppass_visited = false;
         p = p->nodet_next;
     } while (p != n);
     
+    for (i = 0; i < num_dataparts; ++i) {
+        if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+            mfl_set_subtree_actives(p->nodet_charstates[i],
+                                    p->nodet_next->nodet_edge->nodet_charstates[i],
+                                    p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
+                                    p->nodet_edge->nodet_charstates[i],
+                                    n->nodet_charstates[i]->nd_parent_partition);
+        }
+    }
 //    n->nodet_downpass_visited = false;
     
     return;
@@ -1246,7 +1252,7 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
 //    mfl_clear_active_states(dataparts);
     mfl_first_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
 
-//    mfl_calculate_all_views2(t, dataparts, NULL);
+    mfl_calculate_all_views2(t, dataparts, NULL);
     // Perform the final uppass
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
 //    mfl_clear_active_states(dataparts);
