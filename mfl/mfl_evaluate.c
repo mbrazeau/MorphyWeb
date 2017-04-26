@@ -151,51 +151,29 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                     cost += weights[i];
                 }
                 else {
-                    // Three possibilities:
-                    // Lone NA region
-                    //      No steps
+                    
                     if (tgt1a[i] || tgt2a[i]) { // If the new branch is not a lone region
-                    // Connects with nearby NA region?
-                        if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
-                    //      Two possibilites:
-                    //      1. connects with one other region
-                            if (!((tgt1p[i] & tgt2p[i]) & MORPHY_INAPPLICABLE_BITPOS)) {
-                    //          Two further possibilities:
-                    //          1. Intersection?
-                    //          2. No intersection?
-                                if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
-                                    cost += weights[i];
-                                }
+                        
+                        // Connects with nearby NA region?
+                        tgt1n = (tgt1p[i] | tgt1p2[i] | tgt1p3[i]) & MORPHY_IS_APPLICABLE;
+                        tgt2n = (tgt2p[i] | tgt2p2[i] | tgt2p3[i]) & MORPHY_IS_APPLICABLE;
+                       
+                        if (tgt1n || tgt2n) {
+                            if (tgt1n && tgt2n) {
+                                regions -= weights[i];
+                                // Then sort out any added steps;
                             }
-                            else {
-                                // Store the nearest states
-                                tgt1n = tgt1p[i] | tgt1p2[i];
-                                tgt2n = tgt2p[i] | tgt2p2[i];
-                    //      2. Connects two neighbouring regions
-                                if (tgt1n == tgt2n) {
-                                    regions -= weights[i];
-                                }
-                                else if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE && (tgt1p3[i] || tgt2p3[i])/*(tgt1p3[i] && tgt1p[i] & MORPHY_IS_APPLICABLE) || (tgt2p3[i] && tgt2p[i] & MORPHY_IS_APPLICABLE) */) {
-                                    regions -= weights[i];
-                                    
-                                    if (!((tgt1p[i] | tgt2p[i]) & (tgt1p3[i] | tgt2p3[i]))) {
-                                        cost += weights[i];
-                                    }
-                                }
-
-                    //          1. All one region: no intersections?
-                                if (!(src[i] & (tgt1n | tgt2n))) {
-                                    cost += weights[i];
-                                }
-                                
-                    //          2. All one region: intersections
-                    //              1. Total intersection
-                    //              2. Partial intersection
+                            else if (tgt1p[i] && tgt1p3[i]) {
+                                regions -= weights[i];
+                            }
+                            else if (tgt2p[i] && tgt2p3[i]) {
+                                regions -= weights[i];
                             }
                         }
                         else {
                             regions += weights[i];
                         }
+                        
                     }
                 }
             }
@@ -852,7 +830,7 @@ inline int mfl_wagner_stepcount(mfl_charstate leftchar,
 void mfl_postorder_traversal(mfl_node_t *n, int* length)
 {
     
-//    if (!n->nodet_downpass_visited) {
+    if (!n->nodet_downpass_visited) {
     
         int i = 0;
         int num_dataparts;
@@ -890,7 +868,7 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
 
         n->nodet_downpass_visited = true;
 
-//    }
+    }
 
     return;
 }
