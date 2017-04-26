@@ -147,34 +147,41 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
             
             if (src[i] & MORPHY_IS_APPLICABLE) {
-                if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
-                    cost += weights[i];
-                }
-                else {
-                    
-                    if (tgt1a[i] || tgt2a[i]) { // If the new branch is not a lone region
-                        
-                        // Connects with nearby NA region?
-                        tgt1n = (tgt1p[i] | tgt1p2[i] | tgt1p3[i]) & MORPHY_IS_APPLICABLE;
-                        tgt2n = (tgt2p[i] | tgt2p2[i] | tgt2p3[i]) & MORPHY_IS_APPLICABLE;
-                       
-                        if (tgt1n || tgt2n) {
-                            if (tgt1n && tgt2n) {
+                if (tgt1f[i] == tgt2f[i]) {
+                    if (tgt1f[i] & MORPHY_INAPPLICABLE_BITPOS) { // (Implying that both are, really)
+                        if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
+                            if (tgt1p2[i] || tgt2p2[i]) {
                                 regions -= weights[i];
-                                // Then sort out any added steps;
+                                
+                                if (!((tgt1p2[i] | tgt2p2[i]) & src[i])) {
+                                    cost += weights[i];
+                                } else {
+                                    //
+                                }
                             }
-                            else if (tgt1p[i] && tgt1p3[i]) {
+                            else if (tgt1p3[i] || tgt2p3[i]) {
                                 regions -= weights[i];
+                                
+                                if (!((tgt1p3[i] | tgt2p3[i]) & src[i])) {
+                                    cost += weights[i];
+                                } else {
+                                    //
+                                }
                             }
-                            else if (tgt2p[i] && tgt2p3[i]) {
-                                regions -= weights[i];
+                            else if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
+                                cost += weights[i];
                             }
                         }
-                        else {
+                        else if (tgt1a[i] || tgt2a[i]) {
                             regions += weights[i];
                         }
-                        
                     }
+                    else {
+                        cost += weights[i];
+                    }
+                }
+                else {
+                    cost += weights[i];
                 }
             }
             else {
