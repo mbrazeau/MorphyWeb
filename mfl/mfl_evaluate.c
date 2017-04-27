@@ -81,7 +81,7 @@
 int mfl_test_fitch_local(const mfl_nodedata_t* src_nd,
                          const mfl_nodedata_t* tgt1_nd,
                          const mfl_nodedata_t* tgt2_nd,
-                         const mfl_datapartition_t* dataprt,
+                         mfl_datapartition_t* dataprt,
                          const int diff)
 {
     int i = 0;
@@ -111,81 +111,67 @@ int mfl_test_fitch_local(const mfl_nodedata_t* src_nd,
 }
 
 
+void mfl_add_to_change_list(int index, mfl_datapartition_t *dataprt)
+{
+    dataprt->part_char_changing[dataprt->nchanges] = index;
+    ++dataprt->nchanges;
+    assert(dataprt->nchanges <= dataprt->part_n_chars_included);
+}
+
+
+void mfl_reset_change_list(mfl_datapartition_t *dataprt)
+{
+    dataprt->nchanges = 0;
+    memset(dataprt->part_char_changing, 0, dataprt->part_n_chars_included * sizeof(int));
+}
+
+
 int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                             const mfl_nodedata_t* tgt1_nd,
                             const mfl_nodedata_t* tgt2_nd,
-                            const mfl_datapartition_t* dataprt,
+                            mfl_datapartition_t* dataprt,
                             const int diff)
 {
-    int i = 0;
-    int cost = 0;
+    int i       = 0;
+    int cost    = 0;
     int regions = 0;
-    int *weights = dataprt->part_int_weights;
+    int *weights  = dataprt->part_int_weights;
     int num_chars = dataprt->part_n_chars_included;
-    mfl_charstate* src = src_nd->nd_prelim_set;
+    mfl_charstate* src   = src_nd->nd_prelim_set;
     mfl_charstate* tgt1f = tgt1_nd->nd_final_set;
     mfl_charstate* tgt2f = tgt2_nd->nd_final_set;
     mfl_charstate* tgt1p = tgt1_nd->nd_initprelim;
     mfl_charstate* tgt2p = tgt2_nd->nd_initprelim;
-    mfl_charstate* tgt1p2 = tgt1_nd->nd_prelim2_set;
-    mfl_charstate* tgt2p2 = tgt2_nd->nd_prelim2_set;
-    mfl_charstate* tgt1p3 = tgt1_nd->nd_prelim3_set;
-    mfl_charstate* tgt2p3 = tgt2_nd->nd_prelim3_set;
     mfl_charstate* tgt1a = tgt1_nd->nd_subtree_activestates;
     mfl_charstate* tgt2a = tgt2_nd->nd_subtree_activestates;
-    mfl_charstate nodeset = 0;
-    mfl_charstate tgt1n = 0;
-    mfl_charstate tgt2n = 0;
+    
+    
+    mfl_reset_change_list(dataprt);
     
     // TODO: Optimise: increment pointers in loop head
     for (i = 0; i < num_chars; ++i) {
-
-        nodeset = 0;
-        tgt1n = 0;
-        tgt2n = 0;
         
         if (!(src[i] & (tgt1f[i] | tgt2f[i]))) {
-            
             if (src[i] & MORPHY_IS_APPLICABLE) {
-                if (tgt1f[i] == tgt2f[i]) {
-                    if (tgt1f[i] & MORPHY_INAPPLICABLE_BITPOS) { // (Implying that both are, really)
-                        if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
-                            if (tgt1p2[i] || tgt2p2[i]) {
-                                regions -= weights[i];
-                                
-                                if (!((tgt1p2[i] | tgt2p2[i]) & src[i])) {
-                                    cost += weights[i];
-                                } else {
-                                    //
-                                }
-                            }
-                            else if (tgt1p3[i] || tgt2p3[i]) {
-                                regions -= weights[i];
-                                
-                                if (!((tgt1p3[i] | tgt2p3[i]) & src[i])) {
-                                    cost += weights[i];
-                                } else {
-                                    //
-                                }
-                            }
-                            else if (!(src[i] & (tgt1p[i] | tgt2p[i]))) {
-                                cost += weights[i];
-                            }
-                        }
-                        else if (tgt1a[i] || tgt2a[i]) {
-                            regions += weights[i];
-                        }
-                    }
-                    else {
-                        cost += weights[i];
-                    }
-                }
-                else {
+                if ((tgt1f[i] | tgt2f[i]) & MORPHY_IS_APPLICABLE) {
                     cost += weights[i];
+                    //  if (!(diff < 0)) {
+                    //      if (cost > diff) {
+                    //          return cost + regions;
+                    //      }
+                    //  }
+                }
+                else if ((tgt1p[i] | tgt2p[i]) & MORPHY_IS_APPLICABLE) {
+                    // That's complicated!
+                    // Push i to list; We'll do that one later!
+                    mfl_add_to_change_list(i, dataprt);
+                }
+                else if (tgt1a[i] || tgt2a[i]) {
+                    regions += weights[i];
                 }
             }
             else {
-                if (tgt1p[i] & tgt2p[i] & src[i]) {
+                if (tgt1p[i] & tgt2p[i] & MORPHY_INAPPLICABLE_BITPOS) {
                     if (tgt1p[i] & tgt2p[i] & MORPHY_IS_APPLICABLE) {
                         regions += weights[i];
                     }
@@ -198,9 +184,7 @@ int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd,
                     }
                 }
             }
-            
         }
-        
     }
     
     return cost + regions;
@@ -222,7 +206,7 @@ void mfl_local_add_cost(mfl_node_t* src, mfl_node_t* tgt, const int diff, int *c
         *cost += evaluator((const mfl_nodedata_t*)src->nodet_charstates[i],
                   (const mfl_nodedata_t*)tgt->nodet_charstates[i],
                   (const mfl_nodedata_t*)tgtopp->nodet_charstates[i],
-                  (const mfl_datapartition_t*)src->nodet_charstates[i]->nd_parent_partition,
+                  src->nodet_charstates[i]->nd_parent_partition,
                    diff);
     }
 }
@@ -316,28 +300,18 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                                  int*                  length)
 {
     int i = 0;
-//    int* weights = datapart->part_int_weights;
     int num_chars = datapart->part_n_chars_included;
     mfl_charstate* left = left_nd->nd_initprelim;
     mfl_charstate* right = right_nd->nd_initprelim;
     mfl_charstate* n_initprelim = n_nd->nd_initprelim;
-    
-    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
-    mfl_charstate* lprelim3 = left_nd->nd_prelim3_set;
-    mfl_charstate* rprelim3 = right_nd->nd_prelim3_set;
-    mfl_charstate* prelim3 = n_nd->nd_prelim3_set;
-    //mfl_charstate* st_prelim = n_nd->nd_subtree_prelim_set;
-    
     mfl_charstate* lft_active = left_nd->nd_subtree_activestates;
     mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-    mfl_charstate temp = 0;
+    mfl_charstate temp;
     
     for (i = 0; i < num_chars; ++i) {
 
         temp = 0;
-
-        prelim3[i] = 0;
         
         if ((temp = (left[i] & right[i])) ) {
             
@@ -348,12 +322,8 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
                 if ((left[i] & MORPHY_IS_APPLICABLE) && (right[i] & MORPHY_IS_APPLICABLE)) {
                     n_initprelim[i] = left[i] | right[i];
                 }
-                else {
-                    prelim2[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
-                    
-                }
             }
-            
+
         }
         else {
             
@@ -364,29 +334,6 @@ void mfl_first_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             }
             
         }
-        
-        /*** Saving nearby states ***/
-        /****************************/
-        if (n_initprelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
-            
-            if (n_initprelim[i] == MORPHY_INAPPLICABLE_BITPOS) {
-                if ((left[i] | right[i]) & MORPHY_IS_APPLICABLE) {
-                    prelim3[i] = (left[i] | right[i]) & MORPHY_IS_APPLICABLE;
-                }
-            }
-            else if (left[i] & rprelim3[i] || right[i] & lprelim3[i]) {
-                prelim3[i] = ((left[i] & rprelim3[i]) | (right[i] & lprelim3[i]));
-            }
-            else if (((left[i] & MORPHY_IS_APPLICABLE) && rprelim3[i]) || ((right[i] & MORPHY_IS_APPLICABLE) && lprelim3[i])) {
-                prelim3[i] = (left[i] | rprelim3[i] | right[i] | lprelim3[i]) & MORPHY_IS_APPLICABLE;
-            }
-            else {
-                prelim3[i] = 0;
-            }
-        }
-        
-        /********************************/
-        /*** End saving nearby states ***/
         
         subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         
@@ -414,26 +361,19 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
     mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* anc_char = anc_nd->nd_initfinal;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
-//    mfl_charstate* nd_active = n_nd->nd_region_activestates;
-//    mfl_charstate* ractive = datapart->part_tempactives;
 
     if (!left_nd) {
         assert(!right_nd);
         for (i = 0; i < num_chars; ++i) {
             
             if (n_initprelim[i] & anc_char[i]) {
-//                n_initfinal[i] = n_initprelim[i] & anc_char[i];
-//                n_prelim[i] = n_initfinal[i];
                 subtreeactive[i] = (n_initprelim[i] & anc_char[i]) & MORPHY_IS_APPLICABLE;
             }
             else {
-//                n_initfinal[i] = n_initprelim[i];
-//                n_prelim[i] = n_initfinal[i];
                 subtreeactive[i] |= n_initprelim[i] & MORPHY_IS_APPLICABLE;
             }
             
             n_initfinal[i] = n_initprelim[i];
-//            n_prelim[i] = n_initfinal[i];
             
             if (n_initfinal[i] & anc_char[i]) {
                 if (anc_char[i] & MORPHY_IS_APPLICABLE) {
@@ -443,15 +383,9 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             
             n_prelim[i] = n_initfinal[i];
 
-//            nd_active[i] = subtreeactive[i];
-//            subtreeactive[i] = (n_initfinal[i] & MORPHY_IS_APPLICABLE);
-
             assert(n_initfinal[i]);
             
-            prelim2[i] = n_initprelim[i] & MORPHY_IS_APPLICABLE;
         }
-        
-        
         return;
     }
     
@@ -470,6 +404,8 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 }
                 else {
                     n_initfinal[i] = n_initprelim[i] & MORPHY_IS_APPLICABLE;
+                    
+                    assert(!(anc_char[i] & MORPHY_INAPPLICABLE_BITPOS));
                 }
             }
             else {
@@ -535,12 +471,13 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             
             if ((temp = (lft_char[i] & rt_char[i]))) {
                 
-                if (temp & MORPHY_IS_APPLICABLE) {
+//                if (temp & MORPHY_IS_APPLICABLE) {
                     n_prelim[i] = temp & MORPHY_IS_APPLICABLE;
-                }
-                else {
-                    n_prelim[i] = n_init[i];
-                }
+//                }
+//                else {
+//                    n_prelim[i] = n_init[i]; // & IS_APPLIC?
+//                    assert(!(n_prelim[i] & MORPHY_INAPPLICABLE_BITPOS));
+//                }
                 
             } else {
                 n_prelim[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
@@ -562,9 +499,6 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
             n_prelim[i] = n_init[i];
         }
         
-
-        prelim2[i] = n_prelim[i] & MORPHY_IS_APPLICABLE;
-//        nreg_active[i] |= lreg_active[i] | rreg_active[i];
         subtreeactive[i] = (lft_active[i] | rt_active[i]) & MORPHY_IS_APPLICABLE;
         assert(n_prelim[i]);
 
@@ -601,7 +535,6 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
     int* weights = datapart->part_int_weights;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
     mfl_charstate* n_final = n_nd->nd_final_set;
-    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* anc_char = anc_nd->nd_final_set;
 //    mfl_charstate* actives = datapart->part_activestates;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
@@ -624,12 +557,8 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
             else {
                 n_final[i] = n_prelim[i];
             }
-            
-            prelim2[i] = n_final[i] & MORPHY_IS_APPLICABLE;
-            
+
             subtreeactive[i] = (n_final[i] & MORPHY_IS_APPLICABLE);
-        
-//            assert(subtreeactive[i] < MORPHY_MISSING_DATA_BITWISE - 1);
             
             assert(n_final[i]);
         }
@@ -654,11 +583,12 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 if ((anc_char[i] & n_prelim[i]) == anc_char[i]) {
                     
                     n_final[i] = anc_char[i] & n_prelim[i];
+                    
                 }
                 else {
-                    if (lft_char[i] & rt_char[i]) {
+                    if (lft_char[i] & rt_char[i]) { // TODO: Use temp for micro-optimisation
                         
-                        n_final[i] = (n_prelim[i] | ( anc_char[i] & (lft_char[i] & rt_char[i])));
+                        n_final[i] = (n_prelim[i] | (anc_char[i] & (lft_char[i] & rt_char[i])));
     
                     }
                     else {
@@ -666,7 +596,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                         if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
                             
                             if ((lft_char[i] | rt_char[i]) & anc_char[i]) {
-                                n_final[i] = ((lft_char[i] | rt_char[i]) & anc_char[i]) | anc_char[i];
+                                n_final[i] = anc_char[i];
                             }
                             else {
                                 n_final[i] = (lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
@@ -682,7 +612,7 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                         }
                     }
                 }
-            }
+             }
              else {
                  n_final[i] = n_prelim[i];
              }
@@ -698,9 +628,8 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                 }
             }
         }
-//        assert(subtreeactive[i] < MORPHY_MISSING_DATA_BITWISE - 1);
-        assert(n_final[i]);
         
+        assert(n_final[i]);
     }
 
 }
@@ -874,9 +803,63 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
         }
 
         n->nodet_downpass_visited = true;
+    }
+
+    return;
+}
+
+
+void mfl_partial_postorder(mfl_node_t *n, int* length)
+{
+    
+    int i = 0;
+    int num_dataparts;
+    mfl_node_t *p = NULL;
+    mfl_parsim_fn evaluator;
+    mfl_node_t* left;
+    mfl_node_t* right;
+    
+    if (n->nodet_tip) {
+        return;
+    }
+    
+    if (!n->nodet_marked) {
+        
+        left = n->nodet_next->nodet_edge;
+        right = n->nodet_next->nodet_next->nodet_edge;
+        
+        p = n->nodet_next;
+        do {
+            mfl_partial_postorder(p->nodet_edge, length);
+            p = p->nodet_next;
+        } while (p != n);
 
     }
 
+    num_dataparts = n->nodet_num_dat_partitions;
+    
+    for (i = 0; i < num_dataparts; ++i) {
+        // Optimise downpass for all character affected by insertion
+        // Return the node for the last node affected by the downpass
+        // Elsewhere:
+        //      Begin first uppass on that node;
+        //      Go up 1 node past the last node affected by the insertion?
+        //      Pass down until state sets no longer affected
+        //      Pass up until 1 past last node affected
+        // Where to add/subtract length?
+        
+        
+//        evaluator = n->nodet_charstates[i]->nd_downpass_full;
+//        evaluator(
+//                  n->nodet_charstates[i],
+//                  left->nodet_charstates[i],
+//                  right->nodet_charstates[i],
+//                  NULL,
+//                  n->nodet_charstates[i]->nd_parent_partition,
+//                  length
+//                  );
+    }
+    
     return;
 }
 

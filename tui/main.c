@@ -600,17 +600,18 @@ void tui_basic_test_local_reopt(void)
         "??---1?;", // 24
         "??---1?;", // 25
         "3---331;", // 26
-        "13---31;",
-        "03---31;",
-        "3---331;",
-        "0----00;",
-        "00-0--0;",
-        "00-5--0;",
-        "0---11-;",
+        "13---31;", // 27
+        "03---31;", // 28
+        "3---331;", // 29
+        "0----00;", // 30
+        "00-0--0;", // 31
+        "00-5--0;", // 32
+        "0---11-;", // 33
                           };
     
-    //                          0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6
+    //                          0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9
     const int expectedlens[] = {1, 2, 3, 1, 0, 0, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 1, 1, 2, 0, 0, 0, 1, 0, 0, 2, 3, 3, 2, 1, 0, 1, 1};
+    //  0  1  2  3
         
     mfl_handle_s* handle = mfl_t2s(mfl_create_handle());
     
@@ -627,7 +628,7 @@ void tui_basic_test_local_reopt(void)
         mfl_tree_t* testtree = mfl_convert_newick_to_mfl_tree_t((char*)testnwk, num_taxa);
         dbg_printf("Testing matrix %i ... \n", i);
         
-        if (i == 33) {
+        if (i == 14) {
             dbg_printf("hold here\n");
         }
         handle->input_data = (char*)matrix[i];
@@ -637,7 +638,7 @@ void tui_basic_test_local_reopt(void)
         
         mfl_fullpass_tree_optimisation(testtree, dataparts);
         int oldlen = testtree->treet_parsimonylength;
-//        assert(oldlen == expectedlens[i]);
+        assert(oldlen == expectedlens[i]);
         
         int diff = 0;
         mfl_cliprec_t clip;
@@ -712,7 +713,7 @@ void tui_basic_any_local_reopt(void)
         "0---11-;", // 7
         "00-11--;", // 8
         "00--1-1;", // 9
-        "00--111;", // 10
+        "00---11;", // 10
         "----111;", // 11
         "-----11;", // 12
         "---0-11;", // 13

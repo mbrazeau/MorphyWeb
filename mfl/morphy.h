@@ -214,7 +214,7 @@ typedef enum {
 
 
 typedef void (*mfl_parsim_fn)(struct mfl_nodedata_t* n, struct mfl_nodedata_t* left, struct mfl_nodedata_t* right, struct mfl_nodedata_t* anc, struct mfl_datapartition_t* datapart, int* length);       // Pointer for a function that performs parsimony calculations at a node.
-typedef int (*mfl_lparsim_fn)(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);       // Pointer for a function that performs parsimony local reoptimisation at a node.
+typedef int (*mfl_lparsim_fn)(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd,  mfl_datapartition_t* dataprt, const int diff);       // Pointer for a function that performs parsimony local reoptimisation at a node.
 
 typedef mfl_charstate (*mfl_char2bit_fn)(char *states, char* datype_converter, mfl_gap_t gaprule);    // Pointer to conversion functions following conversion rules for a particular character type
 
@@ -227,6 +227,8 @@ typedef struct mfl_datapartition_t {
     bool part_has_inapplicables;
     bool part_char_is_directed;
     int *part_char_indices;                         // The partitions can contain characters be non-sequentially and out of order, this allows them to be identified after a search.
+    int  nchanges;
+    int* part_char_changing; //
     int* part_int_weights;
     double* part_real_weights;
     mfl_parsim_fn part_downpass_full;
@@ -312,6 +314,7 @@ typedef struct mfl_node_t {
     int col;
     int branchl_cdraw;
     bool nodet_isingroup;                       // Indicates if node is within the ingroup or not.
+    bool nodet_marked;
     int nodet_advancement_index;
     int nodet_weight;                           // The number of tips of this node; tips are 1.
     int nodet_isbottom;                         // Indicates node points to (calculation) root.
@@ -476,8 +479,8 @@ typedef struct {
 int             tui_check_broken_tree(mfl_tree_t *t, int verbose);
 
 /* In mfl_evaluate.c */
-int mfl_test_fitch_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);
-int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, const mfl_datapartition_t* dataprt, const int diff);
+int mfl_test_fitch_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, mfl_datapartition_t* dataprt, const int diff);
+int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd,  mfl_datapartition_t* dataprt, const int diff);
 void mfl_local_add_cost(mfl_node_t* src, mfl_node_t* tgt, const int diff, int *cost);
 void mfl_fitch_downpass_binary_node(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy, mfl_datapartition_t* datapart, int* length);
 void mfl_first_fitch_na_downpass(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd,  mfl_nodedata_t* dummy, mfl_datapartition_t*  datapart,int* length);
