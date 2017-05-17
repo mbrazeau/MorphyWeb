@@ -78,9 +78,8 @@ using namespace std;
 #define MORPHY_VALID_NONALPHA_STATES char* __MORPHY_NONALPHAS = {'+','-','@'};
 #define MORPHY_NUM_VALID_NONALPHA  3
 #define MORPHY_SPECIAL_STATE_PAD 1 /* Bit width used to reserve a position for a special state*/
-#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) - MORPHY_SPECIAL_STATE_PAD)
 #define MORPHY_BTS_IN_BITSET (sizeof(mfl_bitfield_t) * CHAR_BIT)
-
+#define MORPHY_MAX_STATE_NUMBER (sizeof(mfl_charstate) * CHAR_BIT - MORPHY_SPECIAL_STATE_PAD)
 //Defaults
 #define MORPHY_DEFAULT_WEIGHT 1.0
 #define MORPHY_DEFAULT_TREE_LIMIT 1000
@@ -278,6 +277,7 @@ typedef struct mfl_matrix_t {
 typedef struct mfl_nodedata_t {
     int nd_n_characters;                        // The number of characters within the datablock.
     bool nd_completed;
+    vector<int> changing;                       // The indices of characters that change at this node
     mfl_datapartition_t *nd_parent_partition;
     mfl_parsim_fn nd_downpass_full;                  // The downpass parsimony function.
     mfl_parsim_fn nd_downpass_partial;
@@ -289,11 +289,11 @@ typedef struct mfl_nodedata_t {
     mfl_charstate *nd_initprelim;
     mfl_charstate *nd_initfinal;
     mfl_charstate *nd_prelim_set;               // The initial downpass set for the whole tree.
-    mfl_charstate *nd_prelim2_set;
-    mfl_charstate *nd_prelim3_set;
     mfl_charstate *nd_final_set;                // The final uppass set for the whole tree.
     mfl_charstate *nd_final2_set;
+    mfl_charstate *nd_subtree_initprelim;
     mfl_charstate *nd_subtree_prelim_set;       // The initial downpass set of the subtree when the tree broken.
+    mfl_charstate *nd_subtree_initfinal;
     mfl_charstate *nd_subtree_final_set;        // The final uppass set of the subtree when the tree is broken.
     mfl_charstate *nd_subtree_activestates;
     mfl_charstate *nd_region_activestates;
@@ -479,6 +479,10 @@ typedef struct {
 int             tui_check_broken_tree(mfl_tree_t *t, int verbose);
 
 /* In mfl_evaluate.c */
+void mfl_update_postorder(mfl_node_t *n, int* length);
+int mfl_update_first_fitch_na_downpass (mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* dummy,  mfl_datapartition_t* datapart, int* length);
+
+
 int mfl_test_fitch_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd, mfl_datapartition_t* dataprt, const int diff);
 int mfl_test_fitch_na_local(const mfl_nodedata_t* src_nd, const mfl_nodedata_t* tgt1_nd, const mfl_nodedata_t* tgt2_nd,  mfl_datapartition_t* dataprt, const int diff);
 void mfl_local_add_cost(mfl_node_t* src, mfl_node_t* tgt, const int diff, int *cost);

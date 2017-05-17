@@ -122,7 +122,7 @@ void mfl_add_to_change_list(int index, mfl_datapartition_t *dataprt)
 void mfl_reset_change_list(mfl_datapartition_t *dataprt)
 {
     dataprt->nchanges = 0;
-    memset(dataprt->part_char_changing, 0, dataprt->part_n_chars_included * sizeof(int));
+    memset(dataprt->part_char_changing, 0, dataprt->part_n_chars_max * sizeof(int));
 }
 
 
@@ -202,12 +202,57 @@ void mfl_local_add_cost(mfl_node_t* src, mfl_node_t* tgt, const int diff, int *c
     assert(src->nodet_num_dat_partitions == tgt->nodet_num_dat_partitions);
     
     for (i = 0; i < num_dataparts; ++i) {
+        
         evaluator = src->nodet_charstates[i]->nd_local;
+        
         *cost += evaluator((const mfl_nodedata_t*)src->nodet_charstates[i],
-                  (const mfl_nodedata_t*)tgt->nodet_charstates[i],
-                  (const mfl_nodedata_t*)tgtopp->nodet_charstates[i],
-                  src->nodet_charstates[i]->nd_parent_partition,
-                   diff);
+                           (const mfl_nodedata_t*)tgt->nodet_charstates[i],
+                           (const mfl_nodedata_t*)tgtopp->nodet_charstates[i],
+                           src->nodet_charstates[i]->nd_parent_partition,
+                           diff);
+        
+        if (src->nodet_charstates[i]->nd_parent_partition->nchanges) {
+            dbg_printf("Doing it the hard way for ");
+            dbg_printf("%i characters\n",
+                       src->nodet_charstates[i]->nd_parent_partition->nchanges);
+            
+            
+            // Insert branch for real.
+            mfl_cliprec_t clip;
+            mfl_insert_branch_with_ring_base(src, tgt);
+            src->nodet_edge->nodet_weight = 3; // TODO: Fix this crap
+            
+            // Update the subtree state sets.
+
+            // Set the NEW internal node to "marked"
+            
+            // Plumb down to the last node affected by the insertion
+            mfl_node_t* p = tgt->nodet_edge;
+            tgtopp->nodet_edge->nodet_isbottom = true;
+//            assert(!tgtopp->nodet_isbottom);
+            if (!p->nodet_isbottom && !p->nodet_tip) {
+                do {
+                    p = p->nodet_next;
+                } while (!p->nodet_isbottom);
+            }
+            mfl_update_postorder(p, NULL);
+            // Pass back up.
+            
+            // Then down again.
+            
+            // Then up again.
+            
+            // Restore everything to the way it was before
+            src->nodet_charstates[i]->nd_parent_partition->nchanges = 0;
+//            mfl_reset_change_list(src->nodet_charstates[i]->nd_parent_partition);
+            
+            // Remove the branch
+            tgtopp->nodet_edge->nodet_isbottom = false;
+            mfl_clip_branch(src, &clip);
+        }
+        else {
+            dbg_printf("0\n");
+        }
     }
 }
 
@@ -358,7 +403,6 @@ void mfl_first_fitch_na_uppass(mfl_nodedata_t*       n_nd,
     mfl_charstate* n_initprelim = n_nd->nd_initprelim;
     mfl_charstate* n_initfinal = n_nd->nd_initfinal;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
-    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* anc_char = anc_nd->nd_initfinal;
     mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
 
@@ -446,7 +490,6 @@ void mfl_second_fitch_na_downpass(mfl_nodedata_t*       n_nd,
     int* weights = datapart->part_int_weights;
     mfl_charstate* lft_char = left_nd->nd_prelim_set;
     mfl_charstate* rt_char = right_nd->nd_prelim_set;
-    mfl_charstate* prelim2 = n_nd->nd_prelim2_set;
     mfl_charstate* n_init = n_nd->nd_initfinal;
     mfl_charstate* n_prelim = n_nd->nd_prelim_set;
 //    mfl_charstate* actives = datapart->part_activestates;
@@ -593,23 +636,8 @@ void mfl_second_fitch_na_uppass(mfl_nodedata_t*       n_nd,
                     }
                     else {
                         
-                        if ((lft_char[i] | rt_char[i]) & MORPHY_INAPPLICABLE_BITPOS) {
-                            
-                            if ((lft_char[i] | rt_char[i]) & anc_char[i]) {
-                                n_final[i] = anc_char[i];
-                            }
-                            else {
-                                n_final[i] = (lft_char[i] | rt_char[i] | anc_char[i]) & MORPHY_IS_APPLICABLE;
-                            }
-                        }
-                        else {
-                            
-                            n_final[i] = n_prelim[i] | anc_char[i];
-                            
-                            if ((anc_char[i] & n_final[i]) == anc_char[i]) {
-                                n_final[i] = anc_char[i] & n_final[i];
-                            }
-                        }
+                        
+                        
                     }
                 }
              }
@@ -803,61 +831,275 @@ void mfl_postorder_traversal(mfl_node_t *n, int* length)
         }
 
         n->nodet_downpass_visited = true;
+        
+        if (length) {
+            n->nodet_isbottom = true;
+        }
     }
 
     return;
 }
 
-
-void mfl_partial_postorder(mfl_node_t *n, int* length)
+int mfl_update_first_fitch_na_uppass
+(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd, mfl_nodedata_t* anc_nd, mfl_datapartition_t* datapart, int* length)
 {
     
+    int i = 0;
+    int j = 0;
+    int num_chars = datapart->nchanges;
+    int *indices = datapart->part_char_changing;
+    int updates = 0;
+
+    mfl_charstate* lft_char = NULL;
+    mfl_charstate* rt_char = NULL;
+    mfl_charstate* n_initprelim = n_nd->nd_subtree_initprelim;
+    mfl_charstate* n_initfinal = n_nd->nd_subtree_initfinal;
+    mfl_charstate* n_prelim = n_nd->nd_subtree_prelim_set;
+    mfl_charstate* anc_char = anc_nd->nd_subtree_initfinal;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate* n_originitfinal = n_nd->nd_initfinal;
+    
+    if (!left_nd) {
+        assert(!right_nd);
+        for (j = 0; j < num_chars; ++j) {
+            
+            i = indices[j];
+            if (n_initprelim[i] & anc_char[i]) {
+                subtreeactive[i] = (n_initprelim[i] & anc_char[i]) & MORPHY_IS_APPLICABLE;
+            }
+            else {
+                subtreeactive[i] |= n_initprelim[i] & MORPHY_IS_APPLICABLE;
+            }
+            
+            n_initfinal[i] = n_initprelim[i];
+            
+            if (n_initfinal[i] & anc_char[i]) {
+                if (anc_char[i] & MORPHY_IS_APPLICABLE) {
+                    n_initfinal[i] &= MORPHY_IS_APPLICABLE;
+                }
+            }
+            
+            n_prelim[i] = n_initfinal[i];
+            
+            assert(n_initfinal[i]);
+        }
+        return 0;
+    }
+    
+    // TODO: memcpy the original statesets into these fiels, otherwise they'll be empty
+    lft_char = left_nd->nd_subtree_initprelim;
+    rt_char = right_nd->nd_subtree_initprelim;;
+    
+    for (j = 0; j < num_chars; ++j) {
+        
+        i = indices[j];
+        
+        if (n_initprelim[i] & MORPHY_INAPPLICABLE_BITPOS) {
+            
+            if (n_initprelim[i] & MORPHY_IS_APPLICABLE) {
+                
+                if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    n_initfinal[i] = MORPHY_INAPPLICABLE_BITPOS;
+                }
+                else {
+                    n_initfinal[i] = n_initprelim[i] & MORPHY_IS_APPLICABLE;
+                    
+                    assert(!(anc_char[i] & MORPHY_INAPPLICABLE_BITPOS));
+                }
+            }
+            else {
+                if (anc_char[i] == MORPHY_INAPPLICABLE_BITPOS) {
+                    n_initfinal[i] = MORPHY_INAPPLICABLE_BITPOS;
+                }
+                else {
+                    if ((lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE) {
+                        n_initfinal[i] = (lft_char[i] | rt_char[i]) & MORPHY_IS_APPLICABLE;
+                    }
+                    else {
+                        n_initfinal[i] = MORPHY_INAPPLICABLE_BITPOS;
+                    }
+                }
+            }
+        }
+        else {
+            n_initfinal[i] = n_initprelim[i];
+        }
+        
+        if (n_initfinal[j] != n_originitfinal[j]) {
+            ++updates;
+        }
+        
+        //        nd_active[i] |= ractive[i];
+        assert(n_initfinal[i]);
+    }
+    
+    return updates;
+}
+
+
+int mfl_update_first_fitch_na_downpass
+(mfl_nodedata_t* n_nd, mfl_nodedata_t* left_nd, mfl_nodedata_t* right_nd,mfl_nodedata_t* dummy, mfl_datapartition_t*  datapart, int* length)
+{
+    int i = 0;
+    int j = 0;
+    int updates = 0;
+    int num_chars = datapart->nchanges;
+    int *indices = datapart->part_char_changing;
+    
+    mfl_charstate* left = left_nd->nd_subtree_initprelim;   // TODO: Change these three to subtree records?
+    mfl_charstate* right = right_nd->nd_subtree_initprelim;
+    mfl_charstate* n_initprelim = n_nd->nd_subtree_initprelim;
+    mfl_charstate* n_originitprelim = n_nd->nd_initprelim;
+    
+    mfl_charstate* lft_active = left_nd->nd_subtree_activestates; // TODO: What about these?
+    mfl_charstate* rt_active = right_nd->nd_subtree_activestates;
+    mfl_charstate* subtreeactive = n_nd->nd_subtree_activestates;
+    mfl_charstate temp;
+    
+    for (i = 0; i < num_chars; ++i) {
+        
+        temp = 0;
+        j = indices[i];
+        
+        if ((temp = (left[j] & right[j])) ) {
+            
+            n_initprelim[j] = temp;
+            
+            if (n_initprelim[j] == MORPHY_INAPPLICABLE_BITPOS) {
+                
+                if ((left[j] & MORPHY_IS_APPLICABLE) && (right[j] & MORPHY_IS_APPLICABLE)) {
+                    n_initprelim[j] = left[j] | right[j];
+                }
+            }
+        }
+        else {
+            
+            n_initprelim[j] = left[j] | right[j];
+            
+            if ((left[j] & MORPHY_IS_APPLICABLE) && (right[j] & MORPHY_IS_APPLICABLE)) {
+                n_initprelim[j] = n_initprelim[j] & MORPHY_IS_APPLICABLE;
+            }
+            
+        }
+        
+        subtreeactive[j] = (lft_active[j] | rt_active[j]) & MORPHY_IS_APPLICABLE;
+        
+        if (n_initprelim[j] != n_originitprelim[j]) {
+            ++updates;
+        }
+        
+        assert(n_initprelim[j]);
+    }
+    
+    return updates; // Return the number of characters updated at this node
+}
+
+
+void mfl_update_preorder(mfl_node_t *n, int *length)
+{
     int i = 0;
     int num_dataparts;
     mfl_node_t *p = NULL;
     mfl_parsim_fn evaluator;
     mfl_node_t* left;
     mfl_node_t* right;
+    mfl_nodedata_t* leftchars;
+    mfl_nodedata_t* rightchars;
+    
+    num_dataparts = n->nodet_num_dat_partitions;
+    
+    if (!n->nodet_tip) {
+        left = n->nodet_next->nodet_edge;
+        right = n->nodet_next->nodet_next->nodet_edge;
+    }
+    
+    
+    
+    for (i = 0; i < num_dataparts; ++i) {
+        if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+            
+        }
+    }
     
     if (n->nodet_tip) {
         return;
     }
     
-    if (!n->nodet_marked) {
-        
-        left = n->nodet_next->nodet_edge;
-        right = n->nodet_next->nodet_next->nodet_edge;
-        
-        p = n->nodet_next;
-        do {
-            mfl_partial_postorder(p->nodet_edge, length);
-            p = p->nodet_next;
-        } while (p != n);
-
-    }
-
-    num_dataparts = n->nodet_num_dat_partitions;
+    p = n->nodet_next;
+    do {
+        mfl_first_preorder_traversal(p->nodet_edge, length);
+        p = p->nodet_next;
+    } while (p != n);
+    
     
     for (i = 0; i < num_dataparts; ++i) {
-        // Optimise downpass for all character affected by insertion
-        // Return the node for the last node affected by the downpass
-        // Elsewhere:
-        //      Begin first uppass on that node;
-        //      Go up 1 node past the last node affected by the insertion?
-        //      Pass down until state sets no longer affected
-        //      Pass up until 1 past last node affected
-        // Where to add/subtract length?
-        
-        
-//        evaluator = n->nodet_charstates[i]->nd_downpass_full;
-//        evaluator(
-//                  n->nodet_charstates[i],
-//                  left->nodet_charstates[i],
-//                  right->nodet_charstates[i],
-//                  NULL,
-//                  n->nodet_charstates[i]->nd_parent_partition,
-//                  length
-//                  );
+        if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
+
+        }
+    }
+    
+    return;
+}
+
+void mfl_update_postorder(mfl_node_t *n, int *length)
+{
+    
+    int i = 0;
+    int num_dataparts;
+    mfl_node_t *p = NULL;
+//    mfl_parsim_fn evaluator;
+
+    dbg_printf("Plumbing...\n");
+    
+    if (n->nodet_tip) {
+        return;
+    }
+    
+    mfl_node_t* left;
+    mfl_node_t* right;
+    
+    p = n;
+    if (!p->nodet_isbottom) {
+        do {
+            p = p->nodet_next;
+            assert(p != n);
+        } while (!p->nodet_isbottom);
+    }
+    
+    left    = p->nodet_next->nodet_edge;
+    right   = p->nodet_next->nodet_next->nodet_edge;
+    
+    num_dataparts = p->nodet_num_dat_partitions;
+    mfl_datapartition_t *part = NULL;
+    
+    for (i = 0; i < num_dataparts; ++i) {
+        part = p->nodet_charstates[i]->nd_parent_partition;
+        if (part->nchanges) {
+
+            // Optimise downpass for all character affected by insertion
+            // Return the node for the last node affected by the downpass
+            // Elsewhere:
+            //      Begin first uppass on that node;
+            //      Go up 1 node past the last node affected by the insertion?
+            //      Pass down until state sets no longer affected
+            //      Pass up until 1 past last node affected
+            // Where to add/subtract length?
+            
+            int updates = mfl_update_first_fitch_na_downpass
+                          (p->nodet_charstates[i], left->nodet_charstates[i], right->nodet_charstates[i], NULL, p->nodet_charstates[i]->nd_parent_partition, length);
+            if (!updates) {
+                dbg_printf("Finished plumbing, returning...\n");
+                // Do uppass
+                return;
+            }
+        }
+    }
+    
+    if (p->nodet_edge->nodet_tip > 0) {
+        mfl_update_postorder(p->nodet_edge, NULL);
+    }
+    else {
+        // Do uppass:
     }
     
     return;
@@ -1098,101 +1340,6 @@ bool mfl_calculate_all_views(mfl_tree_t* t, mfl_partition_set_t* dataparts, int 
     return false;
 }
 
-
-void mfl_second_postorder(mfl_node_t *n, int* length)
-{
-    int i = 0;
-    int num_dataparts;
-    mfl_node_t *p = NULL;
-    mfl_parsim_fn evaluator;
-    mfl_node_t* left = NULL;
-    mfl_node_t* right = NULL;
-    mfl_nodedata_t* leftchars;
-    mfl_nodedata_t* rightchars;
-    
-    num_dataparts = n->nodet_num_dat_partitions;
-    
-    if (n->nodet_tip) {
-        return;
-    }
-    
-    p = n->nodet_next;
-    
-    do {
-        mfl_second_postorder(p->nodet_edge, length);
-        
-        p->nodet_uppass_visited = false;
-        p = p->nodet_next;
-    } while (p != n);
-    
-    for (i = 0; i < num_dataparts; ++i) {
-        if (n->nodet_charstates[i]->nd_parent_partition->part_has_inapplicables) {
-            mfl_set_subtree_actives(p->nodet_charstates[i],
-                                    p->nodet_next->nodet_edge->nodet_charstates[i],
-                                    p->nodet_next->nodet_next->nodet_edge->nodet_charstates[i],
-                                    p->nodet_edge->nodet_charstates[i],
-                                    n->nodet_charstates[i]->nd_parent_partition);
-        }
-    }
-//    n->nodet_downpass_visited = false;
-    
-    return;
-}
-
-
-void mfl_allviews_traversal2(mfl_node_t* n)
-{
-    mfl_node_t *p = NULL;
-    
-    if (n->nodet_tip) {
-        //        dbg_printf("Tip visited: %i\n", n->nodet_tip);
-        mfl_second_postorder(n->nodet_edge, NULL);
-        return;
-    }
-    
-    p = n->nodet_next;
-    do {
-        mfl_allviews_traversal2(p->nodet_edge);
-        p = p->nodet_next;
-    } while (p != n);
-    
-}
-
-bool mfl_calculate_all_views2(mfl_tree_t* t, mfl_partition_set_t* dataparts, int *length)
-{
-    int num_taxa = t->treet_num_taxa;
-    mfl_cliprec_t orig_root;
-    mfl_node_t *entry = NULL;
-    
-    if (t->treet_root) {
-        entry = t->treet_root;
-    }
-    else {
-        entry = t->treet_start;
-    }
-    
-    // Unroot the tree
-    if (t->treet_root) {
-        if (!t->treet_root->nodet_weight) {
-            t->treet_root->nodet_weight = num_taxa;
-        }
-        
-    }
-    // TODO: This really needs to be generalised.
-    // Perform a simple unrooting by
-    if (mfl_simple_unroot(t, &orig_root)) {
-        
-        mfl_allviews_traversal2(t->treet_start);
-        
-        mfl_simple_reroot(t, &orig_root);
-
-        return true;
-    }
-
-    
-    return false;
-}
-
 void mfl_clear_active_states(mfl_partition_set_t* dataparts)
 {
     int i = 0;
@@ -1212,6 +1359,10 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
     // TODO: Needs rooted/unrooted handling
     t->treet_parsimonylength = 0;
     
+    for (int i = 0; i < t->treet_num_nodes; ++i) {
+        t->treet_treenodes[i]->nodet_isbottom = false;
+    }
+    
     // Perform the downpass in all directions
     mfl_calculate_all_views(t, dataparts, &t->treet_parsimonylength);
     
@@ -1220,7 +1371,7 @@ void mfl_fullpass_tree_optimisation(mfl_tree_t* t, mfl_partition_set_t* datapart
 //    mfl_clear_active_states(dataparts);
     mfl_first_preorder_traversal(t->treet_root, &t->treet_parsimonylength);
 
-    mfl_calculate_all_views2(t, dataparts, NULL);
+//    mfl_calculate_all_views2(t, dataparts, NULL);
     // Perform the final uppass
     mfl_set_rootstates(&t->treet_dummynode, t->treet_root, dataparts);
 //    mfl_clear_active_states(dataparts);
@@ -1283,6 +1434,7 @@ int mfl_ordered_distance(mfl_charstate* t, const mfl_charstate* a, int* weights,
 }
 
 
+// MDB: No it doesn't. This function won't work as expected.
 /*!
  @discussion Defines if final set is different than preliminary set
  @param target_node (mfl_nodedata_t*) a target node

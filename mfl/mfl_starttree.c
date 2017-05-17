@@ -76,7 +76,10 @@ void mfl_copy_from_all_partitions_into_tip_nodedata(mfl_node_t* n, mfl_partition
         memcpy(n->nodet_charstates[i]->nd_initprelim, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
         memcpy(n->nodet_charstates[i]->nd_initfinal, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
         memcpy(n->nodet_charstates[i]->nd_final_set, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
-        
+        memcpy(n->nodet_charstates[i]->nd_subtree_initprelim, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
+        memcpy(n->nodet_charstates[i]->nd_subtree_initfinal, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
+        memcpy(n->nodet_charstates[i]->nd_subtree_final_set, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
+        memcpy(n->nodet_charstates[i]->nd_subtree_prelim_set, n->nodet_charstates[i]->nd_prelim_set, n->nodet_charstates[i]->nd_n_characters * sizeof(mfl_charstate));
         
     }
 }
@@ -435,6 +438,8 @@ void mfl_tryall_traversal(mfl_node_t* n, mfl_node_t* newbranch, mfl_stepwise_add
     length = searchrec->sr_swaping_on->treet_parsimonylength;
     
     mfl_local_add_cost(newbranch, n->nodet_edge, NULL, &cost);
+    
+    
     searchrec->sr_swaping_on->treet_parsimonylength += cost;
     
 //    mfl_test_expected_length(newbranch, n, searchrec->sr_swaping_on, searchrec);
@@ -513,8 +518,7 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         
         node->nodet_charstates[i]->nd_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_initprelim = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-        node->nodet_charstates[i]->nd_prelim2_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
-        node->nodet_charstates[i]->nd_prelim3_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+        node->nodet_charstates[i]->nd_subtree_initprelim = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_prelim_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_subtree_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         node->nodet_charstates[i]->nd_region_activestates = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
@@ -529,6 +533,7 @@ void mfl_setup_nodedata(mfl_node_t* node, mfl_partition_set_t* dataparts, bool b
         if (bottom) {
             node->nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
             node->nodet_charstates[i]->nd_initfinal = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+            node->nodet_charstates[i]->nd_subtree_initfinal = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
             node->nodet_charstates[i]->nd_subtree_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         }
     }
@@ -543,6 +548,7 @@ void mfl_connect_uppass_sets(mfl_node_t* ringmmber, const mfl_node_t* ringbase, 
         ringmmber->nodet_charstates[i]->nd_final_set = ringbase->nodet_charstates[i]->nd_final_set;
         ringmmber->nodet_charstates[i]->nd_initfinal = ringbase->nodet_charstates[i]->nd_initfinal;
         ringmmber->nodet_charstates[i]->nd_subtree_final_set = ringbase->nodet_charstates[i]->nd_subtree_final_set;
+        ringmmber->nodet_charstates[i]->nd_subtree_initfinal = ringbase->nodet_charstates[i]->nd_subtree_initfinal;
     }
     
 }
@@ -609,7 +615,7 @@ void mfl_setup_starttree_root(mfl_tree_t* t, mfl_partition_set_t* dataparts)
         
         t->treet_dummynode.nodet_charstates[i]->nd_final_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         
-        t->treet_dummynode.nodet_charstates[i]->nd_prelim2_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
+//        t->treet_dummynode.nodet_charstates[i]->nd_prelim2_set = (mfl_charstate*)mfl_malloc(dataparts->ptset_partitions[i]->part_n_chars_included * sizeof(mfl_charstate), 0);
         
         t->treet_dummynode.nodet_charstates[i]->nd_initprelim = t->treet_dummynode.nodet_charstates[i]->nd_final_set;
         t->treet_dummynode.nodet_charstates[i]->nd_initfinal = t->treet_dummynode.nodet_charstates[i]->nd_final_set;

@@ -26,7 +26,6 @@ void mfl_bts_setbit(mfl_bitset_t* bitset, mfl_bitfield_t set_to, int setposition
     bitset->bts_bitfields[i] |= (set_to << ((setposition - (i * MORPHY_BTS_IN_BITSET)) - 1));
 }
 
-
 /*!
  @discussion Simulates a bitwise AND on an mfl_bitset_t struct. If a target 
  bitset is supplied, that target will be set to the result of a bitwise AND 

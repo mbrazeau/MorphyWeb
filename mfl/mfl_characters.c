@@ -1730,6 +1730,7 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, const 
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, false, handle);
             dataparts->ptset_partitions[part_i]->part_n_chars_max = jntchars[i].jpt_num_allapplic;
             dataparts->ptset_partitions[part_i]->part_char_indices = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
+            dataparts->ptset_partitions[part_i]->part_char_changing = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
             dataparts->ptset_partitions[part_i]->part_index = jntchars[i].jpt_applic_part_num;
             ++part_i;
         }
@@ -1741,6 +1742,7 @@ mfl_partition_set_t* mfl_create_data_partitions_set(mfl_matrix_t* matrix, const 
             mfl_set_datapart_params(dataparts->ptset_partitions[part_i], (mfl_parsimony_t)i, true, handle);
             dataparts->ptset_partitions[part_i]->part_n_chars_max = jntchars[i].jpt_num_winapplic;
             dataparts->ptset_partitions[part_i]->part_char_indices = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
+            dataparts->ptset_partitions[part_i]->part_char_changing = (int*)mfl_malloc(dataparts->ptset_partitions[part_i]->part_n_chars_max * sizeof(int), 0);
             dataparts->ptset_partitions[part_i]->part_index = jntchars[i].jpt_inapplic_part_num;
             ++part_i;
         }
@@ -1784,6 +1786,7 @@ void mfl_destroy_partition_set(mfl_partition_set_t* ptset)
         free(ptset->ptset_partitions[i]->part_char_indices);
         free(ptset->ptset_partitions[i]->part_int_weights);
         free(ptset->ptset_partitions[i]->part_matrix);
+        free(ptset->ptset_partitions[i]->part_char_changing);
         free(ptset->ptset_partitions[i]);
         ptset->ptset_partitions[i] = NULL;
     }
