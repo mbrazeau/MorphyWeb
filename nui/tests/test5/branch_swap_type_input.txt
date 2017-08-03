@@ -1,7 +1,0 @@
-open
-Gnathostomes_Nov2010f2.nex
-branchswap=123123
-branchswap=NearistNeighbor
-branchswap=SubtreePruning
-branchswap=TreeBisection
-q

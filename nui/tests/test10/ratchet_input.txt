@@ -1,7 +1,0 @@
-open
-Ptomacanth_Edit.txt
-ratchet=3123
-ratchet=true
-ratchet=Disable
-ratchet=Enable
-q

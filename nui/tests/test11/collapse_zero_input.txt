@@ -1,7 +1,0 @@
-open
-Ptomacanth_Edit.txt
-collapsezero=adasd
-collapsezero=44
-collapsezero=Collapse
-collapsezero=NoCollapse
-q
