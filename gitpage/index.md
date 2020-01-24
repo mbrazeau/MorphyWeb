@@ -2,9 +2,20 @@
 
 ### Download
 
-The latest versions of Morphy here.
+The latest versions of Morphy [here](https://github.com/mbrazeau/morphy.release.test/releases).
 
 ### Install
+
+#### Mac:
+To install on macOS you will need to use the Terminal and navigate to the directory where the Morphy executable is stored and enter the command:
+
+	sudo chmod a+x <morphy executable name>
+	
+To run Morphy, simply issue the command:
+
+	./<morphy executable name>
+	
+Macs are quite restrictive about permissions for programs downloaded from the web. So, when you first try to run Morphy, the  operating system will try to stop you. Navigate to `System Preferences > Security & Privacy` and choose "Allow" for Morphy.
 
 ### User guide
 
