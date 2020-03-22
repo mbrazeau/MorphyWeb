@@ -2,7 +2,7 @@
 
 ### Download
 
-The latest versions of Morphy [here](https://github.com/mbrazeau/morphy.release.test/releases).
+The latest versions of Morphy [here](https://github.com/mbrazeau/morphy.archive/releases).
 
 ### Install
 
