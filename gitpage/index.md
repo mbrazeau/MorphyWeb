@@ -29,6 +29,10 @@ To run Morphy, simply issue the command:
 	
 Macs are quite restrictive about permissions for programs downloaded from the web. So, when you first try to run Morphy, the  operating system will try to stop you. Navigate to `System Preferences > Security & Privacy` and choose "Allow" for Morphy.
 
+## Staying up to date
+
+Join the [Morphy user group](https://groups.google.com/forum/#!forum/morphy-phylogenetic-software-announcements). This is a low-traffic forum for announcements about updates to the software and documentation.
+
 ## User guide
 
 A list of commands is provided with the ‘help’ command. However, that list is a lot of promises and not a lot of action. The basic functionality of Morphy is doing searches using either random addition sequence + branch-swapping or using the "ratchet”.
