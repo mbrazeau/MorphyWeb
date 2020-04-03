@@ -16,6 +16,8 @@ Linux users: follow the instructions [here](https://github.com/mbrazeau/morphy.a
 
 ## Install
 
+On most systems, running the program shouldn't require any special installation. Mac users may need to follow the instructions below.
+
 ### Mac:
 To install on macOS you will need to use the Terminal and navigate to the directory where the Morphy executable is stored and enter the command:
 
