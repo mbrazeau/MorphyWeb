@@ -1,4 +1,5 @@
 theme: jekyll-theme-cayman
 title: [Morphy]
 github:
-  repository_url: https://github.com/mbrazeau/morphy.archive
+  is_project_page: false
+#  repository_url: https://github.com/mbrazeau/morphy.archive
