@@ -1,12 +1,20 @@
-## Morphy: Phylogenetic Analysis of Morphological Data With Character-state Inapplicability
+# Morphy: Phylogenetic Analysis of Morphological Data With Character-state Inapplicability
 
-### Download
+## Download
 
 The latest versions of Morphy [here](https://github.com/mbrazeau/morphy.archive/releases).
 
-### Install
+### Precompiled binaries:
 
-#### Mac:
+[macOS](https://github.com/mbrazeau/morphy.archive/releases/download/0.2-beta/morphy_nui_v02b-macOS)
+[Windows x64 (64-bit)](https://github.com/mbrazeau/morphy.archive/releases/download/0.2-beta/morphy_nui_v02b-win64.exe)
+[Windows x86 (32-bit)](https://github.com/mbrazeau/morphy.archive/releases/download/0.2-beta/morphy_nui_v02b-win32.exe)
+
+Linux users: follow the instructions [here](https://github.com/mbrazeau/morphy.archive) to clone all repos and run the build script.
+
+## Install
+
+### Mac:
 To install on macOS you will need to use the Terminal and navigate to the directory where the Morphy executable is stored and enter the command:
 
 	sudo chmod a+x <morphy executable name>
@@ -17,7 +25,7 @@ To run Morphy, simply issue the command:
 	
 Macs are quite restrictive about permissions for programs downloaded from the web. So, when you first try to run Morphy, the  operating system will try to stop you. Navigate to `System Preferences > Security & Privacy` and choose "Allow" for Morphy.
 
-### User guide
+## User guide
 
 A list of commands is provided with the ‘help’ command. However, that list is a lot of promises and not a lot of action. The basic functionality of Morphy is doing searches using either random addition sequence + branch-swapping or using the "ratchet”.
 
