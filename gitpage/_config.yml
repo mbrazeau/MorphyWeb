@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
 title: [Morphy]
-github:
+github_info:
     is_project_page: false
     about_url: http://www.morphyproject.org
     
