@@ -1,3 +1,9 @@
+---
+title: User guide
+layout: default
+filename: userguide.md
+---
+
 ## User guide
 
 A list of commands is provided with the ‘help’ command. However, that list is a lot of promises and not a lot of action. The basic functionality of Morphy is doing searches using either random addition sequence + branch-swapping or using the "ratchet”.

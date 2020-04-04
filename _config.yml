@@ -4,3 +4,6 @@ description: Morphological phylogenetics accommodating inapplicable data
 github:
     is_project_page: false
     about_url: http://www.morphyproject.org
+    downloads_url: http://www.morphyproject.org/download.html
+    userguide_url: http://www.morphyproject.org/userguide.html
+    faq_url: http://www.morphyproject.org/faq.html
