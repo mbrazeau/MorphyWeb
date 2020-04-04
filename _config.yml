@@ -1,6 +1,6 @@
 remote_theme: mbrazeau/cayman
 title: Morphy
 description: Morphological phylogenetics accommodating inapplicable data
-github:
+github_info:
     is_project_page: false
     about_url: http://www.morphyproject.org
