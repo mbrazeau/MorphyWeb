@@ -1,6 +1,6 @@
 ---
 title: Download
-layout: template
+layout: default
 filename: download.md
 ---
 
