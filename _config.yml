@@ -1,4 +1,4 @@
-remote_theme: mbrazeau/cayman
+theme: jekyll-theme-cayman
 title: Morphy
 description: Morphological phylogenetics accommodating inapplicable data
 is_project_page: false
