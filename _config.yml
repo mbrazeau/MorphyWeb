@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
-title: [Morphy]
-description: [Morphological phylogenetics accommodating inapplicable data]
+title: Morphy
+description: Morphological phylogenetics accommodating inapplicable data
 github:
     is_project_page: false
     about_url: http://www.morphyproject.org
