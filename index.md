@@ -1,5 +1,3 @@
-# Morphy: Phylogenetic Analysis of Morphological Data With Character-state Inapplicability
-
 ## Download
 
 ### Precompiled binaries:
