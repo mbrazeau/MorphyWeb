@@ -6,13 +6,19 @@ filename: userguide.md
 
 ## User guide
 
+## Table of contents
+
+Coming soon...
+
+## Commands
+
 A list of commands is provided with the ‘help’ command. However, that list is a lot of promises and not a lot of action. The basic functionality of Morphy is doing searches using either random addition sequence + branch-swapping or using the "ratchet”.
 
 Basic command structure:
 
 	<command> = <option>
 
-### Changing your working directory:
+## Opening files, setting working directory 
 
 	cd=/path/to/working/directory
 
@@ -20,6 +26,7 @@ Opening a file:
 
 	open=mynexusfile.nex
 
+## Searching
 Running a simple heuristic search using the default settings and input order of the taxa:
 
 	heuristic
