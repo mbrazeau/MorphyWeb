@@ -36,7 +36,7 @@ The following are valid state symbols:
 
 The following symbols can be used as 'wildcards' 
 
-* `-` The gap symbol (can be any of inapplicable, missing, or an additional state)
+* `-` The gap symbol (can be any of inapplicable, missing, or an additional state). The options are global for the data set and are set using the `gap=` command, where the options are `inapplicable` (default), `missing`, and `state`.
 * `?` Signifies missing data in all categories (applicable or inapplicable)
 * `+` Signifies 'unknown' defined here to be: "applicable, but of unknown state". This could be, for instance, the colour, of a structure known in a fossil.
 
