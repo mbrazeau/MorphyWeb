@@ -20,6 +20,8 @@ Basic command structure:
 
 ## Opening files, setting working directory 
 
+To set the working directory, the command is issued as follows:
+
 	cd=/path/to/working/directory
 
 Opening a file:
