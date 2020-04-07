@@ -30,7 +30,7 @@ Opening a file:
 
 Morphy currently only reads Nexus files.
 
-The following valid state symbols:
+The following are valid state symbols:
 
 	0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
