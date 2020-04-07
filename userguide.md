@@ -26,6 +26,20 @@ Opening a file:
 
 	open=mynexusfile.nex
 
+## Input format
+
+Morphy currently only reads Nexus files.
+
+The following valid state symbols:
+
+	0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
+The following symbols can be used as 'wildcards' 
+
+* `-` The gap symbol (can be any of inapplicable, missing, or an additional state)
+* `?` Signifies missing data in all categories (applicable or inapplicable)
+* `+` Signifies 'unknown' defined here to be: "applicable, but of unknown state". This could be, for instance, the colour, of a structure known in a fossil.
+
 ## Searching
 Running a simple heuristic search using the default settings and input order of the taxa:
 
