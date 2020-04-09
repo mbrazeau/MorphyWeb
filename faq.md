@@ -7,7 +7,8 @@ filename: faq.md
 Note: This version of the FAQ was written on 5 April 2020 for version 0.2 beta.
 
 ## Q: Why won't Morphy read my Nexus file?
-There are some issues with Nexus file formatting that can cause read issues. The most common is the missing `SYMBOLS` command in the `CHARACTERS` (or `DATA`) block. While Morphy does not strictly require this item, the program uses the [Nexus Class Library] (https://github.com/mtholder/ncl) to handle input and output. These functions appear to choke on Nexus files without a `SYMBOLS` command.
+There are some issues with Nexus file formatting that can cause read issues. The most common is the missing `SYMBOLS` command in the `CHARACTERS` (or `DATA`) block. 
+While Morphy does not strictly require this item, the program uses the [Nexus Class Library](https://github.com/mtholder/ncl) to handle input and output. These functions appear to choke on Nexus files without a `SYMBOLS` command.
 
 ## Q: Why does the world need another phylogeny program?
 Perhaps it doesn't. Morphy has its own way of encoding discrete data internally, it's own routines for deriving the score of a tree, and its own methods for accelerating the scoring of trees during searches. There is also a lack of serious parsimony programs available that are open-source and would have allowed me to invade the code and re-write these routines. There would be little hope I could have done this without my own practice at writing and building phylogeny programs. So now the world has Morphy. 
