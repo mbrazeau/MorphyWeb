@@ -8,11 +8,11 @@ filename: download.md
 
 ### Precompiled binaries:
 
-* [macOS](https://github.com/mbrazeau/morphy.archive/releases/download/0.3-beta/morphy_nui_v03b-macOS)
+* [macOS](https://github.com/mbrazeau/morphy.archive/releases/download/0.4-beta/morphy_nui_v04-macOS)
 
-* [Windows x64 (64-bit)](https://github.com/mbrazeau/morphy.archive/releases/download/0.3-beta/morphy_nui_v03b-win64.exe)
+* [Windows x64 (64-bit)](https://github.com/mbrazeau/morphy.archive/releases/download/0.4-beta/morphy_nui_v04b-x64.exe.64-bit.exe)
 
-* [Windows x86 (32-bit)](https://github.com/mbrazeau/morphy.archive/releases/download/0.3-beta/morphy_nui_v03b-win32.exe)
+* [Windows x86 (32-bit)](https://github.com/mbrazeau/morphy.archive/releases/download/0.4-beta/morphy_nui_v04b-x86.exe.32-bit.exe)
 
 * Linux users: follow the instructions [here](https://github.com/mbrazeau/morphy.archive) to clone all repos and run the build script.
 
