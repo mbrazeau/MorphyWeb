@@ -42,6 +42,10 @@ The following symbols can be used as 'wildcards'
 * `?` Signifies missing data in all categories (applicable or inapplicable)
 * `+` Signifies 'unknown' defined here to be: "applicable, but of unknown state". This could be, for instance, the colour, of a structure known in a fossil.
 
+## Handling the gap state:
+
+By default, Morphy treats the gap symbol in the data as inapplicable under the algorithm by Brazeau, Guillerme, and Smith (2019). However, it is possible to set the gap symbol to be treated either as missing or as an extra state. Simply use the `gap` command with either `inapplicable`, `missing`, or `state`.
+
 ## Setting the parsimony type:
 
 Characters are unordered by default. To set characters to ordered parsimony, simply use the `ordered` command followed by an equals sign and the space-separated list of character numbers (the first character 1). For instance:
@@ -109,6 +113,7 @@ After the ratchet search completes, you can do full TBR or SPR search on the tre
 
 The search will complete eventually (You can interrupt a search with Cmd+period on a Mac or Ctrl+C on other systems).
 
+## Saving results
 At present, Morphy doesn’t compute a consensus tree or output a text-drawing of your tree(s). You’ll want to export your trees to a tree file to view them or compute the consensus.
 That’s simply done with:
 
