@@ -42,6 +42,18 @@ The following symbols can be used as 'wildcards'
 * `?` Signifies missing data in all categories (applicable or inapplicable)
 * `+` Signifies 'unknown' defined here to be: "applicable, but of unknown state". This could be, for instance, the colour, of a structure known in a fossil.
 
+## Setting the parsimony type:
+
+Characters are unordered by default. To set characters to ordered parsimony, simply use the `ordered` command followed by an equals sign and the space-separated list of character numbers (the first character 1). For instance:
+
+    ordered=1 7 21 30
+
+To set these back, simply issue the inverse unordered command:
+
+    unordered=1 7 21 30
+
+At present, inputting ranges is not supported. A future version will allow setting ranges as well as using an 'all' declaration.
+
 ## Searching
 Running a simple heuristic search using the default settings and input order of the taxa:
 
